@@ -15,6 +15,7 @@
  */
 package com.github.wnameless.spring.boot.up.permission;
 
+import java.util.Map;
 import java.util.Set;
 
 import com.github.wnameless.spring.boot.up.permission.ability.ResourceAbility;
@@ -43,5 +44,7 @@ public interface WebPermissionManager {
   boolean addUserRole(String username, Role role);
 
   boolean removeUserRole(String username, Role role);
+
+  Map<String, Set<String>> getUserMetadata();
 
 }

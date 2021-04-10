@@ -22,6 +22,7 @@ import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility
 import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.READ;
 import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.UPDATE;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -535,5 +536,7 @@ public interface PermittedUser<ID> {
 
     return ret;
   }
+
+  Map<String, Set<String>> getUserMetadata();
 
 }

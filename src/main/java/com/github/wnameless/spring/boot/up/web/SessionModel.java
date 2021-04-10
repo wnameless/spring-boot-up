@@ -16,6 +16,7 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.http.HttpSession;
 
@@ -35,8 +36,8 @@ public final class SessionModel {
   private final HttpSession session;
 
   public SessionModel(Model model, HttpSession session) {
-    if (model == null) throw new NullPointerException();
-    if (session == null) throw new NullPointerException();
+    Objects.requireNonNull(model);
+    Objects.requireNonNull(session);
 
     this.model = model;
     this.session = session;

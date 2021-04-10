@@ -17,11 +17,13 @@ package com.github.wnameless.spring.boot.up.permission;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -44,6 +46,8 @@ import com.github.wnameless.spring.boot.up.permission.ability.CanUpdate;
 import com.github.wnameless.spring.boot.up.permission.ability.Do;
 import com.github.wnameless.spring.boot.up.permission.ability.ResourceAbility;
 import com.github.wnameless.spring.boot.up.permission.ability.RestAbility;
+import com.github.wnameless.spring.boot.up.permission.ability.RoleMeta;
+import com.github.wnameless.spring.boot.up.permission.ability.RoleMetadata;
 import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceAccessRule;
 import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceFilterRepository;
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceAccessRule;
@@ -65,6 +69,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
 
   private final Map<String, WebRole> webRoles;
   private final Map<String, Set<AccessAbility>> role2Abilities;
+  private final Map<String, Map<String, Set<String>>> role2Metadata;
   @SuppressWarnings("rawtypes")
   private final Map<Class<ResourceFilterRepository>, Set<ResourceAccessRule>> repo2Rules;
   @SuppressWarnings("rawtypes")
@@ -74,6 +79,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
     {
       webRoles = new LinkedCaseInsensitiveMap<>();
       role2Abilities = new LinkedCaseInsensitiveMap<>();
+      role2Metadata = new LinkedHashMap<>();
       repo2Rules = new HashMap<>();
       repo2EmbeddedRules = new HashMap<>();
       resourceLookup = new LinkedCaseInsensitiveMap<>();
@@ -124,6 +130,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
       String role = wr.getRole().getRoleName();
       webRoles.put(role, wr);
 
+      // Abilities
       Map<Class<?>, Set<AccessAbility>> roleAbilities =
           buildAccessAbilities(wr);
       if (!role2Abilities.containsKey(role)) {
@@ -132,7 +139,42 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
       for (Set<AccessAbility> abilities : roleAbilities.values()) {
         role2Abilities.get(role).addAll(abilities);
       }
+
+      // Metadata
+      role2Metadata.put(role, buildRoleMetadata(wr));
     }
+  }
+
+  private Map<String, Set<String>> buildRoleMetadata(WebRole webRole) {
+    Map<String, Set<String>> metadata = new LinkedHashMap<>();
+
+    RoleMetadata roleMetadata =
+        AnnotationUtils.findAnnotation(webRole.getClass(), RoleMetadata.class);
+    if (roleMetadata != null) {
+      for (RoleMeta roleMeta : roleMetadata.value()) {
+        if (metadata.containsKey(roleMeta.key())) {
+          metadata.get(roleMeta.key())
+              .addAll(Ruby.Set.copyOf(roleMeta.values()));
+        } else {
+          metadata.put(roleMeta.key(),
+              Ruby.Set.copyOf(roleMeta.values()).toSet());
+        }
+      }
+    } else {
+      RoleMeta roleMeta =
+          AnnotationUtils.findAnnotation(webRole.getClass(), RoleMeta.class);
+      if (roleMeta != null) {
+        if (metadata.containsKey(roleMeta.key())) {
+          metadata.get(roleMeta.key())
+              .addAll(Ruby.Set.copyOf(roleMeta.values()));
+        } else {
+          metadata.put(roleMeta.key(),
+              Ruby.Set.copyOf(roleMeta.values()).toSet());
+        }
+      }
+    }
+
+    return metadata;
   }
 
   @Override
@@ -498,6 +540,26 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
     }
 
     return accessAbilities;
+  }
+
+  @Override
+  public Map<String, Set<String>> getUserMetadata() {
+    Map<String, Set<String>> metadata = new LinkedHashMap<>();
+
+    for (Role role : getUserRoles()) {
+      Map<String, Set<String>> roleMeta = role2Metadata.get(role.getRoleName());
+      if (roleMeta != null) {
+        metadata = Stream
+            .concat(metadata.entrySet().stream(), roleMeta.entrySet().stream())
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                (value1, value2) -> {
+                  value1.addAll(value2);
+                  return value1;
+                }));
+      }
+    }
+
+    return metadata;
   }
 
 }

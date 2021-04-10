@@ -27,8 +27,4 @@ public interface Role {
 
   String getRoleName();
 
-  default String getUpperCaseRoleName() {
-    return getRoleName().toUpperCase();
-  }
-
 }

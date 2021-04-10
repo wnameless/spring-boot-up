@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2020 Wei-Ming Wu
+ * Copyright 2021 Wei-Ming Wu
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,14 +13,21 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.permission.role;
+package com.github.wnameless.spring.boot.up.permission.ability;
 
-import java.util.Set;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface RoleList extends Role {
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Repeatable(RoleMetadata.class)
+public @interface RoleMeta {
 
-  WebRole getWebRole();
+  String key();
 
-  Set<Role> getAssignableRoles();
+  String[] values() default {};
 
 }

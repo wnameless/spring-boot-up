@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2020 Wei-Ming Wu
+ * Copyright 2021 Wei-Ming Wu
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,15 +13,17 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.permission.role;
+package com.github.wnameless.spring.boot.up.permission.ability;
 
-public interface TypeRole<T> extends WebRole {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-  @Override
-  default boolean isActive() {
-    return true;
-  }
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RoleMetadata {
 
-  Class<T> getType();
+  RoleMeta[] value();
 
 }
