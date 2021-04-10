@@ -22,6 +22,7 @@ import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility
 import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.READ;
 import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.UPDATE;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -538,5 +539,10 @@ public interface PermittedUser<ID> {
   }
 
   Map<String, Set<String>> getUserMetadata();
+
+  default Set<String> getUserMeta(String key) {
+    Set<String> meta = getUserMetadata().get(key);
+    return meta == null ? new LinkedHashSet<>() : meta;
+  }
 
 }
