@@ -31,8 +31,8 @@ import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 
-public interface ResourceFilterRepository<T, ID>
-    extends CrudRepository<T, ID>, QuerydslPredicateExecutor<T> {
+public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
+    QuerydslPredicateExecutor<T>, QueryDSLProjectionRepository {
 
   @SuppressWarnings("rawtypes")
   default ResourceAccessRule getResourceAccessRule() {
@@ -67,6 +67,20 @@ public interface ResourceFilterRepository<T, ID>
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
+  default Iterable<T> filterFindAll() {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findAll(rar.getPredicateOfManageAbility());
+    }
+    return findAll(rar.getPredicateOfReadAbility());
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   default Iterable<T> filterFindAll(Predicate predicate) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
@@ -80,6 +94,20 @@ public interface ResourceFilterRepository<T, ID>
     }
     return findAll(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate));
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default Iterable<T> filterFindAll(Sort sort) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findAll(rar.getPredicateOfManageAbility(), sort);
+    }
+    return findAll(rar.getPredicateOfReadAbility(), sort);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -98,6 +126,22 @@ public interface ResourceFilterRepository<T, ID>
     return findAll(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
         sort);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default Iterable<T> filterFindAll(OrderSpecifier<?>... orders) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findAll(ExpressionUtils.allOf(rar.getPredicateOfManageAbility()),
+          orders);
+    }
+    return findAll(ExpressionUtils.allOf(rar.getPredicateOfReadAbility()),
+        orders);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -120,7 +164,7 @@ public interface ResourceFilterRepository<T, ID>
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default Iterable<T> filterFindAll(OrderSpecifier<?>... orders) {
+  default Page<T> filterFindAll(Pageable pageable) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -129,10 +173,10 @@ public interface ResourceFilterRepository<T, ID>
 
     if (user.canManage(rar.getResourceType())) {
       return findAll(ExpressionUtils.allOf(rar.getPredicateOfManageAbility()),
-          orders);
+          pageable);
     }
     return findAll(ExpressionUtils.allOf(rar.getPredicateOfReadAbility()),
-        orders);
+        pageable);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -154,7 +198,7 @@ public interface ResourceFilterRepository<T, ID>
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default Page<T> filterFindAll(Pageable pageable) {
+  default long filterCount() {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -162,11 +206,9 @@ public interface ResourceFilterRepository<T, ID>
     }
 
     if (user.canManage(rar.getResourceType())) {
-      return findAll(ExpressionUtils.allOf(rar.getPredicateOfManageAbility()),
-          pageable);
+      return count(rar.getPredicateOfManageAbility());
     }
-    return findAll(ExpressionUtils.allOf(rar.getPredicateOfReadAbility()),
-        pageable);
+    return count(rar.getPredicateOfReadAbility());
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -287,6 +329,132 @@ public interface ResourceFilterRepository<T, ID>
     if (target.isPresent()) {
       delete(target.get());
     }
+  }
+
+  // Projection APIs
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default <P> Optional<P> filterFindProjectedBy(Predicate predicate,
+      Class<P> projection) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return this.findProjectedBy(
+          ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
+          projection);
+    }
+    return findProjectedBy(
+        ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
+        projection);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default <P> Iterable<P> filterFindAllProjectedBy(Class<P> projection) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findAllProjectedBy(rar.getPredicateOfManageAbility(), projection);
+    }
+    return findAllProjectedBy(rar.getPredicateOfReadAbility(), projection);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default <P> Iterable<P> filterFindAllProjectedBy(Predicate predicate,
+      Class<P> projection) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findAllProjectedBy(
+          ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
+          projection);
+    }
+    return findAllProjectedBy(
+        ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
+        projection);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default <P> Iterable<P> filterFindAllProjectedBy(Sort sort,
+      Class<P> projection) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findAllProjectedBy(rar.getPredicateOfManageAbility(), sort,
+          projection);
+    }
+    return findAllProjectedBy(rar.getPredicateOfReadAbility(), sort,
+        projection);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default <P> Iterable<P> filterFindAllProjectedBy(Predicate predicate,
+      Sort sort, Class<P> projection) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findAllProjectedBy(
+          ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
+          sort, projection);
+    }
+    return findAllProjectedBy(
+        ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate), sort,
+        projection);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default <P> Page<P> filterFindPagedProjectedBy(Pageable pageable,
+      Class<P> projection) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findPagedProjectedBy(rar.getPredicateOfManageAbility(), pageable,
+          projection);
+    }
+    return findPagedProjectedBy(rar.getPredicateOfReadAbility(), pageable,
+        projection);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default <P> Page<P> filterFindPagedProjectedBy(Predicate predicate,
+      Pageable pageable, Class<P> projection) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findPagedProjectedBy(
+          ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
+          pageable, projection);
+    }
+    return findPagedProjectedBy(
+        ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
+        pageable, projection);
   }
 
 }

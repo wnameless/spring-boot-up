@@ -71,6 +71,24 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
+  default Iterable<ER> embeddedFilterFindAll() {
+    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
+    PermittedUser user = getPermittedUser();
+    if (!user.canRead(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      return Ruby.LazyEnumerator.of(findAll(erar.getPredicateOfManageAbility()))
+          .map(e -> (ER) erar.getEmbeddedResource(e));
+    }
+    return Ruby.LazyEnumerator.of(findAll(erar.getPredicateOfReadAbility()))
+        .map(e -> (ER) erar.getEmbeddedResource(e));
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   default Iterable<ER> embeddedFilterFindAll(Predicate predicate) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
@@ -92,6 +110,26 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
+  default Iterable<ER> embeddedFilterFindAll(Sort sort) {
+    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
+    PermittedUser user = getPermittedUser();
+    if (!user.canRead(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      return Ruby.LazyEnumerator
+          .of(findAll(erar.getPredicateOfManageAbility(), sort))
+          .map(e -> (ER) erar.getEmbeddedResource(e));
+    }
+    return Ruby.LazyEnumerator
+        .of(findAll(erar.getPredicateOfReadAbility(), sort))
+        .map(e -> (ER) erar.getEmbeddedResource(e));
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   default Iterable<ER> embeddedFilterFindAll(Predicate predicate, Sort sort) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
@@ -109,27 +147,6 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
     return Ruby.LazyEnumerator.of(findAll(
         ExpressionUtils.allOf(erar.getPredicateOfReadAbility(), predicate),
         sort)).map(e -> (ER) erar.getEmbeddedResource(e));
-  }
-
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  default Iterable<ER> embeddedFilterFindAll(Predicate predicate,
-      OrderSpecifier<?>... orders) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(),
-        erar.getEmbeddedResourceFieldName())) {
-      throw new UnsupportedOperationException("No permission to READ");
-    }
-
-    if (user.canManage(erar.getResourceType(),
-        erar.getEmbeddedResourceFieldName())) {
-      return Ruby.LazyEnumerator.of(findAll(
-          ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), predicate),
-          orders)).map(e -> (ER) erar.getEmbeddedResource(e));
-    }
-    return Ruby.LazyEnumerator.of(findAll(
-        ExpressionUtils.allOf(erar.getPredicateOfReadAbility(), predicate),
-        orders)).map(e -> (ER) erar.getEmbeddedResource(e));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -155,6 +172,45 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
+  default Iterable<ER> embeddedFilterFindAll(Predicate predicate,
+      OrderSpecifier<?>... orders) {
+    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
+    PermittedUser user = getPermittedUser();
+    if (!user.canRead(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      return Ruby.LazyEnumerator.of(findAll(
+          ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), predicate),
+          orders)).map(e -> (ER) erar.getEmbeddedResource(e));
+    }
+    return Ruby.LazyEnumerator.of(findAll(
+        ExpressionUtils.allOf(erar.getPredicateOfReadAbility(), predicate),
+        orders)).map(e -> (ER) erar.getEmbeddedResource(e));
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default Page<ER> embeddedFilterFindAll(Pageable pageable) {
+    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
+    PermittedUser user = getPermittedUser();
+    if (!user.canRead(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      return findAll(erar.getPredicateOfManageAbility(), pageable)
+          .map(e -> (ER) erar.getEmbeddedResource(e));
+    }
+    return findAll(erar.getPredicateOfReadAbility(), pageable)
+        .map(e -> (ER) erar.getEmbeddedResource(e));
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   default Page<ER> embeddedFilterFindAll(Predicate predicate,
       Pageable pageable) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
@@ -173,6 +229,22 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
     return findAll(
         ExpressionUtils.allOf(erar.getPredicateOfReadAbility(), predicate),
         pageable).map(e -> (ER) erar.getEmbeddedResource(e));
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default long embeddedFilterCount() {
+    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
+    PermittedUser user = getPermittedUser();
+    if (!user.canRead(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(erar.getResourceType(),
+        erar.getEmbeddedResourceFieldName())) {
+      return count(erar.getPredicateOfManageAbility());
+    }
+    return count(erar.getPredicateOfReadAbility());
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
