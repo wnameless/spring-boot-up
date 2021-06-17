@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
 
 import test.model.Car;
 import test.model.Engine;
+import test.model.GasTank;
+import test.model.Motor;
 import test.repository.CarRepository;
 import test.repository.EngineRepository;
 import test.repository.WheelRepository;
@@ -47,11 +49,21 @@ public class DBInit {
     Engine engine = new Engine();
     engine.setHorsePower(500);
 
+    Motor motor = new Motor();
+    motor.setRpm(60000);
+    engine.setMotor(motor);
+
+    GasTank gasTank = new GasTank();
+    gasTank.setCapacity(100);
+
     car.setEngine(engine);
+    car.setGasTank(gasTank);
     carRepo.save(car);
 
-    car = carRepo.findAll().get(0);
     System.out.println(car.getEngine().getId());
+    System.out.println(car.getEngine().getMotor().getId());
+    System.out.println(car.getGasTank().getId());
+    car = carRepo.findAll().get(0);
     carRepo.delete(car);
   }
 

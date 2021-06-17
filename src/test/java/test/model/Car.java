@@ -40,4 +40,8 @@ public class Car implements Serializable {
   @DBRef
   Engine engine;
 
+  @Cascade
+  @DBRef
+  GasTank gasTank;
+
 }

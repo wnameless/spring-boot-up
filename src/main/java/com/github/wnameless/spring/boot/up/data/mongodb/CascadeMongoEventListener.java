@@ -41,7 +41,7 @@ public class CascadeMongoEventListener
   private MongoOperations mongoOperations;
 
   @Override
-  public synchronized void onBeforeConvert(BeforeConvertEvent<Object> event) {
+  public void onBeforeConvert(BeforeConvertEvent<Object> event) {
     Object source = event.getSource();
     CascadeSaveUpdateCallback callback =
         new CascadeSaveUpdateCallback(source, mongoOperations);
@@ -49,14 +49,14 @@ public class CascadeMongoEventListener
   }
 
   @Override
-  public synchronized void onAfterSave(AfterSaveEvent<Object> event) {
+  public void onAfterSave(AfterSaveEvent<Object> event) {
     Object source = event.getSource();
     ParentRefCallback callback = new ParentRefCallback(source, mongoOperations);
     ReflectionUtils.doWithFields(source.getClass(), callback);
   }
 
   @Override
-  public synchronized void onAfterConvert(AfterConvertEvent<Object> event) {
+  public void onAfterConvert(AfterConvertEvent<Object> event) {
     Object source = event.getSource();
     CascadeDeleteCallback callback =
         new CascadeDeleteCallback(source, mongoOperations);
@@ -73,13 +73,13 @@ public class CascadeMongoEventListener
   }
 
   @Override
-  public synchronized void onAfterDelete(AfterDeleteEvent<Object> event) {
+  public void onAfterDelete(AfterDeleteEvent<Object> event) {
     Object docId = event.getSource().get("_id");
     if (cascadeDeleteCallbacks.containsKey(docId)) {
       CascadeDeleteCallback callback = cascadeDeleteCallbacks.remove(docId);
       for (DeletableId deletableId : callback.getDeletableIds()) {
-        Query searchQuery = new Query(
-            Criteria.where(callback.getIdFieldName()).is(deletableId.getId()));
+        Query searchQuery =
+            new Query(Criteria.where("_id").is(deletableId.getId()));
         mongoOperations.remove(searchQuery, deletableId.getType());
       }
     }

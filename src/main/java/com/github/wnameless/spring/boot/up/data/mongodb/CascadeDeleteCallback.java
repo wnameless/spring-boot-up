@@ -34,7 +34,6 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
   private final Object source;
   private final Set<DeletableId> deletableIds =
       new LinkedHashSet<DeletableId>();
-  private String idFieldName;
 
   CascadeDeleteCallback(Object source, MongoOperations mongoOperations) {
     this.source = source;
@@ -60,7 +59,6 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
         ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
 
         if (callback.isIdFound() && callback.getId(fieldValue) != null) {
-          idFieldName = callback.getIdFieldName();
           deletableIds.add(DeletableId.of(fieldValue.getClass(),
               callback.getId(fieldValue)));
         }
@@ -71,10 +69,6 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
 
   public Set<DeletableId> getDeletableIds() {
     return deletableIds;
-  }
-
-  public String getIdFieldName() {
-    return idFieldName;
   }
 
 }

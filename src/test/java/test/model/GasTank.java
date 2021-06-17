@@ -21,7 +21,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.github.wnameless.spring.boot.up.data.mongodb.Cascade;
 import com.github.wnameless.spring.boot.up.data.mongodb.ParentRef;
 
 import lombok.Data;
@@ -30,7 +29,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false, of = { "id" })
 @Data
 @Document
-public class Engine implements Serializable {
+public class GasTank implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -41,10 +40,6 @@ public class Engine implements Serializable {
   @DBRef
   Car car;
 
-  double horsePower;
-
-  @Cascade
-  @DBRef
-  Motor motor;
+  double capacity;
 
 }
