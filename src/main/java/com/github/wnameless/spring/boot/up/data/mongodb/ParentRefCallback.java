@@ -44,11 +44,11 @@ public class ParentRefCallback implements ReflectionUtils.FieldCallback {
     ReflectionUtils.makeAccessible(field);
 
     if (!field.isAnnotationPresent(DBRef.class)
-        || !field.isAnnotationPresent(Cascade.class)) {
+        || !field.isAnnotationPresent(CascadeRef.class)) {
       return;
     }
 
-    Cascade cascade = AnnotationUtils.getAnnotation(field, Cascade.class);
+    CascadeRef cascade = AnnotationUtils.getAnnotation(field, CascadeRef.class);
     List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
     if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)) return;
 

@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Cascade {
+public @interface CascadeRef {
 
   CascadeType[] value() default { CascadeType.ALL };
 

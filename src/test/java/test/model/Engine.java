@@ -21,7 +21,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.github.wnameless.spring.boot.up.data.mongodb.Cascade;
+import com.github.wnameless.spring.boot.up.data.mongodb.CascadeRef;
 import com.github.wnameless.spring.boot.up.data.mongodb.ParentRef;
 
 import lombok.Data;
@@ -43,7 +43,7 @@ public class Engine implements Serializable {
 
   double horsePower;
 
-  @Cascade
+  @CascadeRef
   @DBRef
   Motor motor;
 

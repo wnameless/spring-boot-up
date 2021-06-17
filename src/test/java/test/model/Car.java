@@ -23,7 +23,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.github.wnameless.spring.boot.up.data.mongodb.Cascade;
+import com.github.wnameless.spring.boot.up.data.mongodb.CascadeRef;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,15 +38,15 @@ public class Car implements Serializable {
   @Id
   String id;
 
-  @Cascade
+  @CascadeRef
   @DBRef
   Engine engine;
 
-  @Cascade
+  @CascadeRef
   @DBRef
   GasTank gasTank;
 
-  @Cascade
+  @CascadeRef
   @DBRef
   List<Wheel> wheels = new ArrayList<>();
 
