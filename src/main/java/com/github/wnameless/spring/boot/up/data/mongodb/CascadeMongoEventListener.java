@@ -43,37 +43,34 @@ public class CascadeMongoEventListener
   @Autowired
   private MongoOperations mongoOperations;
 
+  // event.getSource() -> Java Object
   @Override
   public void onBeforeConvert(BeforeConvertEvent<Object> event) {
-    System.out.println("onBeforeConvert");
     Object source = event.getSource();
     CascadeSaveUpdateCallback callback =
         new CascadeSaveUpdateCallback(source, mongoOperations);
-    System.err.println(source.getClass().getSimpleName());
     ReflectionUtils.doWithFields(source.getClass(), callback);
   }
 
+  // event.getSource() -> Java Object
   @Override
-  public void onBeforeSave(BeforeSaveEvent<Object> event) {
-    System.out.println("onBeforeSave");
-  }
+  public void onBeforeSave(BeforeSaveEvent<Object> event) {}
 
+  // event.getSource() -> Java Object
   @Override
   public void onAfterSave(AfterSaveEvent<Object> event) {
-    System.out.println("onAfterSave");
     Object source = event.getSource();
     ParentRefCallback callback = new ParentRefCallback(source, mongoOperations);
     ReflectionUtils.doWithFields(source.getClass(), callback);
   }
 
+  // event.getSource() -> BSON Document
   @Override
-  public void onAfterLoad(AfterLoadEvent<Object> event) {
-    System.out.println("onAfterLoad");
-  }
+  public void onAfterLoad(AfterLoadEvent<Object> event) {}
 
+  // event.getSource() -> Java Object
   @Override
   public void onAfterConvert(AfterConvertEvent<Object> event) {
-    System.out.println("onAfterConvert");
     Object source = event.getSource();
     CascadeDeleteCallback callback =
         new CascadeDeleteCallback(source, mongoOperations);
@@ -89,14 +86,13 @@ public class CascadeMongoEventListener
     }
   }
 
+  // event.getSource() -> BSON Document
   @Override
-  public void onBeforeDelete(BeforeDeleteEvent<Object> event) {
-    System.out.println("onBeforeDelete");
-  }
+  public void onBeforeDelete(BeforeDeleteEvent<Object> event) {}
 
+  // event.getSource() -> BSON Document
   @Override
   public void onAfterDelete(AfterDeleteEvent<Object> event) {
-    System.out.println("onAfterDelete");
     Object docId = event.getSource().get("_id");
     if (cascadeDeleteCallbacks.containsKey(docId)) {
       CascadeDeleteCallback callback = cascadeDeleteCallbacks.remove(docId);
