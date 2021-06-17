@@ -32,7 +32,7 @@ import net.sf.rubycollect4j.RubyHash;
 public class CascadeMongoEventListener
     extends AbstractMongoEventListener<Object> {
 
-  private static final int CACHE_SIZE = 32;
+  private static final int CACHE_SIZE = 256;
 
   private final RubyHash<Object, CascadeDeleteCallback> cascadeDeleteCallbacks =
       Ruby.Hash.create();
@@ -63,7 +63,7 @@ public class CascadeMongoEventListener
     ReflectionUtils.doWithFields(source.getClass(), callback);
     Object docId = event.getDocument().get("_id");
     if (docId != null && !callback.getDeletableIds().isEmpty()) {
-      cascadeDeleteCallbacks.put(event.getDocument().get("_id"), callback);
+      cascadeDeleteCallbacks.put(docId, callback);
       if (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
         while (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
           cascadeDeleteCallbacks.shift();

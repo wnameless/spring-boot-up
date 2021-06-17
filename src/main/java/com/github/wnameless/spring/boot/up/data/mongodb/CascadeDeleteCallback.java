@@ -19,9 +19,10 @@ import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.ALL;
 import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.DELETE;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -31,7 +32,8 @@ import org.springframework.util.ReflectionUtils;
 public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
 
   private final Object source;
-  private final List<DeletableId> deletableIds = new ArrayList<>();
+  private final Set<DeletableId> deletableIds =
+      new LinkedHashSet<DeletableId>();
   private String idFieldName;
 
   CascadeDeleteCallback(Object source, MongoOperations mongoOperations) {
@@ -67,7 +69,7 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
 
   }
 
-  public List<DeletableId> getDeletableIds() {
+  public Set<DeletableId> getDeletableIds() {
     return deletableIds;
   }
 
