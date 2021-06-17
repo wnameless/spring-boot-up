@@ -24,8 +24,11 @@ import test.model.Car;
 import test.model.Engine;
 import test.model.GasTank;
 import test.model.Motor;
+import test.model.Wheel;
 import test.repository.CarRepository;
 import test.repository.EngineRepository;
+import test.repository.GasTankRepository;
+import test.repository.MotorRepository;
 import test.repository.WheelRepository;
 
 @Component
@@ -36,12 +39,18 @@ public class DBInit {
   @Autowired
   EngineRepository engineRepo;
   @Autowired
+  GasTankRepository gasTankRepo;
+  @Autowired
+  MotorRepository motorRepo;
+  @Autowired
   WheelRepository wheelRepo;
 
   @PostConstruct
   void insertDocuments() {
     carRepo.deleteAll();
     engineRepo.deleteAll();
+    gasTankRepo.deleteAll();
+    motorRepo.deleteAll();
     wheelRepo.deleteAll();
 
     Car car = new Car();
@@ -58,18 +67,23 @@ public class DBInit {
 
     car.setEngine(engine);
     car.setGasTank(gasTank);
+
+    car.getWheels().add(new Wheel("Michelin"));
+    car.getWheels().add(new Wheel("Goodyear"));
+    car.getWheels().add(new Wheel("Continental"));
+    car.getWheels().add(new Wheel("Bridgestone"));
+
     carRepo.save(car);
 
     System.out.println(car.getEngine().getId());
     System.out.println(car.getEngine().getMotor().getId());
     System.out.println(car.getGasTank().getId());
+    System.out.println(car.getWheels().get(0).getId());
+    System.out.println(car.getWheels().get(1).getId());
+    System.out.println(car.getWheels().get(2).getId());
+    System.out.println(car.getWheels().get(3).getId());
     car = carRepo.findAll().get(0);
     carRepo.delete(car);
-  }
-
-  // @PostConstruct
-  void deleteDocuments() {
-    carRepo.deleteAll();
   }
 
 }

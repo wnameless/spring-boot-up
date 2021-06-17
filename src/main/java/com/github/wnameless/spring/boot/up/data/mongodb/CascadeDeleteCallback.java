@@ -20,6 +20,7 @@ import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.DELET
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,27 +45,36 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
       throws IllegalArgumentException, IllegalAccessException {
     ReflectionUtils.makeAccessible(field);
 
-    if (field.isAnnotationPresent(DBRef.class)
-        && field.isAnnotationPresent(Cascade.class)) {
-      Cascade cascade = AnnotationUtils.getAnnotation(field, Cascade.class);
-      List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
-      if (!(cascadeTypes.contains(ALL) || cascadeTypes.contains(DELETE))) {
-        return;
-      }
-
-      Object fieldValue = field.get(source);
-
-      if (fieldValue != null) {
-        IdFieldCallback callback = new IdFieldCallback();
-        ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
-
-        if (callback.isIdFound() && callback.getId(fieldValue) != null) {
-          deletableIds.add(DeletableId.of(fieldValue.getClass(),
-              callback.getId(fieldValue)));
-        }
-      }
+    if (!field.isAnnotationPresent(DBRef.class)
+        || !field.isAnnotationPresent(Cascade.class)) {
+      return;
     }
 
+    Cascade cascade = AnnotationUtils.getAnnotation(field, Cascade.class);
+    List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
+    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(DELETE)) return;
+
+    Object fieldValue = field.get(source);
+    if (fieldValue == null) return;
+    // Collection field
+    if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
+      Collection<?> collection = (Collection<?>) fieldValue;
+      for (Object element : collection) {
+        cascadeDeletable(element);
+      }
+    } else { // Non-Collection field
+      cascadeDeletable(fieldValue);
+    }
+  }
+
+  private void cascadeDeletable(Object value)
+      throws IllegalArgumentException, IllegalAccessException {
+    IdFieldCallback callback = new IdFieldCallback();
+    ReflectionUtils.doWithFields(value.getClass(), callback);
+
+    if (callback.isIdFound() && callback.getId(value) != null) {
+      deletableIds.add(DeletableId.of(value.getClass(), callback.getId(value)));
+    }
   }
 
   public Set<DeletableId> getDeletableIds() {

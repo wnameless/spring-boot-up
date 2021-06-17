@@ -18,7 +18,10 @@ package test.model;
 import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.github.wnameless.spring.boot.up.data.mongodb.ParentRef;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,6 +36,16 @@ public class Wheel implements Serializable {
   @Id
   String id;
 
+  @ParentRef
+  @DBRef
+  Car car;
+
   String tireBrand;
+
+  public Wheel() {}
+
+  public Wheel(String tireBrand) {
+    this.tireBrand = tireBrand;
+  }
 
 }

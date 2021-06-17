@@ -20,8 +20,11 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterConvertEvent;
 import org.springframework.data.mongodb.core.mapping.event.AfterDeleteEvent;
+import org.springframework.data.mongodb.core.mapping.event.AfterLoadEvent;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
+import org.springframework.data.mongodb.core.mapping.event.BeforeDeleteEvent;
+import org.springframework.data.mongodb.core.mapping.event.BeforeSaveEvent;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
@@ -42,21 +45,35 @@ public class CascadeMongoEventListener
 
   @Override
   public void onBeforeConvert(BeforeConvertEvent<Object> event) {
+    System.out.println("onBeforeConvert");
     Object source = event.getSource();
     CascadeSaveUpdateCallback callback =
         new CascadeSaveUpdateCallback(source, mongoOperations);
+    System.err.println(source.getClass().getSimpleName());
     ReflectionUtils.doWithFields(source.getClass(), callback);
   }
 
   @Override
+  public void onBeforeSave(BeforeSaveEvent<Object> event) {
+    System.out.println("onBeforeSave");
+  }
+
+  @Override
   public void onAfterSave(AfterSaveEvent<Object> event) {
+    System.out.println("onAfterSave");
     Object source = event.getSource();
     ParentRefCallback callback = new ParentRefCallback(source, mongoOperations);
     ReflectionUtils.doWithFields(source.getClass(), callback);
   }
 
   @Override
+  public void onAfterLoad(AfterLoadEvent<Object> event) {
+    System.out.println("onAfterLoad");
+  }
+
+  @Override
   public void onAfterConvert(AfterConvertEvent<Object> event) {
+    System.out.println("onAfterConvert");
     Object source = event.getSource();
     CascadeDeleteCallback callback =
         new CascadeDeleteCallback(source, mongoOperations);
@@ -73,7 +90,13 @@ public class CascadeMongoEventListener
   }
 
   @Override
+  public void onBeforeDelete(BeforeDeleteEvent<Object> event) {
+    System.out.println("onBeforeDelete");
+  }
+
+  @Override
   public void onAfterDelete(AfterDeleteEvent<Object> event) {
+    System.out.println("onAfterDelete");
     Object docId = event.getSource().get("_id");
     if (cascadeDeleteCallbacks.containsKey(docId)) {
       CascadeDeleteCallback callback = cascadeDeleteCallbacks.remove(docId);

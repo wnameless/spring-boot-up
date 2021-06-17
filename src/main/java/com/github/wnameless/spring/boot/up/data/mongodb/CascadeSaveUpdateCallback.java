@@ -21,6 +21,7 @@ import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.UPDAT
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.core.annotation.AnnotationUtils;
@@ -44,32 +45,45 @@ public class CascadeSaveUpdateCallback
       throws IllegalArgumentException, IllegalAccessException {
     ReflectionUtils.makeAccessible(field);
 
-    if (field.isAnnotationPresent(DBRef.class)
-        && field.isAnnotationPresent(Cascade.class)) {
-      Cascade cascade = AnnotationUtils.getAnnotation(field, Cascade.class);
-      List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
-      if (!(cascadeTypes.contains(ALL) || cascadeTypes.contains(SAVE)
-          || cascadeTypes.contains(UPDATE))) {
-        return;
+    if (!field.isAnnotationPresent(DBRef.class)
+        || !field.isAnnotationPresent(Cascade.class)) {
+      return;
+    }
+
+    Cascade cascade = AnnotationUtils.getAnnotation(field, Cascade.class);
+    List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
+    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)
+        && !cascadeTypes.contains(UPDATE)) {
+      return;
+    }
+
+    Object fieldValue = field.get(source);
+    if (fieldValue == null) return;
+    // Collection field
+    if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
+      Collection<?> collection = (Collection<?>) fieldValue;
+      for (Object element : collection) {
+        cascadeUpsert(element, cascadeTypes);
       }
+    } else { // Non-Collection field
+      cascadeUpsert(fieldValue, cascadeTypes);
+    }
+  }
 
-      Object fieldValue = field.get(source);
+  private void cascadeUpsert(Object value, List<CascadeType> cascadeTypes)
+      throws IllegalArgumentException, IllegalAccessException {
+    IdFieldCallback callback = new IdFieldCallback();
+    ReflectionUtils.doWithFields(value.getClass(), callback);
 
-      if (fieldValue != null) {
-        IdFieldCallback callback = new IdFieldCallback();
-        ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
-
-        if (callback.isIdFound()) {
-          Object id = callback.getId(fieldValue);
-          if (id == null) {
-            if (cascadeTypes.contains(ALL) || cascadeTypes.contains(SAVE)) {
-              mongoOperations.save(fieldValue);
-            }
-          } else { // id != null
-            if (cascadeTypes.contains(ALL) || cascadeTypes.contains(UPDATE)) {
-              mongoOperations.save(fieldValue);
-            }
-          }
+    if (callback.isIdFound()) {
+      Object id = callback.getId(value);
+      if (id == null) {
+        if (cascadeTypes.contains(ALL) || cascadeTypes.contains(SAVE)) {
+          mongoOperations.save(value);
+        }
+      } else { // id != null
+        if (cascadeTypes.contains(ALL) || cascadeTypes.contains(UPDATE)) {
+          mongoOperations.save(value);
         }
       }
     }

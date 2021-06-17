@@ -20,6 +20,7 @@ import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.SAVE;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.core.annotation.AnnotationUtils;
@@ -42,37 +43,50 @@ public class ParentRefCallback implements ReflectionUtils.FieldCallback {
       throws IllegalArgumentException, IllegalAccessException {
     ReflectionUtils.makeAccessible(field);
 
-    if (field.isAnnotationPresent(DBRef.class)
-        && field.isAnnotationPresent(Cascade.class)) {
-      Cascade cascade = AnnotationUtils.getAnnotation(field, Cascade.class);
-      List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
-      if (!(cascadeTypes.contains(ALL) || cascadeTypes.contains(SAVE))) return;
+    if (!field.isAnnotationPresent(DBRef.class)
+        || !field.isAnnotationPresent(Cascade.class)) {
+      return;
+    }
 
-      Object fieldValue = field.get(source);
+    Cascade cascade = AnnotationUtils.getAnnotation(field, Cascade.class);
+    List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
+    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)) return;
 
-      if (fieldValue != null) {
-        IdFieldCallback callback = new IdFieldCallback();
-        ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
+    Object fieldValue = field.get(source);
+    if (fieldValue == null) return;
+    // Collection field
+    if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
+      Collection<?> collection = (Collection<?>) fieldValue;
+      for (Object element : collection) {
+        cascadeParentRef(element);
+      }
+    } else { // Non-Collection field
+      cascadeParentRef(fieldValue);
+    }
+  }
 
-        if (callback.isIdFound()) {
-          for (Field f : fieldValue.getClass().getDeclaredFields()) {
-            ReflectionUtils.makeAccessible(f);
+  private void cascadeParentRef(Object value)
+      throws IllegalArgumentException, IllegalAccessException {
+    IdFieldCallback callback = new IdFieldCallback();
+    ReflectionUtils.doWithFields(value.getClass(), callback);
 
-            ParentRef parentRef =
-                AnnotationUtils.findAnnotation(f, ParentRef.class);
-            if (parentRef != null) {
-              String refFieldName = parentRef.value();
+    if (callback.isIdFound()) {
+      for (Field f : value.getClass().getDeclaredFields()) {
+        ReflectionUtils.makeAccessible(f);
 
-              if (refFieldName.isEmpty()) {
-                f.set(fieldValue, source);
-                mongoOperations.save(fieldValue);
-              } else {
-                Field srcField =
-                    ReflectionUtils.findField(source.getClass(), refFieldName);
-                f.set(fieldValue, ReflectionUtils.getField(srcField, source));
-                mongoOperations.save(fieldValue);
-              }
-            }
+        ParentRef parentRef =
+            AnnotationUtils.findAnnotation(f, ParentRef.class);
+        if (parentRef != null) {
+          String refFieldName = parentRef.value();
+
+          if (refFieldName.isEmpty()) {
+            f.set(value, source);
+            mongoOperations.save(value);
+          } else {
+            Field srcField =
+                ReflectionUtils.findField(source.getClass(), refFieldName);
+            f.set(value, ReflectionUtils.getField(srcField, source));
+            mongoOperations.save(value);
           }
         }
       }
