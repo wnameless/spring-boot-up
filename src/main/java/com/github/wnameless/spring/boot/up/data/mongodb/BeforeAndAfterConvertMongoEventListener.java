@@ -19,16 +19,28 @@ import java.lang.reflect.Method;
 
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterConvertEvent;
+import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
 import org.springframework.util.ReflectionUtils;
 
-public class AfterConvertMongoEventListener
+public class BeforeAndAfterConvertMongoEventListener
     extends AbstractMongoEventListener<Object> {
+
+  @Override
+  public void onBeforeConvert(BeforeConvertEvent<Object> event) {
+    Object target = event.getSource();
+    for (Method method : target.getClass().getDeclaredMethods()) {
+      if (method.isAnnotationPresent(BeforeConvertToBSON.class)) {
+        method.setAccessible(true);
+        ReflectionUtils.invokeMethod(method, target);
+      }
+    }
+  }
 
   @Override
   public void onAfterConvert(AfterConvertEvent<Object> event) {
     Object target = event.getSource();
     for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(AfterConvert.class)) {
+      if (method.isAnnotationPresent(AfterConvertFromBSON.class)) {
         method.setAccessible(true);
         ReflectionUtils.invokeMethod(method, target);
       }

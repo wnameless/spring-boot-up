@@ -83,7 +83,7 @@ public class DBInit {
     System.out.println(car.getWheels().get(2).getId());
     System.out.println(car.getWheels().get(3).getId());
     car = carRepo.findAll().get(0);
-    carRepo.delete(car);
+    // carRepo.delete(car);
   }
 
 }
