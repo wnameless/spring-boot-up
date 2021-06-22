@@ -281,6 +281,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
     return result.map(r -> Role.of(r)).toSet();
   }
 
+  @Override
   public Set<ResourceAbility> getUserResourceAbilities() {
     return buildResourceAbilities(getUserRoles());
   }
