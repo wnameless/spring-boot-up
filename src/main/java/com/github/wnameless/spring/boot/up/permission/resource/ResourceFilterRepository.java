@@ -421,40 +421,40 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
         projection);
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  default <P> Page<P> filterFindPagedProjectedBy(Pageable pageable,
-      Class<P> projection) {
-    ResourceAccessRule rar = getResourceAccessRule();
-    PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
-      throw new UnsupportedOperationException("No permission to READ");
-    }
-
-    if (user.canManage(rar.getResourceType())) {
-      return findPagedProjectedBy(rar.getPredicateOfManageAbility(), pageable,
-          projection);
-    }
-    return findPagedProjectedBy(rar.getPredicateOfReadAbility(), pageable,
-        projection);
-  }
-
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  default <P> Page<P> filterFindPagedProjectedBy(Predicate predicate,
-      Pageable pageable, Class<P> projection) {
-    ResourceAccessRule rar = getResourceAccessRule();
-    PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
-      throw new UnsupportedOperationException("No permission to READ");
-    }
-
-    if (user.canManage(rar.getResourceType())) {
-      return findPagedProjectedBy(
-          ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          pageable, projection);
-    }
-    return findPagedProjectedBy(
-        ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-        pageable, projection);
-  }
+  // @SuppressWarnings({ "rawtypes", "unchecked" })
+  // default <P> Page<P> filterFindPagedProjectedBy(Pageable pageable,
+  // Class<P> projection) {
+  // ResourceAccessRule rar = getResourceAccessRule();
+  // PermittedUser user = getCurrentUser();
+  // if (!user.canRead(rar.getResourceType())) {
+  // throw new UnsupportedOperationException("No permission to READ");
+  // }
+  //
+  // if (user.canManage(rar.getResourceType())) {
+  // return findPagedProjectedBy(rar.getPredicateOfManageAbility(), pageable,
+  // projection);
+  // }
+  // return findPagedProjectedBy(rar.getPredicateOfReadAbility(), pageable,
+  // projection);
+  // }
+  //
+  // @SuppressWarnings({ "rawtypes", "unchecked" })
+  // default <P> Page<P> filterFindPagedProjectedBy(Predicate predicate,
+  // Pageable pageable, Class<P> projection) {
+  // ResourceAccessRule rar = getResourceAccessRule();
+  // PermittedUser user = getCurrentUser();
+  // if (!user.canRead(rar.getResourceType())) {
+  // throw new UnsupportedOperationException("No permission to READ");
+  // }
+  //
+  // if (user.canManage(rar.getResourceType())) {
+  // return findPagedProjectedBy(
+  // ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
+  // pageable, projection);
+  // }
+  // return findPagedProjectedBy(
+  // ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
+  // pageable, projection);
+  // }
 
 }

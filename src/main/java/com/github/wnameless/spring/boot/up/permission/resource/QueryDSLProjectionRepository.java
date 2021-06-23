@@ -17,8 +17,6 @@ package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.querydsl.core.types.Predicate;
@@ -36,9 +34,9 @@ public interface QueryDSLProjectionRepository {
   <P> Iterable<P> findAllProjectedBy(Predicate predicate, Sort sort,
       Class<P> projection);
 
-  <P> Page<P> findPagedProjectedBy(Pageable pageable, Class<P> projection);
+  // <P> Page<P> findPagedProjectedBy(Pageable pageable, Class<P> projection);
 
-  <P> Page<P> findPagedProjectedBy(Predicate predicate, Pageable pageable,
-      Class<P> projection);
+  // <P> Page<P> findPagedProjectedBy(Predicate predicate, Pageable pageable,
+  // Class<P> projection);
 
 }
