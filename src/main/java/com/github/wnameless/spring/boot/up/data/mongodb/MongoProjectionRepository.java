@@ -27,7 +27,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.repository.NoRepositoryBean;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,12 +35,12 @@ import com.github.wnameless.json.flattener.FlattenMode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 import com.querydsl.core.types.Predicate;
 
-@NoRepositoryBean
-public interface MongoProjectionRepository<E> extends PredicateInterchangeableQueryRepository<E> {
+public interface MongoProjectionRepository<E>
+    extends QuerydslPredicateMongoQueryExecutor<E> {
 
   Logger log = LoggerFactory.getLogger(MongoProjectionRepository.class);
 
-  default Set<String> findTypeFieldNames(Class<?> klass) {
+  default Set<String> findFieldNamesOnType(Class<?> klass) {
     try {
       Object obj = klass.newInstance();
       ObjectMapper mapper = new ObjectMapper();
@@ -60,7 +59,7 @@ public interface MongoProjectionRepository<E> extends PredicateInterchangeableQu
 
   default Optional<E> findProjectedBy(Predicate predicate, Class<E> entityType,
       Class<?> projection) {
-    Set<String> fieldNames = findTypeFieldNames(projection);
+    Set<String> fieldNames = findFieldNamesOnType(projection);
 
     E target = findOne(predicate, entityType, q -> {
       q.fields().include(fieldNames.stream().toArray(String[]::new));
@@ -71,7 +70,7 @@ public interface MongoProjectionRepository<E> extends PredicateInterchangeableQu
   }
 
   default List<E> findAllProjectedBy(Class<E> entityType, Class<?> projection) {
-    Set<String> fieldNames = findTypeFieldNames(projection);
+    Set<String> fieldNames = findFieldNamesOnType(projection);
 
     return findAll(new Query(), entityType, q -> {
       q.fields().include(fieldNames.stream().toArray(String[]::new));
@@ -81,7 +80,7 @@ public interface MongoProjectionRepository<E> extends PredicateInterchangeableQu
 
   default List<E> findAllProjectedBy(Predicate predicate, Class<E> entityType,
       Class<?> projection) {
-    Set<String> fieldNames = findTypeFieldNames(projection);
+    Set<String> fieldNames = findFieldNamesOnType(projection);
 
     return findAll(predicate, entityType, q -> {
       q.fields().include(fieldNames.stream().toArray(String[]::new));
@@ -91,7 +90,7 @@ public interface MongoProjectionRepository<E> extends PredicateInterchangeableQu
 
   default List<E> findAllProjectedBy(Class<E> entityType, Sort sort,
       Class<?> projection) {
-    Set<String> fieldNames = findTypeFieldNames(projection);
+    Set<String> fieldNames = findFieldNamesOnType(projection);
 
     Query query = new Query();
     query.with(sort);
@@ -104,7 +103,7 @@ public interface MongoProjectionRepository<E> extends PredicateInterchangeableQu
 
   default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
       Class<E> entityType, Class<?> projection) {
-    Set<String> fieldNames = findTypeFieldNames(projection);
+    Set<String> fieldNames = findFieldNamesOnType(projection);
 
     return findAll(predicate, entityType, q -> {
       q.fields().include(fieldNames.stream().toArray(String[]::new));
@@ -115,7 +114,7 @@ public interface MongoProjectionRepository<E> extends PredicateInterchangeableQu
 
   default Page<E> findPagedProjectedBy(Pageable pageable, Class<E> entityType,
       Class<?> projection) {
-    Set<String> fieldNames = findTypeFieldNames(projection);
+    Set<String> fieldNames = findFieldNamesOnType(projection);
 
     Query query = new Query();
     query.with(pageable);
@@ -131,7 +130,7 @@ public interface MongoProjectionRepository<E> extends PredicateInterchangeableQu
 
   default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable,
       Class<E> entityType, Class<?> projection) {
-    Set<String> fieldNames = findTypeFieldNames(projection);
+    Set<String> fieldNames = findFieldNamesOnType(projection);
 
     List<E> targets = findAll(predicate, entityType, q -> {
       q.fields().include(fieldNames.stream().toArray(String[]::new));

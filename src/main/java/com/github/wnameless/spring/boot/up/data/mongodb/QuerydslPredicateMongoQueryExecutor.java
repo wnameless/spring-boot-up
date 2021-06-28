@@ -22,13 +22,11 @@ import org.bson.Document;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.repository.NoRepositoryBean;
 
 import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
 import com.querydsl.core.types.Predicate;
 
-@NoRepositoryBean
-public interface PredicateInterchangeableQueryRepository<E> {
+public interface QuerydslPredicateMongoQueryExecutor<E> {
 
   default MongoOperations getMongoOperations() {
     ApplicationContext appCtx =
