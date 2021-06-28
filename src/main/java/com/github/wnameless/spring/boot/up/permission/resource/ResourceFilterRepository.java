@@ -15,6 +15,8 @@
  */
 package com.github.wnameless.spring.boot.up.permission.resource;
 
+import static com.github.wnameless.spring.boot.up.data.mongodb.MongoUtils.findDotPaths;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +34,7 @@ import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.WebPermissionManager;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 
 @NoRepositoryBean
@@ -337,9 +340,19 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   // Projection APIs
 
+  default Optional<T> filterFindProjectedBy(Predicate predicate,
+      Path<?>... paths) {
+    return filterFindProjectedBy(predicate, findDotPaths(paths));
+  }
+
+  default Optional<T> filterFindProjectedBy(Predicate predicate,
+      Class<?> projection) {
+    return filterFindProjectedBy(predicate, findDotPaths(projection));
+  }
+
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default <P> Optional<T> filterFindProjectedBy(Predicate predicate,
-      Class<P> projection) {
+  default Optional<T> filterFindProjectedBy(Predicate predicate,
+      String... dotPaths) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -349,15 +362,23 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return this.findProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          rar.getResourceType(), projection);
+          rar.getResourceType(), dotPaths);
     }
     return findProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-        rar.getResourceType(), projection);
+        rar.getResourceType(), dotPaths);
+  }
+
+  default List<T> filterFindAllProjectedBy(Path<?>... paths) {
+    return filterFindAllProjectedBy(findDotPaths(paths));
+  }
+
+  default List<T> filterFindAllProjectedBy(Class<?> projection) {
+    return filterFindAllProjectedBy(findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default List<T> filterFindAllProjectedBy(Class<?> projection) {
+  default List<T> filterFindAllProjectedBy(String... dotPaths) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -366,15 +387,25 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
     if (user.canManage(rar.getResourceType())) {
       return findAllProjectedBy(rar.getPredicateOfManageAbility(),
-          rar.getResourceType(), projection);
+          rar.getResourceType(), dotPaths);
     }
     return findAllProjectedBy(rar.getPredicateOfReadAbility(),
-        rar.getResourceType(), projection);
+        rar.getResourceType(), dotPaths);
+  }
+
+  default List<T> filterFindAllProjectedBy(Predicate predicate,
+      Path<?>... paths) {
+    return filterFindAllProjectedBy(predicate, findDotPaths(paths));
+  }
+
+  default List<T> filterFindAllProjectedBy(Predicate predicate,
+      Class<?> projection) {
+    return filterFindAllProjectedBy(predicate, findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   default List<T> filterFindAllProjectedBy(Predicate predicate,
-      Class<?> projection) {
+      String... dotPaths) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -384,15 +415,23 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return findAllProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          rar.getResourceType(), projection);
+          rar.getResourceType(), dotPaths);
     }
     return findAllProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-        rar.getResourceType(), projection);
+        rar.getResourceType(), dotPaths);
+  }
+
+  default List<T> filterFindAllProjectedBy(Sort sort, Path<?>... paths) {
+    return filterFindAllProjectedBy(sort, findDotPaths(paths));
+  }
+
+  default List<T> filterFindAllProjectedBy(Sort sort, Class<?> projection) {
+    return filterFindAllProjectedBy(sort, findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default List<T> filterFindAllProjectedBy(Sort sort, Class<?> projection) {
+  default List<T> filterFindAllProjectedBy(Sort sort, String... dotPaths) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -401,15 +440,25 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
     if (user.canManage(rar.getResourceType())) {
       return findAllProjectedBy(rar.getPredicateOfManageAbility(), sort,
-          rar.getResourceType(), projection);
+          rar.getResourceType(), dotPaths);
     }
     return findAllProjectedBy(rar.getPredicateOfReadAbility(), sort,
-        rar.getResourceType(), projection);
+        rar.getResourceType(), dotPaths);
+  }
+
+  default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort,
+      Path<?>... paths) {
+    return filterFindAllProjectedBy(predicate, sort, findDotPaths(paths));
+  }
+
+  default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort,
+      Class<?> projection) {
+    return filterFindAllProjectedBy(predicate, sort, findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort,
-      Class<?> projection) {
+      String... dotPaths) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -420,16 +469,26 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
       return findAllProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
 
-          sort, rar.getResourceType(), projection);
+          sort, rar.getResourceType(), dotPaths);
     }
     return findAllProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate), sort,
-        rar.getResourceType(), projection);
+        rar.getResourceType(), dotPaths);
+  }
+
+  default Page<T> filterFindPagedProjectedBy(Pageable pageable,
+      Path<?>... paths) {
+    return filterFindPagedProjectedBy(pageable, findDotPaths(paths));
+  }
+
+  default Page<T> filterFindPagedProjectedBy(Pageable pageable,
+      Class<?> projection) {
+    return filterFindPagedProjectedBy(pageable, findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   default Page<T> filterFindPagedProjectedBy(Pageable pageable,
-      Class<?> projection) {
+      String... dotPaths) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -438,15 +497,26 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
     if (user.canManage(rar.getResourceType())) {
       return findPagedProjectedBy(rar.getPredicateOfManageAbility(), pageable,
-          rar.getResourceType(), projection);
+          rar.getResourceType(), dotPaths);
     }
     return findPagedProjectedBy(rar.getPredicateOfReadAbility(), pageable,
-        rar.getResourceType(), projection);
+        rar.getResourceType(), dotPaths);
+  }
+
+  default Page<T> filterFindPagedProjectedBy(Predicate predicate,
+      Pageable pageable, Path<?>... paths) {
+    return filterFindPagedProjectedBy(predicate, pageable, findDotPaths(paths));
+  }
+
+  default Page<T> filterFindPagedProjectedBy(Predicate predicate,
+      Pageable pageable, Class<?> projection) {
+    return filterFindPagedProjectedBy(predicate, pageable,
+        findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   default <P> Page<P> filterFindPagedProjectedBy(Predicate predicate,
-      Pageable pageable, Class<P> projection) {
+      Pageable pageable, String... dotPaths) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -456,11 +526,11 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return findPagedProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          pageable, rar.getResourceType(), projection);
+          pageable, rar.getResourceType(), dotPaths);
     }
     return findPagedProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-        pageable, rar.getResourceType(), projection);
+        pageable, rar.getResourceType(), dotPaths);
   }
 
 }
