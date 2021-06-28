@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
 import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
@@ -33,6 +34,7 @@ import com.querydsl.core.types.Predicate;
 
 import net.sf.rubycollect4j.Ruby;
 
+@NoRepositoryBean
 public interface EmbeddedResourceFilterRepository<ER, T, ID>
     extends CrudRepository<T, ID>, QuerydslPredicateExecutor<T> {
 

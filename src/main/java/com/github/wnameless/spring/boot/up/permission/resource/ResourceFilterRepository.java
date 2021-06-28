@@ -15,6 +15,7 @@
  */
 package com.github.wnameless.spring.boot.up.permission.resource;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.ApplicationContext;
@@ -23,16 +24,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
 import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
+import com.github.wnameless.spring.boot.up.data.mongodb.MongoProjectionRepository;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.WebPermissionManager;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 
+@NoRepositoryBean
 public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
-    QuerydslPredicateExecutor<T>, QueryDSLProjectionRepository {
+    QuerydslPredicateExecutor<T>, MongoProjectionRepository<T> {
 
   @SuppressWarnings("rawtypes")
   default ResourceAccessRule getResourceAccessRule() {
@@ -334,7 +338,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   // Projection APIs
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default <P> Optional<P> filterFindProjectedBy(Predicate predicate,
+  default <P> Optional<T> filterFindProjectedBy(Predicate predicate,
       Class<P> projection) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
@@ -345,15 +349,15 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return this.findProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          projection);
+          rar.getResourceType(), projection);
     }
     return findProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-        projection);
+        rar.getResourceType(), projection);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default <P> Iterable<P> filterFindAllProjectedBy(Class<P> projection) {
+  default List<T> filterFindAllProjectedBy(Class<?> projection) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -361,14 +365,16 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     }
 
     if (user.canManage(rar.getResourceType())) {
-      return findAllProjectedBy(rar.getPredicateOfManageAbility(), projection);
+      return findAllProjectedBy(rar.getPredicateOfManageAbility(),
+          rar.getResourceType(), projection);
     }
-    return findAllProjectedBy(rar.getPredicateOfReadAbility(), projection);
+    return findAllProjectedBy(rar.getPredicateOfReadAbility(),
+        rar.getResourceType(), projection);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default <P> Iterable<P> filterFindAllProjectedBy(Predicate predicate,
-      Class<P> projection) {
+  default List<T> filterFindAllProjectedBy(Predicate predicate,
+      Class<?> projection) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -378,16 +384,15 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return findAllProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          projection);
+          rar.getResourceType(), projection);
     }
     return findAllProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-        projection);
+        rar.getResourceType(), projection);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default <P> Iterable<P> filterFindAllProjectedBy(Sort sort,
-      Class<P> projection) {
+  default List<T> filterFindAllProjectedBy(Sort sort, Class<?> projection) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -396,15 +401,15 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
     if (user.canManage(rar.getResourceType())) {
       return findAllProjectedBy(rar.getPredicateOfManageAbility(), sort,
-          projection);
+          rar.getResourceType(), projection);
     }
     return findAllProjectedBy(rar.getPredicateOfReadAbility(), sort,
-        projection);
+        rar.getResourceType(), projection);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default <P> Iterable<P> filterFindAllProjectedBy(Predicate predicate,
-      Sort sort, Class<P> projection) {
+  default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort,
+      Class<?> projection) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
     if (!user.canRead(rar.getResourceType())) {
@@ -414,47 +419,48 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return findAllProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          sort, projection);
+
+          sort, rar.getResourceType(), projection);
     }
     return findAllProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate), sort,
-        projection);
+        rar.getResourceType(), projection);
   }
 
-  // @SuppressWarnings({ "rawtypes", "unchecked" })
-  // default <P> Page<P> filterFindPagedProjectedBy(Pageable pageable,
-  // Class<P> projection) {
-  // ResourceAccessRule rar = getResourceAccessRule();
-  // PermittedUser user = getCurrentUser();
-  // if (!user.canRead(rar.getResourceType())) {
-  // throw new UnsupportedOperationException("No permission to READ");
-  // }
-  //
-  // if (user.canManage(rar.getResourceType())) {
-  // return findPagedProjectedBy(rar.getPredicateOfManageAbility(), pageable,
-  // projection);
-  // }
-  // return findPagedProjectedBy(rar.getPredicateOfReadAbility(), pageable,
-  // projection);
-  // }
-  //
-  // @SuppressWarnings({ "rawtypes", "unchecked" })
-  // default <P> Page<P> filterFindPagedProjectedBy(Predicate predicate,
-  // Pageable pageable, Class<P> projection) {
-  // ResourceAccessRule rar = getResourceAccessRule();
-  // PermittedUser user = getCurrentUser();
-  // if (!user.canRead(rar.getResourceType())) {
-  // throw new UnsupportedOperationException("No permission to READ");
-  // }
-  //
-  // if (user.canManage(rar.getResourceType())) {
-  // return findPagedProjectedBy(
-  // ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-  // pageable, projection);
-  // }
-  // return findPagedProjectedBy(
-  // ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-  // pageable, projection);
-  // }
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default Page<T> filterFindPagedProjectedBy(Pageable pageable,
+      Class<?> projection) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findPagedProjectedBy(rar.getPredicateOfManageAbility(), pageable,
+          rar.getResourceType(), projection);
+    }
+    return findPagedProjectedBy(rar.getPredicateOfReadAbility(), pageable,
+        rar.getResourceType(), projection);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default <P> Page<P> filterFindPagedProjectedBy(Predicate predicate,
+      Pageable pageable, Class<P> projection) {
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    if (!user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+
+    if (user.canManage(rar.getResourceType())) {
+      return findPagedProjectedBy(
+          ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
+          pageable, rar.getResourceType(), projection);
+    }
+    return findPagedProjectedBy(
+        ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
+        pageable, rar.getResourceType(), projection);
+  }
 
 }
