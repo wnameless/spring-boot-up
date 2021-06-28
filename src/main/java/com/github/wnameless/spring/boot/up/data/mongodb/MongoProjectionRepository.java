@@ -15,112 +15,134 @@
  */
 package com.github.wnameless.spring.boot.up.data.mongodb;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import static com.github.wnameless.spring.boot.up.data.mongodb.MongoUtils.findDotPaths;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Query;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.wnameless.json.base.JacksonJsonValue;
-import com.github.wnameless.json.flattener.FlattenMode;
-import com.github.wnameless.json.flattener.JsonFlattener;
+import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 
 public interface MongoProjectionRepository<E>
     extends QuerydslPredicateMongoQueryExecutor<E> {
 
-  Logger log = LoggerFactory.getLogger(MongoProjectionRepository.class);
-
-  default Set<String> findFieldNamesOnType(Class<?> klass) {
-    try {
-      Object obj = klass.newInstance();
-      ObjectMapper mapper = new ObjectMapper();
-      JsonNode jsonNode = mapper.valueToTree(obj);
-
-      JsonFlattener jf = new JsonFlattener(new JacksonJsonValue(jsonNode));
-      Map<String, Object> flattenedMap =
-          jf.withFlattenMode(FlattenMode.KEEP_ARRAYS).flattenAsMap();
-
-      log.debug(flattenedMap.keySet().toString());
-      return flattenedMap.keySet();
-    } catch (InstantiationException | IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
+  default Optional<E> findProjectedBy(Predicate predicate, Class<E> entityType,
+      Path<?>... paths) {
+    return findProjectedBy(predicate, entityType, findDotPaths(paths));
   }
 
   default Optional<E> findProjectedBy(Predicate predicate, Class<E> entityType,
       Class<?> projection) {
-    Set<String> fieldNames = findFieldNamesOnType(projection);
+    return findProjectedBy(predicate, entityType, findDotPaths(projection));
+  }
 
+  default Optional<E> findProjectedBy(Predicate predicate, Class<E> entityType,
+      String... dotPaths) {
     E target = findOne(predicate, entityType, q -> {
-      q.fields().include(fieldNames.stream().toArray(String[]::new));
+      q.fields().include(dotPaths);
       return q;
     });
 
     return Optional.ofNullable(target);
   }
 
-  default List<E> findAllProjectedBy(Class<E> entityType, Class<?> projection) {
-    Set<String> fieldNames = findFieldNamesOnType(projection);
+  default List<E> findAllProjectedBy(Class<E> entityType, Path<?>... paths) {
+    return findAllProjectedBy(entityType, findDotPaths(paths));
+  }
 
+  default List<E> findAllProjectedBy(Class<E> entityType, Class<?> projection) {
+    return findAllProjectedBy(entityType, findDotPaths(projection));
+  }
+
+  default List<E> findAllProjectedBy(Class<E> entityType, String... dotPaths) {
     return findAll(new Query(), entityType, q -> {
-      q.fields().include(fieldNames.stream().toArray(String[]::new));
+      q.fields().include(dotPaths);
       return q;
     });
   }
 
   default List<E> findAllProjectedBy(Predicate predicate, Class<E> entityType,
-      Class<?> projection) {
-    Set<String> fieldNames = findFieldNamesOnType(projection);
+      Path<?>... paths) {
+    return findAllProjectedBy(predicate, entityType, findDotPaths(paths));
+  }
 
+  default List<E> findAllProjectedBy(Predicate predicate, Class<E> entityType,
+      Class<?> projection) {
+    return findAllProjectedBy(predicate, entityType, findDotPaths(projection));
+  }
+
+  default List<E> findAllProjectedBy(Predicate predicate, Class<E> entityType,
+      String... dotPaths) {
     return findAll(predicate, entityType, q -> {
-      q.fields().include(fieldNames.stream().toArray(String[]::new));
+      q.fields().include(dotPaths);
       return q;
     });
   }
 
-  default List<E> findAllProjectedBy(Class<E> entityType, Sort sort,
-      Class<?> projection) {
-    Set<String> fieldNames = findFieldNamesOnType(projection);
+  default List<E> findAllProjectedBy(Sort sort, Class<E> entityType,
+      Path<?>... paths) {
+    return findAllProjectedBy(sort, entityType, findDotPaths(paths));
+  }
 
+  default List<E> findAllProjectedBy(Sort sort, Class<E> entityType,
+      Class<?> projection) {
+    return findAllProjectedBy(sort, entityType, findDotPaths(projection));
+  }
+
+  default List<E> findAllProjectedBy(Sort sort, Class<E> entityType,
+      String... dotPaths) {
     Query query = new Query();
     query.with(sort);
 
     return findAll(query, entityType, q -> {
-      q.fields().include(fieldNames.stream().toArray(String[]::new));
+      q.fields().include(dotPaths);
       return q;
     });
   }
 
   default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
-      Class<E> entityType, Class<?> projection) {
-    Set<String> fieldNames = findFieldNamesOnType(projection);
+      Class<E> entityType, Path<?>... paths) {
+    return findAllProjectedBy(predicate, sort, entityType, findDotPaths(paths));
+  }
 
+  default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
+      Class<E> entityType, Class<?> projection) {
+    return findAllProjectedBy(predicate, sort, entityType,
+        findDotPaths(projection));
+  }
+
+  default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
+      Class<E> entityType, String... dotPaths) {
     return findAll(predicate, entityType, q -> {
-      q.fields().include(fieldNames.stream().toArray(String[]::new));
+      q.fields().include(dotPaths);
       q.with(sort);
       return q;
     });
   }
 
   default Page<E> findPagedProjectedBy(Pageable pageable, Class<E> entityType,
-      Class<?> projection) {
-    Set<String> fieldNames = findFieldNamesOnType(projection);
+      Path<?>... paths) {
+    return findPagedProjectedBy(pageable, entityType, findDotPaths(paths));
+  }
 
+  default Page<E> findPagedProjectedBy(Pageable pageable, Class<E> entityType,
+      Class<?> projection) {
+    return findPagedProjectedBy(pageable, entityType, findDotPaths(projection));
+  }
+
+  default Page<E> findPagedProjectedBy(Pageable pageable, Class<E> entityType,
+      String... dotPaths) {
     Query query = new Query();
     query.with(pageable);
 
     List<E> targets = findAll(query, entityType, q -> {
-      q.fields().include(fieldNames.stream().toArray(String[]::new));
+      q.fields().include(dotPaths);
       return q;
     });
     long count = countAll(query, entityType);
@@ -129,11 +151,21 @@ public interface MongoProjectionRepository<E>
   }
 
   default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable,
-      Class<E> entityType, Class<?> projection) {
-    Set<String> fieldNames = findFieldNamesOnType(projection);
+      Class<E> entityType, Path<?>... paths) {
+    return findPagedProjectedBy(predicate, pageable, entityType,
+        findDotPaths(paths));
+  }
 
+  default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable,
+      Class<E> entityType, Class<?> projection) {
+    return findPagedProjectedBy(predicate, pageable, entityType,
+        findDotPaths(projection));
+  }
+
+  default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable,
+      Class<E> entityType, String... dotPaths) {
     List<E> targets = findAll(predicate, entityType, q -> {
-      q.fields().include(fieldNames.stream().toArray(String[]::new));
+      q.fields().include(dotPaths);
       q.with(pageable);
       return q;
     });
