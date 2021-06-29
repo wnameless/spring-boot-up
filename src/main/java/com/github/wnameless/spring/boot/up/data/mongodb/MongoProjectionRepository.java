@@ -20,6 +20,7 @@ import static com.github.wnameless.spring.boot.up.data.mongodb.MongoUtils.findDo
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.core.ResolvableType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -32,19 +33,24 @@ import com.querydsl.core.types.Predicate;
 public interface MongoProjectionRepository<E>
     extends QuerydslPredicateMongoQueryExecutor<E> {
 
-  default Optional<E> findProjectedBy(Predicate predicate, Class<E> entityType,
-      Path<?>... paths) {
-    return findProjectedBy(predicate, entityType, findDotPaths(paths));
+  @SuppressWarnings("unchecked")
+  default Class<E> getDocumentType() {
+    ResolvableType t =
+        ResolvableType.forClass(getClass()).as(MongoProjectionRepository.class);
+    return (Class<E>) t.getGeneric(0).resolve();
   }
 
-  default Optional<E> findProjectedBy(Predicate predicate, Class<E> entityType,
+  default Optional<E> findProjectedBy(Predicate predicate, Path<?>... paths) {
+    return findProjectedBy(predicate, findDotPaths(paths));
+  }
+
+  default Optional<E> findProjectedBy(Predicate predicate,
       Class<?> projection) {
-    return findProjectedBy(predicate, entityType, findDotPaths(projection));
+    return findProjectedBy(predicate, findDotPaths(projection));
   }
 
-  default Optional<E> findProjectedBy(Predicate predicate, Class<E> entityType,
-      String... dotPaths) {
-    E target = findOne(predicate, entityType, q -> {
+  default Optional<E> findProjectedBy(Predicate predicate, String... dotPaths) {
+    E target = findOne(predicate, getDocumentType(), q -> {
       q.fields().include(dotPaths);
       return q;
     });
@@ -52,124 +58,112 @@ public interface MongoProjectionRepository<E>
     return Optional.ofNullable(target);
   }
 
-  default List<E> findAllProjectedBy(Class<E> entityType, Path<?>... paths) {
-    return findAllProjectedBy(entityType, findDotPaths(paths));
+  default List<E> findAllProjectedBy(Path<?>... paths) {
+    return findAllProjectedBy(findDotPaths(paths));
   }
 
-  default List<E> findAllProjectedBy(Class<E> entityType, Class<?> projection) {
-    return findAllProjectedBy(entityType, findDotPaths(projection));
+  default List<E> findAllProjectedBy(Class<?> projection) {
+    return findAllProjectedBy(findDotPaths(projection));
   }
 
-  default List<E> findAllProjectedBy(Class<E> entityType, String... dotPaths) {
-    return findAll(new Query(), entityType, q -> {
+  default List<E> findAllProjectedBy(String... dotPaths) {
+    return findAll(new Query(), getDocumentType(), q -> {
       q.fields().include(dotPaths);
       return q;
     });
   }
 
-  default List<E> findAllProjectedBy(Predicate predicate, Class<E> entityType,
-      Path<?>... paths) {
-    return findAllProjectedBy(predicate, entityType, findDotPaths(paths));
+  default List<E> findAllProjectedBy(Predicate predicate, Path<?>... paths) {
+    return findAllProjectedBy(predicate, findDotPaths(paths));
   }
 
-  default List<E> findAllProjectedBy(Predicate predicate, Class<E> entityType,
-      Class<?> projection) {
-    return findAllProjectedBy(predicate, entityType, findDotPaths(projection));
+  default List<E> findAllProjectedBy(Predicate predicate, Class<?> projection) {
+    return findAllProjectedBy(predicate, findDotPaths(projection));
   }
 
-  default List<E> findAllProjectedBy(Predicate predicate, Class<E> entityType,
-      String... dotPaths) {
-    return findAll(predicate, entityType, q -> {
+  default List<E> findAllProjectedBy(Predicate predicate, String... dotPaths) {
+    return findAll(predicate, getDocumentType(), q -> {
       q.fields().include(dotPaths);
       return q;
     });
   }
 
-  default List<E> findAllProjectedBy(Sort sort, Class<E> entityType,
-      Path<?>... paths) {
-    return findAllProjectedBy(sort, entityType, findDotPaths(paths));
+  default List<E> findAllProjectedBy(Sort sort, Path<?>... paths) {
+    return findAllProjectedBy(sort, findDotPaths(paths));
   }
 
-  default List<E> findAllProjectedBy(Sort sort, Class<E> entityType,
-      Class<?> projection) {
-    return findAllProjectedBy(sort, entityType, findDotPaths(projection));
+  default List<E> findAllProjectedBy(Sort sort, Class<?> projection) {
+    return findAllProjectedBy(sort, findDotPaths(projection));
   }
 
-  default List<E> findAllProjectedBy(Sort sort, Class<E> entityType,
-      String... dotPaths) {
+  default List<E> findAllProjectedBy(Sort sort, String... dotPaths) {
     Query query = new Query();
     query.with(sort);
 
-    return findAll(query, entityType, q -> {
+    return findAll(query, getDocumentType(), q -> {
       q.fields().include(dotPaths);
       return q;
     });
   }
 
   default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
-      Class<E> entityType, Path<?>... paths) {
-    return findAllProjectedBy(predicate, sort, entityType, findDotPaths(paths));
+      Path<?>... paths) {
+    return findAllProjectedBy(predicate, sort, findDotPaths(paths));
   }
 
   default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
-      Class<E> entityType, Class<?> projection) {
-    return findAllProjectedBy(predicate, sort, entityType,
-        findDotPaths(projection));
+      Class<?> projection) {
+    return findAllProjectedBy(predicate, sort, findDotPaths(projection));
   }
 
   default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
-      Class<E> entityType, String... dotPaths) {
-    return findAll(predicate, entityType, q -> {
+      String... dotPaths) {
+    return findAll(predicate, getDocumentType(), q -> {
       q.fields().include(dotPaths);
       q.with(sort);
       return q;
     });
   }
 
-  default Page<E> findPagedProjectedBy(Pageable pageable, Class<E> entityType,
-      Path<?>... paths) {
-    return findPagedProjectedBy(pageable, entityType, findDotPaths(paths));
+  default Page<E> findPagedProjectedBy(Pageable pageable, Path<?>... paths) {
+    return findPagedProjectedBy(pageable, findDotPaths(paths));
   }
 
-  default Page<E> findPagedProjectedBy(Pageable pageable, Class<E> entityType,
-      Class<?> projection) {
-    return findPagedProjectedBy(pageable, entityType, findDotPaths(projection));
+  default Page<E> findPagedProjectedBy(Pageable pageable, Class<?> projection) {
+    return findPagedProjectedBy(pageable, findDotPaths(projection));
   }
 
-  default Page<E> findPagedProjectedBy(Pageable pageable, Class<E> entityType,
-      String... dotPaths) {
+  default Page<E> findPagedProjectedBy(Pageable pageable, String... dotPaths) {
     Query query = new Query();
     query.with(pageable);
 
-    List<E> targets = findAll(query, entityType, q -> {
+    List<E> targets = findAll(query, getDocumentType(), q -> {
       q.fields().include(dotPaths);
       return q;
     });
-    long count = countAll(query, entityType);
+    long count = countAll(query, getDocumentType());
 
     return new PageImpl<>(targets, pageable, count);
   }
 
   default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable,
-      Class<E> entityType, Path<?>... paths) {
-    return findPagedProjectedBy(predicate, pageable, entityType,
-        findDotPaths(paths));
+      Path<?>... paths) {
+    return findPagedProjectedBy(predicate, pageable, findDotPaths(paths));
   }
 
   default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable,
-      Class<E> entityType, Class<?> projection) {
-    return findPagedProjectedBy(predicate, pageable, entityType,
-        findDotPaths(projection));
+      Class<?> projection) {
+    return findPagedProjectedBy(predicate, pageable, findDotPaths(projection));
   }
 
   default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable,
-      Class<E> entityType, String... dotPaths) {
-    List<E> targets = findAll(predicate, entityType, q -> {
+      String... dotPaths) {
+    List<E> targets = findAll(predicate, getDocumentType(), q -> {
       q.fields().include(dotPaths);
       q.with(pageable);
       return q;
     });
-    long count = countAll(predicate, entityType, q -> q.with(pageable));
+    long count = countAll(predicate, getDocumentType(), q -> q.with(pageable));
 
     return new PageImpl<>(targets, pageable, count);
   }

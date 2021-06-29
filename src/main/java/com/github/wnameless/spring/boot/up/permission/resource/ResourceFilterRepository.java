@@ -362,11 +362,11 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return this.findProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          rar.getResourceType(), dotPaths);
+          dotPaths);
     }
     return findProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-        rar.getResourceType(), dotPaths);
+        dotPaths);
   }
 
   default List<T> filterFindAllProjectedBy(Path<?>... paths) {
@@ -386,11 +386,9 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     }
 
     if (user.canManage(rar.getResourceType())) {
-      return findAllProjectedBy(rar.getPredicateOfManageAbility(),
-          rar.getResourceType(), dotPaths);
+      return findAllProjectedBy(rar.getPredicateOfManageAbility(), dotPaths);
     }
-    return findAllProjectedBy(rar.getPredicateOfReadAbility(),
-        rar.getResourceType(), dotPaths);
+    return findAllProjectedBy(rar.getPredicateOfReadAbility(), dotPaths);
   }
 
   default List<T> filterFindAllProjectedBy(Predicate predicate,
@@ -415,11 +413,11 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return findAllProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          rar.getResourceType(), dotPaths);
+          dotPaths);
     }
     return findAllProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-        rar.getResourceType(), dotPaths);
+        dotPaths);
   }
 
   default List<T> filterFindAllProjectedBy(Sort sort, Path<?>... paths) {
@@ -440,10 +438,9 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
     if (user.canManage(rar.getResourceType())) {
       return findAllProjectedBy(rar.getPredicateOfManageAbility(), sort,
-          rar.getResourceType(), dotPaths);
+          dotPaths);
     }
-    return findAllProjectedBy(rar.getPredicateOfReadAbility(), sort,
-        rar.getResourceType(), dotPaths);
+    return findAllProjectedBy(rar.getPredicateOfReadAbility(), sort, dotPaths);
   }
 
   default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort,
@@ -468,12 +465,11 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return findAllProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-
-          sort, rar.getResourceType(), dotPaths);
+          sort, dotPaths);
     }
     return findAllProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate), sort,
-        rar.getResourceType(), dotPaths);
+        dotPaths);
   }
 
   default Page<T> filterFindPagedProjectedBy(Pageable pageable,
@@ -497,10 +493,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
     if (user.canManage(rar.getResourceType())) {
       return findPagedProjectedBy(rar.getPredicateOfManageAbility(), pageable,
-          rar.getResourceType(), dotPaths);
+          dotPaths);
     }
     return findPagedProjectedBy(rar.getPredicateOfReadAbility(), pageable,
-        rar.getResourceType(), dotPaths);
+        dotPaths);
   }
 
   default Page<T> filterFindPagedProjectedBy(Predicate predicate,
@@ -515,7 +511,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default <P> Page<P> filterFindPagedProjectedBy(Predicate predicate,
+  default Page<T> filterFindPagedProjectedBy(Predicate predicate,
       Pageable pageable, String... dotPaths) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
@@ -526,11 +522,11 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     if (user.canManage(rar.getResourceType())) {
       return findPagedProjectedBy(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), predicate),
-          pageable, rar.getResourceType(), dotPaths);
+          pageable, dotPaths);
     }
     return findPagedProjectedBy(
         ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate),
-        pageable, rar.getResourceType(), dotPaths);
+        pageable, dotPaths);
   }
 
 }
