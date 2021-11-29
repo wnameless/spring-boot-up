@@ -15,6 +15,7 @@
  */
 package com.github.wnameless.spring.boot.up.data.mongodb;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,7 @@ public final class MongoUtils {
 
   public static String[] findDotPaths(Class<?> klass) {
     try {
-      Object obj = klass.newInstance();
+      Object obj = klass.getDeclaredConstructor().newInstance();
       ObjectMapper mapper = new ObjectMapper();
       JsonNode jsonNode = mapper.valueToTree(obj);
 
@@ -50,7 +51,9 @@ public final class MongoUtils {
 
       log.debug(flattenedMap.keySet().toString());
       return flattenedMap.keySet().stream().toArray(String[]::new);
-    } catch (InstantiationException | IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException
+        | IllegalArgumentException | InvocationTargetException
+        | NoSuchMethodException | SecurityException e) {
       throw new RuntimeException(e);
     }
   }
