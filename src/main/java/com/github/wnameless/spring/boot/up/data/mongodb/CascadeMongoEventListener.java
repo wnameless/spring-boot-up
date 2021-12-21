@@ -79,10 +79,8 @@ public class CascadeMongoEventListener
     if (docId != null && !callback.getDeletableIds().isEmpty()) {
       synchronized (cascadeDeleteCallbacks) {
         cascadeDeleteCallbacks.put(docId, callback);
-        if (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
-          while (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
-            cascadeDeleteCallbacks.shift();
-          }
+        while (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
+          cascadeDeleteCallbacks.shift();
         }
       }
     }
