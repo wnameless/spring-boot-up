@@ -47,7 +47,7 @@ public class CascadeMongoEventListener
 
             @Override
             protected boolean removeEldestEntry(
-                java.util.Map.Entry<Object, CascadeDeleteCallback> entry) {
+                Map.Entry<Object, CascadeDeleteCallback> entry) {
               return size() > CACHE_SIZE;
             }
 
