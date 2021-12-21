@@ -15,6 +15,10 @@
  */
 package com.github.wnameless.spring.boot.up.data.mongodb;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
@@ -29,16 +33,25 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
 
-import net.sf.rubycollect4j.Ruby;
-import net.sf.rubycollect4j.RubyHash;
-
 public class CascadeMongoEventListener
     extends AbstractMongoEventListener<Object> {
 
   private static final int CACHE_SIZE = 256;
 
-  private final RubyHash<Object, CascadeDeleteCallback> cascadeDeleteCallbacks =
-      Ruby.Hash.create();
+  private final Map<Object, CascadeDeleteCallback> cascadeDeleteCallbacks =
+      Collections.synchronizedMap(
+
+          new LinkedHashMap<Object, CascadeDeleteCallback>(CACHE_SIZE) {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected boolean removeEldestEntry(
+                java.util.Map.Entry<Object, CascadeDeleteCallback> entry) {
+              return size() > CACHE_SIZE;
+            }
+
+          });
 
   @Autowired
   private MongoOperations mongoOperations;
@@ -77,12 +90,7 @@ public class CascadeMongoEventListener
     ReflectionUtils.doWithFields(source.getClass(), callback);
     Object docId = event.getDocument().get("_id");
     if (docId != null && !callback.getDeletableIds().isEmpty()) {
-      synchronized (cascadeDeleteCallbacks) {
-        cascadeDeleteCallbacks.put(docId, callback);
-        while (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
-          cascadeDeleteCallbacks.shift();
-        }
-      }
+      cascadeDeleteCallbacks.put(docId, callback);
     }
   }
 
