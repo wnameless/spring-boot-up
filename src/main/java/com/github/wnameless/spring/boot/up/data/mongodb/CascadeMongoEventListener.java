@@ -77,10 +77,12 @@ public class CascadeMongoEventListener
     ReflectionUtils.doWithFields(source.getClass(), callback);
     Object docId = event.getDocument().get("_id");
     if (docId != null && !callback.getDeletableIds().isEmpty()) {
-      cascadeDeleteCallbacks.put(docId, callback);
-      if (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
-        while (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
-          cascadeDeleteCallbacks.shift();
+      synchronized (cascadeDeleteCallbacks) {
+        cascadeDeleteCallbacks.put(docId, callback);
+        if (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
+          while (cascadeDeleteCallbacks.size() > CACHE_SIZE) {
+            cascadeDeleteCallbacks.shift();
+          }
         }
       }
     }
