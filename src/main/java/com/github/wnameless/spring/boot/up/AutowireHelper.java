@@ -54,7 +54,10 @@ public final class AutowireHelper implements ApplicationContextAware {
   private AutowireHelper() {}
 
   /**
-   * @see {@link AutowireCapableBeanFactory#autowireBean}
+   * {@link AutowireCapableBeanFactory#autowireBean}
+   * 
+   * @param instance
+   *          dependencies injection target
    */
   public static void autowire(Object instance) {
     applicationContext.getAutowireCapableBeanFactory().autowireBean(instance);
