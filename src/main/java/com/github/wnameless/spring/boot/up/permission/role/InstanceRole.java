@@ -16,18 +16,14 @@
 package com.github.wnameless.spring.boot.up.permission.role;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+public interface InstanceRole<I> extends ConditionalRole {
 
-public interface InstanceRole<I> extends WebRole {
-
-  @Override
-  default boolean isActive() {
-    return getInstance(SecurityContextHolder.getContext().getAuthentication())
-        .isPresent();
+  default BooleanSupplier getCondition() {
+    return () -> getInstance().isPresent();
   }
 
-  Optional<I> getInstance(Authentication auth);
+  Optional<I> getInstance();
 
 }

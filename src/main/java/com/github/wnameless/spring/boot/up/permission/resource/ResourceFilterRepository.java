@@ -15,10 +15,11 @@
  */
 package com.github.wnameless.spring.boot.up.permission.resource;
 
-import static com.github.wnameless.spring.boot.up.data.mongodb.MongoUtils.findDotPaths;
-
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.validation.Validator;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -27,9 +28,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.ui.Model;
 
 import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
 import com.github.wnameless.spring.boot.up.data.mongodb.MongoProjectionRepository;
+import com.github.wnameless.spring.boot.up.data.mongodb.MongoUtils;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.WebPermissionManager;
 import com.querydsl.core.types.ExpressionUtils;
@@ -256,6 +259,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     PermittedUser user = getCurrentUser();
     Predicate idEq = rar.getPredicateOfEntity(entity);
     Optional<T> target = findOne(idEq);
+
     // new entity
     if (!target.isPresent()) {
       if (!user.canCreate(rar.getResourceType())) {
@@ -266,6 +270,46 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     }
 
     // check if entity existed and accessible
+    if (user.canManage(rar.getResourceType())) {
+      target = findOne(
+          ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), idEq));
+    } else {
+      target = findOne(
+          ExpressionUtils.allOf(rar.getPredicateOfUpdateAbility(), idEq));
+    }
+    if (!target.isPresent()) {
+      throw new UnsupportedOperationException("No permission to UPDATE");
+    }
+
+    return save(entity);
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  default T filterSaveWithValidation(T entity, Model model) {
+    Validator validator = ApplicationContextProvider.getApplicationContext()
+        .getBean(Validator.class);
+
+    ResourceAccessRule rar = getResourceAccessRule();
+    PermittedUser user = getCurrentUser();
+    Predicate idEq = rar.getPredicateOfEntity(entity);
+    Optional<T> target = findOne(idEq);
+
+    // validates bean
+    List<String> messages = validator.validate(entity).stream()
+        .map(e -> e.getMessage()).collect(Collectors.toList());
+    model.addAttribute("messages", messages);
+    if (messages.size() > 0) return entity;
+
+    // new entity
+    if (!target.isPresent()) {
+      if (!user.canCreate(rar.getResourceType())) {
+        throw new UnsupportedOperationException("No permission to CREATE");
+      }
+
+      return save(entity);
+    }
+
+    // checks if entity existed and accessible
     if (user.canManage(rar.getResourceType())) {
       target = findOne(
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), idEq));
@@ -342,12 +386,13 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   default Optional<T> filterFindProjectedBy(Predicate predicate,
       Path<?>... paths) {
-    return filterFindProjectedBy(predicate, findDotPaths(paths));
+    return filterFindProjectedBy(predicate, MongoUtils.findDotPaths(paths));
   }
 
   default Optional<T> filterFindProjectedBy(Predicate predicate,
       Class<?> projection) {
-    return filterFindProjectedBy(predicate, findDotPaths(projection));
+    return filterFindProjectedBy(predicate,
+        MongoUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -370,11 +415,11 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   }
 
   default List<T> filterFindAllProjectedBy(Path<?>... paths) {
-    return filterFindAllProjectedBy(findDotPaths(paths));
+    return filterFindAllProjectedBy(MongoUtils.findDotPaths(paths));
   }
 
   default List<T> filterFindAllProjectedBy(Class<?> projection) {
-    return filterFindAllProjectedBy(findDotPaths(projection));
+    return filterFindAllProjectedBy(MongoUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -393,12 +438,13 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   default List<T> filterFindAllProjectedBy(Predicate predicate,
       Path<?>... paths) {
-    return filterFindAllProjectedBy(predicate, findDotPaths(paths));
+    return filterFindAllProjectedBy(predicate, MongoUtils.findDotPaths(paths));
   }
 
   default List<T> filterFindAllProjectedBy(Predicate predicate,
       Class<?> projection) {
-    return filterFindAllProjectedBy(predicate, findDotPaths(projection));
+    return filterFindAllProjectedBy(predicate,
+        MongoUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -421,11 +467,11 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   }
 
   default List<T> filterFindAllProjectedBy(Sort sort, Path<?>... paths) {
-    return filterFindAllProjectedBy(sort, findDotPaths(paths));
+    return filterFindAllProjectedBy(sort, MongoUtils.findDotPaths(paths));
   }
 
   default List<T> filterFindAllProjectedBy(Sort sort, Class<?> projection) {
-    return filterFindAllProjectedBy(sort, findDotPaths(projection));
+    return filterFindAllProjectedBy(sort, MongoUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -445,12 +491,14 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort,
       Path<?>... paths) {
-    return filterFindAllProjectedBy(predicate, sort, findDotPaths(paths));
+    return filterFindAllProjectedBy(predicate, sort,
+        MongoUtils.findDotPaths(paths));
   }
 
   default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort,
       Class<?> projection) {
-    return filterFindAllProjectedBy(predicate, sort, findDotPaths(projection));
+    return filterFindAllProjectedBy(predicate, sort,
+        MongoUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -474,12 +522,13 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   default Page<T> filterFindPagedProjectedBy(Pageable pageable,
       Path<?>... paths) {
-    return filterFindPagedProjectedBy(pageable, findDotPaths(paths));
+    return filterFindPagedProjectedBy(pageable, MongoUtils.findDotPaths(paths));
   }
 
   default Page<T> filterFindPagedProjectedBy(Pageable pageable,
       Class<?> projection) {
-    return filterFindPagedProjectedBy(pageable, findDotPaths(projection));
+    return filterFindPagedProjectedBy(pageable,
+        MongoUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -501,13 +550,14 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   default Page<T> filterFindPagedProjectedBy(Predicate predicate,
       Pageable pageable, Path<?>... paths) {
-    return filterFindPagedProjectedBy(predicate, pageable, findDotPaths(paths));
+    return filterFindPagedProjectedBy(predicate, pageable,
+        MongoUtils.findDotPaths(paths));
   }
 
   default Page<T> filterFindPagedProjectedBy(Predicate predicate,
       Pageable pageable, Class<?> projection) {
     return filterFindPagedProjectedBy(predicate, pageable,
-        findDotPaths(projection));
+        MongoUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })

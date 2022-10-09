@@ -18,12 +18,10 @@ package com.github.wnameless.spring.boot.up.web;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-public interface RestfulRouteController<ID> {
-
-  RestfulRoute<ID> getRoute();
+public interface RestfulRouteController<ID> extends RestfulRouteProvider<ID> {
 
   default RestfulRoute<ID> getTemplate() {
-    return getRoute().getTemplateRoute();
+    return getRestfulRoute().getTemplateRoute();
   }
 
   default String getRouteKey() {
@@ -36,7 +34,7 @@ public interface RestfulRouteController<ID> {
 
   @ModelAttribute
   default void setRoute(Model model) {
-    model.addAttribute(getRouteKey(), getRoute());
+    model.addAttribute(getRouteKey(), getRestfulRoute());
   }
 
   @ModelAttribute

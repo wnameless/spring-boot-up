@@ -17,7 +17,7 @@ package com.github.wnameless.spring.boot.up.permission.role;
 
 import java.util.function.BooleanSupplier;
 
-public interface ConditionalRole<P> extends WebRole {
+public interface ConditionalRole extends WebRole {
 
   @Override
   default boolean isActive() {

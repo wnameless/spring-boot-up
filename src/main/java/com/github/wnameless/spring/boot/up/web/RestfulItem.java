@@ -15,6 +15,10 @@
  */
 package com.github.wnameless.spring.boot.up.web;
 
+import org.atteo.evo.inflector.English;
+
+import com.google.common.base.CaseFormat;
+
 public interface RestfulItem<ID> extends JoinablePath {
 
   @Override
@@ -24,7 +28,12 @@ public interface RestfulItem<ID> extends JoinablePath {
 
   ID getId();
 
-  String getIndexPath();
+  default String getIndexPath() {
+    String lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,
+        this.getClass().getSimpleName());
+    String plural = English.plural(lowerHyphen);
+    return "/" + plural;
+  }
 
   default String getCreatePath() {
     return getIndexPath();
@@ -61,13 +70,13 @@ public interface RestfulItem<ID> extends JoinablePath {
     return new RestfulItem<ID>() {
 
       @Override
-      public String getIndexPath() {
-        return indexPath;
+      public ID getId() {
+        return id;
       }
 
       @Override
-      public ID getId() {
-        return id;
+      public String getIndexPath() {
+        return indexPath;
       }
 
     };
@@ -80,13 +89,13 @@ public interface RestfulItem<ID> extends JoinablePath {
     return new RestfulItem<CID>() {
 
       @Override
-      public String getIndexPath() {
-        return indexPath;
+      public CID getId() {
+        return id;
       }
 
       @Override
-      public CID getId() {
-        return id;
+      public String getIndexPath() {
+        return indexPath;
       }
 
     };

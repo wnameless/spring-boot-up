@@ -15,14 +15,20 @@
  */
 package com.github.wnameless.spring.boot.up.web;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 public interface RestfulController<I, ID, R extends CrudRepository<I, ID>>
-// extends RestfulRouteController<ID>
-{
+    extends RestfulRouteController<ID> {
 
   R getRepository();
 
@@ -51,9 +57,6 @@ public interface RestfulController<I, ID, R extends CrudRepository<I, ID>>
     model.addAttribute(getItemKey(), //
         getOption().getBeforeAdd() == null ? item
             : getOption().getBeforeAdd().apply(item));
-
-    model.addAttribute(getRouteKey(), getRoute());
-    model.addAttribute(getTemplateKey(), getTemplate());
   }
 
   default String getItemKey() {
@@ -76,18 +79,16 @@ public interface RestfulController<I, ID, R extends CrudRepository<I, ID>>
     return item;
   }
 
-  RestfulRoute<ID> getRoute();
+  default void validateSave(I item, Validator validator, Model model) {
+    Set<ConstraintViolation<I>> errors = validator.validate(item);
 
-  default RestfulRoute<ID> getTemplate() {
-    return getRoute().getTemplateRoute();
-  }
-
-  default String getRouteKey() {
-    return "route";
-  }
-
-  default String getTemplateKey() {
-    return "template";
+    if (errors.size() == 0) {
+      getRepository().save(item);
+    } else {
+      List<String> messages =
+          errors.stream().map(e -> e.getMessage()).collect(Collectors.toList());
+      model.addAttribute("messages", messages);
+    }
   }
 
 }
