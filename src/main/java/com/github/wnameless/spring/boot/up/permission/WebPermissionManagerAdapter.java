@@ -30,7 +30,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
@@ -87,9 +86,9 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
     }
   }
 
-  protected abstract CrudRepository<U, ID> getRolifyUserRepository();
+  // protected abstract CrudRepository<U, ID> getRolifyUserRepository();
 
-  protected abstract U newRolifyUser();
+  // protected abstract U newRolifyUser();
 
   protected abstract Set<U> findAllRolifyUsersByUsername(String username);
 
@@ -334,35 +333,35 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
     return Ruby.Array.copyOf(webRoles.values()).map(WebRole::getRole).toSet();
   }
 
-  @Override
-  public boolean addUserRole(String username, Role role) {
-    Set<U> roles = findAllRolifyUsersByUsername(username);
-    if (roles.stream().anyMatch(
-        r -> Objects.equals(r.getRole().getRoleName(), role.getRoleName()))) {
-      return false;
-    }
+  // @Override
+  // public boolean addUserRole(String username, Role role) {
+  // Set<U> roles = findAllRolifyUsersByUsername(username);
+  // if (roles.stream().anyMatch(
+  // r -> Objects.equals(r.getRole().getRoleName(), role.getRoleName()))) {
+  // return false;
+  // }
 
-    U newRole = newRolifyUser();
-    newRole.setUsername(username);
-    newRole.setRole(role);
-    getRolifyUserRepository().save(newRole);
+  // U newRole = newRolifyUser();
+  // newRole.setUsername(username);
+  // newRole.setRole(role);
+  // getRolifyUserRepository().save(newRole);
 
-    return true;
-  }
+  // return true;
+  // }
 
-  @Override
-  public boolean removeUserRole(String username, Role role) {
-    Set<U> roles = findAllRolifyUsersByUsername(username);
-    U target = Ruby.Set.copyOf(roles).find(
-        r -> Objects.equals(r.getRole().getRoleName(), role.getRoleName()));
-    if (target != null) {
-      getRolifyUserRepository().delete(target);
+  // @Override
+  // public boolean removeUserRole(String username, Role role) {
+  // Set<U> roles = findAllRolifyUsersByUsername(username);
+  // U target = Ruby.Set.copyOf(roles).find(
+  // r -> Objects.equals(r.getRole().getRoleName(), role.getRoleName()));
+  // if (target != null) {
+  // getRolifyUserRepository().delete(target);
 
-      return true;
-    }
+  // return true;
+  // }
 
-    return false;
-  }
+  // return false;
+  // }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private Map<Class<?>, Set<AccessAbility>> buildAccessAbilities(Object bean) {

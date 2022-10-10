@@ -17,12 +17,16 @@ package com.github.wnameless.spring.boot.up.permission.role;
 
 public interface RolifyUser {
 
+  public static SimpleRolifyUser of(String username, Role role) {
+    return new SimpleRolifyUser(username, role);
+  }
+
+  public static SimpleRolifyUser of(String username, String roleName) {
+    return new SimpleRolifyUser(username, Role.of(roleName));
+  }
+
   String getUsername();
 
-  void setUsername(String username);
-
   Role getRole();
-
-  void setRole(Role role);
 
 }
