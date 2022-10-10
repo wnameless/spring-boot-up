@@ -19,11 +19,22 @@ import org.springframework.context.ApplicationContext;
 
 public final class SpringBootUp {
 
+  private SpringBootUp() {}
+
   public static ApplicationContext applicationContext() {
     return ApplicationContextProvider.getApplicationContext();
   }
 
-  public static void autowire(Object instance) {
+  public static <T> T getBean(Class<T> requiredType) {
+    return ApplicationContextProvider.getApplicationContext()
+        .getBean(requiredType);
+  }
+
+  public static Object getBean(String name) {
+    return ApplicationContextProvider.getApplicationContext().getBean(name);
+  }
+
+  public static void autowireBean(Object instance) {
     ApplicationContextProvider.getApplicationContext()
         .getAutowireCapableBeanFactory().autowireBean(instance);
   }
