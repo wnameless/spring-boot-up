@@ -50,11 +50,19 @@ public class NamedResourceProcessor extends AbstractProcessor {
                     roundEnv.getElementsAnnotatedWith(annotation);
 
             for (Element element : annotatedElements) {
-                String resourceName = element.getSimpleName().toString();
+                String className =
+                        ((TypeElement) element).getQualifiedName().toString();
+                String classSimpleName = element.getSimpleName().toString();
+                String packageName = null;
+                int lastDot = className.lastIndexOf('.');
+                if (lastDot > 0) {
+                    packageName = className.substring(0, lastDot);
+                }
+
                 NamedResource nr = element.getAnnotation(NamedResource.class);
                 singularName = nr.singular().value().trim();
                 if ("".equals(singularName)) {
-                    singularName = resourceName;
+                    singularName = classSimpleName;
                 }
                 pluralName = nr.plural().value().trim();
                 if ("".equals(pluralName)) {
@@ -89,7 +97,7 @@ public class NamedResourceProcessor extends AbstractProcessor {
                 NameKey resourcePathNameKey = nr.resourcePathNameKey();
 
                 TypeSpec.Builder builder = TypeSpec
-                        .classBuilder(nr.classNamePrefix() + resourceName
+                        .classBuilder(nr.classNamePrefix() + classSimpleName
                                 + nr.classNameSuffix())
                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
 
@@ -110,11 +118,23 @@ public class NamedResourceProcessor extends AbstractProcessor {
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
                                         Modifier.FINAL)
                                 .initializer("$S", pluralName).build())
-                        // RAW = resourceName
-                        .addField(FieldSpec.builder(String.class, "RAW")
+                        // CLASS_SIMPLE_NAME = classSimpleName
+                        .addField(FieldSpec
+                                .builder(String.class, "CLASS_SIMPLE_NAME")
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
                                         Modifier.FINAL)
-                                .initializer("$S", resourceName).build())
+                                .initializer("$S", classSimpleName).build())
+                        // CLASS_NAME = className
+                        .addField(FieldSpec.builder(String.class, "CLASS_NAME")
+                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
+                                        Modifier.FINAL)
+                                .initializer("$S", className).build())
+                        // PACKAGE_NAME = packageName
+                        .addField(
+                                FieldSpec.builder(String.class, "PACKAGE_NAME")
+                                        .addModifiers(Modifier.PUBLIC,
+                                                Modifier.STATIC, Modifier.FINAL)
+                                        .initializer("$S", packageName).build())
 
                         // UPPER_CAMEL_SINGULAR
                         .addField(FieldSpec
@@ -273,13 +293,6 @@ public class NamedResourceProcessor extends AbstractProcessor {
                 }
 
                 // Writes to file
-                String className =
-                        ((TypeElement) element).getQualifiedName().toString();
-                String packageName = null;
-                int lastDot = className.lastIndexOf('.');
-                if (lastDot > 0) {
-                    packageName = className.substring(0, lastDot);
-                }
                 TypeSpec namedResourceType = builder.build();
                 JavaFile javaFile = JavaFile
                         .builder(packageName, namedResourceType).build();

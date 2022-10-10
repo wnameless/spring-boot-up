@@ -9,60 +9,61 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 public @interface NamedResource {
 
-    NameValue singular() default @NameValue(value = "",
-            type = NameType.UPPER_CAMEL);
+        NameValue singular() default @NameValue(value = "",
+                        type = NameType.UPPER_CAMEL);
 
-    NameValue plural() default @NameValue(value = "",
-            type = NameType.UPPER_CAMEL);
+        NameValue plural() default @NameValue(value = "",
+                        type = NameType.UPPER_CAMEL);
 
-    String classNamePrefix() default "NR";
+        String classNamePrefix() default "NR";
 
-    String classNameSuffix() default "";
+        String classNameSuffix() default "";
 
-    NameKey resourceNameKey() default @NameKey(key = "RESOURCE", plural = false,
-            type = NameType.UPPER_CAMEL);
+        NameKey resourceNameKey() default @NameKey(key = "RESOURCE",
+                        plural = false, type = NameType.LOWER_HYPHEN);
 
-    NameKey resourcesNameKey() default @NameKey(key = "RESOURCES",
-            plural = true, type = NameType.LOWER_HYPHEN);
+        NameKey resourcesNameKey() default @NameKey(key = "RESOURCES",
+                        plural = true, type = NameType.LOWER_HYPHEN);
 
-    NameKey resourcePathNameKey() default @NameKey(key = "RESOURCE_PATH",
-            plural = true, type = NameType.LOWER_HYPHEN, prefix = "/");
+        NameKey resourcePathNameKey() default @NameKey(key = "RESOURCE_PATH",
+                        plural = true, type = NameType.LOWER_HYPHEN,
+                        prefix = "/");
 
-    NameType[] literalSingularConstants() default {};
+        NameType[] literalSingularConstants() default {};
 
-    NameType[] literalPluralConstants() default {};
+        NameType[] literalPluralConstants() default {};
 
-    NameKey[] nameKeys() default {};
+        NameKey[] nameKeys() default {};
 
-    public enum NameType {
+        public enum NameType {
 
-        UPPER_CAMEL, LOWER_CAMEL, UPPER_UNDERSCORE, LOWER_UNDERSCORE,
-        LOWER_HYPHEN;
+                UPPER_CAMEL, LOWER_CAMEL, UPPER_UNDERSCORE, LOWER_UNDERSCORE,
+                LOWER_HYPHEN;
 
-    }
+        }
 
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface NameKey {
+        @Target(ElementType.ANNOTATION_TYPE)
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface NameKey {
 
-        String key();
+                String key();
 
-        boolean plural();
+                boolean plural();
 
-        NameType type();
+                NameType type();
 
-        String prefix() default "";
+                String prefix() default "";
 
-    }
+        }
 
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface NameValue {
+        @Target(ElementType.ANNOTATION_TYPE)
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface NameValue {
 
-        String value();
+                String value();
 
-        NameType type();
+                NameType type();
 
-    }
+        }
 
 }
