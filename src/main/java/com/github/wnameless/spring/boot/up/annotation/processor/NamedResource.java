@@ -9,61 +9,76 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 public @interface NamedResource {
 
-        NameValue singular() default @NameValue(value = "",
-                        type = NameType.UPPER_CAMEL);
+    boolean injectable() default false;
 
-        NameValue plural() default @NameValue(value = "",
-                        type = NameType.UPPER_CAMEL);
+    NameValue singular() default @NameValue(value = "",
+            type = NameType.UPPER_CAMEL);
 
-        String classNamePrefix() default "NR";
+    NameValue plural() default @NameValue(value = "",
+            type = NameType.UPPER_CAMEL);
 
-        String classNameSuffix() default "";
+    String classNamePrefix() default "NR";
 
-        NameKey resourceNameKey() default @NameKey(key = "RESOURCE",
-                        plural = false, type = NameType.LOWER_HYPHEN);
+    String classNameSuffix() default "";
 
-        NameKey resourcesNameKey() default @NameKey(key = "RESOURCES",
-                        plural = true, type = NameType.LOWER_HYPHEN);
+    NameKey resourceNameKey() default @NameKey(key = "RESOURCE", plural = false,
+            type = NameType.LOWER_HYPHEN);
 
-        NameKey resourcePathNameKey() default @NameKey(key = "RESOURCE_PATH",
-                        plural = true, type = NameType.LOWER_HYPHEN,
-                        prefix = "/");
+    NameKey resourcesNameKey() default @NameKey(key = "RESOURCES",
+            plural = true, type = NameType.LOWER_HYPHEN);
 
-        NameType[] literalSingularConstants() default {};
+    NameKey resourcePathNameKey() default @NameKey(key = "RESOURCE_PATH",
+            plural = true, type = NameType.LOWER_HYPHEN, prefix = "/");
 
-        NameType[] literalPluralConstants() default {};
+    NameType[] literalSingularConstants() default {};
 
-        NameKey[] nameKeys() default {};
+    NameType[] literalPluralConstants() default {};
 
-        public enum NameType {
+    NameKey[] nameKeys() default {};
 
-                UPPER_CAMEL, LOWER_CAMEL, UPPER_UNDERSCORE, LOWER_UNDERSCORE,
-                LOWER_HYPHEN;
+    NameKeyValue[] nameKeyValues() default {};
 
-        }
+    public enum NameType {
 
-        @Target(ElementType.ANNOTATION_TYPE)
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface NameKey {
+        UPPER_CAMEL, LOWER_CAMEL, UPPER_UNDERSCORE, LOWER_UNDERSCORE,
+        LOWER_HYPHEN;
 
-                String key();
+    }
 
-                boolean plural();
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NameKey {
 
-                NameType type();
+        String key();
 
-                String prefix() default "";
+        boolean plural();
 
-        }
+        NameType type();
 
-        @Target(ElementType.ANNOTATION_TYPE)
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface NameValue {
+        String prefix() default "";
 
-                String value();
+        String suffix() default "";
 
-                NameType type();
+    }
 
-        }
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NameValue {
+
+        String value();
+
+        NameType type();
+
+    }
+
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NameKeyValue {
+
+        String key();
+
+        String value();
+
+    }
 
 }

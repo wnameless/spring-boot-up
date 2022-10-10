@@ -15,6 +15,7 @@ import javax.lang.model.element.TypeElement;
 import org.atteo.evo.inflector.English;
 
 import com.github.wnameless.spring.boot.up.annotation.processor.NamedResource.NameKey;
+import com.github.wnameless.spring.boot.up.annotation.processor.NamedResource.NameKeyValue;
 import com.github.wnameless.spring.boot.up.annotation.processor.NamedResource.NameType;
 import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.FieldSpec;
@@ -101,6 +102,12 @@ public class NamedResourceProcessor extends AbstractProcessor {
                                 + nr.classNameSuffix())
                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
 
+                // Apply javax.inject
+                if (nr.injectable()) {
+                    builder.addAnnotation(javax.inject.Named.class);
+                    builder.addSuperinterface(INamedResource.class);
+                }
+
                 // RESUORCE
                 this.nameKeyBuilder(builder, resourceNameKey);
                 // RESUORCES
@@ -118,7 +125,8 @@ public class NamedResourceProcessor extends AbstractProcessor {
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
                                         Modifier.FINAL)
                                 .initializer("$S", pluralName).build())
-                        // CLASS_SIMPLE_NAME = classSimpleName
+                        // CLASS_SIMPLE_NAME =
+                        // classSimpleName
                         .addField(FieldSpec
                                 .builder(String.class, "CLASS_SIMPLE_NAME")
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
@@ -292,6 +300,14 @@ public class NamedResourceProcessor extends AbstractProcessor {
                     nameKeyBuilder(builder, nameKey);
                 }
 
+                for (NameKeyValue nameKeyValue : nr.nameKeyValues()) {
+                    builder.addField(FieldSpec
+                            .builder(String.class, nameKeyValue.key())
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
+                                    Modifier.FINAL)
+                            .initializer("$S", nameKeyValue.value()).build());
+                }
+
                 // Writes to file
                 TypeSpec namedResourceType = builder.build();
                 JavaFile javaFile = JavaFile
@@ -314,44 +330,53 @@ public class NamedResourceProcessor extends AbstractProcessor {
                 builder.addField(FieldSpec.builder(String.class, nameKey.key())
                         .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
                                 Modifier.FINAL)
-                        .initializer("$S", nameKey.prefix() + (nameKey.plural()
-                                ? lowerCamelPlural : lowerCamelSingular))
+                        .initializer("$S",
+                                nameKey.prefix()
+                                        + (nameKey.plural() ? lowerCamelPlural
+                                                : lowerCamelSingular)
+                                        + nameKey.suffix())
                         .build());
                 break;
             case LOWER_HYPHEN:
                 builder.addField(FieldSpec.builder(String.class, nameKey.key())
                         .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
                                 Modifier.FINAL)
-                        .initializer("$S", nameKey.prefix() + (nameKey.plural()
-                                ? lowerHyphenPlural : lowerHyphenSingular))
+                        .initializer("$S",
+                                nameKey.prefix()
+                                        + (nameKey.plural() ? lowerHyphenPlural
+                                                : lowerHyphenSingular)
+                                        + nameKey.suffix())
                         .build());
                 break;
             case LOWER_UNDERSCORE:
                 builder.addField(FieldSpec.builder(String.class, nameKey.key())
                         .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
                                 Modifier.FINAL)
-                        .initializer("$S",
-                                nameKey.prefix() + (nameKey.plural()
-                                        ? lowerUnderscorePlural
-                                        : lowerUnderscoreSingular))
+                        .initializer("$S", nameKey.prefix()
+                                + (nameKey.plural() ? lowerUnderscorePlural
+                                        : lowerUnderscoreSingular)
+                                + nameKey.suffix())
                         .build());
                 break;
             case UPPER_CAMEL:
                 builder.addField(FieldSpec.builder(String.class, nameKey.key())
                         .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
                                 Modifier.FINAL)
-                        .initializer("$S", nameKey.prefix() + (nameKey.plural()
-                                ? upperCamelPlural : upperCamelSingular))
+                        .initializer("$S",
+                                nameKey.prefix()
+                                        + (nameKey.plural() ? upperCamelPlural
+                                                : upperCamelSingular)
+                                        + nameKey.suffix())
                         .build());
                 break;
             case UPPER_UNDERSCORE:
                 builder.addField(FieldSpec.builder(String.class, nameKey.key())
                         .addModifiers(Modifier.PUBLIC, Modifier.STATIC,
                                 Modifier.FINAL)
-                        .initializer("$S",
-                                nameKey.prefix() + (nameKey.plural()
-                                        ? upperUnderscorePlural
-                                        : upperUnderscoreSingular))
+                        .initializer("$S", nameKey.prefix()
+                                + (nameKey.plural() ? upperUnderscorePlural
+                                        : upperUnderscoreSingular)
+                                + nameKey.suffix())
                         .build());
                 break;
             default:
