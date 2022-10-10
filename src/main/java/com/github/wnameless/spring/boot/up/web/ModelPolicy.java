@@ -21,9 +21,9 @@ public class ModelPolicy<I> {
 
   private boolean enable = true;
 
-  private Function<? super I, ? extends I> afterInit;
+  private Function<? super I, ? extends I> afterItemInitialized;
 
-  private Function<? super I, ? extends I> beforeAdd;
+  private Function<? super I, ? extends I> beforeItemAddingToModel;
 
   public ModelPolicy<I> enable() {
     enable = true;
@@ -35,26 +35,32 @@ public class ModelPolicy<I> {
     return this;
   }
 
-  public ModelPolicy<I> afterInit(Function<I, I> afterInit) {
-    this.afterInit = afterInit;
-    return this;
-  }
-
-  public ModelPolicy<I> beforeAdd(Function<I, I> beforeAdd) {
-    this.beforeAdd = beforeAdd;
-    return this;
-  }
-
   public boolean isEnable() {
     return enable;
   }
 
-  public Function<? super I, ? extends I> getAfterInit() {
-    return afterInit;
+  public boolean isDisable() {
+    return !enable;
   }
 
-  public Function<? super I, ? extends I> getBeforeAdd() {
-    return beforeAdd;
+  public ModelPolicy<I> afterItemInitialized(
+      Function<I, I> afterItemInitialized) {
+    this.afterItemInitialized = afterItemInitialized;
+    return this;
+  }
+
+  public ModelPolicy<I> beforeItemAddingToModel(
+      Function<I, I> beforeItemAddingToModel) {
+    this.beforeItemAddingToModel = beforeItemAddingToModel;
+    return this;
+  }
+
+  public Function<? super I, ? extends I> afterItemInitialized() {
+    return afterItemInitialized;
+  }
+
+  public Function<? super I, ? extends I> beforeItemAddingToModel() {
+    return beforeItemAddingToModel;
   }
 
 }

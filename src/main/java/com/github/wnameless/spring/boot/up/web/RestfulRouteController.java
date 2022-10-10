@@ -20,15 +20,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 public interface RestfulRouteController<ID> extends RestfulRouteProvider<ID> {
 
-  default RestfulRoute<ID> getTemplate() {
-    return getRestfulRoute().getTemplateRoute();
+  default RestfulRoute<ID> getTemplateRoute() {
+    return getRestfulRoute().toTemplateRoute();
   }
 
   default String getRouteKey() {
     return "route";
   }
 
-  default String getTemplateKey() {
+  default String getTemplateRouteKey() {
     return "template";
   }
 
@@ -38,8 +38,8 @@ public interface RestfulRouteController<ID> extends RestfulRouteProvider<ID> {
   }
 
   @ModelAttribute
-  default void setTemplate(Model model) {
-    model.addAttribute(getTemplateKey(), getTemplate());
+  default void setTemplateRoute(Model model) {
+    model.addAttribute(getTemplateRouteKey(), getTemplateRoute());
   }
 
 }

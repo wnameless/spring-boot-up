@@ -108,7 +108,7 @@ public interface RestfulRoute<ID> extends JoinablePath {
     return getDeletePath(id);
   }
 
-  default RestfulRoute<ID> getTemplateRoute() {
+  default RestfulRoute<ID> toTemplateRoute() {
     String templatePath = getTemplatePath();
     if (templatePath.startsWith("/")) {
       templatePath = templatePath.replaceFirst("^/+", "");

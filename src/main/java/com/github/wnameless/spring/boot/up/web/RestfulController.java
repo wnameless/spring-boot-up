@@ -15,26 +15,19 @@
  */
 package com.github.wnameless.spring.boot.up.web;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
-public interface RestfulController<I, ID, R extends CrudRepository<I, ID>>
+public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID> {
 
   R getRepository();
 
   void configure(ModelPolicy<I> policy);
 
-  default ModelPolicy<I> getOption() {
+  default ModelPolicy<I> getModelPolicy() {
     ModelPolicy<I> policy = new ModelPolicy<I>();
     configure(policy);
     return policy;
@@ -42,7 +35,7 @@ public interface RestfulController<I, ID, R extends CrudRepository<I, ID>>
 
   @ModelAttribute
   default void setItem(Model model, @PathVariable(required = false) ID id) {
-    if (!getOption().isEnable()) return;
+    if (getModelPolicy().isDisable()) return;
 
     I item = null;
 
@@ -50,13 +43,16 @@ public interface RestfulController<I, ID, R extends CrudRepository<I, ID>>
       item = getRepository().findById(id).get();
     }
 
-    if (getOption().getAfterInit() != null) {
-      item = getOption().getAfterInit().apply(item);
+    if (getModelPolicy().afterItemInitialized() != null) {
+      item = getModelPolicy().afterItemInitialized().apply(item);
     }
 
-    model.addAttribute(getItemKey(), //
-        getOption().getBeforeAdd() == null ? item
-            : getOption().getBeforeAdd().apply(item));
+    if (getModelPolicy().beforeItemAddingToModel() == null) {
+      model.addAttribute(getItemKey(), item);
+    } else {
+      model.addAttribute(getItemKey(),
+          getModelPolicy().beforeItemAddingToModel().apply(item));
+    }
   }
 
   default String getItemKey() {
@@ -77,18 +73,6 @@ public interface RestfulController<I, ID, R extends CrudRepository<I, ID>>
   default I updateItem(Model model, I item) {
     model.addAttribute(getItemKey(), item);
     return item;
-  }
-
-  default void validateSave(I item, Validator validator, Model model) {
-    Set<ConstraintViolation<I>> errors = validator.validate(item);
-
-    if (errors.size() == 0) {
-      getRepository().save(item);
-    } else {
-      List<String> messages =
-          errors.stream().map(e -> e.getMessage()).collect(Collectors.toList());
-      model.addAttribute("messages", messages);
-    }
   }
 
 }

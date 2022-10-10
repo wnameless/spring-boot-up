@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 public interface NestedRestfulController< //
-    P, PID, PR extends CrudRepository<P, PID>, //
-    C, CID, CR extends CrudRepository<C, CID>> {
+    PR extends CrudRepository<P, PID>, P, PID, //
+    CR extends CrudRepository<C, CID>, C, CID> {
 
   Function<P, ? extends RestfulRoute<CID>> getRoute();
 
@@ -40,7 +40,7 @@ public interface NestedRestfulController< //
   void configure(ModelPolicy<P> parentPolicy, ModelPolicy<C> childPolicy,
       ModelPolicy<Iterable<C>> childrenPolicy);
 
-  default ModelPolicy<P> getParentModelOption() {
+  default ModelPolicy<P> getParentModelPolicy() {
     ModelPolicy<P> parentPolicy = new ModelPolicy<>();
     ModelPolicy<C> childPolicy = new ModelPolicy<>();
     ModelPolicy<Iterable<C>> childrenPolicy = new ModelPolicy<>();
@@ -48,7 +48,7 @@ public interface NestedRestfulController< //
     return parentPolicy;
   }
 
-  default ModelPolicy<C> getChildModelOption() {
+  default ModelPolicy<C> getChildModelPolicy() {
     ModelPolicy<P> parentPolicy = new ModelPolicy<>();
     ModelPolicy<C> childPolicy = new ModelPolicy<>();
     ModelPolicy<Iterable<C>> childrenPolicy = new ModelPolicy<>();
@@ -56,7 +56,7 @@ public interface NestedRestfulController< //
     return childPolicy;
   }
 
-  default ModelPolicy<Iterable<C>> getChildrenModelOption() {
+  default ModelPolicy<Iterable<C>> getChildrenModelPolicy() {
     ModelPolicy<P> parentPolicy = new ModelPolicy<>();
     ModelPolicy<C> childPolicy = new ModelPolicy<>();
     ModelPolicy<Iterable<C>> childrenPolicy = new ModelPolicy<>();
@@ -68,39 +68,39 @@ public interface NestedRestfulController< //
   default void setParentAndChild(Model model,
       @PathVariable(required = false) PID parentId,
       @PathVariable(required = false) CID id) {
-    if (!getParentModelOption().isEnable()) return;
+    if (getParentModelPolicy().isDisable()) return;
 
     P parent = null;
     if (parentId != null) {
       parent = getParentRepository().findById(parentId).get();
     }
-    if (getParentModelOption().getAfterInit() != null) {
-      parent = getParentModelOption().getAfterInit().apply(parent);
+    if (getParentModelPolicy().afterItemInitialized() != null) {
+      parent = getParentModelPolicy().afterItemInitialized().apply(parent);
     }
     model.addAttribute(getParentKey(),
-        getParentModelOption().getBeforeAdd() == null ? parent
-            : getParentModelOption().getBeforeAdd().apply(parent));
+        getParentModelPolicy().beforeItemAddingToModel() == null ? parent
+            : getParentModelPolicy().beforeItemAddingToModel().apply(parent));
 
-    if (!getChildModelOption().isEnable()) return;
+    if (getChildModelPolicy().isDisable()) return;
 
     C child = null;
     if (parent != null && id != null) {
       child = getChildRepository().findById(id).get();
       child = getPaternityTesting().test(parent, child) ? child : null;
     }
-    if (getChildModelOption().getAfterInit() != null) {
-      child = getChildModelOption().getAfterInit().apply(child);
+    if (getChildModelPolicy().afterItemInitialized() != null) {
+      child = getChildModelPolicy().afterItemInitialized().apply(child);
     }
     model.addAttribute(getChildKey(),
-        getChildModelOption().getBeforeAdd() == null ? child
-            : getChildModelOption().getBeforeAdd().apply(child));
+        getChildModelPolicy().beforeItemAddingToModel() == null ? child
+            : getChildModelPolicy().beforeItemAddingToModel().apply(child));
   }
 
   @ModelAttribute
   default void setChildren(Model model,
       @PathVariable(required = false) PID parentId,
       @PathVariable(required = false) CID id) {
-    if (!getChildrenModelOption().isEnable()) return;
+    if (getChildrenModelPolicy().isDisable()) return;
 
     Iterable<C> children = null;
 
@@ -109,13 +109,15 @@ public interface NestedRestfulController< //
       children = getChildren(parent);
     }
 
-    if (getChildrenModelOption().getAfterInit() != null) {
-      children = getChildrenModelOption().getAfterInit().apply(children);
+    if (getChildrenModelPolicy().afterItemInitialized() != null) {
+      children =
+          getChildrenModelPolicy().afterItemInitialized().apply(children);
     }
 
     model.addAttribute(getChildrenKey(),
-        getChildrenModelOption().getBeforeAdd() == null ? children
-            : getChildrenModelOption().getBeforeAdd().apply(children));
+        getChildrenModelPolicy().beforeItemAddingToModel() == null ? children
+            : getChildrenModelPolicy().beforeItemAddingToModel()
+                .apply(children));
   }
 
   @ModelAttribute
