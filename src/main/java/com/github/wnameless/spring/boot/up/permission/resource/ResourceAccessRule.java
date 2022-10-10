@@ -24,7 +24,7 @@ import com.github.wnameless.spring.boot.up.permission.ability.Ability;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 
-public interface ResourceAccessRule<T, ID, RF extends ResourceFilterRepository<T, ID>> {
+public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, T, ID> {
 
   Class<T> getResourceType();
 

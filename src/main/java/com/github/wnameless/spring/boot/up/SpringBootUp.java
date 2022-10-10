@@ -15,6 +15,8 @@
  */
 package com.github.wnameless.spring.boot.up;
 
+import java.util.Map;
+
 import org.springframework.context.ApplicationContext;
 
 public final class SpringBootUp {
@@ -32,6 +34,11 @@ public final class SpringBootUp {
 
   public static Object getBean(String name) {
     return ApplicationContextProvider.getApplicationContext().getBean(name);
+  }
+
+  public static <T> Map<String, T> getBeansOfType(Class<T> type) {
+    return ApplicationContextProvider.getApplicationContext()
+        .getBeansOfType(type);
   }
 
   public static void autowireBean(Object instance) {

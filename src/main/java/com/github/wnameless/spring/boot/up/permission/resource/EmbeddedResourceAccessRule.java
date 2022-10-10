@@ -17,8 +17,8 @@ package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.util.Optional;
 
-public interface EmbeddedResourceAccessRule<ER, ERF extends EmbeddedResourceFilterRepository<ER, T, ID>, T, ID, FR extends ResourceFilterRepository<T, ID>>
-    extends ResourceAccessRule<T, ID, FR> {
+public interface EmbeddedResourceAccessRule<ER, ERF extends EmbeddedResourceFilterRepository<ER, T, ID>, FR extends ResourceFilterRepository<T, ID>, T, ID>
+    extends ResourceAccessRule<FR, T, ID> {
 
   ERF getEmbeddedResourceFilterRepository();
 
