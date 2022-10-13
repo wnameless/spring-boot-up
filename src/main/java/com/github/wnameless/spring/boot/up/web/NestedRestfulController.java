@@ -18,14 +18,23 @@ package com.github.wnameless.spring.boot.up.web;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.github.wnameless.spring.boot.up.SpringBootUp;
+
 public interface NestedRestfulController< //
     PR extends CrudRepository<P, PID>, P, PID, //
     CR extends CrudRepository<C, CID>, C, CID> {
+
+  @ModelAttribute
+  default void cacheModel(HttpServletRequest req, Model model) {
+    SpringBootUp.cacheWebUiModel(req, model);
+  }
 
   Function<P, ? extends RestfulRoute<CID>> getRoute();
 

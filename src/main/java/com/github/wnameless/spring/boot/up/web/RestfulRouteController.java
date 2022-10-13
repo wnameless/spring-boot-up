@@ -15,10 +15,19 @@
  */
 package com.github.wnameless.spring.boot.up.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.github.wnameless.spring.boot.up.SpringBootUp;
+
 public interface RestfulRouteController<ID> extends RestfulRouteProvider<ID> {
+
+  @ModelAttribute
+  default void cacheModel(HttpServletRequest req, Model model) {
+    SpringBootUp.cacheWebUiModel(req, model);
+  }
 
   default RestfulRoute<ID> getTemplateRoute() {
     return getRestfulRoute().toTemplateRoute();

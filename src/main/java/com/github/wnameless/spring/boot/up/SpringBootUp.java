@@ -17,11 +17,32 @@ package com.github.wnameless.spring.boot.up;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.context.ApplicationContext;
+import org.springframework.ui.Model;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.github.wnameless.spring.boot.up.web.WebUiModelHolder;
 
 public final class SpringBootUp {
 
   private SpringBootUp() {}
+
+  public static void cacheWebUiModel(HttpServletRequest req, Model model) {
+    WebUiModelHolder webUiModelHolder = getBean(WebUiModelHolder.class);
+    webUiModelHolder.cacheModel(req, model);
+  }
+
+  public static Model retrieveWebUiModel() {
+    WebUiModelHolder webUiModelHolder = getBean(WebUiModelHolder.class);
+    HttpServletRequest request =
+        ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+            .getRequest();
+
+    return webUiModelHolder.retrieveModel(request);
+  }
 
   public static ApplicationContext applicationContext() {
     return ApplicationContextProvider.getApplicationContext();

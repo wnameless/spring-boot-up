@@ -15,13 +15,22 @@
  */
 package com.github.wnameless.spring.boot.up.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.github.wnameless.spring.boot.up.SpringBootUp;
+
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID> {
+
+  @ModelAttribute
+  default void cacheModel(HttpServletRequest req, Model model) {
+    SpringBootUp.cacheWebUiModel(req, model);
+  }
 
   R getRepository();
 

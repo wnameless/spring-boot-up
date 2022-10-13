@@ -31,6 +31,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.ui.Model;
 
 import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
+import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.data.mongodb.MongoProjectionRepository;
 import com.github.wnameless.spring.boot.up.data.mongodb.MongoUtils;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
@@ -284,10 +285,13 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     return save(entity);
   }
 
+  default T filterSaveWithValidation(T entity) {
+    return filterSaveWithValidation(entity, SpringBootUp.retrieveWebUiModel());
+  }
+
   @SuppressWarnings({ "rawtypes", "unchecked" })
   default T filterSaveWithValidation(T entity, Model model) {
-    Validator validator = ApplicationContextProvider.getApplicationContext()
-        .getBean(Validator.class);
+    Validator validator = SpringBootUp.getBean(Validator.class);
 
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
@@ -297,8 +301,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     // validates bean
     List<String> messages = validator.validate(entity).stream()
         .map(e -> e.getMessage()).collect(Collectors.toList());
-    model.addAttribute("messages", messages);
-    if (messages.size() > 0) return entity;
+    if (messages.size() > 0) {
+      model.addAttribute("messages", messages);
+      return entity;
+    }
 
     // new entity
     if (!target.isPresent()) {
