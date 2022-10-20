@@ -52,16 +52,15 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
       item = getRepository().findById(id).get();
     }
 
-    if (getModelPolicy().afterItemInitialized() != null) {
-      item = getModelPolicy().afterItemInitialized().apply(item);
+    if (item == null && getModelPolicy().onDefaultItem() != null) {
+      item = getModelPolicy().onDefaultItem().get();
     }
 
-    if (getModelPolicy().beforeItemAddingToModel() == null) {
-      model.addAttribute(getItemKey(), item);
-    } else {
-      model.addAttribute(getItemKey(),
-          getModelPolicy().beforeItemAddingToModel().apply(item));
+    if (getModelPolicy().onItemInitialized() != null) {
+      item = getModelPolicy().onItemInitialized().apply(item);
     }
+
+    model.addAttribute(getItemKey(), item);
   }
 
   default String getItemKey() {

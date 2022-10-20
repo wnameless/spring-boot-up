@@ -27,4 +27,8 @@ public interface Role {
 
   String getRoleName();
 
+  default Role toRole() {
+    return Role.of(this);
+  }
+
 }

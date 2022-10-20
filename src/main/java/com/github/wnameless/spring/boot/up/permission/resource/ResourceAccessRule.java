@@ -68,7 +68,7 @@ public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, 
         getPredicateOfEntityId(id));
   }
 
-  int getOrder();
+  int getRuleOrder();
 
   default Predicate getPredicateOfCreateAbility() {
     return getPredicateOfCRUDAbility();

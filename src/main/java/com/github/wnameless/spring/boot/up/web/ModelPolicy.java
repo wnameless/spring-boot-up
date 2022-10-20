@@ -16,14 +16,15 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ModelPolicy<I> {
 
   private boolean enable = true;
 
-  private Function<? super I, ? extends I> afterItemInitialized;
+  private Supplier<? extends I> defaultItem;
 
-  private Function<? super I, ? extends I> beforeItemAddingToModel;
+  private Function<? super I, ? extends I> itemInitialized;
 
   public ModelPolicy<I> enable() {
     enable = true;
@@ -43,24 +44,22 @@ public class ModelPolicy<I> {
     return !enable;
   }
 
-  public ModelPolicy<I> afterItemInitialized(
-      Function<I, I> afterItemInitialized) {
-    this.afterItemInitialized = afterItemInitialized;
+  public ModelPolicy<I> forDefaultItem(Supplier<? extends I> defaultItem) {
+    this.defaultItem = defaultItem;
     return this;
   }
 
-  public ModelPolicy<I> beforeItemAddingToModel(
-      Function<I, I> beforeItemAddingToModel) {
-    this.beforeItemAddingToModel = beforeItemAddingToModel;
+  public Supplier<? extends I> onDefaultItem() {
+    return defaultItem;
+  }
+
+  public ModelPolicy<I> forItemInitialized(Function<I, I> itemInitialized) {
+    this.itemInitialized = itemInitialized;
     return this;
   }
 
-  public Function<? super I, ? extends I> afterItemInitialized() {
-    return afterItemInitialized;
-  }
-
-  public Function<? super I, ? extends I> beforeItemAddingToModel() {
-    return beforeItemAddingToModel;
+  public Function<? super I, ? extends I> onItemInitialized() {
+    return itemInitialized;
   }
 
 }

@@ -83,12 +83,13 @@ public interface NestedRestfulController< //
     if (parentId != null) {
       parent = getParentRepository().findById(parentId).get();
     }
-    if (getParentModelPolicy().afterItemInitialized() != null) {
-      parent = getParentModelPolicy().afterItemInitialized().apply(parent);
+    if (parent == null && getParentModelPolicy().onDefaultItem() != null) {
+      parent = getParentModelPolicy().onDefaultItem().get();
     }
-    model.addAttribute(getParentKey(),
-        getParentModelPolicy().beforeItemAddingToModel() == null ? parent
-            : getParentModelPolicy().beforeItemAddingToModel().apply(parent));
+    if (getParentModelPolicy().onItemInitialized() != null) {
+      parent = getParentModelPolicy().onItemInitialized().apply(parent);
+    }
+    model.addAttribute(getParentKey(), parent);
 
     if (getChildModelPolicy().isDisable()) return;
 
@@ -97,12 +98,13 @@ public interface NestedRestfulController< //
       child = getChildRepository().findById(id).get();
       child = getPaternityTesting().test(parent, child) ? child : null;
     }
-    if (getChildModelPolicy().afterItemInitialized() != null) {
-      child = getChildModelPolicy().afterItemInitialized().apply(child);
+    if (child == null && getChildModelPolicy().onDefaultItem() != null) {
+      child = getChildModelPolicy().onDefaultItem().get();
     }
-    model.addAttribute(getChildKey(),
-        getChildModelPolicy().beforeItemAddingToModel() == null ? child
-            : getChildModelPolicy().beforeItemAddingToModel().apply(child));
+    if (getChildModelPolicy().onItemInitialized() != null) {
+      child = getChildModelPolicy().onItemInitialized().apply(child);
+    }
+    model.addAttribute(getChildKey(), child);
   }
 
   @ModelAttribute
@@ -112,21 +114,17 @@ public interface NestedRestfulController< //
     if (getChildrenModelPolicy().isDisable()) return;
 
     Iterable<C> children = null;
-
     if (parentId != null && id == null) {
       P parent = getParentRepository().findById(parentId).get();
       children = getChildren(parent);
     }
-
-    if (getChildrenModelPolicy().afterItemInitialized() != null) {
-      children =
-          getChildrenModelPolicy().afterItemInitialized().apply(children);
+    if (children == null && getChildrenModelPolicy().onDefaultItem() != null) {
+      children = getChildrenModelPolicy().onDefaultItem().get();
     }
-
-    model.addAttribute(getChildrenKey(),
-        getChildrenModelPolicy().beforeItemAddingToModel() == null ? children
-            : getChildrenModelPolicy().beforeItemAddingToModel()
-                .apply(children));
+    if (getChildrenModelPolicy().onItemInitialized() != null) {
+      children = getChildrenModelPolicy().onItemInitialized().apply(children);
+    }
+    model.addAttribute(getChildrenKey(), children);
   }
 
   @ModelAttribute

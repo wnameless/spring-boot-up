@@ -220,7 +220,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
         Ruby.Array.copyOf(abilities).map(a -> a.getResourceAccessRuleType());
 
     return Ruby.Array.copyOf(rules).keepIf(r -> rarTypes.contains(r.getClass()))
-        .sortBy(r -> r.getOrder()).first();
+        .sortBy(r -> r.getRuleOrder()).first();
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -246,8 +246,8 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
                 .getResourceAccessRuleType());
 
     return Ruby.Array.copyOf(rules)
-        .keepIf(r -> erarTypes.contains(r.getClass())).sortBy(r -> r.getOrder())
-        .first();
+        .keepIf(r -> erarTypes.contains(r.getClass()))
+        .sortBy(r -> r.getRuleOrder()).first();
   }
 
   @Override
