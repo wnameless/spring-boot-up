@@ -51,6 +51,8 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     if (id != null) {
       item = getRepository().findById(id)
           .orElseGet(getModelPolicy().onDefaultItem());
+    } else {
+      item = getModelPolicy().onDefaultItem().get();
     }
 
     if (getModelPolicy().onItemInitialized() != null) {
