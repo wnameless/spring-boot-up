@@ -15,6 +15,7 @@
  */
 package com.github.wnameless.spring.boot.up.web;
 
+import java.util.ArrayList;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
@@ -68,7 +69,8 @@ public interface NestedRestfulController< //
   default ModelPolicy<Iterable<C>> getChildrenModelPolicy() {
     ModelPolicy<P> parentPolicy = new ModelPolicy<>();
     ModelPolicy<C> childPolicy = new ModelPolicy<>();
-    ModelPolicy<Iterable<C>> childrenPolicy = new ModelPolicy<>();
+    ModelPolicy<Iterable<C>> childrenPolicy =
+        new ModelPolicy<>(new ArrayList<>());
     configure(parentPolicy, childPolicy, childrenPolicy);
     return childrenPolicy;
   }
@@ -81,10 +83,8 @@ public interface NestedRestfulController< //
 
     P parent = null;
     if (parentId != null) {
-      parent = getParentRepository().findById(parentId).get();
-    }
-    if (parent == null && getParentModelPolicy().onDefaultItem() != null) {
-      parent = getParentModelPolicy().onDefaultItem().get();
+      parent = getParentRepository().findById(parentId)
+          .orElseGet(getParentModelPolicy().onDefaultItem());
     }
     if (getParentModelPolicy().onItemInitialized() != null) {
       parent = getParentModelPolicy().onItemInitialized().apply(parent);
@@ -95,11 +95,9 @@ public interface NestedRestfulController< //
 
     C child = null;
     if (parent != null && id != null) {
-      child = getChildRepository().findById(id).get();
+      child = getChildRepository().findById(id)
+          .orElseGet(getChildModelPolicy().onDefaultItem());
       child = getPaternityTesting().test(parent, child) ? child : null;
-    }
-    if (child == null && getChildModelPolicy().onDefaultItem() != null) {
-      child = getChildModelPolicy().onDefaultItem().get();
     }
     if (getChildModelPolicy().onItemInitialized() != null) {
       child = getChildModelPolicy().onItemInitialized().apply(child);
@@ -115,10 +113,12 @@ public interface NestedRestfulController< //
 
     Iterable<C> children = null;
     if (parentId != null && id == null) {
-      P parent = getParentRepository().findById(parentId).get();
+      P parent = getParentRepository().findById(parentId)
+          .orElseGet(getParentModelPolicy().onDefaultItem());
       children = getChildren(parent);
     }
-    if (children == null && getChildrenModelPolicy().onDefaultItem() != null) {
+    if ((children == null || !children.iterator().hasNext())
+        && getChildrenModelPolicy().onDefaultItem() != null) {
       children = getChildrenModelPolicy().onDefaultItem().get();
     }
     if (getChildrenModelPolicy().onItemInitialized() != null) {
@@ -149,7 +149,8 @@ public interface NestedRestfulController< //
 
   default P getParent(PID parentId, P defaultItem) {
     if (parentId != null) {
-      return getParentRepository().findById(parentId).get();
+      return getParentRepository().findById(parentId)
+          .orElseGet(getParentModelPolicy().onDefaultItem());
     }
     return defaultItem;
   }
@@ -169,8 +170,10 @@ public interface NestedRestfulController< //
 
   default C getChild(PID parentId, CID id, C defaultItem) {
     if (parentId != null && id != null) {
-      P parent = getParentRepository().findById(parentId).get();
-      C child = getChildRepository().findById(id).get();
+      P parent = getParentRepository().findById(parentId)
+          .orElseGet(getParentModelPolicy().onDefaultItem());
+      C child = getChildRepository().findById(id)
+          .orElseGet(getChildModelPolicy().onDefaultItem());
       if (getPaternityTesting().test(parent, child)) {
         return child;
       }

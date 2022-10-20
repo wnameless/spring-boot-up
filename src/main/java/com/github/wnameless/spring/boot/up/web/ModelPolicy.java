@@ -22,9 +22,29 @@ public class ModelPolicy<I> {
 
   private boolean enable = true;
 
-  private Supplier<? extends I> defaultItem;
+  private Supplier<? extends I> defaultItem = new Supplier<I>() {
+
+    @Override
+    public I get() {
+      return null;
+    }
+
+  };
 
   private Function<? super I, ? extends I> itemInitialized;
+
+  public ModelPolicy() {}
+
+  public ModelPolicy(I defaultItem) {
+    this.defaultItem = new Supplier<I>() {
+
+      @Override
+      public I get() {
+        return defaultItem;
+      }
+
+    };
+  }
 
   public ModelPolicy<I> enable() {
     enable = true;
