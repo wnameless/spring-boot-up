@@ -122,12 +122,8 @@ public interface NestedRestfulController< //
     Iterable<C> children = null;
     if (parentId != null && id == null) {
       P parent = null;
-      if (parentId != null) {
-        parent = getParentRepository().findById(parentId)
-            .orElseGet(getParentModelPolicy().onDefaultItem());
-      } else {
-        parent = getParentModelPolicy().onDefaultItem().get();
-      }
+      parent = getParentRepository().findById(parentId)
+          .orElseGet(getParentModelPolicy().onDefaultItem());
       children = getChildren(parent);
     }
     if ((children == null || !children.iterator().hasNext())
