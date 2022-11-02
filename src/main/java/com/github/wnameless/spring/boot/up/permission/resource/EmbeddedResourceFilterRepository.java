@@ -352,9 +352,9 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default void embeddedFilterDeleteById(ID id) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canDestroy(erar.getResourceType(),
+    if (!user.canDelete(erar.getResourceType(),
         erar.getEmbeddedResourceFieldName())) {
-      throw new UnsupportedOperationException("No permission to DESTROY");
+      throw new UnsupportedOperationException("No permission to DELETE");
     }
 
     Predicate idEq = erar.getPredicateOfEntityId(id);
@@ -365,7 +365,7 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
           ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), idEq));
     } else {
       target = findOne(
-          ExpressionUtils.allOf(erar.getPredicateOfDestroyAbility(), idEq));
+          ExpressionUtils.allOf(erar.getPredicateOfDeleteAbility(), idEq));
     }
 
     if (target.isPresent()) {

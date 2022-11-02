@@ -38,7 +38,7 @@ import com.github.wnameless.spring.boot.up.permission.ability.AccessAbility;
 import com.github.wnameless.spring.boot.up.permission.ability.Can;
 import com.github.wnameless.spring.boot.up.permission.ability.CanCRUD;
 import com.github.wnameless.spring.boot.up.permission.ability.CanCreate;
-import com.github.wnameless.spring.boot.up.permission.ability.CanDestroy;
+import com.github.wnameless.spring.boot.up.permission.ability.CanDelete;
 import com.github.wnameless.spring.boot.up.permission.ability.CanManage;
 import com.github.wnameless.spring.boot.up.permission.ability.CanRead;
 import com.github.wnameless.spring.boot.up.permission.ability.CanUpdate;
@@ -489,8 +489,8 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
       }
     }
 
-    CanDestroy canDestroy =
-        AnnotationUtils.findAnnotation(bean.getClass(), CanDestroy.class);
+    CanDelete canDestroy =
+        AnnotationUtils.findAnnotation(bean.getClass(), CanDelete.class);
     if (canDestroy != null) {
       for (Class<? extends ResourceAccessRule<?, ?, ?>> t : canDestroy
           .value()) {
@@ -504,12 +504,12 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
           accessAbilities.get(t).add(AccessAbility.ofEmbeddedResource(
               ctx.getBean(t).getResourceType(),
               erar.getEmbeddedResourceFieldName(),
-              RestAbility.DESTROY.getAbilityName(),
+              RestAbility.DELETE.getAbilityName(),
               (Class<? extends EmbeddedResourceAccessRule<?, ?, ?, ?, ?>>) t));
         } else {
           accessAbilities.get(t)
               .add(AccessAbility.ofResource(ctx.getBean(t).getResourceType(),
-                  RestAbility.DESTROY.getAbilityName(), t));
+                  RestAbility.DELETE.getAbilityName(), t));
         }
       }
     }

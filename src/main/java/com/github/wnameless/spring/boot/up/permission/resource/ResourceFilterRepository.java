@@ -346,7 +346,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   default void filterDeleteById(ID id) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
-    if (!user.canDestroy(rar.getResourceType())) {
+    if (!user.canDelete(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to DESTROY");
     }
 
@@ -357,7 +357,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), idEq));
     } else {
       target = findOne(
-          ExpressionUtils.allOf(rar.getPredicateOfDestroyAbility(), idEq));
+          ExpressionUtils.allOf(rar.getPredicateOfDeleteAbility(), idEq));
     }
 
     if (target.isPresent()) {
@@ -369,8 +369,8 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   default void filterDelete(T entity) {
     ResourceAccessRule rar = getResourceAccessRule();
     PermittedUser user = getCurrentUser();
-    if (!user.canDestroy(rar.getResourceType())) {
-      throw new UnsupportedOperationException("No permission to DESTROY");
+    if (!user.canDelete(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to DELETE");
     }
 
     Predicate idEq = rar.getPredicateOfEntity(entity);
@@ -380,7 +380,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
           ExpressionUtils.allOf(rar.getPredicateOfManageAbility(), idEq));
     } else {
       target = findOne(
-          ExpressionUtils.allOf(rar.getPredicateOfDestroyAbility(), idEq));
+          ExpressionUtils.allOf(rar.getPredicateOfDeleteAbility(), idEq));
     }
 
     if (target.isPresent()) {

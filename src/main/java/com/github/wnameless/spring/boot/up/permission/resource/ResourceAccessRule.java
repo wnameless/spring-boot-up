@@ -92,12 +92,12 @@ public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, 
         getPredicateOfEntityId(id));
   }
 
-  default Predicate getPredicateOfDestroyAbility() {
+  default Predicate getPredicateOfDeleteAbility() {
     return getPredicateOfCRUDAbility();
   }
 
-  default Predicate getPredicateOfDestroyById(ID id) {
-    return ExpressionUtils.allOf(getPredicateOfDestroyAbility(),
+  default Predicate getPredicateOfDeleteById(ID id) {
+    return ExpressionUtils.allOf(getPredicateOfDeleteAbility(),
         getPredicateOfEntityId(id));
   }
 

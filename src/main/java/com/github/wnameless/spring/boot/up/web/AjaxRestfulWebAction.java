@@ -18,7 +18,7 @@ public interface AjaxRestfulWebAction<D, ID>
 
   @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   default String showAjax(Model model) {
-    indexAction(model);
+    showAction(model);
     return getRestfulRoute().toTemplateRoute().joinPath("show :: partial");
   }
 

@@ -17,7 +17,7 @@ public interface HtmlRestfulWebAction<D, ID>
 
   @GetMapping("/{id}")
   default String showHtml(Model model) {
-    indexAction(model);
+    showAction(model);
     return getRestfulRoute().toTemplateRoute().joinPath("show :: complete");
   }
 

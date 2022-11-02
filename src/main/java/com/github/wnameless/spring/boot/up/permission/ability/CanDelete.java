@@ -24,7 +24,7 @@ import com.github.wnameless.spring.boot.up.permission.resource.ResourceAccessRul
 
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CanDestroy {
+public @interface CanDelete {
 
   Class<? extends ResourceAccessRule<?, ?, ?>>[] value();
 

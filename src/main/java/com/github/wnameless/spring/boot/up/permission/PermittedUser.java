@@ -17,7 +17,7 @@ package com.github.wnameless.spring.boot.up.permission;
 
 import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.CREATE;
 import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.CRUD;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.DESTROY;
+import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.DELETE;
 import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.MANAGE;
 import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.READ;
 import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.UPDATE;
@@ -171,6 +171,10 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
+  default boolean canManage(Object obj) {
+    return canManage(obj.getClass());
+  }
+
   default boolean canManageOn(String resourceName, ID id) {
     return canManageOn(getResourceType(resourceName), id);
   }
@@ -188,6 +192,10 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
+  default boolean canManageOn(Object obj, ID id) {
+    return canManageOn(obj.getClass(), id);
+  }
+
   default boolean canCRUD(String resourceName, String fieldName) {
     return canCRUD(getResourceType(resourceName), fieldName);
   }
@@ -199,6 +207,10 @@ public interface PermittedUser<ID> {
     boolean ret = existsResourceAbility(type, fieldName, CRUD, MANAGE);
 
     return ret;
+  }
+
+  default boolean canCRUD(Object obj, String fieldName) {
+    return canCRUD(obj, fieldName);
   }
 
   default boolean canCRUDOn(String resourceName, String fieldName, ID id) {
@@ -220,6 +232,10 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
+  default boolean canCRUDOn(Object obj, String fieldName, ID id) {
+    return canCRUDOn(obj.getClass(), fieldName, id);
+  }
+
   default boolean canCRUD(String resourceName) {
     return canCRUD(getResourceType(resourceName));
   }
@@ -230,6 +246,10 @@ public interface PermittedUser<ID> {
     boolean ret = existsResourceAbility(type, CRUD, MANAGE);
 
     return ret;
+  }
+
+  default boolean canCRUD(Object obj) {
+    return canCRUD(obj.getClass());
   }
 
   default boolean canCRUDOn(String resourceName, ID id) {
@@ -250,6 +270,10 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
+  default boolean canCRUDOn(Object obj, ID id) {
+    return canCRUDOn(obj.getClass(), id);
+  }
+
   default boolean canCreate(String resourceName, String fieldName) {
     return canCreate(getResourceType(resourceName), fieldName);
   }
@@ -261,6 +285,10 @@ public interface PermittedUser<ID> {
     boolean ret = existsResourceAbility(type, fieldName, CREATE, CRUD, MANAGE);
 
     return ret;
+  }
+
+  default boolean canCreate(Object obj, String fieldName) {
+    return canCreate(obj.getClass(), fieldName);
   }
 
   default boolean canCreate(String resourceName) {
@@ -275,6 +303,10 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
+  default boolean canCreate(Object obj) {
+    return canCreate(obj.getClass());
+  }
+
   default boolean canRead(String resourceName, String fieldName) {
     return canRead(getResourceType(resourceName), fieldName);
   }
@@ -286,6 +318,10 @@ public interface PermittedUser<ID> {
     boolean ret = existsResourceAbility(type, fieldName, READ, CRUD, MANAGE);
 
     return ret;
+  }
+
+  default boolean canRead(Object obj, String fieldName) {
+    return canRead(obj.getClass(), fieldName);
   }
 
   default boolean canReadOn(String resourceName, String fieldName, ID id) {
@@ -308,6 +344,10 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
+  default boolean canReadOn(Object obj, String fieldName, ID id) {
+    return canReadOn(obj.getClass(), fieldName, id);
+  }
+
   default boolean canRead(String resourceName) {
     return canRead(getResourceType(resourceName));
   }
@@ -318,6 +358,10 @@ public interface PermittedUser<ID> {
     boolean ret = existsResourceAbility(type, READ, CRUD, MANAGE);
 
     return ret;
+  }
+
+  default boolean canRead(Object obj) {
+    return canRead(obj.getClass());
   }
 
   default boolean canReadOn(String resourceName, ID id) {
@@ -338,6 +382,10 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
+  default boolean canReadOn(Object obj, ID id) {
+    return canReadOn(obj.getClass(), id);
+  }
+
   default boolean canUpdate(String resourceName, String fieldName) {
     return canUpdate(getResourceType(resourceName), fieldName);
   }
@@ -349,6 +397,10 @@ public interface PermittedUser<ID> {
     boolean ret = existsResourceAbility(type, fieldName, UPDATE, CRUD, MANAGE);
 
     return ret;
+  }
+
+  default boolean canUpdate(Object obj, String fieldName) {
+    return canUpdate(obj.getClass(), fieldName);
   }
 
   default boolean canUpdateOn(String resourceName, String fieldName, ID id) {
@@ -371,6 +423,10 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
+  default boolean canUpdateOn(Object obj, String fieldName, ID id) {
+    return canUpdateOn(obj.getClass(), fieldName, id);
+  }
+
   default boolean canUpdate(String resourceName) {
     return canUpdate(getResourceType(resourceName));
   }
@@ -381,6 +437,10 @@ public interface PermittedUser<ID> {
     boolean ret = existsResourceAbility(type, UPDATE, CRUD, MANAGE);
 
     return ret;
+  }
+
+  default boolean canUpdate(Object obj) {
+    return canUpdate(obj.getClass());
   }
 
   default boolean canUpdateOn(String resourceName, ID id) {
@@ -401,67 +461,87 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
-  default boolean canDestroy(String resourceName, String fieldName) {
-    return canDestroy(getResourceType(resourceName), fieldName);
+  default boolean canUpdateOn(Object obj, ID id) {
+    return canUpdateOn(obj.getClass(), id);
   }
 
-  default boolean canDestroy(Class<?> type, String fieldName) {
+  default boolean canDelete(String resourceName, String fieldName) {
+    return canDelete(getResourceType(resourceName), fieldName);
+  }
+
+  default boolean canDelete(Class<?> type, String fieldName) {
     if (type == null) return false;
     if (fieldName == null) return false;
 
-    boolean ret = existsResourceAbility(type, fieldName, DESTROY, CRUD, MANAGE);
+    boolean ret = existsResourceAbility(type, fieldName, DELETE, CRUD, MANAGE);
 
     return ret;
   }
 
-  default boolean canDestroyOn(String resourceName, String fieldName, ID id) {
-    return canDestroyOn(getResourceType(resourceName), fieldName, id);
+  default boolean canDelete(Object obj, String fieldName) {
+    return canDelete(obj.getClass(), fieldName);
+  }
+
+  default boolean canDeleteOn(String resourceName, String fieldName, ID id) {
+    return canDeleteOn(getResourceType(resourceName), fieldName, id);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default boolean canDestroyOn(Class<?> type, String fieldName, ID id) {
+  default boolean canDeleteOn(Class<?> type, String fieldName, ID id) {
     if (type == null) return false;
     if (fieldName == null) return false;
 
     EmbeddedResourceFilterRepository erfr =
-        findEmbeddedResourceFilterRepository(type, fieldName, DESTROY, CRUD,
+        findEmbeddedResourceFilterRepository(type, fieldName, DELETE, CRUD,
             MANAGE);
     if (erfr == null) return false;
 
     EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
-    boolean ret = erfr.exists(erar.getPredicateOfDestroyById(id));
+    boolean ret = erfr.exists(erar.getPredicateOfDeleteById(id));
 
     return ret;
   }
 
-  default boolean canDestroy(String resourceName) {
-    return canDestroy(getResourceType(resourceName));
+  default boolean canDeleteOn(Object obj, String fieldName, ID id) {
+    return canDeleteOn(obj.getClass(), fieldName, id);
   }
 
-  default boolean canDestroy(Class<?> type) {
+  default boolean canDelete(String resourceName) {
+    return canDelete(getResourceType(resourceName));
+  }
+
+  default boolean canDelete(Class<?> type) {
     if (type == null) return false;
 
-    boolean ret = existsResourceAbility(type, DESTROY, CRUD, MANAGE);
+    boolean ret = existsResourceAbility(type, DELETE, CRUD, MANAGE);
 
     return ret;
   }
 
-  default boolean canDestroyOn(String resourceName, ID id) {
-    return canDestroyOn(getResourceType(resourceName), id);
+  default boolean canDelete(Object obj) {
+    return canDelete(obj.getClass());
+  }
+
+  default boolean canDeleteOn(String resourceName, ID id) {
+    return canDeleteOn(getResourceType(resourceName), id);
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  default boolean canDestroyOn(Class<?> type, ID id) {
+  default boolean canDeleteOn(Class<?> type, ID id) {
     if (type == null) return false;
 
     ResourceFilterRepository rfr =
-        findResourceFilterRepository(type, DESTROY, CRUD, MANAGE);
+        findResourceFilterRepository(type, DELETE, CRUD, MANAGE);
     if (rfr == null) return false;
 
     ResourceAccessRule rar = rfr.getResourceAccessRule();
-    boolean ret = rfr.exists(rar.getPredicateOfDestroyById(id));
+    boolean ret = rfr.exists(rar.getPredicateOfDeleteById(id));
 
     return ret;
+  }
+
+  default boolean canDeleteOn(Object obj, ID id) {
+    return canDeleteOn(obj.getClass(), id);
   }
 
   default boolean canDo(String performAction, String resourceName,
@@ -478,6 +558,10 @@ public interface PermittedUser<ID> {
         Ability.of(performAction), MANAGE);
 
     return ret;
+  }
+
+  default boolean canDo(String performAction, Object obj, String fieldName) {
+    return canDo(performAction, obj.getClass(), fieldName);
   }
 
   default boolean canDoOn(String performAction, String resourceName,
@@ -504,6 +588,11 @@ public interface PermittedUser<ID> {
     return ret;
   }
 
+  default boolean canDoOn(String performAction, Object obj, String fieldName,
+      ID id) {
+    return canDoOn(performAction, obj.getClass(), fieldName, id);
+  }
+
   default boolean canDo(String performAction, String resourceName) {
     return canDo(performAction, getResourceType(resourceName));
   }
@@ -516,6 +605,10 @@ public interface PermittedUser<ID> {
         existsResourceAbility(type, Ability.of(performAction), MANAGE);
 
     return ret;
+  }
+
+  default boolean canDo(String performAction, Object obj) {
+    return canDo(performAction, obj.getClass());
   }
 
   default boolean canDoOn(String performAction, String resourceName, ID id) {
@@ -536,6 +629,10 @@ public interface PermittedUser<ID> {
         .exists(rar.getPredicateOfAbilityById(Ability.of(performAction), id));
 
     return ret;
+  }
+
+  default boolean canDoOn(String performAction, Object obj, ID id) {
+    return canDoOn(performAction, obj.getClass(), id);
   }
 
   Map<String, Set<String>> getUserMetadata();

@@ -28,11 +28,15 @@ public interface RestfulItem<ID> extends JoinablePath {
 
   ID getId();
 
-  default String getIndexPath() {
+  default String getResourceName() {
     String lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,
         this.getClass().getSimpleName());
     String plural = English.plural(lowerHyphen);
-    return "/" + plural;
+    return plural;
+  }
+
+  default String getIndexPath() {
+    return "/" + getResourceName();
   }
 
   default String getCreatePath() {
@@ -70,6 +74,11 @@ public interface RestfulItem<ID> extends JoinablePath {
     return new RestfulItem<ID>() {
 
       @Override
+      public String getResourceName() {
+        return getResourceName();
+      }
+
+      @Override
       public ID getId() {
         return id;
       }
@@ -87,6 +96,11 @@ public interface RestfulItem<ID> extends JoinablePath {
     CID id = child.getId();
 
     return new RestfulItem<CID>() {
+
+      @Override
+      public String getResourceName() {
+        return child.getResourceName();
+      }
 
       @Override
       public CID getId() {
