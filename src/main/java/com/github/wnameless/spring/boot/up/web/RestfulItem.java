@@ -28,54 +28,50 @@ public interface RestfulItem<ID> extends JoinablePath {
 
   ID getId();
 
-  default String getResourceName() {
+  default String getBasePath() {
     String lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,
         this.getClass().getSimpleName());
     String plural = English.plural(lowerHyphen);
-    return plural;
+    return "/" + plural;
   }
 
   default String getIndexPath() {
-    return "/" + getResourceName();
+    return getBasePath();
   }
 
   default String getCreatePath() {
-    return getIndexPath();
+    return getBasePath();
   }
 
   default String getNewPath() {
-    return getIndexPath() + "/new";
+    return getBasePath() + "/new";
   }
 
   default String getEditPath() {
-    return getIndexPath() + "/" + getId() + "/edit";
+    return getBasePath() + "/" + getId() + "/edit";
   }
 
   default String getShowPath() {
-    return getIndexPath() + "/" + getId();
+    return getBasePath() + "/" + getId();
   }
 
   default String getUpdatePath() {
-    return getIndexPath() + "/" + getId();
-  }
-
-  default String getDestroyPath() {
-    return getIndexPath() + "/" + getId();
+    return getBasePath() + "/" + getId();
   }
 
   default String getDeletePath() {
-    return getDestroyPath();
+    return getBasePath() + "/" + getId();
   }
 
   default RestfulItem<ID> withParent(RestfulItem<?> parent) {
-    String indexPath = parent.getShowPath() + getIndexPath();
+    String basePath = parent.getShowPath() + getBasePath();
     ID id = getId();
 
     return new RestfulItem<ID>() {
 
       @Override
-      public String getResourceName() {
-        return getResourceName();
+      public String getBasePath() {
+        return basePath;
       }
 
       @Override
@@ -83,33 +79,23 @@ public interface RestfulItem<ID> extends JoinablePath {
         return id;
       }
 
-      @Override
-      public String getIndexPath() {
-        return indexPath;
-      }
-
     };
   }
 
   default <CID> RestfulItem<CID> withChild(RestfulItem<CID> child) {
-    String indexPath = getShowPath() + child.getIndexPath();
+    String basePath = getShowPath() + child.getBasePath();
     CID id = child.getId();
 
     return new RestfulItem<CID>() {
 
       @Override
-      public String getResourceName() {
-        return child.getResourceName();
+      public String getBasePath() {
+        return basePath;
       }
 
       @Override
       public CID getId() {
         return id;
-      }
-
-      @Override
-      public String getIndexPath() {
-        return indexPath;
       }
 
     };
