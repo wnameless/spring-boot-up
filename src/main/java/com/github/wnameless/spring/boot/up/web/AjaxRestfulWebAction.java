@@ -1,55 +1,69 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import org.springframework.http.MediaType;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.servlet.ModelAndView;
 
 public interface AjaxRestfulWebAction<D, ID>
     extends BaseWebAction<D>, RestfulRouteProvider<ID> {
 
   @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  default String indexAjax(Model model) {
-    indexAction(model);
-    return getRestfulRoute().toTemplateRoute().joinPath("index :: partial");
+  default ModelAndView indexAjax(ModelAndView mav) {
+    mav.setViewName(
+        getRestfulRoute().toTemplateRoute().joinPath("index :: partial"));
+    indexAction(mav);
+    return mav;
   }
 
   @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  default String showAjax(Model model) {
-    showAction(model);
-    return getRestfulRoute().toTemplateRoute().joinPath("show :: partial");
+  default ModelAndView showAjax(ModelAndView mav) {
+    mav.setViewName(
+        getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
+    showAction(mav);
+    return mav;
   }
 
   @GetMapping(path = "/new", consumes = MediaType.APPLICATION_JSON_VALUE)
-  default String newAjax(Model model) {
-    newAction(model);
-    return getRestfulRoute().toTemplateRoute().joinPath("new :: partial");
+  default ModelAndView newAjax(ModelAndView mav) {
+    mav.setViewName(
+        getRestfulRoute().toTemplateRoute().joinPath("new :: partial"));
+    newAction(mav);
+    return mav;
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  default String createAjax(Model model, @RequestBody D data) {
-    createAction(model, data);
-    return getRestfulRoute().toTemplateRoute().joinPath("index :: partial");
+  default ModelAndView createAjax(ModelAndView mav, @RequestBody D data) {
+    mav.setViewName(
+        getRestfulRoute().toTemplateRoute().joinPath("index :: partial"));
+    createAction(mav, data);
+    return mav;
   }
 
   @GetMapping(path = "/{id}/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
-  default String editAjax(Model model) {
-    editAction(model);
-    return getRestfulRoute().toTemplateRoute().joinPath("edit :: partial");
+  default ModelAndView editAjax(ModelAndView mav) {
+    mav.setViewName(
+        getRestfulRoute().toTemplateRoute().joinPath("edit :: partial"));
+    editAction(mav);
+    return mav;
   }
 
   @PostMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  default String updateAjax(Model model, @RequestBody D data) {
-    updateAction(model, data);
-    return getRestfulRoute().toTemplateRoute().joinPath("index :: partial");
+  default ModelAndView updateAjax(ModelAndView mav, @RequestBody D data) {
+    mav.setViewName(
+        getRestfulRoute().toTemplateRoute().joinPath("index :: partial"));
+    updateAction(mav, data);
+    return mav;
   }
 
   @DeleteMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  default String deleteAjax(Model model) {
-    deleteAction(model);
-    return getRestfulRoute().toTemplateRoute().joinPath("index :: partial");
+  default ModelAndView deleteAjax(ModelAndView mav) {
+    mav.setViewName(
+        getRestfulRoute().toTemplateRoute().joinPath("index :: partial"));
+    deleteAction(mav);
+    return mav;
   }
 
 }

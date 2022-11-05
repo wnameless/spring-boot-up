@@ -1,21 +1,21 @@
 package com.github.wnameless.spring.boot.up.web;
 
-import org.springframework.ui.Model;
+import org.springframework.web.servlet.ModelAndView;
 
 public interface BaseWebAction<D> {
 
-    void indexAction(Model model);
+  void indexAction(ModelAndView mav);
 
-    void showAction(Model model);
+  void showAction(ModelAndView mav);
 
-    void newAction(Model model);
+  void newAction(ModelAndView mav);
 
-    void createAction(Model model, D data);
+  void createAction(ModelAndView mav, D data);
 
-    void editAction(Model model);
+  void editAction(ModelAndView mav);
 
-    void updateAction(Model model, D data);
+  void updateAction(ModelAndView mav, D data);
 
-    void deleteAction(Model model);
+  void deleteAction(ModelAndView mav);
 
 }
