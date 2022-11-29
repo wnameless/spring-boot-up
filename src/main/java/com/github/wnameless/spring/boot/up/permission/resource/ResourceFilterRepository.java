@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.validation.Validator;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +39,8 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 
+import jakarta.validation.Validator;
+
 @NoRepositoryBean
 public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     QuerydslPredicateExecutor<T>, MongoProjectionRepository<T> {
@@ -49,8 +49,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   default ResourceAccessRule getResourceAccessRule() {
     ApplicationContext ctx = ApplicationContextProvider.getApplicationContext();
     WebPermissionManager wpm = ctx.getBean(WebPermissionManager.class);
-    ResourceAccessRule rar =
-        wpm.findUserResourceAccessRuleByRepositoryType(this.getClass());
+    ResourceAccessRule rar = wpm.findUserResourceAccessRuleByRepositoryType(this.getClass());
     return rar;
   }
 

@@ -25,8 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -55,6 +53,7 @@ import com.github.wnameless.spring.boot.up.permission.role.Role;
 import com.github.wnameless.spring.boot.up.permission.role.RolifyUser;
 import com.github.wnameless.spring.boot.up.permission.role.WebRole;
 
+import jakarta.annotation.PostConstruct;
 import net.sf.rubycollect4j.Ruby;
 import net.sf.rubycollect4j.RubyArray;
 
@@ -97,11 +96,11 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
   private void init() {
     for (ResourceAccessRule rar : ctx.getBeansOfType(ResourceAccessRule.class)
         .values()) {
-      if (rar instanceof EmbeddedResourceAccessRule) continue;
+      if (rar instanceof EmbeddedResourceAccessRule)
+        continue;
 
-      Class<ResourceFilterRepository> klass =
-          (Class<ResourceFilterRepository>) rar.getResourceFilterRepository()
-              .getClass();
+      Class<ResourceFilterRepository> klass = (Class<ResourceFilterRepository>) rar.getResourceFilterRepository()
+          .getClass();
 
       if (!repo2Rules.containsKey(klass)) {
         repo2Rules.put(klass, new HashSet<>());
@@ -113,9 +112,8 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
 
     for (EmbeddedResourceAccessRule erar : ctx
         .getBeansOfType(EmbeddedResourceAccessRule.class).values()) {
-      Class<EmbeddedResourceFilterRepository> klass =
-          (Class<EmbeddedResourceFilterRepository>) erar
-              .getEmbeddedResourceFilterRepository().getClass();
+      Class<EmbeddedResourceFilterRepository> klass = (Class<EmbeddedResourceFilterRepository>) erar
+          .getEmbeddedResourceFilterRepository().getClass();
 
       if (!repo2EmbeddedRules.containsKey(klass)) {
         repo2EmbeddedRules.put(klass, new HashSet<>());
@@ -130,8 +128,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
       webRoles.put(role, wr);
 
       // Abilities
-      Map<Class<?>, Set<AccessAbility>> roleAbilities =
-          buildAccessAbilities(wr);
+      Map<Class<?>, Set<AccessAbility>> roleAbilities = buildAccessAbilities(wr);
       if (!role2Abilities.containsKey(role)) {
         role2Abilities.put(role, new HashSet<>());
       }
@@ -147,8 +144,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
   private Map<String, Set<String>> buildRoleMetadata(WebRole webRole) {
     Map<String, Set<String>> metadata = new LinkedHashMap<>();
 
-    RoleMetadata roleMetadata =
-        AnnotationUtils.findAnnotation(webRole.getClass(), RoleMetadata.class);
+    RoleMetadata roleMetadata = AnnotationUtils.findAnnotation(webRole.getClass(), RoleMetadata.class);
     if (roleMetadata != null) {
       for (RoleMeta roleMeta : roleMetadata.value()) {
         if (metadata.containsKey(roleMeta.key())) {
@@ -160,8 +156,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
         }
       }
     } else {
-      RoleMeta roleMeta =
-          AnnotationUtils.findAnnotation(webRole.getClass(), RoleMeta.class);
+      RoleMeta roleMeta = AnnotationUtils.findAnnotation(webRole.getClass(), RoleMeta.class);
       if (roleMeta != null) {
         if (metadata.containsKey(roleMeta.key())) {
           metadata.get(roleMeta.key())
@@ -216,8 +211,8 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
   @SuppressWarnings("rawtypes")
   private ResourceAccessRule findHighestOrderResourceAccessRule(
       Set<ResourceAccessRule> rules, Set<AccessAbility> abilities) {
-    List<Class<? extends ResourceAccessRule>> rarTypes =
-        Ruby.Array.copyOf(abilities).map(a -> a.getResourceAccessRuleType());
+    List<Class<? extends ResourceAccessRule>> rarTypes = Ruby.Array.copyOf(abilities)
+        .map(a -> a.getResourceAccessRuleType());
 
     return Ruby.Array.copyOf(rules).keepIf(r -> rarTypes.contains(r.getClass()))
         .sortBy(r -> r.getRuleOrder()).first();
@@ -240,10 +235,9 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
   @SuppressWarnings({ "rawtypes", "unchecked" })
   private EmbeddedResourceAccessRule findHighestOrderEmbeddedResourceAccessRule(
       Set<EmbeddedResourceAccessRule> rules, Set<AccessAbility> abilities) {
-    List<Class<? extends EmbeddedResourceAccessRule>> erarTypes =
-        Ruby.Array.copyOf(abilities)
-            .map(a -> (Class<? extends EmbeddedResourceAccessRule>) a
-                .getResourceAccessRuleType());
+    List<Class<? extends EmbeddedResourceAccessRule>> erarTypes = Ruby.Array.copyOf(abilities)
+        .map(a -> (Class<? extends EmbeddedResourceAccessRule>) a
+            .getResourceAccessRuleType());
 
     return Ruby.Array.copyOf(rules)
         .keepIf(r -> erarTypes.contains(r.getClass()))
@@ -252,8 +246,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
 
   @Override
   public Set<Role> getUserRoles() {
-    String username =
-        SecurityContextHolder.getContext().getAuthentication().getName();
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Set<Role> roles = findAllRolifyUsersByUsername(username).stream()
         .map(r -> Role.of(r.getRole())).collect(Collectors.toSet());
     roles.addAll(retrieveMinorRoles(roles));
@@ -293,20 +286,18 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
         for (AccessAbility aa : role2Abilities.get(role.getRoleName())) {
           if (aa.isResourceEmbedded()) {
             @SuppressWarnings("unchecked")
-            EmbeddedResourceFilterRepository<?, ?, ?> erfr =
-                (EmbeddedResourceFilterRepository<?, ?, ?>) getEmbeddedResourceAccessRule(
-                    (Class<? extends EmbeddedResourceAccessRule<?, ?, ?, ?, ?>>) aa
-                        .getResourceAccessRuleType())
-                            .getEmbeddedResourceFilterRepository();
+            EmbeddedResourceFilterRepository<?, ?, ?> erfr = (EmbeddedResourceFilterRepository<?, ?, ?>) getEmbeddedResourceAccessRule(
+                (Class<? extends EmbeddedResourceAccessRule<?, ?, ?, ?, ?>>) aa
+                    .getResourceAccessRuleType())
+                .getEmbeddedResourceFilterRepository();
 
             resourceAbilities
                 .add(ResourceAbility.ofEmbeddedResource(aa.getResourceType(),
                     aa.getFieldName(), aa.getAbilityName(), erfr));
           } else {
-            ResourceFilterRepository<?, ?> rfr =
-                (ResourceFilterRepository<?, ?>) getResourceAccessRule(
-                    aa.getResourceAccessRuleType())
-                        .getResourceFilterRepository();
+            ResourceFilterRepository<?, ?> rfr = (ResourceFilterRepository<?, ?>) getResourceAccessRule(
+                aa.getResourceAccessRuleType())
+                .getResourceFilterRepository();
 
             resourceAbilities.add(ResourceAbility
                 .ofResource(aa.getResourceType(), aa.getAbilityName(), rfr));
@@ -367,8 +358,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
   private Map<Class<?>, Set<AccessAbility>> buildAccessAbilities(Object bean) {
     Map<Class<?>, Set<AccessAbility>> accessAbilities = new HashMap<>();
 
-    CanManage canManage =
-        AnnotationUtils.findAnnotation(bean.getClass(), CanManage.class);
+    CanManage canManage = AnnotationUtils.findAnnotation(bean.getClass(), CanManage.class);
     if (canManage != null) {
       for (Class<? extends ResourceAccessRule> t : canManage.value()) {
         if (!accessAbilities.containsKey(t)) {
@@ -376,8 +366,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
         }
 
         if (EmbeddedResourceAccessRule.class.isAssignableFrom(t)) {
-          EmbeddedResourceAccessRule erar =
-              (EmbeddedResourceAccessRule) ctx.getBean(t);
+          EmbeddedResourceAccessRule erar = (EmbeddedResourceAccessRule) ctx.getBean(t);
           accessAbilities.get(t).add(AccessAbility.ofEmbeddedResource(
               ctx.getBean(t).getResourceType(),
               erar.getEmbeddedResourceFieldName(),
@@ -392,8 +381,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
       }
     }
 
-    CanCRUD canCRUD =
-        AnnotationUtils.findAnnotation(bean.getClass(), CanCRUD.class);
+    CanCRUD canCRUD = AnnotationUtils.findAnnotation(bean.getClass(), CanCRUD.class);
     if (canCRUD != null) {
       for (Class<? extends ResourceAccessRule<?, ?, ?>> t : canCRUD.value()) {
         if (!accessAbilities.containsKey(t)) {
@@ -401,8 +389,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
         }
 
         if (EmbeddedResourceAccessRule.class.isAssignableFrom(t)) {
-          EmbeddedResourceAccessRule erar =
-              (EmbeddedResourceAccessRule) ctx.getBean(t);
+          EmbeddedResourceAccessRule erar = (EmbeddedResourceAccessRule) ctx.getBean(t);
           accessAbilities.get(t).add(AccessAbility.ofEmbeddedResource(
               ctx.getBean(t).getResourceType(),
               erar.getEmbeddedResourceFieldName(),
@@ -416,8 +403,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
       }
     }
 
-    CanCreate canCreate =
-        AnnotationUtils.findAnnotation(bean.getClass(), CanCreate.class);
+    CanCreate canCreate = AnnotationUtils.findAnnotation(bean.getClass(), CanCreate.class);
     if (canCreate != null) {
       for (Class<? extends ResourceAccessRule> t : canCreate.value()) {
         if (!accessAbilities.containsKey(t)) {
@@ -425,8 +411,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
         }
 
         if (EmbeddedResourceAccessRule.class.isAssignableFrom(t)) {
-          EmbeddedResourceAccessRule erar =
-              (EmbeddedResourceAccessRule) ctx.getBean(t);
+          EmbeddedResourceAccessRule erar = (EmbeddedResourceAccessRule) ctx.getBean(t);
           accessAbilities.get(t).add(AccessAbility.ofEmbeddedResource(
               ctx.getBean(t).getResourceType(),
               erar.getEmbeddedResourceFieldName(),
@@ -441,8 +426,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
       }
     }
 
-    CanRead canRead =
-        AnnotationUtils.findAnnotation(bean.getClass(), CanRead.class);
+    CanRead canRead = AnnotationUtils.findAnnotation(bean.getClass(), CanRead.class);
     if (canRead != null) {
       for (Class<? extends ResourceAccessRule<?, ?, ?>> t : canRead.value()) {
         if (!accessAbilities.containsKey(t)) {
@@ -450,8 +434,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
         }
 
         if (EmbeddedResourceAccessRule.class.isAssignableFrom(t)) {
-          EmbeddedResourceAccessRule erar =
-              (EmbeddedResourceAccessRule) ctx.getBean(t);
+          EmbeddedResourceAccessRule erar = (EmbeddedResourceAccessRule) ctx.getBean(t);
           accessAbilities.get(t).add(AccessAbility.ofEmbeddedResource(
               ctx.getBean(t).getResourceType(),
               erar.getEmbeddedResourceFieldName(),
@@ -465,8 +448,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
       }
     }
 
-    CanUpdate canUpdate =
-        AnnotationUtils.findAnnotation(bean.getClass(), CanUpdate.class);
+    CanUpdate canUpdate = AnnotationUtils.findAnnotation(bean.getClass(), CanUpdate.class);
     if (canUpdate != null) {
       for (Class<? extends ResourceAccessRule<?, ?, ?>> t : canUpdate.value()) {
         if (!accessAbilities.containsKey(t)) {
@@ -474,8 +456,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
         }
 
         if (EmbeddedResourceAccessRule.class.isAssignableFrom(t)) {
-          EmbeddedResourceAccessRule erar =
-              (EmbeddedResourceAccessRule) ctx.getBean(t);
+          EmbeddedResourceAccessRule erar = (EmbeddedResourceAccessRule) ctx.getBean(t);
           accessAbilities.get(t).add(AccessAbility.ofEmbeddedResource(
               ctx.getBean(t).getResourceType(),
               erar.getEmbeddedResourceFieldName(),
@@ -489,8 +470,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
       }
     }
 
-    CanDelete canDestroy =
-        AnnotationUtils.findAnnotation(bean.getClass(), CanDelete.class);
+    CanDelete canDestroy = AnnotationUtils.findAnnotation(bean.getClass(), CanDelete.class);
     if (canDestroy != null) {
       for (Class<? extends ResourceAccessRule<?, ?, ?>> t : canDestroy
           .value()) {
@@ -499,8 +479,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
         }
 
         if (EmbeddedResourceAccessRule.class.isAssignableFrom(t)) {
-          EmbeddedResourceAccessRule erar =
-              (EmbeddedResourceAccessRule) ctx.getBean(t);
+          EmbeddedResourceAccessRule erar = (EmbeddedResourceAccessRule) ctx.getBean(t);
           accessAbilities.get(t).add(AccessAbility.ofEmbeddedResource(
               ctx.getBean(t).getResourceType(),
               erar.getEmbeddedResourceFieldName(),
@@ -523,8 +502,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
           }
 
           if (EmbeddedResourceAccessRule.class.isAssignableFrom(t)) {
-            EmbeddedResourceAccessRule erar =
-                (EmbeddedResourceAccessRule) ctx.getBean(t);
+            EmbeddedResourceAccessRule erar = (EmbeddedResourceAccessRule) ctx.getBean(t);
             accessAbilities.get(t).add(AccessAbility.ofEmbeddedResource(
                 ctx.getBean(t).getResourceType(),
                 erar.getEmbeddedResourceFieldName(),

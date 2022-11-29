@@ -15,14 +15,14 @@
  */
 package com.github.wnameless.spring.boot.up.web;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.github.wnameless.spring.boot.up.SpringBootUp;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID> {
@@ -44,7 +44,8 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
 
   @ModelAttribute
   default void setItem(Model model, @PathVariable(required = false) ID id) {
-    if (getModelPolicy().isDisable()) return;
+    if (getModelPolicy().isDisable())
+      return;
 
     I item = null;
 

@@ -19,14 +19,14 @@ import java.util.ArrayList;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.github.wnameless.spring.boot.up.SpringBootUp;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface NestedRestfulController< //
     PR extends CrudRepository<P, PID>, P, PID, //
@@ -53,8 +53,7 @@ public interface NestedRestfulController< //
   default ModelPolicy<P> getParentModelPolicy() {
     ModelPolicy<P> parentPolicy = new ModelPolicy<>();
     ModelPolicy<C> childPolicy = new ModelPolicy<>();
-    ModelPolicy<Iterable<C>> childrenPolicy =
-        new ModelPolicy<>(new ArrayList<>());
+    ModelPolicy<Iterable<C>> childrenPolicy = new ModelPolicy<>(new ArrayList<>());
     configure(parentPolicy, childPolicy, childrenPolicy);
     return parentPolicy;
   }
@@ -62,8 +61,7 @@ public interface NestedRestfulController< //
   default ModelPolicy<C> getChildModelPolicy() {
     ModelPolicy<P> parentPolicy = new ModelPolicy<>();
     ModelPolicy<C> childPolicy = new ModelPolicy<>();
-    ModelPolicy<Iterable<C>> childrenPolicy =
-        new ModelPolicy<>(new ArrayList<>());
+    ModelPolicy<Iterable<C>> childrenPolicy = new ModelPolicy<>(new ArrayList<>());
     configure(parentPolicy, childPolicy, childrenPolicy);
     return childPolicy;
   }
@@ -71,8 +69,7 @@ public interface NestedRestfulController< //
   default ModelPolicy<Iterable<C>> getChildrenModelPolicy() {
     ModelPolicy<P> parentPolicy = new ModelPolicy<>();
     ModelPolicy<C> childPolicy = new ModelPolicy<>();
-    ModelPolicy<Iterable<C>> childrenPolicy =
-        new ModelPolicy<>(new ArrayList<>());
+    ModelPolicy<Iterable<C>> childrenPolicy = new ModelPolicy<>(new ArrayList<>());
     configure(parentPolicy, childPolicy, childrenPolicy);
     return childrenPolicy;
   }
@@ -81,7 +78,8 @@ public interface NestedRestfulController< //
   default void setParentAndChild(Model model,
       @PathVariable(required = false) PID parentId,
       @PathVariable(required = false) CID id) {
-    if (getParentModelPolicy().isDisable()) return;
+    if (getParentModelPolicy().isDisable())
+      return;
 
     P parent = null;
     if (parentId != null) {
@@ -95,7 +93,8 @@ public interface NestedRestfulController< //
     }
     model.addAttribute(getParentKey(), parent);
 
-    if (getChildModelPolicy().isDisable()) return;
+    if (getChildModelPolicy().isDisable())
+      return;
 
     C child = null;
     if (parent != null) {
@@ -117,7 +116,8 @@ public interface NestedRestfulController< //
   default void setChildren(Model model,
       @PathVariable(required = false) PID parentId,
       @PathVariable(required = false) CID id) {
-    if (getChildrenModelPolicy().isDisable()) return;
+    if (getChildrenModelPolicy().isDisable())
+      return;
 
     Iterable<C> children = null;
     if (parentId != null && id == null) {

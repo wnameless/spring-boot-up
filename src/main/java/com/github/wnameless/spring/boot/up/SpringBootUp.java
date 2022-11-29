@@ -17,8 +17,6 @@ package com.github.wnameless.spring.boot.up;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -26,9 +24,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.github.wnameless.spring.boot.up.web.WebUiModelHolder;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public final class SpringBootUp {
 
-  private SpringBootUp() {}
+  private SpringBootUp() {
+  }
 
   public static void cacheWebUiModel(HttpServletRequest req, Model model) {
     WebUiModelHolder webUiModelHolder = getBean(WebUiModelHolder.class);
@@ -37,9 +38,8 @@ public final class SpringBootUp {
 
   public static Model retrieveWebUiModel() {
     WebUiModelHolder webUiModelHolder = getBean(WebUiModelHolder.class);
-    HttpServletRequest request =
-        ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-            .getRequest();
+    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+        .getRequest();
 
     return webUiModelHolder.retrieveModel(request);
   }

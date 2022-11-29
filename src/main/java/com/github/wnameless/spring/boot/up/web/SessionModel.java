@@ -18,13 +18,13 @@ package com.github.wnameless.spring.boot.up.web;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
 
 import com.github.wnameless.spring.boot.up.web.Pageables.PageableParams;
+
+import jakarta.servlet.http.HttpSession;
 
 public final class SessionModel {
 
@@ -52,7 +52,8 @@ public final class SessionModel {
     if (value == null) {
       value = (E) session.getAttribute(key);
     }
-    if (value == null) value = defaultVal;
+    if (value == null)
+      value = defaultVal;
 
     model.addAttribute(key, value);
     session.setAttribute(key, value);
