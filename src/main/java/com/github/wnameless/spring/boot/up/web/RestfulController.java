@@ -17,8 +17,10 @@ package com.github.wnameless.spring.boot.up.web;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 
@@ -40,6 +42,24 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     ModelPolicy<I> policy = new ModelPolicy<I>();
     configure(policy);
     return policy;
+  }
+
+  default String getQueryConfigKey() {
+    return "queryConfig";
+  }
+
+  @ModelAttribute
+  default void setQueryConfig(Model model, @RequestParam MultiValueMap<String, String> params) {
+    if (getModelPolicy().isDisable())
+      return;
+
+    if (getModelPolicy().onQueryConfig() != null) {
+      QueryConfig<?> queryConfig = new QueryConfig<>(getModelPolicy().onQuerySetting().get(), params);
+      if (getModelPolicy().onQueryConfig() != null) {
+        queryConfig = getModelPolicy().onQueryConfig().apply(queryConfig);
+      }
+      model.addAttribute(getQueryConfigKey(), queryConfig);
+    }
   }
 
   @ModelAttribute

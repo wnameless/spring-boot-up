@@ -16,6 +16,7 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 public final class Pageables {
 
-  private Pageables() {}
+  private Pageables() {
+  }
 
   private static final Pageables INSTANCE = new Pageables();
 
@@ -37,7 +39,8 @@ public final class Pageables {
 
   public static String toQueryString(Pageable pageable,
       PageableParams pageableParams) {
-    if (pageable == null) return "";
+    if (pageable == null)
+      return "";
 
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
     uriBuilder.queryParam(pageableParams.getPageParameter(),
@@ -58,7 +61,8 @@ public final class Pageables {
 
   public static String toQueryStringWithoutPage(Pageable pageable,
       PageableParams pageableParams) {
-    if (pageable == null) return "";
+    if (pageable == null)
+      return "";
 
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
     uriBuilder.queryParam(pageableParams.getSizeParameter(),
@@ -81,26 +85,34 @@ public final class Pageables {
   }
 
   public static Sort paramToSort(String... params) {
-    if (params.length == 0) return Sort.unsorted();
+    return paramToSort(Arrays.asList(params));
+  }
+
+  public static Sort paramToSort(List<String> params) {
+    if (params.size() == 0)
+      return Sort.unsorted();
 
     List<Order> orderList = new ArrayList<>();
 
     for (String param : params) {
-      String[] propAndDerct = param.split(",");
-      if (propAndDerct.length == 1) {
-        orderList.add(Order.by(propAndDerct[0]));
-      } else if (propAndDerct.length == 2) {
+      if (param.trim().isEmpty())
+        continue;
+
+      String[] propAndDirect = param.split(",");
+      if (propAndDirect.length == 1) {
+        orderList.add(Order.by(propAndDirect[0]));
+      } else if (propAndDirect.length == 2) {
         Direction direction;
         try {
-          direction = Direction.fromString(propAndDerct[1]);
+          direction = Direction.fromString(propAndDirect[1]);
           if (direction == Direction.ASC) {
-            orderList.add(Order.asc(propAndDerct[0]));
+            orderList.add(Order.asc(propAndDirect[0]));
           }
           if (direction == Direction.DESC) {
-            orderList.add(Order.desc(propAndDerct[0]));
+            orderList.add(Order.desc(propAndDirect[0]));
           }
         } catch (Exception e) {
-          orderList.add(Order.by(propAndDerct[0]));
+          orderList.add(Order.by(propAndDirect[0]));
         }
       }
     }

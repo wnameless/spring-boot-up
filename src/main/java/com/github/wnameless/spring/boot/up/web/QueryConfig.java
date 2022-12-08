@@ -1,103 +1,143 @@
-/*
- *
- * Copyright 2022 Wei-Ming Wu
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- *
- */
 package com.github.wnameless.spring.boot.up.web;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.Map.Entry;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.util.MultiValueMap;
 
+import com.github.wnameless.spring.boot.up.web.Pageables.PageableParams;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.dsl.BooleanOperation;
+import com.querydsl.core.types.dsl.EntityPathBase;
 
 import lombok.Data;
 import lombok.SneakyThrows;
-import net.sf.rubycollect4j.Ruby;
 
 @Data
-public final class QueryConfig {
+public final class QueryConfig<E extends EntityPathBase<?>> {
 
-  private final Pageable pageable;
-  private final Predicate predicate;
-  private final List<String> fields;
+  private final E entity;
+  private final Map<String, FilterableField<E>> filterFields;
+  private final PageableParams pageableParams;
+  private final MultiValueMap<String, String> requestParams;
 
-  public QueryConfig(Pageable pageable, Predicate predicate, String... fields) {
-    this.pageable = pageable;
-    this.predicate = predicate;
-    this.fields = new ArrayList<>(Arrays.asList(fields));
+  public QueryConfig(QuerySetting<E> queryConfig, MultiValueMap<String, String> requestParams) {
+    this.entity = queryConfig.getEntity();
+    this.filterFields = queryConfig.getFilterFields();
+    this.pageableParams = queryConfig.getPageableParams();
+    this.requestParams = requestParams;
   }
 
-  public Map<String, Order> getSorts() {
+  public List<String> getFields() {
+    return new ArrayList<>(filterFields.keySet());
+  }
+
+  public Order getFieldOrder(String field) {
     Map<String, Order> sorts = new LinkedHashMap<>();
-    pageable.getSort().forEach(order -> sorts.put(order.getProperty(), order));
-    return sorts;
+    if (requestParams.containsKey(pageableParams.getSortParameter())) {
+      Sort sort = Pageables.paramToSort(requestParams.get(pageableParams.getSortParameter()));
+      sort.forEach(order -> sorts.put(order.getProperty(), order));
+    }
+
+    return sorts.get(field);
   }
 
-  public Map<String, String> getFilters() {
+  public String getFieldQuery(String field) {
     Map<String, String> filters = new LinkedHashMap<>();
-    if (predicate instanceof BooleanOperation) {
-      BooleanOperation bo = (BooleanOperation) predicate;
-      for (var ra : Ruby.Array.of(bo.getArgs()).eachSlice(2)) {
-        filters.put(ra.get(0).toString().split(Pattern.quote("."))[1], ra.get(1).toString());
-      }
+
+    for (Entry<String, FilterableField<E>> entry : filterFields.entrySet()) {
+      String f = entry.getKey();
+      filters.put(f, requestParams.getFirst(f));
     }
-    return filters;
+
+    return filters.get(field);
   }
 
   @SneakyThrows
   public String toQueryString() {
     StringBuilder queryStr = new StringBuilder("?");
 
-    if (pageable != null) {
-      int size = pageable.getPageSize();
+    // if (pageable != null) {
+    if (requestParams.containsKey(pageableParams.getSizeParameter())) {
+      // int size = pageable.getPageSize();
       queryStr.append("size");
       queryStr.append('=');
-      queryStr.append(size);
+      queryStr.append(getSize());
       queryStr.append('&');
+    }
+    for (Order order : getSort()) {
+      String name = order.getProperty();
+      String direction = order.getDirection().toString();
 
-      for (Order order : pageable.getSort()) {
-        String name = order.getProperty();
-        String direction = order.getDirection().toString();
-
-        queryStr.append("sort");
-        queryStr.append('=');
-        queryStr.append(URLEncoder.encode(name, "UTF-8"));
-        queryStr.append(',');
-        queryStr.append(direction);
-        queryStr.append('&');
-      }
+      queryStr.append("sort");
+      queryStr.append('=');
+      queryStr.append(URLEncoder.encode(name, "UTF-8"));
+      queryStr.append(',');
+      queryStr.append(direction);
+      queryStr.append('&');
     }
 
-    if (predicate instanceof BooleanOperation) {
-      BooleanOperation bo = (BooleanOperation) predicate;
-      for (var ra : Ruby.Array.of(bo.getArgs()).eachSlice(2)) {
-        queryStr.append(URLEncoder.encode(ra.get(0).toString().split(Pattern.quote("."))[1], "UTF-8"));
-        queryStr.append('=');
-        queryStr.append(ra.get(1).toString());
-        queryStr.append('&');
-      }
+    for (Entry<String, FilterableField<E>> entry : filterFields.entrySet()) {
+      String field = entry.getKey();
+      queryStr.append(URLEncoder.encode(field, "UTF-8"));
+      queryStr.append('=');
+      queryStr.append(requestParams.get(field));
+      queryStr.append('&');
     }
-
     return queryStr.toString();
+  }
+
+  public Predicate getPredicate() {
+    Predicate predicate = null;
+
+    for (String field : getFields()) {
+      if (requestParams.containsKey(field)) {
+        FilterableField<E> ff = filterFields.get(field);
+        if (predicate == null) {
+          predicate = ff.getLogic(entity).apply(requestParams.getFirst(field));
+        } else {
+          predicate = ExpressionUtils.allOf(predicate,
+              ff.getLogic(entity).apply(requestParams.getFirst(field)));
+        }
+
+      }
+    }
+
+    return predicate == null ? new BooleanBuilder() : predicate;
+  }
+
+  public int getPage() {
+    if (requestParams.containsKey(pageableParams.getPageParameter())) {
+      return Integer.parseInt(requestParams.getFirst(pageableParams.getPageParameter()));
+    }
+    return 0;
+  }
+
+  public int getSize() {
+    if (requestParams.containsKey(pageableParams.getSizeParameter())) {
+      return Integer.parseInt(requestParams.getFirst(pageableParams.getSizeParameter()));
+    }
+    return 10;
+  }
+
+  public Sort getSort() {
+    if (requestParams.containsKey(pageableParams.getSortParameter())) {
+      return Pageables.paramToSort(requestParams.get(pageableParams.getSortParameter()));
+    }
+    return Sort.unsorted();
+  }
+
+  public Pageable getPageable() {
+    return PageRequest.of(getPage(), getSize(), getSort());
   }
 
 }

@@ -31,9 +31,14 @@ public class ModelPolicy<I> {
 
   };
 
+  private Supplier<QuerySetting<?>> querySetting = null;
+
+  private Function<QueryConfig<?>, QueryConfig<?>> queryConfig = null;
+
   private Function<? super I, ? extends I> itemInitialized;
 
-  public ModelPolicy() {}
+  public ModelPolicy() {
+  }
 
   public ModelPolicy(I defaultItem) {
     this.defaultItem = new Supplier<I>() {
@@ -80,6 +85,24 @@ public class ModelPolicy<I> {
 
   public Function<? super I, ? extends I> onItemInitialized() {
     return itemInitialized;
+  }
+
+  public ModelPolicy<I> forQuerySetting(Supplier<QuerySetting<?>> querySetting) {
+    this.querySetting = querySetting;
+    return this;
+  }
+
+  public Supplier<QuerySetting<?>> onQuerySetting() {
+    return querySetting;
+  }
+
+  public ModelPolicy<I> forQueryConfig(Function<QueryConfig<?>, QueryConfig<?>> queryConfig) {
+    this.queryConfig = queryConfig;
+    return this;
+  }
+
+  public Function<QueryConfig<?>, QueryConfig<?>> onQueryConfig() {
+    return queryConfig;
   }
 
 }
