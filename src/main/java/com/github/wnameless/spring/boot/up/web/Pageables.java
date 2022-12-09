@@ -89,7 +89,7 @@ public final class Pageables {
   }
 
   public static Sort paramToSort(List<String> params) {
-    if (params.size() == 0)
+    if (params == null || params.size() == 0)
       return Sort.unsorted();
 
     List<Order> orderList = new ArrayList<>();

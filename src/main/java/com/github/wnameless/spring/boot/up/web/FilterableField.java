@@ -26,15 +26,37 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   }
 
   private final Function<E, ? extends Path<?>> pathFinder;
-  private final Optional<String> field;
+  private final Optional<String> fieldName;
   private final BiFunction<E, String, Predicate> filterLogic;
+  private boolean sortable = true;
 
-  public Function<String, Predicate> getLogic(E qEntity) {
+  public FilterableField<E> sortable(boolean sortable) {
+    this.sortable = sortable;
+    return this;
+  }
+
+  public Function<String, Predicate> getFilterLogic(E qEntity) {
     return param -> filterLogic.apply(qEntity, param);
   }
 
   public String getFieldName(E qEntity) {
-    return field.isPresent() ? field.get() : pathFinder.apply(qEntity).getMetadata().getName();
+    return fieldName.orElse(getEntryFieldName(pathFinder.apply(qEntity)));
+  }
+
+  public String getSortableFieldName(E qEntity) {
+    if (!sortable)
+      return null;
+    return getEntryFieldName(pathFinder.apply(qEntity));
+  }
+
+  private String getEntryFieldName(Path<?> path) {
+    Path<?> last = path;
+    Path<?> current = path;
+    while (current.getMetadata().getParent() != null) {
+      last = current;
+      current = current.getMetadata().getParent();
+    }
+    return last.getMetadata().getName();
   }
 
 }

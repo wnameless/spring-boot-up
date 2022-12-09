@@ -44,24 +44,6 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     return policy;
   }
 
-  default String getQueryConfigKey() {
-    return "queryConfig";
-  }
-
-  @ModelAttribute
-  default void setQueryConfig(Model model, @RequestParam MultiValueMap<String, String> params) {
-    if (getModelPolicy().isDisable())
-      return;
-
-    if (getModelPolicy().onQueryConfig() != null) {
-      QueryConfig<?> queryConfig = new QueryConfig<>(getModelPolicy().onQuerySetting().get(), params);
-      if (getModelPolicy().onQueryConfig() != null) {
-        queryConfig = getModelPolicy().onQueryConfig().apply(queryConfig);
-      }
-      model.addAttribute(getQueryConfigKey(), queryConfig);
-    }
-  }
-
   @ModelAttribute
   default void setItem(Model model, @PathVariable(required = false) ID id) {
     if (getModelPolicy().isDisable())
@@ -101,6 +83,24 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
   default I updateItem(Model model, I item) {
     model.addAttribute(getItemKey(), item);
     return item;
+  }
+
+  default String getQueryConfigKey() {
+    return "queryConfig";
+  }
+
+  @ModelAttribute
+  default void setQueryConfig(Model model, @RequestParam MultiValueMap<String, String> params) {
+    if (getModelPolicy().isDisable())
+      return;
+
+    if (getModelPolicy().onQueryConfig() != null) {
+      QueryConfig<?> queryConfig = new QueryConfig<>(getModelPolicy().onQuerySetting().get(), params);
+      if (getModelPolicy().onQueryConfig() != null) {
+        queryConfig = getModelPolicy().onQueryConfig().apply(queryConfig);
+      }
+      model.addAttribute(getQueryConfigKey(), queryConfig);
+    }
   }
 
 }

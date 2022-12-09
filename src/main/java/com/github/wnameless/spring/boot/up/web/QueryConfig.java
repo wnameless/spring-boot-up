@@ -27,13 +27,13 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
 
   private final E entity;
   private final Map<String, FilterableField<E>> filterFields;
-  private final PageableParams pageableParams;
+  private PageableParams pageableParams;
   private final MultiValueMap<String, String> requestParams;
 
-  public QueryConfig(QuerySetting<E> queryConfig, MultiValueMap<String, String> requestParams) {
-    this.entity = queryConfig.getEntity();
-    this.filterFields = queryConfig.getFilterFields();
-    this.pageableParams = queryConfig.getPageableParams();
+  public QueryConfig(QuerySetting<E> querySetting, MultiValueMap<String, String> requestParams) {
+    this.entity = querySetting.getEntity();
+    this.filterFields = querySetting.getFilterFields();
+    this.pageableParams = querySetting.getPageableParams();
     this.requestParams = requestParams;
   }
 
@@ -51,9 +51,8 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
     return sorts.get(field);
   }
 
-  public String getFieldQuery(String field) {
+  public String getFieldQueryString(String field) {
     Map<String, String> filters = new LinkedHashMap<>();
-
     for (Entry<String, FilterableField<E>> entry : filterFields.entrySet()) {
       String f = entry.getKey();
       filters.put(f, requestParams.getFirst(f));
@@ -62,25 +61,29 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
     return filters.get(field);
   }
 
+  public String getFieldSortName(String field) {
+    return filterFields.get(field).getSortableFieldName(entity);
+  }
+
   @SneakyThrows
   public String toQueryString() {
     StringBuilder queryStr = new StringBuilder("?");
 
-    // if (pageable != null) {
-    if (requestParams.containsKey(pageableParams.getSizeParameter())) {
-      // int size = pageable.getPageSize();
-      queryStr.append("size");
+    String sizeKey = pageableParams.getSizeParameter();
+    if (requestParams.containsKey(sizeKey)) {
+      queryStr.append(URLEncoder.encode(sizeKey, "UTF-8"));
       queryStr.append('=');
       queryStr.append(getSize());
       queryStr.append('&');
     }
+    String sortKey = pageableParams.getSortParameter();
     for (Order order : getSort()) {
-      String name = order.getProperty();
+      String property = order.getProperty();
       String direction = order.getDirection().toString();
 
-      queryStr.append("sort");
+      queryStr.append(URLEncoder.encode(sortKey, "UTF-8"));
       queryStr.append('=');
-      queryStr.append(URLEncoder.encode(name, "UTF-8"));
+      queryStr.append(URLEncoder.encode(property, "UTF-8"));
       queryStr.append(',');
       queryStr.append(direction);
       queryStr.append('&');
@@ -103,10 +106,10 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
       if (requestParams.containsKey(field)) {
         FilterableField<E> ff = filterFields.get(field);
         if (predicate == null) {
-          predicate = ff.getLogic(entity).apply(requestParams.getFirst(field));
+          predicate = ff.getFilterLogic(entity).apply(requestParams.getFirst(field));
         } else {
           predicate = ExpressionUtils.allOf(predicate,
-              ff.getLogic(entity).apply(requestParams.getFirst(field)));
+              ff.getFilterLogic(entity).apply(requestParams.getFirst(field)));
         }
 
       }
@@ -115,21 +118,21 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
     return predicate == null ? new BooleanBuilder() : predicate;
   }
 
-  public int getPage() {
+  private int getPage() {
     if (requestParams.containsKey(pageableParams.getPageParameter())) {
       return Integer.parseInt(requestParams.getFirst(pageableParams.getPageParameter()));
     }
     return 0;
   }
 
-  public int getSize() {
+  private int getSize() {
     if (requestParams.containsKey(pageableParams.getSizeParameter())) {
       return Integer.parseInt(requestParams.getFirst(pageableParams.getSizeParameter()));
     }
     return 10;
   }
 
-  public Sort getSort() {
+  private Sort getSort() {
     if (requestParams.containsKey(pageableParams.getSortParameter())) {
       return Pageables.paramToSort(requestParams.get(pageableParams.getSortParameter()));
     }

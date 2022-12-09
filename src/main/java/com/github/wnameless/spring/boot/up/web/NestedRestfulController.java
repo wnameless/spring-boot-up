@@ -21,8 +21,10 @@ import java.util.function.Function;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 
@@ -209,6 +211,24 @@ public interface NestedRestfulController< //
     Iterable<C> children = getChildren(parent);
     model.addAttribute(getChildrenKey(), children);
     return children;
+  }
+
+  default String getQueryConfigKey() {
+    return "queryConfig";
+  }
+
+  @ModelAttribute
+  default void setQueryConfig(Model model, @RequestParam MultiValueMap<String, String> params) {
+    if (getChildrenModelPolicy().isDisable())
+      return;
+
+    if (getChildrenModelPolicy().onQueryConfig() != null) {
+      QueryConfig<?> queryConfig = new QueryConfig<>(getChildrenModelPolicy().onQuerySetting().get(), params);
+      if (getChildrenModelPolicy().onQueryConfig() != null) {
+        queryConfig = getChildrenModelPolicy().onQueryConfig().apply(queryConfig);
+      }
+      model.addAttribute(getQueryConfigKey(), queryConfig);
+    }
   }
 
 }
