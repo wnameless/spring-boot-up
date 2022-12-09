@@ -93,7 +93,7 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
       String field = entry.getKey();
       queryStr.append(URLEncoder.encode(field, "UTF-8"));
       queryStr.append('=');
-      queryStr.append(requestParams.get(field));
+      queryStr.append(URLEncoder.encode(requestParams.getFirst(field), "UTF-8"));
       queryStr.append('&');
     }
     return queryStr.toString();
