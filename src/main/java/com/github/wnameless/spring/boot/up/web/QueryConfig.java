@@ -91,6 +91,10 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
 
     for (Entry<String, FilterableField<E>> entry : filterFields.entrySet()) {
       String field = entry.getKey();
+      if (!requestParams.containsKey(field)) {
+        continue;
+      }
+
       queryStr.append(URLEncoder.encode(field, "UTF-8"));
       queryStr.append('=');
       queryStr.append(URLEncoder.encode(requestParams.getFirst(field), "UTF-8"));
