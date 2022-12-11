@@ -34,11 +34,13 @@ import com.github.wnameless.spring.boot.up.data.mongodb.MongoProjectionRepositor
 import com.github.wnameless.spring.boot.up.data.mongodb.MongoUtils;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.WebPermissionManager;
+import com.github.wnameless.spring.boot.up.web.WebUiModelHolder;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Validator;
 
 @NoRepositoryBean
@@ -285,7 +287,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   }
 
   default T filterSaveWithValidation(T entity) {
-    return filterSaveWithValidation(entity, SpringBootUp.retrieveWebUiModel());
+    WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
+    HttpServletRequest request = SpringBootUp.getBean(HttpServletRequest.class);
+
+    return filterSaveWithValidation(entity, webUiModelHolder.retrieveModel(request));
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })

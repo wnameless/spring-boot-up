@@ -26,7 +26,8 @@ public interface RestfulRouteController<ID> extends RestfulRouteProvider<ID> {
 
   @ModelAttribute
   default void cacheModel(HttpServletRequest req, Model model) {
-    SpringBootUp.cacheWebUiModel(req, model);
+    WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
+    webUiModelHolder.cacheModel(req, model);
   }
 
   default RestfulRoute<ID> getTemplateRoute() {

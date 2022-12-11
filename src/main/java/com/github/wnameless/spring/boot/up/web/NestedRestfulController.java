@@ -36,7 +36,8 @@ public interface NestedRestfulController< //
 
   @ModelAttribute
   default void cacheModel(HttpServletRequest req, Model model) {
-    SpringBootUp.cacheWebUiModel(req, model);
+    WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
+    webUiModelHolder.cacheModel(req, model);
   }
 
   Function<P, ? extends RestfulRoute<CID>> getRoute();

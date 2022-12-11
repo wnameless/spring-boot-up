@@ -23,16 +23,16 @@ import org.springframework.stereotype.Component;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
-public class ApplicationContextProvider implements ApplicationContextAware {
+public final class ApplicationContextProvider implements ApplicationContextAware {
 
-  private static class AplicationContextHolder {
+  private static final class AplicationContextHolder {
 
-    private static final InnerContextResource CONTEXT_PROV =
-        new InnerContextResource();
+    private static final InnerContextResource RESOURCE = new InnerContextResource();
 
     private AplicationContextHolder() {
       super();
     }
+
   }
 
   private static final class InnerContextResource {
@@ -46,15 +46,16 @@ public class ApplicationContextProvider implements ApplicationContextAware {
     private void setContext(ApplicationContext context) {
       this.context = context;
     }
+
   }
 
   public static ApplicationContext getApplicationContext() {
-    return AplicationContextHolder.CONTEXT_PROV.context;
+    return AplicationContextHolder.RESOURCE.context;
   }
 
   @Override
   public void setApplicationContext(ApplicationContext ac) {
-    AplicationContextHolder.CONTEXT_PROV.setContext(ac);
+    AplicationContextHolder.RESOURCE.setContext(ac);
   }
 
 }

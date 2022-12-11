@@ -17,35 +17,28 @@ package com.github.wnameless.spring.boot.up;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.ui.Model;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import com.github.wnameless.spring.boot.up.web.WebUiModelHolder;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 public final class SpringBootUp {
 
   private SpringBootUp() {
   }
 
-  public static void cacheWebUiModel(HttpServletRequest req, Model model) {
-    WebUiModelHolder webUiModelHolder = getBean(WebUiModelHolder.class);
-    webUiModelHolder.cacheModel(req, model);
-  }
-
-  public static Model retrieveWebUiModel() {
-    WebUiModelHolder webUiModelHolder = getBean(WebUiModelHolder.class);
-    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-        .getRequest();
-
-    return webUiModelHolder.retrieveModel(request);
-  }
-
   public static ApplicationContext applicationContext() {
     return ApplicationContextProvider.getApplicationContext();
+  }
+
+  public static <T> T getBean(String name, Class<T> requiredType) {
+    return ApplicationContextProvider.getApplicationContext().getBean(name, requiredType);
+  }
+
+  public static Object getBean(String name) {
+    return ApplicationContextProvider.getApplicationContext().getBean(name);
+  }
+
+  public static Object getBean(String name, Object... args) {
+    return ApplicationContextProvider.getApplicationContext().getBean(name, args);
   }
 
   public static <T> T getBean(Class<T> requiredType) {
@@ -53,8 +46,8 @@ public final class SpringBootUp {
         .getBean(requiredType);
   }
 
-  public static Object getBean(String name) {
-    return ApplicationContextProvider.getApplicationContext().getBean(name);
+  public static <T> T getBean(Class<T> requiredType, Object... args) {
+    return ApplicationContextProvider.getApplicationContext().getBean(requiredType, args);
   }
 
   public static <T> Map<String, T> getBeansOfType(Class<T> type) {
@@ -62,9 +55,30 @@ public final class SpringBootUp {
         .getBeansOfType(type);
   }
 
-  public static void autowireBean(Object instance) {
+  public static <T> Map<String, T> getBeansOfType(Class<T> type, boolean includeNonSingletons, boolean allowEagerInit) {
+    return ApplicationContextProvider.getApplicationContext()
+        .getBeansOfType(type, includeNonSingletons, allowEagerInit);
+  }
+
+  public static AutowireCapableBeanFactory autowireCapableBeanFactory() {
+    return ApplicationContextProvider.getApplicationContext().getAutowireCapableBeanFactory();
+  }
+
+  public static <T> T autowire(Class<T> beanClass, int autowireMode, boolean dependencyCheck) {
+    return beanClass.cast(ApplicationContextProvider.getApplicationContext().getAutowireCapableBeanFactory()
+        .autowire(beanClass, autowireMode, dependencyCheck));
+  }
+
+  public static <T> T autowireBean(T existingBean) {
     ApplicationContextProvider.getApplicationContext()
-        .getAutowireCapableBeanFactory().autowireBean(instance);
+        .getAutowireCapableBeanFactory().autowireBean(existingBean);
+    return existingBean;
+  }
+
+  public static <T> T autowireBeanProperties(T existingBean, int autowireMode, boolean dependencyCheck) {
+    ApplicationContextProvider.getApplicationContext()
+        .getAutowireCapableBeanFactory().autowireBeanProperties(existingBean, autowireMode, dependencyCheck);
+    return existingBean;
   }
 
 }
