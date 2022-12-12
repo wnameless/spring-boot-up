@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.annotation.processor;
+package com.github.wnameless.spring.boot.up.apt.processor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

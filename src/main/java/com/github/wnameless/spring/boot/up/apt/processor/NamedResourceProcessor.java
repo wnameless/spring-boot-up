@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.annotation.processor;
+package com.github.wnameless.spring.boot.up.apt.processor;
 
 import java.io.IOException;
 import java.util.Set;
@@ -14,9 +14,9 @@ import javax.lang.model.element.TypeElement;
 
 import org.atteo.evo.inflector.English;
 
-import com.github.wnameless.spring.boot.up.annotation.processor.NamedResource.NameKey;
-import com.github.wnameless.spring.boot.up.annotation.processor.NamedResource.NameKeyValue;
-import com.github.wnameless.spring.boot.up.annotation.processor.NamedResource.NameType;
+import com.github.wnameless.spring.boot.up.apt.processor.NamedResource.NameKey;
+import com.github.wnameless.spring.boot.up.apt.processor.NamedResource.NameKeyValue;
+import com.github.wnameless.spring.boot.up.apt.processor.NamedResource.NameType;
 import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -24,7 +24,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import jakarta.inject.Named;
 
-@SupportedAnnotationTypes("com.github.wnameless.spring.boot.up.annotation.processor.NamedResource")
+@SupportedAnnotationTypes("com.github.wnameless.spring.boot.up.apt.processor.NamedResource")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class NamedResourceProcessor extends AbstractProcessor {
 
