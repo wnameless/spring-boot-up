@@ -2,7 +2,6 @@ package com.github.wnameless.spring.boot.up.lombok.extensions;
 
 import java.util.List;
 import java.util.Map;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,8 +11,7 @@ import com.github.wnameless.json.base.JacksonJsonValue;
 
 public final class JacksonExtensions {
 
-  private JacksonExtensions() {
-  }
+  private JacksonExtensions() {}
 
   public static ObjectNode asObject(JsonNode node) {
     return (ObjectNode) node;
@@ -24,26 +22,19 @@ public final class JacksonExtensions {
   }
 
   public static Map<String, Object> toMap(JsonNode node) {
-    return new ObjectMapper().convertValue(node,
-        new TypeReference<Map<String, Object>>() {
-        });
+    return new ObjectMapper().convertValue(node, new TypeReference<Map<String, Object>>() {});
   }
 
   public static Map<String, Object> toMap(JsonNode node, ObjectMapper mapper) {
-    return mapper.convertValue(node,
-        new TypeReference<Map<String, Object>>() {
-        });
+    return mapper.convertValue(node, new TypeReference<Map<String, Object>>() {});
   }
 
   public static List<Object> toList(JsonNode node) {
-    return new ObjectMapper().convertValue(node,
-        new TypeReference<List<Object>>() {
-        });
+    return new ObjectMapper().convertValue(node, new TypeReference<List<Object>>() {});
   }
 
   public static List<Object> toList(JsonNode node, ObjectMapper mapper) {
-    return mapper.convertValue(node, new TypeReference<List<Object>>() {
-    });
+    return mapper.convertValue(node, new TypeReference<List<Object>>() {});
   }
 
   public static JacksonJsonValue toJsonValue(JsonNode node) {

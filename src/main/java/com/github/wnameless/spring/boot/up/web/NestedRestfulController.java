@@ -18,16 +18,13 @@ package com.github.wnameless.spring.boot.up.web;
 import java.util.ArrayList;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import com.github.wnameless.spring.boot.up.SpringBootUp;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface NestedRestfulController< //
@@ -78,8 +75,7 @@ public interface NestedRestfulController< //
   }
 
   @ModelAttribute
-  default void setParentAndChild(Model model,
-      @PathVariable(required = false) PID parentId,
+  default void setParentAndChild(Model model, @PathVariable(required = false) PID parentId,
       @PathVariable(required = false) CID id) {
     if (getParentModelPolicy().isDisable())
       return;
@@ -102,8 +98,7 @@ public interface NestedRestfulController< //
     C child = null;
     if (parent != null) {
       if (id != null) {
-        child = getChildRepository().findById(id)
-            .orElseGet(getChildModelPolicy().onDefaultItem());
+        child = getChildRepository().findById(id).orElseGet(getChildModelPolicy().onDefaultItem());
       } else {
         child = getChildModelPolicy().onDefaultItem().get();
       }
@@ -116,8 +111,7 @@ public interface NestedRestfulController< //
   }
 
   @ModelAttribute
-  default void setChildren(Model model,
-      @PathVariable(required = false) PID parentId,
+  default void setChildren(Model model, @PathVariable(required = false) PID parentId,
       @PathVariable(required = false) CID id) {
     if (getChildrenModelPolicy().isDisable())
       return;
@@ -140,8 +134,7 @@ public interface NestedRestfulController< //
   }
 
   @ModelAttribute
-  default void setRoute(Model model,
-      @PathVariable(required = false) PID parentId) {
+  default void setRoute(Model model, @PathVariable(required = false) PID parentId) {
     if (parentId != null) {
       model.addAttribute(getRouteKey(), getRoute().apply(getParent(parentId)));
     }
@@ -184,8 +177,7 @@ public interface NestedRestfulController< //
     if (parentId != null && id != null) {
       P parent = getParentRepository().findById(parentId)
           .orElseGet(getParentModelPolicy().onDefaultItem());
-      C child = getChildRepository().findById(id)
-          .orElseGet(getChildModelPolicy().onDefaultItem());
+      C child = getChildRepository().findById(id).orElseGet(getChildModelPolicy().onDefaultItem());
       if (getPaternityTesting().test(parent, child)) {
         return child;
       }
@@ -224,7 +216,8 @@ public interface NestedRestfulController< //
       return;
 
     if (getChildrenModelPolicy().onQueryConfig() != null) {
-      QueryConfig<?> queryConfig = new QueryConfig<>(getChildrenModelPolicy().onQuerySetting().get(), params);
+      QueryConfig<?> queryConfig =
+          new QueryConfig<>(getChildrenModelPolicy().onQuerySetting().get(), params);
       if (getChildrenModelPolicy().onQueryConfig() != null) {
         queryConfig = getChildrenModelPolicy().onQueryConfig().apply(queryConfig);
       }

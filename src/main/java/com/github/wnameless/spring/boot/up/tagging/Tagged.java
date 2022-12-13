@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public interface Tagged {
@@ -34,21 +33,17 @@ public interface Tagged {
   }
 
   default List<? extends Tag> getPublicTags() {
-    return getTagList().stream().filter(tag -> !tag.isPersonal())
-        .collect(Collectors.toList());
+    return getTagList().stream().filter(tag -> !tag.isPersonal()).collect(Collectors.toList());
   }
 
   default List<? extends Tag> getPersonalTags() {
-    return getTagList().stream().filter(tag -> tag.isPersonal())
-        .collect(Collectors.toList());
+    return getTagList().stream().filter(tag -> tag.isPersonal()).collect(Collectors.toList());
   }
 
   default List<? extends Tag> getViewableTags() {
-    String username =
-        SecurityContextHolder.getContext().getAuthentication().getName();
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
     List<? extends Tag> userTags = getPersonalTags().stream()
-        .filter(pt -> Objects.equals(username, pt.getUsername()))
-        .collect(Collectors.toList());
+        .filter(pt -> Objects.equals(username, pt.getUsername())).collect(Collectors.toList());
     List<? extends Tag> publicTags = getPublicTags();
 
     List<Tag> tags = new ArrayList<>();
@@ -70,8 +65,7 @@ public interface Tagged {
   }
 
   default boolean addPersonalTag(String label) {
-    String username =
-        SecurityContextHolder.getContext().getAuthentication().getName();
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Tag tag = new Tag();
     tag.setLabel(label);
     tag.setUsername(username);
@@ -79,8 +73,7 @@ public interface Tagged {
   }
 
   default boolean removePersonalTag(String label) {
-    String username =
-        SecurityContextHolder.getContext().getAuthentication().getName();
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Tag tag = new Tag();
     tag.setLabel(label);
     tag.setUsername(username);

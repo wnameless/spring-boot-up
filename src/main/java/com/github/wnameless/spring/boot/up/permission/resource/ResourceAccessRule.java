@@ -17,9 +17,7 @@ package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-
 import org.springframework.data.annotation.Id;
-
 import com.github.wnameless.spring.boot.up.permission.ability.Ability;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
@@ -57,15 +55,13 @@ public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, 
   Predicate getPredicateOfManageAbility();
 
   default Predicate getPredicateOfManageById(ID id) {
-    return ExpressionUtils.allOf(getPredicateOfManageAbility(),
-        getPredicateOfEntityId(id));
+    return ExpressionUtils.allOf(getPredicateOfManageAbility(), getPredicateOfEntityId(id));
   }
 
   Predicate getPredicateOfCRUDAbility();
 
   default Predicate getPredicateOfCRUDById(ID id) {
-    return ExpressionUtils.allOf(getPredicateOfCRUDAbility(),
-        getPredicateOfEntityId(id));
+    return ExpressionUtils.allOf(getPredicateOfCRUDAbility(), getPredicateOfEntityId(id));
   }
 
   int getRuleOrder();
@@ -79,8 +75,7 @@ public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, 
   }
 
   default Predicate getPredicateOfReadById(ID id) {
-    return ExpressionUtils.allOf(getPredicateOfReadAbility(),
-        getPredicateOfEntityId(id));
+    return ExpressionUtils.allOf(getPredicateOfReadAbility(), getPredicateOfEntityId(id));
   }
 
   default Predicate getPredicateOfUpdateAbility() {
@@ -88,8 +83,7 @@ public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, 
   }
 
   default Predicate getPredicateOfUpdateById(ID id) {
-    return ExpressionUtils.allOf(getPredicateOfUpdateAbility(),
-        getPredicateOfEntityId(id));
+    return ExpressionUtils.allOf(getPredicateOfUpdateAbility(), getPredicateOfEntityId(id));
   }
 
   default Predicate getPredicateOfDeleteAbility() {
@@ -97,8 +91,7 @@ public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, 
   }
 
   default Predicate getPredicateOfDeleteById(ID id) {
-    return ExpressionUtils.allOf(getPredicateOfDeleteAbility(),
-        getPredicateOfEntityId(id));
+    return ExpressionUtils.allOf(getPredicateOfDeleteAbility(), getPredicateOfEntityId(id));
   }
 
   default Predicate getPredicateOfAbility(Ability ability) {
@@ -106,8 +99,7 @@ public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, 
   }
 
   default Predicate getPredicateOfAbilityById(Ability ability, ID id) {
-    return ExpressionUtils.allOf(getPredicateOfAbility(ability),
-        getPredicateOfEntityId(id));
+    return ExpressionUtils.allOf(getPredicateOfAbility(ability), getPredicateOfEntityId(id));
   }
 
 }

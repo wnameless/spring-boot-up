@@ -20,15 +20,13 @@ import com.github.wnameless.spring.boot.up.permission.resource.ResourceAccessRul
 
 public interface AccessAbility extends Ability {
 
-  public static AccessAbility ofResource(Class<?> resourceType,
-      String abilityName,
+  public static AccessAbility ofResource(Class<?> resourceType, String abilityName,
       Class<? extends ResourceAccessRule<?, ?, ?>> resourceAccessRuleType) {
-    return new ResourceAccessAbility(resourceType, null, abilityName,
-        resourceAccessRuleType);
+    return new ResourceAccessAbility(resourceType, null, abilityName, resourceAccessRuleType);
   }
 
-  public static AccessAbility ofEmbeddedResource(Class<?> resourceType,
-      String fieldName, String abilityName,
+  public static AccessAbility ofEmbeddedResource(Class<?> resourceType, String fieldName,
+      String abilityName,
       Class<? extends EmbeddedResourceAccessRule<?, ?, ?, ?, ?>> embeddedResourceAccessRuleType) {
     return new ResourceAccessAbility(resourceType, fieldName, abilityName,
         embeddedResourceAccessRuleType);

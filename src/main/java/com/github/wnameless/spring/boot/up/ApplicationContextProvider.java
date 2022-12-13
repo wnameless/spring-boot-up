@@ -21,6 +21,14 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * 
+ * {@link ApplicationContextProvider} is made for SpringBootUp library to store the Spring
+ * {@link ApplicationContext} of user's running application.
+ * 
+ * @author Wei-Ming Wu
+ * 
+ */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
 public final class ApplicationContextProvider implements ApplicationContextAware {

@@ -1,13 +1,11 @@
 package com.github.wnameless.spring.boot.up.lombok.extensions;
 
 import java.util.Map;
-
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 
 public final class SpringBootUpExtensions {
 
-  private SpringBootUpExtensions() {
-  }
+  private SpringBootUpExtensions() {}
 
   public static <T> T toBean(Class<T> requiredType) {
     return SpringBootUp.getBean(requiredType);
@@ -21,7 +19,8 @@ public final class SpringBootUpExtensions {
     return SpringBootUp.getBeansOfType(type);
   }
 
-  public static <T> Map<String, T> toBeansOfType(Class<T> type, boolean includeNonSingletons, boolean allowEagerInit) {
+  public static <T> Map<String, T> toBeansOfType(Class<T> type, boolean includeNonSingletons,
+      boolean allowEagerInit) {
     return SpringBootUp.getBeansOfType(type, includeNonSingletons, allowEagerInit);
   }
 

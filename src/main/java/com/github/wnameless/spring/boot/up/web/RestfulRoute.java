@@ -28,8 +28,7 @@ public interface RestfulRoute<ID> extends JoinablePath {
     };
   }
 
-  public static <ID> RestfulRoute<ID> of(String indexPath,
-      String templatePath) {
+  public static <ID> RestfulRoute<ID> of(String indexPath, String templatePath) {
     return new RestfulRoute<ID>() {
 
       @Override

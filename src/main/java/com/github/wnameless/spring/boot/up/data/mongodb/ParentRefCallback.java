@@ -17,12 +17,10 @@ package com.github.wnameless.spring.boot.up.data.mongodb;
 
 import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.ALL;
 import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.SAVE;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -39,21 +37,21 @@ public class ParentRefCallback implements ReflectionUtils.FieldCallback {
   }
 
   @Override
-  public void doWith(final Field field)
-      throws IllegalArgumentException, IllegalAccessException {
+  public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
     ReflectionUtils.makeAccessible(field);
 
-    if (!field.isAnnotationPresent(DBRef.class)
-        || !field.isAnnotationPresent(CascadeRef.class)) {
+    if (!field.isAnnotationPresent(DBRef.class) || !field.isAnnotationPresent(CascadeRef.class)) {
       return;
     }
 
     CascadeRef cascade = AnnotationUtils.getAnnotation(field, CascadeRef.class);
     List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
-    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)) return;
+    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE))
+      return;
 
     Object fieldValue = field.get(source);
-    if (fieldValue == null) return;
+    if (fieldValue == null)
+      return;
     // Collection field
     if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
       Collection<?> collection = (Collection<?>) fieldValue;
@@ -74,8 +72,7 @@ public class ParentRefCallback implements ReflectionUtils.FieldCallback {
       for (Field f : value.getClass().getDeclaredFields()) {
         ReflectionUtils.makeAccessible(f);
 
-        ParentRef parentRef =
-            AnnotationUtils.findAnnotation(f, ParentRef.class);
+        ParentRef parentRef = AnnotationUtils.findAnnotation(f, ParentRef.class);
         if (parentRef != null) {
           String refFieldName = parentRef.value();
 
@@ -83,8 +80,7 @@ public class ParentRefCallback implements ReflectionUtils.FieldCallback {
             f.set(value, source);
             mongoOperations.save(value);
           } else {
-            Field srcField =
-                ReflectionUtils.findField(source.getClass(), refFieldName);
+            Field srcField = ReflectionUtils.findField(source.getClass(), refFieldName);
             f.set(value, ReflectionUtils.getField(srcField, source));
             mongoOperations.save(value);
           }

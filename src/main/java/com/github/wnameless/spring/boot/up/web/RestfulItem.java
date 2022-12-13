@@ -16,7 +16,6 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import org.atteo.evo.inflector.English;
-
 import com.google.common.base.CaseFormat;
 
 public interface RestfulItem<ID> extends JoinablePath {
@@ -29,8 +28,8 @@ public interface RestfulItem<ID> extends JoinablePath {
   ID getId();
 
   default String getBasePath() {
-    String lowerHyphen = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,
-        this.getClass().getSimpleName());
+    String lowerHyphen =
+        CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, this.getClass().getSimpleName());
     String plural = English.plural(lowerHyphen);
     return "/" + plural;
   }

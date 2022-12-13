@@ -16,27 +16,22 @@
 package com.github.wnameless.spring.boot.up.data.mongodb;
 
 import static com.github.wnameless.spring.boot.up.data.mongodb.MongoUtils.findDotPaths;
-
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Query;
-
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 
-public interface MongoProjectionRepository<E>
-    extends QuerydslPredicateMongoQueryExecutor<E> {
+public interface MongoProjectionRepository<E> extends QuerydslPredicateMongoQueryExecutor<E> {
 
   @SuppressWarnings("unchecked")
   default Class<E> getDocumentType() {
-    ResolvableType t =
-        ResolvableType.forClass(getClass()).as(MongoProjectionRepository.class);
+    ResolvableType t = ResolvableType.forClass(getClass()).as(MongoProjectionRepository.class);
     return (Class<E>) t.getGeneric(0).resolve();
   }
 
@@ -44,8 +39,7 @@ public interface MongoProjectionRepository<E>
     return findProjectedBy(predicate, findDotPaths(paths));
   }
 
-  default Optional<E> findProjectedBy(Predicate predicate,
-      Class<?> projection) {
+  default Optional<E> findProjectedBy(Predicate predicate, Class<?> projection) {
     return findProjectedBy(predicate, findDotPaths(projection));
   }
 
@@ -106,18 +100,15 @@ public interface MongoProjectionRepository<E>
     });
   }
 
-  default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
-      Path<?>... paths) {
+  default List<E> findAllProjectedBy(Predicate predicate, Sort sort, Path<?>... paths) {
     return findAllProjectedBy(predicate, sort, findDotPaths(paths));
   }
 
-  default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
-      Class<?> projection) {
+  default List<E> findAllProjectedBy(Predicate predicate, Sort sort, Class<?> projection) {
     return findAllProjectedBy(predicate, sort, findDotPaths(projection));
   }
 
-  default List<E> findAllProjectedBy(Predicate predicate, Sort sort,
-      String... dotPaths) {
+  default List<E> findAllProjectedBy(Predicate predicate, Sort sort, String... dotPaths) {
     return findAll(predicate, getDocumentType(), q -> {
       q.fields().include(dotPaths);
       q.with(sort);
@@ -146,8 +137,7 @@ public interface MongoProjectionRepository<E>
     return new PageImpl<>(targets, pageable, count);
   }
 
-  default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable,
-      Path<?>... paths) {
+  default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable, Path<?>... paths) {
     return findPagedProjectedBy(predicate, pageable, findDotPaths(paths));
   }
 
@@ -156,8 +146,7 @@ public interface MongoProjectionRepository<E>
     return findPagedProjectedBy(predicate, pageable, findDotPaths(projection));
   }
 
-  default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable,
-      String... dotPaths) {
+  default Page<E> findPagedProjectedBy(Predicate predicate, Pageable pageable, String... dotPaths) {
     List<E> targets = findAll(predicate, getDocumentType(), q -> {
       q.fields().include(dotPaths);
       q.with(pageable);

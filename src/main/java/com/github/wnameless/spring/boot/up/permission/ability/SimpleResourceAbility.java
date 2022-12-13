@@ -17,7 +17,6 @@ package com.github.wnameless.spring.boot.up.permission.ability;
 
 import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceFilterRepository;
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceFilterRepository;
-
 import lombok.Data;
 import lombok.NonNull;
 
@@ -31,8 +30,7 @@ public class SimpleResourceAbility implements ResourceAbility {
   private final ResourceFilterRepository<?, ?> resourceFilterRepository;
   private final EmbeddedResourceFilterRepository<?, ?, ?> embeddedResourceFilterRepository;
 
-  public SimpleResourceAbility(@NonNull Class<?> resourceType,
-      @NonNull String abilityName,
+  public SimpleResourceAbility(@NonNull Class<?> resourceType, @NonNull String abilityName,
       @NonNull ResourceFilterRepository<?, ?> resourceFilterRepository) {
     this.resourceType = resourceType;
     this.fieldName = null;
@@ -41,8 +39,8 @@ public class SimpleResourceAbility implements ResourceAbility {
     this.embeddedResourceFilterRepository = null;
   }
 
-  public SimpleResourceAbility(@NonNull Class<?> resourceType,
-      @NonNull String fieldName, @NonNull String abilityName,
+  public SimpleResourceAbility(@NonNull Class<?> resourceType, @NonNull String fieldName,
+      @NonNull String abilityName,
       @NonNull EmbeddedResourceFilterRepository<?, ?, ?> embeddedResourceFilterRepository) {
     this.resourceType = resourceType;
     this.fieldName = fieldName;

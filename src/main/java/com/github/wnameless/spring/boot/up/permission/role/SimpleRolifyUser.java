@@ -6,10 +6,10 @@ import lombok.NonNull;
 @Data
 public class SimpleRolifyUser implements RolifyUser {
 
-    @NonNull
-    private final String username;
+  @NonNull
+  private final String username;
 
-    @NonNull
-    private final Role role;
+  @NonNull
+  private final Role role;
 
 }

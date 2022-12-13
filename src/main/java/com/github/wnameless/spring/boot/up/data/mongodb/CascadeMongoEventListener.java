@@ -18,7 +18,6 @@ package com.github.wnameless.spring.boot.up.data.mongodb;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
@@ -33,8 +32,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
 
-public class CascadeMongoEventListener
-    extends AbstractMongoEventListener<Object> {
+public class CascadeMongoEventListener extends AbstractMongoEventListener<Object> {
 
   private static final int CACHE_SIZE = 256;
 
@@ -46,8 +44,7 @@ public class CascadeMongoEventListener
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected boolean removeEldestEntry(
-                Map.Entry<Object, CascadeDeleteCallback> entry) {
+            protected boolean removeEldestEntry(Map.Entry<Object, CascadeDeleteCallback> entry) {
               return size() > CACHE_SIZE;
             }
 
@@ -60,8 +57,7 @@ public class CascadeMongoEventListener
   @Override
   public void onBeforeConvert(BeforeConvertEvent<Object> event) {
     Object source = event.getSource();
-    CascadeSaveUpdateCallback callback =
-        new CascadeSaveUpdateCallback(source, mongoOperations);
+    CascadeSaveUpdateCallback callback = new CascadeSaveUpdateCallback(source, mongoOperations);
     ReflectionUtils.doWithFields(source.getClass(), callback);
   }
 
@@ -85,8 +81,7 @@ public class CascadeMongoEventListener
   @Override
   public void onAfterConvert(AfterConvertEvent<Object> event) {
     Object source = event.getSource();
-    CascadeDeleteCallback callback =
-        new CascadeDeleteCallback(source, mongoOperations);
+    CascadeDeleteCallback callback = new CascadeDeleteCallback(source, mongoOperations);
     ReflectionUtils.doWithFields(source.getClass(), callback);
     Object docId = event.getDocument().get("_id");
     if (docId != null && !callback.getDeletableIds().isEmpty()) {
@@ -105,8 +100,7 @@ public class CascadeMongoEventListener
     if (cascadeDeleteCallbacks.containsKey(docId)) {
       CascadeDeleteCallback callback = cascadeDeleteCallbacks.remove(docId);
       for (DeletableId deletableId : callback.getDeletableIds()) {
-        Query searchQuery =
-            new Query(Criteria.where("_id").is(deletableId.getId()));
+        Query searchQuery = new Query(Criteria.where("_id").is(deletableId.getId()));
         mongoOperations.remove(searchQuery, deletableId.getType());
       }
     }

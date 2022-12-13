@@ -16,7 +16,6 @@
 package com.github.wnameless.spring.boot.up.permission.ability;
 
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceAccessRule;
-
 import lombok.Data;
 import lombok.NonNull;
 

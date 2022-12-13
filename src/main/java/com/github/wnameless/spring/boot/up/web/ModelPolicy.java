@@ -37,8 +37,7 @@ public class ModelPolicy<I> {
 
   private Function<? super I, ? extends I> itemInitialized;
 
-  public ModelPolicy() {
-  }
+  public ModelPolicy() {}
 
   public ModelPolicy(I defaultItem) {
     this.defaultItem = new Supplier<I>() {

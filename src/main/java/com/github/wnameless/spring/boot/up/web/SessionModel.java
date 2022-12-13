@@ -17,13 +17,10 @@ package com.github.wnameless.spring.boot.up.web;
 
 import java.util.Map;
 import java.util.Objects;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
-
 import com.github.wnameless.spring.boot.up.web.Pageables.PageableParams;
-
 import jakarta.servlet.http.HttpSession;
 
 public final class SessionModel {
@@ -77,8 +74,7 @@ public final class SessionModel {
     return initPageable(requestParams, PageableParams.ofSpring());
   }
 
-  public Pageable initPageable(Map<String, String> requestParams,
-      PageableParams pageableParams) {
+  public Pageable initPageable(Map<String, String> requestParams, PageableParams pageableParams) {
     String pageParam = pageableParams.getPageParameter();
     String sizeParam = pageableParams.getSizeParameter();
     String sortParam = pageableParams.getSortParameter();
@@ -86,12 +82,11 @@ public final class SessionModel {
     String size = initAttr(sizeParam, requestParams.get(sizeParam), "10");
     String sort = initAttr(sortParam, requestParams.get(sortParam), "");
 
-    return initAttr("pageable", PageRequest.of(Integer.valueOf(page),
-        Integer.valueOf(size), Pageables.paramToSort(sort)));
+    return initAttr("pageable",
+        PageRequest.of(Integer.valueOf(page), Integer.valueOf(size), Pageables.paramToSort(sort)));
   }
 
-  public Pageable initPageable(Map<String, String> requestParams,
-      Pageable defaultPageable) {
+  public Pageable initPageable(Map<String, String> requestParams, Pageable defaultPageable) {
     String page = initAttr("page", requestParams.get("page"),
         Integer.toString(defaultPageable.getPageNumber()));
     String size = initAttr("size", requestParams.get("size"),
@@ -99,8 +94,8 @@ public final class SessionModel {
     String sort = initAttr("sort", requestParams.get("sort"),
         Pageables.sortToParam(defaultPageable.getSort()).get(0));
 
-    return initAttr("pageable", PageRequest.of(Integer.valueOf(page),
-        Integer.valueOf(size), Pageables.paramToSort(sort)));
+    return initAttr("pageable",
+        PageRequest.of(Integer.valueOf(page), Integer.valueOf(size), Pageables.paramToSort(sort)));
   }
 
 }

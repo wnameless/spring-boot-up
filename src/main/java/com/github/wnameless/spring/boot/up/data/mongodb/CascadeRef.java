@@ -24,6 +24,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface CascadeRef {
 
-  CascadeType[] value() default { CascadeType.ALL };
+  CascadeType[] value() default {CascadeType.ALL};
 
 }

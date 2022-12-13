@@ -16,7 +16,6 @@
 package com.github.wnameless.spring.boot.up.data.mongodb;
 
 import java.lang.reflect.Field;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.util.ReflectionUtils;
 
@@ -27,8 +26,7 @@ public class IdFieldCallback implements ReflectionUtils.FieldCallback {
   private String idFieldName;
 
   @Override
-  public void doWith(final Field field)
-      throws IllegalArgumentException, IllegalAccessException {
+  public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
     ReflectionUtils.makeAccessible(field);
 
     if (field.isAnnotationPresent(Id.class)) {
@@ -46,8 +44,7 @@ public class IdFieldCallback implements ReflectionUtils.FieldCallback {
     return idFieldName;
   }
 
-  public Object getId(Object obj)
-      throws IllegalArgumentException, IllegalAccessException {
+  public Object getId(Object obj) throws IllegalArgumentException, IllegalAccessException {
     return idField.get(obj);
   }
 

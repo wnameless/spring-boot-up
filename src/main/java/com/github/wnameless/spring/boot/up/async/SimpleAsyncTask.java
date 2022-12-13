@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import lombok.Data;
 
 @Data
@@ -40,8 +39,7 @@ public class SimpleAsyncTask<T> implements AsyncTask<T> {
   private boolean mutuallyExclusive = true;
   private Map<String, ?> properties = new LinkedHashMap<>();
   private FutureConsumer<CompletableFuture<T>> actionOnDone = null;
-  private FutureConsumer<CompletableFuture<T>> actionOnCompletedExceptionally =
-      null;
+  private FutureConsumer<CompletableFuture<T>> actionOnCompletedExceptionally = null;
   private FutureConsumer<CompletableFuture<T>> actionOnCancelled = null;
 
   public SimpleAsyncTask(String name, String type,

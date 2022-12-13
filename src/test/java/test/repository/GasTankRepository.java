@@ -17,8 +17,8 @@ package test.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-
 import test.model.GasTank;
 
 @Repository
-public interface GasTankRepository extends MongoRepository<GasTank, String> {}
+public interface GasTankRepository extends MongoRepository<GasTank, String> {
+}

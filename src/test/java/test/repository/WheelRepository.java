@@ -17,8 +17,8 @@ package test.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-
 import test.model.Wheel;
 
 @Repository
-public interface WheelRepository extends MongoRepository<Wheel, String> {}
+public interface WheelRepository extends MongoRepository<Wheel, String> {
+}

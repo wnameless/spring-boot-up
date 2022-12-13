@@ -20,12 +20,33 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.ComponentScan;
 
+/**
+ * 
+ * {@link EnableSpringBootUp} is made for Spring to activate all features brought by SpringBootUp
+ * library. SpringBootUp components under package {@code com.github.wnameless.spring.boot.up} will
+ * be found automatically.<br>
+ * <br>
+ * Add this annotation to an {@code @Configuration} class to enable SpringBootUp.<br>
+ * <br>
+ * For example:
+ *
+ * <pre class="code">
+ * &#064;Configuration
+ * &#064;EnableSpringBootUp
+ * public class MyWebConfiguration {
+ * }
+ * </pre>
+ *
+ * @see ApplicationContextProvider
+ *
+ * @author Wei-Ming Wu
+ * 
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ComponentScan(basePackageClasses = { ApplicationContextProvider.class })
+@ComponentScan(basePackageClasses = {ApplicationContextProvider.class})
 public @interface EnableSpringBootUp {
 }

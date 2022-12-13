@@ -20,13 +20,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-
 import com.github.wnameless.spring.boot.up.web.Pageables.PageableParams;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.StringPath;
-
 import lombok.Data;
 
 @Data
@@ -76,8 +74,9 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     }
 
     public QuerySetting<E> filterLogic(BiFunction<E, String, Predicate> filterLogic) {
-      QuerySetting.this.filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-          filterLogic).sortable(sortable));
+      QuerySetting.this.filterableField(
+          new FilterableField<>(pathFinder, Optional.ofNullable(alias), filterLogic)
+              .sortable(sortable));
       return QuerySetting.this;
     }
 
@@ -101,32 +100,37 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     }
 
     public QuerySetting<E> containsIgnoreCase() {
-      QuerySetting.this.filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-          (e, param) -> pathFinder.apply(e).containsIgnoreCase(param)).sortable(sortable));
+      QuerySetting.this
+          .filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
+              (e, param) -> pathFinder.apply(e).containsIgnoreCase(param)).sortable(sortable));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> contains() {
-      QuerySetting.this.filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-          (e, param) -> pathFinder.apply(e).contains(param)).sortable(sortable));
+      QuerySetting.this
+          .filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
+              (e, param) -> pathFinder.apply(e).contains(param)).sortable(sortable));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> eq() {
-      QuerySetting.this.filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-          (e, param) -> pathFinder.apply(e).eq(param)).sortable(sortable));
+      QuerySetting.this
+          .filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
+              (e, param) -> pathFinder.apply(e).eq(param)).sortable(sortable));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> startsWith() {
-      QuerySetting.this.filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-          (e, param) -> pathFinder.apply(e).startsWith(param)).sortable(sortable));
+      QuerySetting.this
+          .filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
+              (e, param) -> pathFinder.apply(e).startsWith(param)).sortable(sortable));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> endsWith() {
-      QuerySetting.this.filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-          (e, param) -> pathFinder.apply(e).endsWith(param)).sortable(sortable));
+      QuerySetting.this
+          .filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
+              (e, param) -> pathFinder.apply(e).endsWith(param)).sortable(sortable));
       return QuerySetting.this;
     }
 

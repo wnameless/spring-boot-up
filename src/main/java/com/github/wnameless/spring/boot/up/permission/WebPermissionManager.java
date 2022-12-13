@@ -17,7 +17,6 @@ package com.github.wnameless.spring.boot.up.permission;
 
 import java.util.Map;
 import java.util.Set;
-
 import com.github.wnameless.spring.boot.up.permission.ability.ResourceAbility;
 import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceAccessRule;
 import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceFilterRepository;

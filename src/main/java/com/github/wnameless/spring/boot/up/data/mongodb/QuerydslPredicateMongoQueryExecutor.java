@@ -17,20 +17,17 @@ package com.github.wnameless.spring.boot.up.data.mongodb;
 
 import java.util.List;
 import java.util.function.Function;
-
 import org.bson.Document;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
-
 import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
 import com.querydsl.core.types.Predicate;
 
 public interface QuerydslPredicateMongoQueryExecutor<E> {
 
   default MongoOperations getMongoOperations() {
-    ApplicationContext appCtx =
-        ApplicationContextProvider.getApplicationContext();
+    ApplicationContext appCtx = ApplicationContextProvider.getApplicationContext();
     return appCtx.getBean(MongoOperations.class);
   }
 
@@ -39,8 +36,7 @@ public interface QuerydslPredicateMongoQueryExecutor<E> {
     return mongoOperations.findOne(query, entityClass);
   }
 
-  default E findOne(Query query, Class<E> entityClass,
-      Function<Query, Query> queryConfig) {
+  default E findOne(Query query, Class<E> entityClass, Function<Query, Query> queryConfig) {
     MongoOperations mongoOperations = getMongoOperations();
 
     query = queryConfig.apply(query);
@@ -52,13 +48,11 @@ public interface QuerydslPredicateMongoQueryExecutor<E> {
     return findOne(predicate, entityClass, q -> q);
   }
 
-  default E findOne(Predicate predicate, Class<E> entityClass,
-      Function<Query, Query> queryConfig) {
+  default E findOne(Predicate predicate, Class<E> entityClass, Function<Query, Query> queryConfig) {
     MongoOperations mongoOperations = getMongoOperations();
 
     Document document =
-        new CustomSpringDataMongodbQuery<>(mongoOperations, entityClass)
-            .createQuery(predicate);
+        new CustomSpringDataMongodbQuery<>(mongoOperations, entityClass).createQuery(predicate);
     Query query = Query.query(new DocumentCriteria(document));
     query = queryConfig.apply(query);
 
@@ -70,8 +64,7 @@ public interface QuerydslPredicateMongoQueryExecutor<E> {
     return mongoOperations.find(query, entityClass);
   }
 
-  default List<E> findAll(Query query, Class<E> entityClass,
-      Function<Query, Query> queryConfig) {
+  default List<E> findAll(Query query, Class<E> entityClass, Function<Query, Query> queryConfig) {
     MongoOperations mongoOperations = getMongoOperations();
 
     query = queryConfig.apply(query);
@@ -88,8 +81,7 @@ public interface QuerydslPredicateMongoQueryExecutor<E> {
     MongoOperations mongoOperations = getMongoOperations();
 
     Document document =
-        new CustomSpringDataMongodbQuery<>(mongoOperations, entityClass)
-            .createQuery(predicate);
+        new CustomSpringDataMongodbQuery<>(mongoOperations, entityClass).createQuery(predicate);
     Query query = Query.query(new DocumentCriteria(document));
     query = queryConfig.apply(query);
 
@@ -101,8 +93,7 @@ public interface QuerydslPredicateMongoQueryExecutor<E> {
     return mongoOperations.count(query, entityClass);
   }
 
-  default long countAll(Query query, Class<E> entityClass,
-      Function<Query, Query> queryConfig) {
+  default long countAll(Query query, Class<E> entityClass, Function<Query, Query> queryConfig) {
     MongoOperations mongoOperations = getMongoOperations();
 
     query = queryConfig.apply(query);
@@ -119,8 +110,7 @@ public interface QuerydslPredicateMongoQueryExecutor<E> {
     MongoOperations mongoOperations = getMongoOperations();
 
     Document document =
-        new CustomSpringDataMongodbQuery<>(mongoOperations, entityClass)
-            .createQuery(predicate);
+        new CustomSpringDataMongodbQuery<>(mongoOperations, entityClass).createQuery(predicate);
     Query query = Query.query(new DocumentCriteria(document));
     query = queryConfig.apply(query);
 

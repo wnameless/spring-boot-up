@@ -17,8 +17,8 @@ package test.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-
 import test.model.Motor;
 
 @Repository
-public interface MotorRepository extends MongoRepository<Motor, String> {}
+public interface MotorRepository extends MongoRepository<Motor, String> {
+}

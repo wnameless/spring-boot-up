@@ -16,14 +16,12 @@
 package com.github.wnameless.spring.boot.up.data.mongodb;
 
 import java.lang.reflect.Method;
-
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterConvertEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
 import org.springframework.util.ReflectionUtils;
 
-public class BeforeAndAfterConvertMongoEventListener
-    extends AbstractMongoEventListener<Object> {
+public class BeforeAndAfterConvertMongoEventListener extends AbstractMongoEventListener<Object> {
 
   @Override
   public void onBeforeConvert(BeforeConvertEvent<Object> event) {

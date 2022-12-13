@@ -21,9 +21,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import com.github.wnameless.spring.boot.up.SpringBootUp;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
@@ -53,8 +51,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     I item = null;
 
     if (id != null) {
-      item = getRepository().findById(id)
-          .orElseGet(getModelPolicy().onDefaultItem());
+      item = getRepository().findById(id).orElseGet(getModelPolicy().onDefaultItem());
     } else {
       item = getModelPolicy().onDefaultItem().get();
     }
@@ -96,7 +93,8 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
       return;
 
     if (getModelPolicy().onQueryConfig() != null) {
-      QueryConfig<?> queryConfig = new QueryConfig<>(getModelPolicy().onQuerySetting().get(), params);
+      QueryConfig<?> queryConfig =
+          new QueryConfig<>(getModelPolicy().onQuerySetting().get(), params);
       if (getModelPolicy().onQueryConfig() != null) {
         queryConfig = getModelPolicy().onQueryConfig().apply(queryConfig);
       }

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -28,8 +27,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 public final class Pageables {
 
-  private Pageables() {
-  }
+  private Pageables() {}
 
   private static final Pageables INSTANCE = new Pageables();
 
@@ -37,8 +35,7 @@ public final class Pageables {
     return INSTANCE;
   }
 
-  public static String toQueryString(Pageable pageable,
-      PageableParams pageableParams) {
+  public static String toQueryString(Pageable pageable, PageableParams pageableParams) {
     if (pageable == null)
       return "";
 
@@ -59,8 +56,7 @@ public final class Pageables {
     return toQueryString(pageable, PageableParams.ofSpring());
   }
 
-  public static String toQueryStringWithoutPage(Pageable pageable,
-      PageableParams pageableParams) {
+  public static String toQueryStringWithoutPage(Pageable pageable, PageableParams pageableParams) {
     if (pageable == null)
       return "";
 
@@ -135,8 +131,7 @@ public final class Pageables {
     private String sizeParameter;
     private String sortParameter;
 
-    private PageableParams(String pageParameter, String sizeParameter,
-        String sortParameter) {
+    private PageableParams(String pageParameter, String sizeParameter, String sortParameter) {
       this.pageParameter = pageParameter;
       this.sizeParameter = sizeParameter;
       this.sortParameter = sortParameter;

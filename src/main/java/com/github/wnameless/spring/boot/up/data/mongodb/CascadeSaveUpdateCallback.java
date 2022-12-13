@@ -18,19 +18,16 @@ package com.github.wnameless.spring.boot.up.data.mongodb;
 import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.ALL;
 import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.SAVE;
 import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.UPDATE;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
 
-public class CascadeSaveUpdateCallback
-    implements ReflectionUtils.FieldCallback {
+public class CascadeSaveUpdateCallback implements ReflectionUtils.FieldCallback {
 
   private final Object source;
   private final MongoOperations mongoOperations;
@@ -41,12 +38,10 @@ public class CascadeSaveUpdateCallback
   }
 
   @Override
-  public void doWith(final Field field)
-      throws IllegalArgumentException, IllegalAccessException {
+  public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
     ReflectionUtils.makeAccessible(field);
 
-    if (!field.isAnnotationPresent(DBRef.class)
-        || !field.isAnnotationPresent(CascadeRef.class)) {
+    if (!field.isAnnotationPresent(DBRef.class) || !field.isAnnotationPresent(CascadeRef.class)) {
       return;
     }
 
@@ -58,7 +53,8 @@ public class CascadeSaveUpdateCallback
     }
 
     Object fieldValue = field.get(source);
-    if (fieldValue == null) return;
+    if (fieldValue == null)
+      return;
     // Collection field
     if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
       Collection<?> collection = (Collection<?>) fieldValue;

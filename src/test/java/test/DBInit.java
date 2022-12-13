@@ -17,7 +17,6 @@ package test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import jakarta.annotation.PostConstruct;
 import test.model.Car;
 import test.model.Engine;

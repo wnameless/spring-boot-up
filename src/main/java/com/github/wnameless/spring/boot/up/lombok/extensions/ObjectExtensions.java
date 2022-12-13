@@ -16,13 +16,11 @@
 package com.github.wnameless.spring.boot.up.lombok.extensions;
 
 import java.util.Objects;
-
 import net.sf.rubycollect4j.Ruby;
 
 public final class ObjectExtensions {
 
-  private ObjectExtensions() {
-  }
+  private ObjectExtensions() {}
 
   public static boolean eq(Object obj, Object otherObj) {
     return Objects.equals(obj, otherObj);

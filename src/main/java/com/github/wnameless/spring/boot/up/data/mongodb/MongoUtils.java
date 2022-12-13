@@ -22,10 +22,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.json.base.JacksonJsonValue;
@@ -46,14 +44,12 @@ public final class MongoUtils {
       JsonNode jsonNode = mapper.valueToTree(obj);
 
       JsonFlattener jf = new JsonFlattener(new JacksonJsonValue(jsonNode));
-      Map<String, Object> flattenedMap =
-          jf.withFlattenMode(FlattenMode.KEEP_ARRAYS).flattenAsMap();
+      Map<String, Object> flattenedMap = jf.withFlattenMode(FlattenMode.KEEP_ARRAYS).flattenAsMap();
 
       log.debug(flattenedMap.keySet().toString());
       return flattenedMap.keySet().stream().toArray(String[]::new);
-    } catch (InstantiationException | IllegalAccessException
-        | IllegalArgumentException | InvocationTargetException
-        | NoSuchMethodException | SecurityException e) {
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
       throw new RuntimeException(e);
     }
   }
@@ -64,8 +60,8 @@ public final class MongoUtils {
     for (Path<?> path : paths) {
       String[] pathStrs = path.toString().split(Pattern.quote("."));
       if (pathStrs.length > 1) {
-        String dotPath = IntStream.range(1, pathStrs.length)
-            .mapToObj(idx -> pathStrs[idx]).collect(Collectors.joining("."));
+        String dotPath = IntStream.range(1, pathStrs.length).mapToObj(idx -> pathStrs[idx])
+            .collect(Collectors.joining("."));
         dotPaths.add(dotPath);
       }
     }
