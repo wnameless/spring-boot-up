@@ -15,11 +15,14 @@
  */
 package com.github.wnameless.spring.boot.up.web;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import com.github.wnameless.spring.boot.up.web.Pageables.PageableParams;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
@@ -36,11 +39,24 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
 
   private final E entity;
   private final Map<String, FilterableField<E>> filterFields;
+  private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
   private PageableParams pageableParams = PageableParams.ofSpring();
 
   public QuerySetting(E entity) {
     this.entity = entity;
     this.filterFields = new LinkedHashMap<>();
+  }
+
+  public QuerySetting<E> sortBy(String... fields) {
+    Arrays.asList(fields).forEach(f -> params.add(pageableParams.getSortParameter(), f));
+    return this;
+  }
+
+  public MultiValueMap<String, String> defaultParams(MultiValueMap<String, String> other) {
+    params.entrySet().forEach(e -> {
+      other.putIfAbsent(e.getKey(), e.getValue());
+    });
+    return other;
   }
 
   public QuerySetting<E> filterableField(FilterableField<E> ff) {
@@ -114,9 +130,11 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     }
 
     public QuerySetting<E> eq() {
-      QuerySetting.this
-          .filterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-              (e, param) -> pathFinder.apply(e).eq(param)).sortable(sortable));
+      QuerySetting.this.filterableField(
+          new FilterableField<>(pathFinder, Optional.ofNullable(alias), (e, param) -> {
+            return param == null || param.isBlank() ? pathFinder.apply(e).containsIgnoreCase(param)
+                : pathFinder.apply(e).eq(param);
+          }).sortable(sortable));
       return QuerySetting.this;
     }
 

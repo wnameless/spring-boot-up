@@ -31,7 +31,7 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
     this.entity = querySetting.getEntity();
     this.filterFields = querySetting.getFilterFields();
     this.pageableParams = querySetting.getPageableParams();
-    this.requestParams = requestParams;
+    this.requestParams = querySetting.defaultParams(requestParams);
   }
 
   public List<String> getFields() {
@@ -83,6 +83,32 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
       queryStr.append(URLEncoder.encode(property, "UTF-8"));
       queryStr.append(',');
       queryStr.append(direction);
+      queryStr.append('&');
+    }
+
+    for (Entry<String, FilterableField<E>> entry : filterFields.entrySet()) {
+      String field = entry.getKey();
+      if (!requestParams.containsKey(field)) {
+        continue;
+      }
+
+      queryStr.append(URLEncoder.encode(field, "UTF-8"));
+      queryStr.append('=');
+      queryStr.append(URLEncoder.encode(requestParams.getFirst(field), "UTF-8"));
+      queryStr.append('&');
+    }
+    return queryStr.toString();
+  }
+
+  @SneakyThrows
+  public String toQueryStringWithoutSort() {
+    StringBuilder queryStr = new StringBuilder("?");
+
+    String sizeKey = pageableParams.getSizeParameter();
+    if (requestParams.containsKey(sizeKey)) {
+      queryStr.append(URLEncoder.encode(sizeKey, "UTF-8"));
+      queryStr.append('=');
+      queryStr.append(getSize());
       queryStr.append('&');
     }
 
