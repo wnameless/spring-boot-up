@@ -58,18 +58,18 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
     implements WebPermissionManager {
 
   @Autowired
-  private ApplicationContext ctx;
+  protected ApplicationContext ctx;
   @Autowired
-  private PermittedUser<ID> user;
+  protected PermittedUser<ID> user;
 
-  private final Map<String, WebRole> webRoles;
-  private final Map<String, Set<AccessAbility>> role2Abilities;
-  private final Map<String, Map<String, Set<String>>> role2Metadata;
+  protected final Map<String, WebRole> webRoles;
+  protected final Map<String, Set<AccessAbility>> role2Abilities;
+  protected final Map<String, Map<String, Set<String>>> role2Metadata;
   @SuppressWarnings("rawtypes")
-  private final Map<Class<ResourceFilterRepository>, Set<ResourceAccessRule>> repo2Rules;
+  protected final Map<Class<ResourceFilterRepository>, Set<ResourceAccessRule>> repo2Rules;
   @SuppressWarnings("rawtypes")
-  private final Map<Class<EmbeddedResourceFilterRepository>, Set<EmbeddedResourceAccessRule>> repo2EmbeddedRules;
-  private final Map<String, Class<?>> resourceLookup;
+  protected final Map<Class<EmbeddedResourceFilterRepository>, Set<EmbeddedResourceAccessRule>> repo2EmbeddedRules;
+  protected final Map<String, Class<?>> resourceLookup;
   {
     {
       webRoles = new LinkedCaseInsensitiveMap<>();
@@ -514,5 +514,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
 
     return metadata;
   }
+
+
 
 }
