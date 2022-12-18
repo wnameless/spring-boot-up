@@ -33,9 +33,14 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   public void onBeforeConvert(BeforeConvertEvent<Object> event) {
     Object target = event.getSource();
     for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(BeforeConvertToBSON.class)) {
+      if (method.isAnnotationPresent(BeforeConvertToMongo.class)) {
         method.setAccessible(true);
-        ReflectionUtils.invokeMethod(method, target);
+        if (method.getParameterTypes().length == 1
+            && method.getParameterTypes()[0].isAssignableFrom(target.getClass())) {
+          ReflectionUtils.invokeMethod(method, target, target);
+        } else {
+          ReflectionUtils.invokeMethod(method, target);
+        }
       }
     }
   }
@@ -45,9 +50,14 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   public void onBeforeSave(BeforeSaveEvent<Object> event) {
     Object target = event.getSource();
     for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(BeforeSaveToBSON.class)) {
+      if (method.isAnnotationPresent(BeforeSaveToMongo.class)) {
         method.setAccessible(true);
-        ReflectionUtils.invokeMethod(method, target);
+        if (method.getParameterTypes().length == 1
+            && method.getParameterTypes()[0].isAssignableFrom(target.getClass())) {
+          ReflectionUtils.invokeMethod(method, target, target);
+        } else {
+          ReflectionUtils.invokeMethod(method, target);
+        }
       }
     }
   }
@@ -57,9 +67,14 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   public void onAfterSave(AfterSaveEvent<Object> event) {
     Object target = event.getSource();
     for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(AfterSaveToBSON.class)) {
+      if (method.isAnnotationPresent(AfterSaveToMongo.class)) {
         method.setAccessible(true);
-        ReflectionUtils.invokeMethod(method, target);
+        if (method.getParameterTypes().length == 1
+            && method.getParameterTypes()[0].isAssignableFrom(target.getClass())) {
+          ReflectionUtils.invokeMethod(method, target, target);
+        } else {
+          ReflectionUtils.invokeMethod(method, target);
+        }
       }
     }
   }
@@ -69,9 +84,14 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   public void onAfterLoad(AfterLoadEvent<Object> event) {
     Object target = event.getSource();
     for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(AfterLoadBSON.class)) {
+      if (method.isAnnotationPresent(AfterLoadFormMongo.class)) {
         method.setAccessible(true);
-        ReflectionUtils.invokeMethod(method, target);
+        if (method.getParameterTypes().length == 1
+            && method.getParameterTypes()[0].isAssignableFrom(target.getClass())) {
+          ReflectionUtils.invokeMethod(method, target, target);
+        } else {
+          ReflectionUtils.invokeMethod(method, target);
+        }
       }
     }
   }
@@ -81,9 +101,14 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   public void onAfterConvert(AfterConvertEvent<Object> event) {
     Object target = event.getSource();
     for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(AfterConvertFromBSON.class)) {
+      if (method.isAnnotationPresent(AfterConvertFromMongo.class)) {
         method.setAccessible(true);
-        ReflectionUtils.invokeMethod(method, target);
+        if (method.getParameterTypes().length == 1
+            && method.getParameterTypes()[0].isAssignableFrom(target.getClass())) {
+          ReflectionUtils.invokeMethod(method, target, target);
+        } else {
+          ReflectionUtils.invokeMethod(method, target);
+        }
       }
     }
   }
@@ -93,9 +118,14 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   public void onBeforeDelete(BeforeDeleteEvent<Object> event) {
     Object target = event.getSource();
     for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(BeforeDeleteBSON.class)) {
+      if (method.isAnnotationPresent(BeforeDeleteFromMongo.class)) {
         method.setAccessible(true);
-        ReflectionUtils.invokeMethod(method, target);
+        if (method.getParameterTypes().length == 1
+            && method.getParameterTypes()[0].isAssignableFrom(target.getClass())) {
+          ReflectionUtils.invokeMethod(method, target, target);
+        } else {
+          ReflectionUtils.invokeMethod(method, target);
+        }
       }
     }
   }
@@ -105,9 +135,14 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   public void onAfterDelete(AfterDeleteEvent<Object> event) {
     Object target = event.getSource();
     for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(AfterDeleteBSON.class)) {
+      if (method.isAnnotationPresent(AfterDeleteFromMongo.class)) {
         method.setAccessible(true);
-        ReflectionUtils.invokeMethod(method, target);
+        if (method.getParameterTypes().length == 1
+            && method.getParameterTypes()[0].isAssignableFrom(target.getClass())) {
+          ReflectionUtils.invokeMethod(method, target, target);
+        } else {
+          ReflectionUtils.invokeMethod(method, target);
+        }
       }
     }
   }
