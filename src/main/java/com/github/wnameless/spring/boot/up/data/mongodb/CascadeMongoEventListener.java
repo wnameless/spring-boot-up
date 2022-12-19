@@ -83,6 +83,8 @@ public class CascadeMongoEventListener extends AbstractMongoEventListener<Object
     Object source = event.getSource();
     CascadeDeleteCallback callback = new CascadeDeleteCallback(source, mongoOperations);
     ReflectionUtils.doWithFields(source.getClass(), callback);
+
+    // Cache deletable callback
     Object docId = event.getDocument().get("_id");
     if (docId != null && !callback.getDeletableIds().isEmpty()) {
       cascadeDeleteCallbacks.put(docId, callback);
