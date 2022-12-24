@@ -77,8 +77,7 @@ public interface NestedRestfulController< //
   @ModelAttribute
   default void setParentAndChild(Model model, @PathVariable(required = false) PID parentId,
       @PathVariable(required = false) CID id) {
-    if (getParentModelPolicy().isDisable())
-      return;
+    if (getParentModelPolicy().isDisable()) return;
 
     P parent = null;
     if (parentId != null) {
@@ -92,8 +91,7 @@ public interface NestedRestfulController< //
     }
     model.addAttribute(getParentKey(), parent);
 
-    if (getChildModelPolicy().isDisable())
-      return;
+    if (getChildModelPolicy().isDisable()) return;
 
     C child = null;
     if (parent != null) {
@@ -113,8 +111,7 @@ public interface NestedRestfulController< //
   @ModelAttribute
   default void setChildren(Model model, @PathVariable(required = false) PID parentId,
       @PathVariable(required = false) CID id) {
-    if (getChildrenModelPolicy().isDisable())
-      return;
+    if (getChildrenModelPolicy().isDisable()) return;
 
     Iterable<C> children = null;
     if (parentId != null && id == null) {
@@ -212,8 +209,7 @@ public interface NestedRestfulController< //
 
   @ModelAttribute
   default void setQueryConfig(Model model, @RequestParam MultiValueMap<String, String> params) {
-    if (getChildrenModelPolicy().isDisable())
-      return;
+    if (getChildrenModelPolicy().isDisable()) return;
 
     if (getChildrenModelPolicy().onQueryConfig() != null) {
       QueryConfig<?> queryConfig =

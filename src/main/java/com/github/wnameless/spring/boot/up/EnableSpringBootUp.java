@@ -35,8 +35,7 @@ import org.springframework.context.annotation.ComponentScan;
  * <pre class="code">
  * &#064;Configuration
  * &#064;EnableSpringBootUp
- * public class MyWebConfiguration {
- * }
+ * public class MyWebConfiguration {}
  * </pre>
  *
  * @see ApplicationContextProvider
@@ -48,5 +47,4 @@ import org.springframework.context.annotation.ComponentScan;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ComponentScan(basePackageClasses = {ApplicationContextProvider.class})
-public @interface EnableSpringBootUp {
-}
+public @interface EnableSpringBootUp {}

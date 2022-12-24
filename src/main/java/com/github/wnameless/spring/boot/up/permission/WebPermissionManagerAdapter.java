@@ -92,8 +92,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
   @PostConstruct
   private void init() {
     for (ResourceAccessRule rar : ctx.getBeansOfType(ResourceAccessRule.class).values()) {
-      if (rar instanceof EmbeddedResourceAccessRule)
-        continue;
+      if (rar instanceof EmbeddedResourceAccessRule) continue;
 
       Class<ResourceFilterRepository> klass =
           (Class<ResourceFilterRepository>) rar.getResourceFilterRepository().getClass();

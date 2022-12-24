@@ -46,12 +46,10 @@ public class ParentRefCallback implements ReflectionUtils.FieldCallback {
 
     CascadeRef cascade = AnnotationUtils.getAnnotation(field, CascadeRef.class);
     List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
-    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE))
-      return;
+    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)) return;
 
     Object fieldValue = field.get(source);
-    if (fieldValue == null)
-      return;
+    if (fieldValue == null) return;
     // Collection field
     if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
       Collection<?> collection = (Collection<?>) fieldValue;

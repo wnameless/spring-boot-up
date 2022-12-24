@@ -20,5 +20,4 @@ import org.springframework.stereotype.Repository;
 import test.model.Wheel;
 
 @Repository
-public interface WheelRepository extends MongoRepository<Wheel, String> {
-}
+public interface WheelRepository extends MongoRepository<Wheel, String> {}

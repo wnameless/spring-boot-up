@@ -54,8 +54,7 @@ public interface PermittedUser<ID> {
     boolean hasAll = true;
     Set<Role> allRoles = getAllRoles();
     for (String role : roles) {
-      if (!allRoles.contains(Role.of(role)))
-        return false;
+      if (!allRoles.contains(Role.of(role))) return false;
     }
     return hasAll;
   }
@@ -64,8 +63,7 @@ public interface PermittedUser<ID> {
     boolean hasAny = false;
     Set<Role> allRoles = getAllRoles();
     for (String role : roles) {
-      if (allRoles.contains(Role.of(role)))
-        return true;
+      if (allRoles.contains(Role.of(role))) return true;
     }
     return hasAny;
   }
@@ -85,8 +83,7 @@ public interface PermittedUser<ID> {
   default ResourceFilterRepository findResourceFilterRepository(Class<?> type,
       Ability... abilities) {
     Optional<ResourceAbility> raOpt = findResourceAbility(type, abilities);
-    if (!raOpt.isPresent())
-      return null;
+    if (!raOpt.isPresent()) return null;
 
     return raOpt.get().getResourceFilterRepository();
   }
@@ -95,8 +92,7 @@ public interface PermittedUser<ID> {
   default EmbeddedResourceFilterRepository findEmbeddedResourceFilterRepository(Class<?> type,
       String fieldName, Ability... abilities) {
     Optional<ResourceAbility> raOpt = findResourceAbility(type, fieldName, abilities);
-    if (!raOpt.isPresent())
-      return null;
+    if (!raOpt.isPresent()) return null;
 
     return raOpt.get().getEmbeddedResourceFilterRepository();
   }
@@ -127,10 +123,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canManage(Class<?> type, String fieldName) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     boolean ret = existsResourceAbility(type, fieldName, MANAGE);
 
@@ -143,15 +137,12 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canManageOn(Class<?> type, String fieldName, ID id) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     EmbeddedResourceFilterRepository erfr =
         findEmbeddedResourceFilterRepository(type, fieldName, MANAGE);
-    if (erfr == null)
-      return false;
+    if (erfr == null) return false;
 
     EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
     boolean ret = erfr.exists(erar.getPredicateOfManageById(id));
@@ -164,8 +155,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canManage(Class<?> type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     boolean ret = existsResourceAbility(type, MANAGE);
 
@@ -182,12 +172,10 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canManageOn(Class<?> type, ID id) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
-    if (rfr == null)
-      return false;
+    if (rfr == null) return false;
 
     ResourceAccessRule rar = rfr.getResourceAccessRule();
     boolean ret = rfr.exists(rar.getPredicateOfManageById(id));
@@ -204,10 +192,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canCRUD(Class<?> type, String fieldName) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     boolean ret = existsResourceAbility(type, fieldName, CRUD, MANAGE);
 
@@ -224,15 +210,12 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canCRUDOn(Class<?> type, String fieldName, ID id) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     EmbeddedResourceFilterRepository erfr =
         findEmbeddedResourceFilterRepository(type, fieldName, CRUD, MANAGE);
-    if (erfr == null)
-      return false;
+    if (erfr == null) return false;
 
     EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
     boolean ret = erfr.exists(erar.getPredicateOfCRUDById(id));
@@ -249,8 +232,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canCRUD(Class<?> type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     boolean ret = existsResourceAbility(type, CRUD, MANAGE);
 
@@ -267,12 +249,10 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canCRUDOn(Class<?> type, ID id) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     ResourceFilterRepository rfr = findResourceFilterRepository(type, CRUD, MANAGE);
-    if (rfr == null)
-      return false;
+    if (rfr == null) return false;
 
     ResourceAccessRule rar = rfr.getResourceAccessRule();
     boolean ret = rfr.exists(rar.getPredicateOfCRUDById(id));
@@ -289,10 +269,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canCreate(Class<?> type, String fieldName) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     boolean ret = existsResourceAbility(type, fieldName, CREATE, CRUD, MANAGE);
 
@@ -308,8 +286,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canCreate(Class<?> type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     boolean ret = existsResourceAbility(type, CREATE, CRUD, MANAGE);
 
@@ -325,10 +302,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canRead(Class<?> type, String fieldName) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     boolean ret = existsResourceAbility(type, fieldName, READ, CRUD, MANAGE);
 
@@ -345,15 +320,12 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canReadOn(Class<?> type, String fieldName, ID id) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     EmbeddedResourceFilterRepository erfr =
         findEmbeddedResourceFilterRepository(type, fieldName, READ, CRUD, MANAGE);
-    if (erfr == null)
-      return false;
+    if (erfr == null) return false;
 
     EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
     boolean ret = erfr.exists(erar.getPredicateOfReadById(id));
@@ -370,8 +342,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canRead(Class<?> type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     boolean ret = existsResourceAbility(type, READ, CRUD, MANAGE);
 
@@ -388,12 +359,10 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canReadOn(Class<?> type, ID id) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     ResourceFilterRepository rfr = findResourceFilterRepository(type, READ, CRUD, MANAGE);
-    if (rfr == null)
-      return false;
+    if (rfr == null) return false;
 
     ResourceAccessRule rar = rfr.getResourceAccessRule();
     boolean ret = rfr.exists(rar.getPredicateOfReadById(id));
@@ -410,10 +379,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canUpdate(Class<?> type, String fieldName) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     boolean ret = existsResourceAbility(type, fieldName, UPDATE, CRUD, MANAGE);
 
@@ -430,15 +397,12 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canUpdateOn(Class<?> type, String fieldName, ID id) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     EmbeddedResourceFilterRepository erfr =
         findEmbeddedResourceFilterRepository(type, fieldName, UPDATE, CRUD, MANAGE);
-    if (erfr == null)
-      return false;
+    if (erfr == null) return false;
 
     EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
     boolean ret = erfr.exists(erar.getPredicateOfUpdateById(id));
@@ -455,8 +419,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canUpdate(Class<?> type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     boolean ret = existsResourceAbility(type, UPDATE, CRUD, MANAGE);
 
@@ -473,12 +436,10 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canUpdateOn(Class<?> type, ID id) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     ResourceFilterRepository rfr = findResourceFilterRepository(type, UPDATE, CRUD, MANAGE);
-    if (rfr == null)
-      return false;
+    if (rfr == null) return false;
 
     ResourceAccessRule rar = rfr.getResourceAccessRule();
     boolean ret = rfr.exists(rar.getPredicateOfUpdateById(id));
@@ -495,10 +456,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canDelete(Class<?> type, String fieldName) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     boolean ret = existsResourceAbility(type, fieldName, DELETE, CRUD, MANAGE);
 
@@ -515,15 +474,12 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canDeleteOn(Class<?> type, String fieldName, ID id) {
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     EmbeddedResourceFilterRepository erfr =
         findEmbeddedResourceFilterRepository(type, fieldName, DELETE, CRUD, MANAGE);
-    if (erfr == null)
-      return false;
+    if (erfr == null) return false;
 
     EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
     boolean ret = erfr.exists(erar.getPredicateOfDeleteById(id));
@@ -540,8 +496,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canDelete(Class<?> type) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     boolean ret = existsResourceAbility(type, DELETE, CRUD, MANAGE);
 
@@ -558,12 +513,10 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canDeleteOn(Class<?> type, ID id) {
-    if (type == null)
-      return false;
+    if (type == null) return false;
 
     ResourceFilterRepository rfr = findResourceFilterRepository(type, DELETE, CRUD, MANAGE);
-    if (rfr == null)
-      return false;
+    if (rfr == null) return false;
 
     ResourceAccessRule rar = rfr.getResourceAccessRule();
     boolean ret = rfr.exists(rar.getPredicateOfDeleteById(id));
@@ -580,12 +533,9 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canDo(String performAction, Class<?> type, String fieldName) {
-    if (performAction == null)
-      return false;
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (performAction == null) return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     boolean ret = existsResourceAbility(type, fieldName, Ability.of(performAction), MANAGE);
 
@@ -602,17 +552,13 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canDoOn(String performAction, Class<?> type, String fieldName, ID id) {
-    if (performAction == null)
-      return false;
-    if (type == null)
-      return false;
-    if (fieldName == null)
-      return false;
+    if (performAction == null) return false;
+    if (type == null) return false;
+    if (fieldName == null) return false;
 
     EmbeddedResourceFilterRepository erfr =
         findEmbeddedResourceFilterRepository(type, fieldName, Ability.of(performAction), MANAGE);
-    if (erfr == null)
-      return false;
+    if (erfr == null) return false;
 
     EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
     boolean ret = erfr.exists(erar.getPredicateOfAbilityById(Ability.of(performAction), id));
@@ -629,10 +575,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canDo(String performAction, Class<?> type) {
-    if (performAction == null)
-      return false;
-    if (type == null)
-      return false;
+    if (performAction == null) return false;
+    if (type == null) return false;
 
     boolean ret = existsResourceAbility(type, Ability.of(performAction), MANAGE);
 
@@ -649,15 +593,12 @@ public interface PermittedUser<ID> {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean canDoOn(String performAction, Class<?> type, ID id) {
-    if (performAction == null)
-      return false;
-    if (type == null)
-      return false;
+    if (performAction == null) return false;
+    if (type == null) return false;
 
     ResourceFilterRepository rfr =
         findResourceFilterRepository(type, Ability.of(performAction), MANAGE);
-    if (rfr == null)
-      return false;
+    if (rfr == null) return false;
 
     ResourceAccessRule rar = rfr.getResourceAccessRule();
     boolean ret = rfr.exists(rar.getPredicateOfAbilityById(Ability.of(performAction), id));

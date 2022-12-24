@@ -41,8 +41,7 @@ public class NamedResourceProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    if (annotations.isEmpty())
-      return false;
+    if (annotations.isEmpty()) return false;
 
     for (TypeElement annotation : annotations) {
       Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);

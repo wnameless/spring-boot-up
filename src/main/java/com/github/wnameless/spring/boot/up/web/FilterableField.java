@@ -40,8 +40,7 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   }
 
   public String getSortableFieldName(E qEntity) {
-    if (!sortable)
-      return null;
+    if (!sortable) return null;
     return getEntryFieldName(pathFinder.apply(qEntity));
   }
 

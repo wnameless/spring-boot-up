@@ -20,6 +20,18 @@ import com.google.common.base.CaseFormat;
 
 public interface RestfulItem<ID> extends JoinablePath {
 
+  default boolean hasBackPathname() {
+    return getBackPathname() != null && !getBackPathname().isBlank();
+  }
+
+  default String getBackPathname() {
+    return null;
+  }
+
+  default String getBackPath() {
+    return hasBackPathname() ? getBackPathname() : getIndexPath();
+  }
+
   @Override
   default String getRootPath() {
     return getShowPath();

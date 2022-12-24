@@ -53,8 +53,7 @@ public class CascadeSaveUpdateCallback implements ReflectionUtils.FieldCallback 
     }
 
     Object fieldValue = field.get(source);
-    if (fieldValue == null)
-      return;
+    if (fieldValue == null) return;
     // Collection field
     if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
       Collection<?> collection = (Collection<?>) fieldValue;

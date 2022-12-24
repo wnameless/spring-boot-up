@@ -45,8 +45,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
 
   @ModelAttribute
   default void setItem(Model model, @PathVariable(required = false) ID id) {
-    if (getModelPolicy().isDisable())
-      return;
+    if (getModelPolicy().isDisable()) return;
 
     I item = null;
 
@@ -89,8 +88,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
 
   @ModelAttribute
   default void setQueryConfig(Model model, @RequestParam MultiValueMap<String, String> params) {
-    if (getModelPolicy().isDisable())
-      return;
+    if (getModelPolicy().isDisable()) return;
 
     if (getModelPolicy().onQueryConfig() != null) {
       QueryConfig<?> queryConfig =

@@ -36,8 +36,7 @@ public final class Pageables {
   }
 
   public static String toQueryString(Pageable pageable, PageableParams pageableParams) {
-    if (pageable == null)
-      return "";
+    if (pageable == null) return "";
 
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
     uriBuilder.queryParam(pageableParams.getPageParameter(),
@@ -57,8 +56,7 @@ public final class Pageables {
   }
 
   public static String toQueryStringWithoutPage(Pageable pageable, PageableParams pageableParams) {
-    if (pageable == null)
-      return "";
+    if (pageable == null) return "";
 
     UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/");
     uriBuilder.queryParam(pageableParams.getSizeParameter(),
@@ -85,14 +83,12 @@ public final class Pageables {
   }
 
   public static Sort paramToSort(List<String> params) {
-    if (params == null || params.size() == 0)
-      return Sort.unsorted();
+    if (params == null || params.size() == 0) return Sort.unsorted();
 
     List<Order> orderList = new ArrayList<>();
 
     for (String param : params) {
-      if (param.trim().isEmpty())
-        continue;
+      if (param.trim().isEmpty()) continue;
 
       String[] propAndDirect = param.split(",");
       if (propAndDirect.length == 1) {

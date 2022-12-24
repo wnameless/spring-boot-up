@@ -49,8 +49,7 @@ public final class SessionModel {
     if (value == null) {
       value = (E) session.getAttribute(key);
     }
-    if (value == null)
-      value = defaultVal;
+    if (value == null) value = defaultVal;
 
     model.addAttribute(key, value);
     session.setAttribute(key, value);

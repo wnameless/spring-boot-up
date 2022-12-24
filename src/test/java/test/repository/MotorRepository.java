@@ -20,5 +20,4 @@ import org.springframework.stereotype.Repository;
 import test.model.Motor;
 
 @Repository
-public interface MotorRepository extends MongoRepository<Motor, String> {
-}
+public interface MotorRepository extends MongoRepository<Motor, String> {}
