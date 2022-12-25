@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.wnameless.spring</groupId>
   <artifactId>spring-boot-up</artifactId>
@@ -84,7 +86,7 @@
     <dependency>
       <groupId>com.github.wnameless.json</groupId>
       <artifactId>json-flattener</artifactId>
-      <version>0.16.0</version>
+      <version>0.16.3</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -182,7 +184,8 @@
         </executions>
         <!-- defaults for compile and testCompile -->
         <configuration>
-          <!-- Only required when JAVA_HOME isn't at least Java 9 and when haven't configured the maven-toolchains-plugin -->
+          <!-- Only required when JAVA_HOME isn't at least Java 9 and when haven't configured the
+          maven-toolchains-plugin -->
           <jdkToolchain>
             <version>9</version>
           </jdkToolchain>
