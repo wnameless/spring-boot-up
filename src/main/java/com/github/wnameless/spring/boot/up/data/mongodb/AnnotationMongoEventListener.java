@@ -16,9 +16,12 @@
 package com.github.wnameless.spring.boot.up.data.mongodb;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
@@ -84,7 +87,11 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   @Override
   public void onBeforeConvert(BeforeConvertEvent<Object> event) {
     Object target = event.getSource();
-    for (Method method : target.getClass().getDeclaredMethods()) {
+
+    Set<Method> methods = new LinkedHashSet<>();
+    methods.addAll(Arrays.asList(target.getClass().getDeclaredMethods()));
+    methods.addAll(Arrays.asList(target.getClass().getMethods()));
+    for (Method method : methods) {
       if (method.isAnnotationPresent(BeforeConvertToMongo.class)) {
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
@@ -102,7 +109,11 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   @Override
   public void onBeforeSave(BeforeSaveEvent<Object> event) {
     Object target = event.getSource();
-    for (Method method : target.getClass().getDeclaredMethods()) {
+
+    Set<Method> methods = new LinkedHashSet<>();
+    methods.addAll(Arrays.asList(target.getClass().getDeclaredMethods()));
+    methods.addAll(Arrays.asList(target.getClass().getMethods()));
+    for (Method method : methods) {
       if (method.isAnnotationPresent(BeforeSaveToMongo.class)) {
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
@@ -120,7 +131,11 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   @Override
   public void onAfterSave(AfterSaveEvent<Object> event) {
     Object target = event.getSource();
-    for (Method method : target.getClass().getDeclaredMethods()) {
+
+    Set<Method> methods = new LinkedHashSet<>();
+    methods.addAll(Arrays.asList(target.getClass().getDeclaredMethods()));
+    methods.addAll(Arrays.asList(target.getClass().getMethods()));
+    for (Method method : methods) {
       if (method.isAnnotationPresent(AfterSaveToMongo.class)) {
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
@@ -145,7 +160,11 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
     boolean afterDeleteMethod = false;
 
     Object target = event.getSource();
-    for (Method method : target.getClass().getDeclaredMethods()) {
+
+    Set<Method> methods = new LinkedHashSet<>();
+    methods.addAll(Arrays.asList(target.getClass().getDeclaredMethods()));
+    methods.addAll(Arrays.asList(target.getClass().getMethods()));
+    for (Method method : methods) {
       if (method.isAnnotationPresent(AfterConvertFromMongo.class)) {
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
@@ -185,7 +204,10 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
       Query searchQuery = new Query(Criteria.where("_id").is(docId));
       Object target = mongoOperations.findOne(searchQuery, type);
 
-      for (Method method : type.getDeclaredMethods()) {
+      Set<Method> methods = new LinkedHashSet<>();
+      methods.addAll(Arrays.asList(type.getClass().getDeclaredMethods()));
+      methods.addAll(Arrays.asList(type.getClass().getMethods()));
+      for (Method method : methods) {
         if (method.isAnnotationPresent(BeforeDeleteFromMongo.class)) {
           method.setAccessible(true);
           if (method.getParameterTypes().length == 1
@@ -216,7 +238,10 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
       Class<?> type = afterDeleteActions.get(docId);
       Object target = afterDeleteObjects.get(docId);
 
-      for (Method method : type.getDeclaredMethods()) {
+      Set<Method> methods = new LinkedHashSet<>();
+      methods.addAll(Arrays.asList(type.getClass().getDeclaredMethods()));
+      methods.addAll(Arrays.asList(type.getClass().getMethods()));
+      for (Method method : methods) {
         if (method.isAnnotationPresent(AfterDeleteFromMongo.class)) {
           method.setAccessible(true);
           if (method.getParameterTypes().length == 1
