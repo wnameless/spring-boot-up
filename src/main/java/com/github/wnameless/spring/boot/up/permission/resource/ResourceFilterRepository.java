@@ -28,8 +28,8 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.ui.Model;
 import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
-import com.github.wnameless.spring.boot.up.data.mongodb.MongoProjectionRepository;
-import com.github.wnameless.spring.boot.up.data.mongodb.MongoUtils;
+import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoProjectionRepository;
+import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoQuerydslUtils;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.WebPermissionManager;
 import com.github.wnameless.spring.boot.up.web.WebUiModelHolder;
@@ -359,11 +359,11 @@ public interface ResourceFilterRepository<T, ID>
   // Projection APIs
 
   default Optional<T> filterFindProjectedBy(Predicate predicate, Path<?>... paths) {
-    return filterFindProjectedBy(predicate, MongoUtils.findDotPaths(paths));
+    return filterFindProjectedBy(predicate, MongoQuerydslUtils.findDotPaths(paths));
   }
 
   default Optional<T> filterFindProjectedBy(Predicate predicate, Class<?> projection) {
-    return filterFindProjectedBy(predicate, MongoUtils.findDotPaths(projection));
+    return filterFindProjectedBy(predicate, MongoQuerydslUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -383,11 +383,11 @@ public interface ResourceFilterRepository<T, ID>
   }
 
   default List<T> filterFindAllProjectedBy(Path<?>... paths) {
-    return filterFindAllProjectedBy(MongoUtils.findDotPaths(paths));
+    return filterFindAllProjectedBy(MongoQuerydslUtils.findDotPaths(paths));
   }
 
   default List<T> filterFindAllProjectedBy(Class<?> projection) {
-    return filterFindAllProjectedBy(MongoUtils.findDotPaths(projection));
+    return filterFindAllProjectedBy(MongoQuerydslUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -405,11 +405,11 @@ public interface ResourceFilterRepository<T, ID>
   }
 
   default List<T> filterFindAllProjectedBy(Predicate predicate, Path<?>... paths) {
-    return filterFindAllProjectedBy(predicate, MongoUtils.findDotPaths(paths));
+    return filterFindAllProjectedBy(predicate, MongoQuerydslUtils.findDotPaths(paths));
   }
 
   default List<T> filterFindAllProjectedBy(Predicate predicate, Class<?> projection) {
-    return filterFindAllProjectedBy(predicate, MongoUtils.findDotPaths(projection));
+    return filterFindAllProjectedBy(predicate, MongoQuerydslUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -429,11 +429,11 @@ public interface ResourceFilterRepository<T, ID>
   }
 
   default List<T> filterFindAllProjectedBy(Sort sort, Path<?>... paths) {
-    return filterFindAllProjectedBy(sort, MongoUtils.findDotPaths(paths));
+    return filterFindAllProjectedBy(sort, MongoQuerydslUtils.findDotPaths(paths));
   }
 
   default List<T> filterFindAllProjectedBy(Sort sort, Class<?> projection) {
-    return filterFindAllProjectedBy(sort, MongoUtils.findDotPaths(projection));
+    return filterFindAllProjectedBy(sort, MongoQuerydslUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -451,11 +451,11 @@ public interface ResourceFilterRepository<T, ID>
   }
 
   default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort, Path<?>... paths) {
-    return filterFindAllProjectedBy(predicate, sort, MongoUtils.findDotPaths(paths));
+    return filterFindAllProjectedBy(predicate, sort, MongoQuerydslUtils.findDotPaths(paths));
   }
 
   default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort, Class<?> projection) {
-    return filterFindAllProjectedBy(predicate, sort, MongoUtils.findDotPaths(projection));
+    return filterFindAllProjectedBy(predicate, sort, MongoQuerydslUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -475,11 +475,11 @@ public interface ResourceFilterRepository<T, ID>
   }
 
   default Page<T> filterFindPagedProjectedBy(Pageable pageable, Path<?>... paths) {
-    return filterFindPagedProjectedBy(pageable, MongoUtils.findDotPaths(paths));
+    return filterFindPagedProjectedBy(pageable, MongoQuerydslUtils.findDotPaths(paths));
   }
 
   default Page<T> filterFindPagedProjectedBy(Pageable pageable, Class<?> projection) {
-    return filterFindPagedProjectedBy(pageable, MongoUtils.findDotPaths(projection));
+    return filterFindPagedProjectedBy(pageable, MongoQuerydslUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -498,12 +498,13 @@ public interface ResourceFilterRepository<T, ID>
 
   default Page<T> filterFindPagedProjectedBy(Predicate predicate, Pageable pageable,
       Path<?>... paths) {
-    return filterFindPagedProjectedBy(predicate, pageable, MongoUtils.findDotPaths(paths));
+    return filterFindPagedProjectedBy(predicate, pageable, MongoQuerydslUtils.findDotPaths(paths));
   }
 
   default Page<T> filterFindPagedProjectedBy(Predicate predicate, Pageable pageable,
       Class<?> projection) {
-    return filterFindPagedProjectedBy(predicate, pageable, MongoUtils.findDotPaths(projection));
+    return filterFindPagedProjectedBy(predicate, pageable,
+        MongoQuerydslUtils.findDotPaths(projection));
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
