@@ -5,8 +5,8 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
-import com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeMongoEventListener;
-import com.github.wnameless.spring.boot.up.data.mongodb.event.BeforeAndAfterMongoEventListener;
+import com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeMongoEventListener;
+import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.InterceptorMongoEventListener;
 
 public class SprinBootUpMongoRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -19,8 +19,8 @@ public class SprinBootUpMongoRegistrar implements ImportBeanDefinitionRegistrar 
         cascadeMongoEventBean);
 
     RootBeanDefinition beforeAndAfterMongoEventBean = new RootBeanDefinition();
-    beforeAndAfterMongoEventBean.setBeanClass(BeforeAndAfterMongoEventListener.class);
-    registry.registerBeanDefinition(BeforeAndAfterMongoEventListener.class.getName(),
+    beforeAndAfterMongoEventBean.setBeanClass(InterceptorMongoEventListener.class);
+    registry.registerBeanDefinition(InterceptorMongoEventListener.class.getName(),
         beforeAndAfterMongoEventBean);
   }
 

@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.data.mongodb.event;
+package com.github.wnameless.spring.boot.up.data.mongodb.interceptor;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -19,15 +19,15 @@ import org.springframework.data.mongodb.core.mapping.event.BeforeSaveEvent;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
-import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.AfterConvertFromMongo;
-import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.AfterDeleteFromMongo;
-import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.AfterSaveToMongo;
-import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.BeforeConvertToMongo;
-import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.BeforeDeleteFromMongo;
-import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.BeforeSaveToMongo;
+import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterConvertFromMongo;
+import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
+import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterSaveToMongo;
+import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.BeforeConvertToMongo;
+import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.BeforeDeleteFromMongo;
+import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.BeforeSaveToMongo;
 
 
-public class BeforeAndAfterMongoEventListener extends AbstractMongoEventListener<Object> {
+public class InterceptorMongoEventListener extends AbstractMongoEventListener<Object> {
 
   private static final String ID = "_id";
 

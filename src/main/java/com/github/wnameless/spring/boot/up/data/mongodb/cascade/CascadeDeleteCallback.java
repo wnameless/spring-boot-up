@@ -13,10 +13,10 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb.entity;
+package com.github.wnameless.spring.boot.up.data.mongodb.cascade;
 
-import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.ALL;
-import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.DELETE;
+import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.ALL;
+import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.DELETE;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +28,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
-import com.github.wnameless.spring.boot.up.data.mongodb.entity.annotation.CascadeRef;
+import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.CascadeRef;
 
 public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
 

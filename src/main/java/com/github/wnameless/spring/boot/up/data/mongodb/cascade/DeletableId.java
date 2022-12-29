@@ -13,17 +13,17 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb.entity.annotation;
+package com.github.wnameless.spring.boot.up.data.mongodb.cascade;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.Data;
+import lombok.NonNull;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ParentRef {
+@Data(staticConstructor = "of")
+public final class DeletableId {
 
-  String value() default "";
+  @NonNull
+  private final Class<?> type;
+  @NonNull
+  private final Object id;
 
 }

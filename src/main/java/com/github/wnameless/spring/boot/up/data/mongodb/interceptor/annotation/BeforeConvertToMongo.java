@@ -13,7 +13,7 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb.event.annotation;
+package com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

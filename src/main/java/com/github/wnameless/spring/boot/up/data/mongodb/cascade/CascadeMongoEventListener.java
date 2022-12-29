@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.data.mongodb.entity;
+package com.github.wnameless.spring.boot.up.data.mongodb.cascade;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

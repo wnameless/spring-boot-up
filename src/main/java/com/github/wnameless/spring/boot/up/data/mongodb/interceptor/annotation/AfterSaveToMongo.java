@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.data.mongodb.event.annotation;
+package com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,4 +7,4 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface BeforeDeleteFromMongo {}
+public @interface AfterSaveToMongo {}

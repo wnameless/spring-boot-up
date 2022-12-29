@@ -13,7 +13,7 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb.entity;
+package com.github.wnameless.spring.boot.up.data.mongodb.cascade;
 
 import java.lang.reflect.Field;
 import org.springframework.data.annotation.Id;

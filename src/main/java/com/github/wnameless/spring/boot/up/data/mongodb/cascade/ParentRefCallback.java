@@ -13,11 +13,10 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb.entity;
+package com.github.wnameless.spring.boot.up.data.mongodb.cascade;
 
-import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.ALL;
-import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.SAVE;
-import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.UPDATE;
+import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.ALL;
+import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.SAVE;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,14 +26,15 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
-import com.github.wnameless.spring.boot.up.data.mongodb.entity.annotation.CascadeRef;
+import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.CascadeRef;
+import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.ParentRef;
 
-public class CascadeSaveUpdateCallback implements ReflectionUtils.FieldCallback {
+public class ParentRefCallback implements ReflectionUtils.FieldCallback {
 
   private final Object source;
   private final MongoOperations mongoOperations;
 
-  public CascadeSaveUpdateCallback(Object source, MongoOperations mongoOperations) {
+  public ParentRefCallback(Object source, MongoOperations mongoOperations) {
     this.source = source;
     this.mongoOperations = mongoOperations;
   }
@@ -49,10 +49,7 @@ public class CascadeSaveUpdateCallback implements ReflectionUtils.FieldCallback 
 
     CascadeRef cascade = AnnotationUtils.getAnnotation(field, CascadeRef.class);
     List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
-    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)
-        && !cascadeTypes.contains(UPDATE)) {
-      return;
-    }
+    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)) return;
 
     Object fieldValue = field.get(source);
     if (fieldValue == null) return;
@@ -65,27 +62,34 @@ public class CascadeSaveUpdateCallback implements ReflectionUtils.FieldCallback 
         collection = (Collection<?>) fieldValue;
       }
       for (Object element : collection) {
-        cascadeUpsert(element, cascadeTypes);
+        cascadeParentRef(element);
       }
     } else { // Non-Collection field
-      cascadeUpsert(fieldValue, cascadeTypes);
+      cascadeParentRef(fieldValue);
     }
   }
 
-  private void cascadeUpsert(Object value, List<CascadeType> cascadeTypes)
+  private void cascadeParentRef(Object value)
       throws IllegalArgumentException, IllegalAccessException {
     IdFieldCallback callback = new IdFieldCallback();
     ReflectionUtils.doWithFields(value.getClass(), callback);
 
     if (callback.isIdFound()) {
-      Object id = callback.getId(value);
-      if (id == null) {
-        if (cascadeTypes.contains(ALL) || cascadeTypes.contains(SAVE)) {
-          mongoOperations.save(value);
-        }
-      } else { // id != null
-        if (cascadeTypes.contains(ALL) || cascadeTypes.contains(UPDATE)) {
-          mongoOperations.save(value);
+      for (Field f : value.getClass().getDeclaredFields()) {
+        ReflectionUtils.makeAccessible(f);
+
+        ParentRef parentRef = AnnotationUtils.findAnnotation(f, ParentRef.class);
+        if (parentRef != null) {
+          String refFieldName = parentRef.value();
+
+          if (refFieldName.isEmpty()) {
+            f.set(value, source);
+            mongoOperations.save(value);
+          } else {
+            Field srcField = ReflectionUtils.findField(source.getClass(), refFieldName);
+            f.set(value, ReflectionUtils.getField(srcField, source));
+            mongoOperations.save(value);
+          }
         }
       }
     }
