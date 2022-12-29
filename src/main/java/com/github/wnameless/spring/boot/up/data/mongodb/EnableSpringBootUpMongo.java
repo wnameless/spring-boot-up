@@ -13,4 +13,4 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import(SprinBootUpMongoRegistrar.class)
-public @interface EnableSpringBootUpMongoDB {}
+public @interface EnableSpringBootUpMongo {}

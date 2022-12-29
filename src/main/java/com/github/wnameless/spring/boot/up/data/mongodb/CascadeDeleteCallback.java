@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -53,7 +54,12 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
     if (fieldValue == null) return;
     // Collection field
     if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
-      Collection<?> collection = (Collection<?>) fieldValue;
+      Collection<?> collection;
+      if (Map.class.isAssignableFrom(fieldValue.getClass())) {
+        collection = ((Map<?, ?>) fieldValue).values();
+      } else {
+        collection = (Collection<?>) fieldValue;
+      }
       for (Object element : collection) {
         cascadeDeletable(element);
       }

@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -56,7 +57,12 @@ public class CascadeSaveUpdateCallback implements ReflectionUtils.FieldCallback 
     if (fieldValue == null) return;
     // Collection field
     if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
-      Collection<?> collection = (Collection<?>) fieldValue;
+      Collection<?> collection;
+      if (Map.class.isAssignableFrom(fieldValue.getClass())) {
+        collection = ((Map<?, ?>) fieldValue).values();
+      } else {
+        collection = (Collection<?>) fieldValue;
+      }
       for (Object element : collection) {
         cascadeUpsert(element, cascadeTypes);
       }
