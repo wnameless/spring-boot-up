@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.data.mongodb.config;
+package com.github.wnameless.spring.boot.up.data.mongodb.event;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -19,11 +19,6 @@ import org.springframework.data.mongodb.core.mapping.event.BeforeSaveEvent;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
-import com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeDeleteCallback;
-import com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeSaveUpdateCallback;
-import com.github.wnameless.spring.boot.up.data.mongodb.entity.DeletableId;
-import com.github.wnameless.spring.boot.up.data.mongodb.entity.ParentRefCallback;
-import com.github.wnameless.spring.boot.up.data.mongodb.event.SourceAndDocument;
 import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.AfterConvertFromMongo;
 import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.AfterDeleteFromMongo;
 import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.AfterSaveToMongo;
@@ -31,28 +26,14 @@ import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.BeforeC
 import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.BeforeDeleteFromMongo;
 import com.github.wnameless.spring.boot.up.data.mongodb.event.annotation.BeforeSaveToMongo;
 
-public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<Object> {
+
+public class BeforeAndAfterMongoEventListener extends AbstractMongoEventListener<Object> {
 
   private static final String ID = "_id";
 
-  private static final int CASCADE_DELETE_CALLBACK_CACHE_SIZE = 256;
   private static final int BEFORE_DELETE_ACTION_CACHE_SIZE = 256;
   private static final int AFTER_DELETE_ACTION_CACHE_SIZE = 256;
   private static final int AFTER_DELETE_OBJECT_CACHE_SIZE = 64;
-
-  private final Map<Object, CascadeDeleteCallback> cascadeDeleteCallbacks =
-      Collections.synchronizedMap(
-
-          new LinkedHashMap<Object, CascadeDeleteCallback>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<Object, CascadeDeleteCallback> entry) {
-              return size() > CASCADE_DELETE_CALLBACK_CACHE_SIZE;
-            }
-
-          });
 
   private final Map<Object, Class<?>> beforeDeleteActions = Collections.synchronizedMap(
 
@@ -100,11 +81,6 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
   // event.getSource() -> Java Object
   @Override
   public void onBeforeConvert(BeforeConvertEvent<Object> event) {
-    // Cascade
-    Object source = event.getSource();
-    CascadeSaveUpdateCallback callback = new CascadeSaveUpdateCallback(source, mongoOperations);
-    ReflectionUtils.doWithFields(source.getClass(), callback);
-
     // Annotation event joint point
     Object target = event.getSource();
 
@@ -175,11 +151,6 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
   // event.getSource() -> Java Object
   @Override
   public void onAfterSave(AfterSaveEvent<Object> event) {
-    // Cascade
-    Object source = event.getSource();
-    ParentRefCallback callback = new ParentRefCallback(source, mongoOperations);
-    ReflectionUtils.doWithFields(source.getClass(), callback);
-
     // Annotation event point
     Object target = event.getSource();
 
@@ -219,17 +190,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
   // event.getSource() -> Java Object
   @Override
   public void onAfterConvert(AfterConvertEvent<Object> event) {
-    // Cascade
-    Object source = event.getSource();
-    CascadeDeleteCallback callback = new CascadeDeleteCallback(source, mongoOperations);
-    ReflectionUtils.doWithFields(source.getClass(), callback);
-
-    // Cache deletable callback
     Object docId = event.getDocument().get(ID);
-    if (docId != null && !callback.getDeletableIds().isEmpty()) {
-      cascadeDeleteCallbacks.put(docId, callback);
-    }
-
     // Annotation event joint point
     boolean beforeDeleteMethod = false;
     boolean afterDeleteMethod = false;
@@ -290,9 +251,8 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
   // event.getSource() -> BSON Document
   @Override
   public void onBeforeDelete(BeforeDeleteEvent<Object> event) {
-    // Annotation event joint point
     Object docId = event.getSource().get(ID);
-
+    // Annotation event joint point
     if (beforeDeleteActions.containsKey(docId)) {
       Class<?> type = beforeDeleteActions.remove(docId);
       Query searchQuery = new Query(Criteria.where(ID).is(docId));
@@ -340,16 +300,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
   // event.getSource() -> BSON Document
   @Override
   public void onAfterDelete(AfterDeleteEvent<Object> event) {
-    // Cascade
     Object docId = event.getSource().get(ID);
-    if (cascadeDeleteCallbacks.containsKey(docId)) {
-      CascadeDeleteCallback callback = cascadeDeleteCallbacks.remove(docId);
-      for (DeletableId deletableId : callback.getDeletableIds()) {
-        Query searchQuery = new Query(Criteria.where(ID).is(deletableId.getId()));
-        mongoOperations.remove(searchQuery, deletableId.getType());
-      }
-    }
-
     // Annotation event joint point
     if (afterDeleteActions.containsKey(docId)) {
       Class<?> type = afterDeleteActions.remove(docId);
