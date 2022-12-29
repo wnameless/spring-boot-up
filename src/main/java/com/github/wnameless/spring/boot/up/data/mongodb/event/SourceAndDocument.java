@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.data.mongodb;
+package com.github.wnameless.spring.boot.up.data.mongodb.event;
 
 import org.bson.Document;
 import lombok.Data;

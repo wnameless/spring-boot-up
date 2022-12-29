@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.data.mongodb;
+package com.github.wnameless.spring.boot.up.data.mongodb.config;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;

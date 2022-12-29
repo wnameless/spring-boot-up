@@ -13,11 +13,11 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb;
+package com.github.wnameless.spring.boot.up.data.mongodb.entity;
 
-import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.ALL;
-import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.SAVE;
-import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.UPDATE;
+import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.ALL;
+import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.SAVE;
+import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.UPDATE;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,13 +27,14 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
+import com.github.wnameless.spring.boot.up.data.mongodb.entity.annotation.CascadeRef;
 
 public class CascadeSaveUpdateCallback implements ReflectionUtils.FieldCallback {
 
   private final Object source;
   private final MongoOperations mongoOperations;
 
-  CascadeSaveUpdateCallback(Object source, MongoOperations mongoOperations) {
+  public CascadeSaveUpdateCallback(Object source, MongoOperations mongoOperations) {
     this.source = source;
     this.mongoOperations = mongoOperations;
   }

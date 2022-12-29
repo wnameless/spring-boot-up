@@ -13,13 +13,10 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb;
+package com.github.wnameless.spring.boot.up.data.mongodb.entity;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public enum CascadeType {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface AfterConvertFromMongo {}
+  ALL, SAVE, UPDATE, DELETE;
+
+}

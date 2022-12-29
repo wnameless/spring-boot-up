@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.data.mongodb;
+package com.github.wnameless.spring.boot.up.data.mongodb.config;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

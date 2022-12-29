@@ -13,10 +13,17 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb;
+package com.github.wnameless.spring.boot.up.data.mongodb.entity.annotation;
 
-public enum CascadeType {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-  ALL, SAVE, UPDATE, DELETE;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ParentRef {
+
+  String value() default "";
 
 }

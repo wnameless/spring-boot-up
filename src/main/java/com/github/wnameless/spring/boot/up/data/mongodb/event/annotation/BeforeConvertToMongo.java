@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2021 Wei-Ming Wu
+ * Copyright 2020 Wei-Ming Wu
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,27 +13,13 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb;
+package com.github.wnameless.spring.boot.up.data.mongodb.event.annotation;
 
-import org.bson.Document;
-import org.springframework.data.mongodb.core.query.CriteriaDefinition;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class DocumentCriteria implements CriteriaDefinition {
-
-  private final Document criteriaObject;
-
-  public DocumentCriteria(Document criteriaObject) {
-    this.criteriaObject = criteriaObject;
-  }
-
-  @Override
-  public Document getCriteriaObject() {
-    return criteriaObject;
-  }
-
-  @Override
-  public String getKey() {
-    return null;
-  }
-
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface BeforeConvertToMongo {}

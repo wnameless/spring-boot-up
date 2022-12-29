@@ -13,29 +13,30 @@
  * the License.
  *
  */
-package com.github.wnameless.spring.boot.up.data.mongodb;
+package com.github.wnameless.spring.boot.up.data.mongodb.entity;
 
-import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.ALL;
-import static com.github.wnameless.spring.boot.up.data.mongodb.CascadeType.DELETE;
+import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.ALL;
+import static com.github.wnameless.spring.boot.up.data.mongodb.entity.CascadeType.SAVE;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
+import com.github.wnameless.spring.boot.up.data.mongodb.entity.annotation.CascadeRef;
+import com.github.wnameless.spring.boot.up.data.mongodb.entity.annotation.ParentRef;
 
-public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
+public class ParentRefCallback implements ReflectionUtils.FieldCallback {
 
   private final Object source;
-  private final Set<DeletableId> deletableIds = new LinkedHashSet<DeletableId>();
+  private final MongoOperations mongoOperations;
 
-  CascadeDeleteCallback(Object source, MongoOperations mongoOperations) {
+  public ParentRefCallback(Object source, MongoOperations mongoOperations) {
     this.source = source;
+    this.mongoOperations = mongoOperations;
   }
 
   @Override
@@ -48,7 +49,7 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
 
     CascadeRef cascade = AnnotationUtils.getAnnotation(field, CascadeRef.class);
     List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
-    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(DELETE)) return;
+    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)) return;
 
     Object fieldValue = field.get(source);
     if (fieldValue == null) return;
@@ -61,25 +62,37 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
         collection = (Collection<?>) fieldValue;
       }
       for (Object element : collection) {
-        cascadeDeletable(element);
+        cascadeParentRef(element);
       }
     } else { // Non-Collection field
-      cascadeDeletable(fieldValue);
+      cascadeParentRef(fieldValue);
     }
   }
 
-  private void cascadeDeletable(Object value)
+  private void cascadeParentRef(Object value)
       throws IllegalArgumentException, IllegalAccessException {
     IdFieldCallback callback = new IdFieldCallback();
     ReflectionUtils.doWithFields(value.getClass(), callback);
 
-    if (callback.isIdFound() && callback.getId(value) != null) {
-      deletableIds.add(DeletableId.of(value.getClass(), callback.getId(value)));
-    }
-  }
+    if (callback.isIdFound()) {
+      for (Field f : value.getClass().getDeclaredFields()) {
+        ReflectionUtils.makeAccessible(f);
 
-  public Set<DeletableId> getDeletableIds() {
-    return deletableIds;
+        ParentRef parentRef = AnnotationUtils.findAnnotation(f, ParentRef.class);
+        if (parentRef != null) {
+          String refFieldName = parentRef.value();
+
+          if (refFieldName.isEmpty()) {
+            f.set(value, source);
+            mongoOperations.save(value);
+          } else {
+            Field srcField = ReflectionUtils.findField(source.getClass(), refFieldName);
+            f.set(value, ReflectionUtils.getField(srcField, source));
+            mongoOperations.save(value);
+          }
+        }
+      }
+    }
   }
 
 }

@@ -21,7 +21,7 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import com.github.wnameless.spring.boot.up.data.mongodb.CascadeRef;
+import com.github.wnameless.spring.boot.up.data.mongodb.entity.annotation.CascadeRef;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
