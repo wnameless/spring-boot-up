@@ -15,18 +15,11 @@
  */
 package test;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.github.wnameless.spring.boot.up.EnableSpringBootUp;
-import com.github.wnameless.spring.boot.up.data.mongodb.CascadeMongoEventListener;
+import com.github.wnameless.spring.boot.up.data.mongodb.EnableSpringBootUpMongo;
 
+@EnableSpringBootUpMongo
 @EnableSpringBootUp
 @Configuration
-public class AppConfig {
-
-  @Bean
-  CascadeMongoEventListener cascadeMongoEventListener() {
-    return new CascadeMongoEventListener();
-  }
-
-}
+public class AppConfig {}

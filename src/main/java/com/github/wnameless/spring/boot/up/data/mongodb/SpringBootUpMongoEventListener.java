@@ -22,6 +22,8 @@ import org.springframework.util.ReflectionUtils;
 
 public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<Object> {
 
+  private static final String ID = "_id";
+
   private static final int CASCADE_DELETE_CALLBACK_CACHE_SIZE = 256;
   private static final int BEFORE_DELETE_ACTION_CACHE_SIZE = 256;
   private static final int AFTER_DELETE_ACTION_CACHE_SIZE = 256;
@@ -102,7 +104,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
             && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
           ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
         } else {
           ReflectionUtils.invokeMethod(method, target);
@@ -115,7 +117,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
             && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
           ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
         } else {
           ReflectionUtils.invokeMethod(method, target);
@@ -137,7 +139,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
             && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
           ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
         } else {
           ReflectionUtils.invokeMethod(method, target);
@@ -150,7 +152,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
             && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
           ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
         } else {
           ReflectionUtils.invokeMethod(method, target);
@@ -177,7 +179,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
             && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
           ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
         } else {
           ReflectionUtils.invokeMethod(method, target);
@@ -190,7 +192,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
             && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
           ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
         } else {
           ReflectionUtils.invokeMethod(method, target);
@@ -212,7 +214,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
     ReflectionUtils.doWithFields(source.getClass(), callback);
 
     // Cache deletable callback
-    Object docId = event.getDocument().get("_id");
+    Object docId = event.getDocument().get(ID);
     if (docId != null && !callback.getDeletableIds().isEmpty()) {
       cascadeDeleteCallbacks.put(docId, callback);
     }
@@ -230,7 +232,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
             && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
           ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
         } else {
           ReflectionUtils.invokeMethod(method, target);
@@ -250,7 +252,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
         method.setAccessible(true);
         if (method.getParameterTypes().length == 1
             && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
           ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
         } else {
           ReflectionUtils.invokeMethod(method, target);
@@ -278,11 +280,11 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
   @Override
   public void onBeforeDelete(BeforeDeleteEvent<Object> event) {
     // Annotation event joint point
-    Object docId = event.getSource().get("_id");
+    Object docId = event.getSource().get(ID);
 
     if (beforeDeleteActions.containsKey(docId)) {
-      Class<?> type = beforeDeleteActions.get(docId);
-      Query searchQuery = new Query(Criteria.where("_id").is(docId));
+      Class<?> type = beforeDeleteActions.remove(docId);
+      Query searchQuery = new Query(Criteria.where(ID).is(docId));
       Object target = mongoOperations.findOne(searchQuery, type);
 
       Set<String> executedNames = new HashSet<>();
@@ -292,7 +294,8 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
           method.setAccessible(true);
           if (method.getParameterTypes().length == 1
               && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-            SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+            SourceAndDocument sourceAndDocument =
+                new SourceAndDocument(target, event.getDocument());
             ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
           } else {
             ReflectionUtils.invokeMethod(method, target);
@@ -305,7 +308,8 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
           method.setAccessible(true);
           if (method.getParameterTypes().length == 1
               && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-            SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+            SourceAndDocument sourceAndDocument =
+                new SourceAndDocument(target, event.getDocument());
             ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
           } else {
             ReflectionUtils.invokeMethod(method, target);
@@ -316,7 +320,7 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
 
     if (afterDeleteActions.containsKey(docId)) {
       Class<?> type = afterDeleteActions.get(docId);
-      Query searchQuery = new Query(Criteria.where("_id").is(docId));
+      Query searchQuery = new Query(Criteria.where(ID).is(docId));
       Object target = mongoOperations.findOne(searchQuery, type);
       afterDeleteObjects.put(docId, target);
     }
@@ -326,19 +330,19 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
   @Override
   public void onAfterDelete(AfterDeleteEvent<Object> event) {
     // Cascade
-    Object docId = event.getSource().get("_id");
+    Object docId = event.getSource().get(ID);
     if (cascadeDeleteCallbacks.containsKey(docId)) {
       CascadeDeleteCallback callback = cascadeDeleteCallbacks.remove(docId);
       for (DeletableId deletableId : callback.getDeletableIds()) {
-        Query searchQuery = new Query(Criteria.where("_id").is(deletableId.getId()));
+        Query searchQuery = new Query(Criteria.where(ID).is(deletableId.getId()));
         mongoOperations.remove(searchQuery, deletableId.getType());
       }
     }
 
     // Annotation event joint point
     if (afterDeleteActions.containsKey(docId)) {
-      Class<?> type = afterDeleteActions.get(docId);
-      Object target = afterDeleteObjects.get(docId);
+      Class<?> type = afterDeleteActions.remove(docId);
+      Object target = afterDeleteObjects.remove(docId);
 
       Set<String> executedNames = new HashSet<>();
       for (Method method : type.getDeclaredMethods()) {
@@ -347,7 +351,8 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
           method.setAccessible(true);
           if (method.getParameterTypes().length == 1
               && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-            SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+            SourceAndDocument sourceAndDocument =
+                new SourceAndDocument(target, event.getDocument());
             ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
           } else {
             ReflectionUtils.invokeMethod(method, target);
@@ -360,7 +365,8 @@ public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<O
           method.setAccessible(true);
           if (method.getParameterTypes().length == 1
               && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-            SourceAndDocument sourceAndDocument = new SourceAndDocument(event);
+            SourceAndDocument sourceAndDocument =
+                new SourceAndDocument(target, event.getDocument());
             ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
           } else {
             ReflectionUtils.invokeMethod(method, target);
