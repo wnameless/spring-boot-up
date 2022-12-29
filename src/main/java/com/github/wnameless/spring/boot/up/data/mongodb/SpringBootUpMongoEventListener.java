@@ -1,18 +1,3 @@
-/*
- *
- * Copyright 2020 Wei-Ming Wu
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- *
- */
 package com.github.wnameless.spring.boot.up.data.mongodb;
 
 import java.lang.reflect.Method;
@@ -35,9 +20,26 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
 
-public class AnnotationMongoEventListener extends AbstractMongoEventListener<Object> {
+public class SpringBootUpMongoEventListener extends AbstractMongoEventListener<Object> {
 
-  private static final int CACHE_SIZE = 256;
+  private static final int CASCADE_DELETE_CALLBACK_CACHE_SIZE = 256;
+  private static final int BEFORE_DELETE_ACTION_CACHE_SIZE = 256;
+  private static final int AFTER_DELETE_ACTION_CACHE_SIZE = 256;
+  private static final int AFTER_DELETE_OBJECT_CACHE_SIZE = 64;
+
+  private final Map<Object, CascadeDeleteCallback> cascadeDeleteCallbacks =
+      Collections.synchronizedMap(
+
+          new LinkedHashMap<Object, CascadeDeleteCallback>() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<Object, CascadeDeleteCallback> entry) {
+              return size() > CASCADE_DELETE_CALLBACK_CACHE_SIZE;
+            }
+
+          });
 
   private final Map<Object, Class<?>> beforeDeleteActions = Collections.synchronizedMap(
 
@@ -47,7 +49,7 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
 
         @Override
         protected boolean removeEldestEntry(Map.Entry<Object, Class<?>> entry) {
-          return size() > CACHE_SIZE;
+          return size() > BEFORE_DELETE_ACTION_CACHE_SIZE;
         }
 
       });
@@ -60,7 +62,7 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
 
         @Override
         protected boolean removeEldestEntry(Map.Entry<Object, Class<?>> entry) {
-          return size() > CACHE_SIZE;
+          return size() > AFTER_DELETE_ACTION_CACHE_SIZE;
         }
 
       });
@@ -73,7 +75,7 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
 
         @Override
         protected boolean removeEldestEntry(Map.Entry<Object, Object> entry) {
-          return size() > 8;
+          return size() > AFTER_DELETE_OBJECT_CACHE_SIZE;
         }
 
       });
@@ -85,6 +87,12 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   // event.getSource() -> Java Object
   @Override
   public void onBeforeConvert(BeforeConvertEvent<Object> event) {
+    // Cascade
+    Object source = event.getSource();
+    CascadeSaveUpdateCallback callback = new CascadeSaveUpdateCallback(source, mongoOperations);
+    ReflectionUtils.doWithFields(source.getClass(), callback);
+
+    // Annotation event joint point
     Object target = event.getSource();
 
     Set<String> executedNames = new HashSet<>();
@@ -119,6 +127,7 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   // event.getSource() -> Java Object
   @Override
   public void onBeforeSave(BeforeSaveEvent<Object> event) {
+    // Annotation event joint point
     Object target = event.getSource();
 
     Set<String> executedNames = new HashSet<>();
@@ -153,6 +162,12 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   // event.getSource() -> Java Object
   @Override
   public void onAfterSave(AfterSaveEvent<Object> event) {
+    // Cascade
+    Object source = event.getSource();
+    ParentRefCallback callback = new ParentRefCallback(source, mongoOperations);
+    ReflectionUtils.doWithFields(source.getClass(), callback);
+
+    // Annotation event point
     Object target = event.getSource();
 
     Set<String> executedNames = new HashSet<>();
@@ -191,6 +206,18 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   // event.getSource() -> Java Object
   @Override
   public void onAfterConvert(AfterConvertEvent<Object> event) {
+    // Cascade
+    Object source = event.getSource();
+    CascadeDeleteCallback callback = new CascadeDeleteCallback(source, mongoOperations);
+    ReflectionUtils.doWithFields(source.getClass(), callback);
+
+    // Cache deletable callback
+    Object docId = event.getDocument().get("_id");
+    if (docId != null && !callback.getDeletableIds().isEmpty()) {
+      cascadeDeleteCallbacks.put(docId, callback);
+    }
+
+    // Annotation event joint point
     boolean beforeDeleteMethod = false;
     boolean afterDeleteMethod = false;
 
@@ -239,7 +266,6 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
     }
 
     // Cache beforeDelete/afterDelete id and class
-    Object docId = event.getDocument().get("_id");
     if (docId != null && beforeDeleteMethod) {
       beforeDeleteActions.put(docId, target.getClass());
     }
@@ -251,6 +277,7 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   // event.getSource() -> BSON Document
   @Override
   public void onBeforeDelete(BeforeDeleteEvent<Object> event) {
+    // Annotation event joint point
     Object docId = event.getSource().get("_id");
 
     if (beforeDeleteActions.containsKey(docId)) {
@@ -298,8 +325,17 @@ public class AnnotationMongoEventListener extends AbstractMongoEventListener<Obj
   // event.getSource() -> BSON Document
   @Override
   public void onAfterDelete(AfterDeleteEvent<Object> event) {
+    // Cascade
     Object docId = event.getSource().get("_id");
+    if (cascadeDeleteCallbacks.containsKey(docId)) {
+      CascadeDeleteCallback callback = cascadeDeleteCallbacks.remove(docId);
+      for (DeletableId deletableId : callback.getDeletableIds()) {
+        Query searchQuery = new Query(Criteria.where("_id").is(deletableId.getId()));
+        mongoOperations.remove(searchQuery, deletableId.getType());
+      }
+    }
 
+    // Annotation event joint point
     if (afterDeleteActions.containsKey(docId)) {
       Class<?> type = afterDeleteActions.get(docId);
       Object target = afterDeleteObjects.get(docId);

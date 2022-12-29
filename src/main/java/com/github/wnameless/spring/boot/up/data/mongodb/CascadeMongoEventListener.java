@@ -39,7 +39,7 @@ public class CascadeMongoEventListener extends AbstractMongoEventListener<Object
   private final Map<Object, CascadeDeleteCallback> cascadeDeleteCallbacks =
       Collections.synchronizedMap(
 
-          new LinkedHashMap<Object, CascadeDeleteCallback>(CACHE_SIZE) {
+          new LinkedHashMap<Object, CascadeDeleteCallback>() {
 
             private static final long serialVersionUID = 1L;
 
