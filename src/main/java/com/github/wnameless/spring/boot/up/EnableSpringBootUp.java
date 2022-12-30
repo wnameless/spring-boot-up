@@ -33,8 +33,8 @@ import org.springframework.context.annotation.ComponentScan;
  * For example:
  *
  * <pre class="code">
- * &#064;Configuration
  * &#064;EnableSpringBootUp
+ * &#064;Configuration
  * public class MyWebConfiguration {}
  * </pre>
  *

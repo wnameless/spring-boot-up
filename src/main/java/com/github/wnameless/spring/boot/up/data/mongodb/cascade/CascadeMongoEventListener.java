@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterConvertEvent;
@@ -21,7 +22,8 @@ public class CascadeMongoEventListener extends AbstractMongoEventListener<Object
 
   private static final String ID = "_id";
 
-  private static final int CASCADE_DELETE_CALLBACK_CACHE_SIZE = 256;
+  @Value("${spring.boot.up.data.mongodb.cacade.delete.cache.size:256}")
+  private int CASCADE_DELETE_CALLBACK_CACHE_SIZE = 256;
 
   private final Map<Object, CascadeDeleteCallback> cascadeDeleteCallbacks =
       Collections.synchronizedMap(

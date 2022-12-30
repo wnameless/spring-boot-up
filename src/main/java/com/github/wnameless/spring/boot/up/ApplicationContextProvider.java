@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 /**
  * 
  * {@link ApplicationContextProvider} is made for SpringBootUp library to store the Spring
- * {@link ApplicationContext} of user's running application.
+ * {@link ApplicationContext} of current running application.
  * 
  * @author Wei-Ming Wu
  * 
@@ -37,9 +37,7 @@ public final class ApplicationContextProvider implements ApplicationContextAware
 
     private static final InnerContextResource RESOURCE = new InnerContextResource();
 
-    private AplicationContextHolder() {
-      super();
-    }
+    private AplicationContextHolder() {}
 
   }
 
@@ -47,9 +45,7 @@ public final class ApplicationContextProvider implements ApplicationContextAware
 
     private ApplicationContext context;
 
-    private InnerContextResource() {
-      super();
-    }
+    private InnerContextResource() {}
 
     private void setContext(ApplicationContext context) {
       this.context = context;

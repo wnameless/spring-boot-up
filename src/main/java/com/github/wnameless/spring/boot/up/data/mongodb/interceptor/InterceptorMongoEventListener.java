@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterConvertEvent;
@@ -31,9 +32,12 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
 
   private static final String ID = "_id";
 
-  private static final int BEFORE_DELETE_ACTION_CACHE_SIZE = 256;
-  private static final int AFTER_DELETE_ACTION_CACHE_SIZE = 256;
-  private static final int AFTER_DELETE_OBJECT_CACHE_SIZE = 64;
+  @Value("${spring.boot.up.data.mongodb.interceptor.before_delete_action.cache.size:256}")
+  private int BEFORE_DELETE_ACTION_CACHE_SIZE = 256;
+  @Value("${spring.boot.up.data.mongodb.interceptor.after_delete_action.cache.size:256}")
+  private int AFTER_DELETE_ACTION_CACHE_SIZE = 256;
+  @Value("${spring.boot.up.data.mongodb.interceptor.after_delete_object.cache.size:16}")
+  private int AFTER_DELETE_OBJECT_CACHE_SIZE = 16;
 
   private final Map<Object, Class<?>> beforeDeleteActions = Collections.synchronizedMap(
 
