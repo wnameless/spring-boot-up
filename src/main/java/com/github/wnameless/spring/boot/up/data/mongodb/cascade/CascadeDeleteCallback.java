@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
 import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.CascadeRef;
@@ -35,7 +34,7 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
   private final Object source;
   private final Set<DeletableId> deletableIds = new LinkedHashSet<DeletableId>();
 
-  public CascadeDeleteCallback(Object source, MongoOperations mongoOperations) {
+  public CascadeDeleteCallback(Object source) {
     this.source = source;
   }
 

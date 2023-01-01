@@ -73,7 +73,7 @@ public class CascadeMongoEventListener extends AbstractMongoEventListener<Object
   public void onAfterConvert(AfterConvertEvent<Object> event) {
     // Cascade
     Object source = event.getSource();
-    CascadeDeleteCallback callback = new CascadeDeleteCallback(source, mongoOperations);
+    CascadeDeleteCallback callback = new CascadeDeleteCallback(source);
     ReflectionUtils.doWithFields(source.getClass(), callback);
 
     // Cache deletable callback

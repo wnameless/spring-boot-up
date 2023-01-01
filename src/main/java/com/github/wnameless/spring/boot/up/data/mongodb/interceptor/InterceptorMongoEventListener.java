@@ -39,6 +39,9 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
   @Value("${spring.boot.up.data.mongodb.interceptor.after_delete_object.cache.size:16}")
   private int AFTER_DELETE_OBJECT_CACHE_SIZE = 16;
 
+  // @Autowired
+  // private MongoConverter mongoConverter;
+
   private final Map<Object, Class<?>> beforeDeleteActions = Collections.synchronizedMap(
 
       new LinkedHashMap<Object, Class<?>>() {
