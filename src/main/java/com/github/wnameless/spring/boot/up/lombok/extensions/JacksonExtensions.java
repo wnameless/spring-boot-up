@@ -13,6 +13,10 @@ public final class JacksonExtensions {
 
   private JacksonExtensions() {}
 
+  public static Map<String, Object> valueToMap(ObjectMapper om, Object val) {
+    return toMap(om.valueToTree(val));
+  }
+
   public static ObjectNode asObject(JsonNode node) {
     return (ObjectNode) node;
   }
