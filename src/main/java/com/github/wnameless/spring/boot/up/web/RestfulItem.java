@@ -21,7 +21,7 @@ import com.google.common.base.CaseFormat;
 public interface RestfulItem<ID> extends JoinablePath {
 
   default boolean hasBackPathname() {
-    return getBackPathname() != null && !getBackPathname().isBlank();
+    return getBackPathname() != null && !getBackPathname().trim().isEmpty();
   }
 
   default String getBackPathname() {

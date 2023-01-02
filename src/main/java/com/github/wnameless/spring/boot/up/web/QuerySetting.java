@@ -152,7 +152,8 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     public QuerySetting<E> filterByEq() {
       QuerySetting.this.addFilterableField(
           new FilterableField<>(pathFinder, Optional.ofNullable(alias), (e, param) -> {
-            return param == null || param.isBlank() ? pathFinder.apply(e).containsIgnoreCase(param)
+            return param == null || param.trim().isEmpty()
+                ? pathFinder.apply(e).containsIgnoreCase(param)
                 : pathFinder.apply(e).eq(param);
           }).sortable(sortable));
       return QuerySetting.this;
