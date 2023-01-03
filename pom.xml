@@ -124,6 +124,13 @@
       <version>2.0.1</version>
     </dependency>
 
+    <!-- APT -->
+    <dependency>
+      <groupId>com.google.auto.service</groupId>
+      <artifactId>auto-service</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
     <!-- Query DSL -->
     <dependency>
       <groupId>com.querydsl</groupId>
