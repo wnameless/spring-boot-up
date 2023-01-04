@@ -36,7 +36,7 @@ import com.querydsl.core.annotations.QueryTransient;
     "org.springframework.data.mongodb.core.mapping.*"})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
-public class AutoMongoAnnotationProcessor extends AbstractQuerydslProcessor {
+public class MongoAnnotationAutoProcessor extends AbstractQuerydslProcessor {
 
   @Override
   protected Configuration createConfiguration(@Nullable RoundEnvironment roundEnv) {

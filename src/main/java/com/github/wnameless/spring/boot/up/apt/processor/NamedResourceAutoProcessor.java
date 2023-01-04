@@ -25,7 +25,7 @@ import jakarta.inject.Named;
 @SupportedAnnotationTypes("com.github.wnameless.spring.boot.up.apt.processor.NamedResource")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
-public class NamedResourceProcessor extends AbstractProcessor {
+public class NamedResourceAutoProcessor extends AbstractProcessor {
 
   private String singularName;
   private String pluralName;
