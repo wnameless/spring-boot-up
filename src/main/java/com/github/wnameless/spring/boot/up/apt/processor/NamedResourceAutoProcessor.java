@@ -21,6 +21,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import jakarta.inject.Named;
+import net.sf.rubycollect4j.Ruby;
 
 @SupportedAnnotationTypes("com.github.wnameless.spring.boot.up.apt.processor.NamedResource")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -46,7 +47,8 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     if (annotations.isEmpty()) return false;
 
-    for (Element element : roundEnv.getElementsAnnotatedWith(NamedResource.class)) {
+    Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(NamedResource.class);
+    for (Element element : elements) {
       String className = ((TypeElement) element).getQualifiedName().toString();
       String classSimpleName = element.getSimpleName().toString();
       String packageName = null;
@@ -103,121 +105,63 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
       // RESUORCE_PATH
       this.nameKeyBuilder(builder, resourcePathNameKey);
 
-      // SINGULAR = singularName
-      builder
-          .addField(FieldSpec.builder(String.class, "SINGULAR")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", singularName).build())
-          // PLURAL = singularName
-          .addField(FieldSpec.builder(String.class, "PLURAL")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", pluralName).build())
-          // CLASS_SIMPLE_NAME =
-          // classSimpleName
-          .addField(FieldSpec.builder(String.class, "CLASS_SIMPLE_NAME")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", classSimpleName).build())
-          // CLASS_NAME = className
-          .addField(FieldSpec.builder(String.class, "CLASS_NAME")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", className).build())
-          // PACKAGE_NAME = packageName
-          .addField(FieldSpec.builder(String.class, "PACKAGE_NAME")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", packageName).build())
+      Ruby.Hash.of( //
+          "SINGULAR", singularName, //
+          "PLURAL", pluralName, //
+          "CLASS_SIMPLE_NAME", classSimpleName, //
+          "CLASS_NAME", className, //
+          "PACKAGE_NAME", packageName).forEach((k, v) -> {
+            builder.addField(constant(k, v));
+          });
 
-          // UPPER_CAMEL_SINGULAR
-          .addField(FieldSpec.builder(String.class, "UPPER_CAMEL_SINGULAR")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", upperCamelSingular).build())
-          // LOWER_CAMEL_SINGULAR
-          .addField(FieldSpec.builder(String.class, "LOWER_CAMEL_SINGULAR")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", lowerCamelSingular).build())
-          // UPPER_UNDERSCORE_SINGULAR
-          .addField(FieldSpec.builder(String.class, "UPPER_UNDERSCORE_SINGULAR")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", upperUnderscoreSingular).build())
-          // LOWER_UNDERSCORE_SINGULAR
-          .addField(FieldSpec.builder(String.class, "LOWER_UNDERSCORE_SINGULAR")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", lowerUnderscoreSingular).build())
-          // LOWER_HYPHEN_SINGULAR
-          .addField(FieldSpec.builder(String.class, "LOWER_HYPHEN_SINGULAR")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", lowerHyphenSingular).build())
-
-          // UPPER_CAMEL_PLURAL
-          .addField(FieldSpec.builder(String.class, "UPPER_CAMEL_PLURAL")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", upperCamelPlural).build())
-          // LOWER_CAMEL_PLURAL
-          .addField(FieldSpec.builder(String.class, "LOWER_CAMEL_PLURAL")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", lowerCamelPlural).build())
-          // UPPER_UNDERSCORE_PLURAL
-          .addField(FieldSpec.builder(String.class, "UPPER_UNDERSCORE_PLURAL")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", upperUnderscorePlural).build())
-          // LOWER_UNDERSCORE_PLURAL
-          .addField(FieldSpec.builder(String.class, "LOWER_UNDERSCORE_PLURAL")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", lowerUnderscorePlural).build())
-          // LOWER_HYPHEN_PLURAL
-          .addField(FieldSpec.builder(String.class, "LOWER_HYPHEN_PLURAL")
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", lowerHyphenPlural).build());
+      Ruby.Hash.of( //
+          "UPPER_CAMEL_SINGULAR", upperCamelSingular, //
+          "LOWER_CAMEL_SINGULAR", lowerCamelSingular, //
+          "UPPER_UNDERSCORE_SINGULAR", upperUnderscoreSingular, //
+          "LOWER_UNDERSCORE_SINGULAR", lowerUnderscoreSingular, //
+          "LOWER_HYPHEN_SINGULAR", lowerHyphenSingular, //
+          "UPPER_CAMEL_PLURAL", upperCamelPlural, //
+          "LOWER_CAMEL_PLURAL", lowerCamelPlural, //
+          "UPPER_UNDERSCORE_PLURAL", upperUnderscorePlural, //
+          "LOWER_UNDERSCORE_PLURAL", lowerUnderscorePlural, //
+          "LOWER_HYPHEN_PLURAL", lowerHyphenPlural).forEach((k, v) -> {
+            builder.addField(constant(k, v));
+          });
 
       for (NameType nameType : nr.literalSingularConstants()) {
         switch (nameType) {
-          case LOWER_CAMEL:
-            builder.addField(FieldSpec.builder(String.class, lowerCamelSingular)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("$S", lowerCamelSingular).build());
-            break;
-          case LOWER_UNDERSCORE:
-            builder.addField(FieldSpec.builder(String.class, lowerUnderscoreSingular)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("$S", lowerUnderscoreSingular).build());
-            break;
           case UPPER_CAMEL:
-            builder.addField(FieldSpec.builder(String.class, upperCamelSingular)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("$S", upperCamelSingular).build());
+            builder.addField(constant(upperCamelSingular, upperCamelSingular));
+            break;
+          case LOWER_CAMEL:
+            builder.addField(constant(lowerCamelSingular, lowerCamelSingular));
             break;
           case UPPER_UNDERSCORE:
-            builder.addField(FieldSpec.builder(String.class, upperUnderscoreSingular)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("$S", upperUnderscoreSingular).build());
+            builder.addField(constant(upperUnderscoreSingular, upperUnderscoreSingular));
             break;
-          default:
+          case LOWER_UNDERSCORE:
+            builder.addField(constant(lowerUnderscoreSingular, lowerUnderscoreSingular));
+            break;
+          case LOWER_HYPHEN:
             break;
         }
       }
 
       for (NameType nameType : nr.literalPluralConstants()) {
         switch (nameType) {
-          case LOWER_CAMEL:
-            builder.addField(FieldSpec.builder(String.class, lowerCamelPlural)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("$S", lowerCamelPlural).build());
-            break;
-          case LOWER_UNDERSCORE:
-            builder.addField(FieldSpec.builder(String.class, lowerUnderscorePlural)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("$S", lowerUnderscorePlural).build());
-            break;
           case UPPER_CAMEL:
-            builder.addField(FieldSpec.builder(String.class, upperCamelPlural)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("$S", upperCamelPlural).build());
+            builder.addField(constant(upperCamelPlural, upperCamelPlural));
+            break;
+          case LOWER_CAMEL:
+            builder.addField(constant(lowerCamelPlural, lowerCamelPlural));
             break;
           case UPPER_UNDERSCORE:
-            builder.addField(FieldSpec.builder(String.class, upperUnderscorePlural)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("$S", upperUnderscorePlural).build());
+            builder.addField(constant(upperUnderscorePlural, upperUnderscorePlural));
             break;
-          default:
+          case LOWER_UNDERSCORE:
+            builder.addField(constant(lowerUnderscorePlural, lowerUnderscorePlural));
+            break;
+          case LOWER_HYPHEN:
             break;
         }
       }
@@ -227,9 +171,7 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
       }
 
       for (NameKeyValue nameKeyValue : nr.nameKeyValues()) {
-        builder.addField(FieldSpec.builder(String.class, nameKeyValue.key())
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-            .initializer("$S", nameKeyValue.value()).build());
+        builder.addField(constant(nameKeyValue.key(), nameKeyValue.value()));
       }
 
       // Writes to file
@@ -243,53 +185,40 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
       }
     }
 
-    return !roundEnv.getElementsAnnotatedWith(NamedResource.class).isEmpty();
+    return !elements.isEmpty();
   }
 
   private void nameKeyBuilder(TypeSpec.Builder builder, NameKey nameKey) {
     switch (nameKey.type()) {
-      case LOWER_CAMEL:
-        builder.addField(FieldSpec.builder(String.class, nameKey.key())
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-            .initializer("$S", nameKey.prefix()
-                + (nameKey.plural() ? lowerCamelPlural : lowerCamelSingular) + nameKey.suffix())
-            .build());
-        break;
-      case LOWER_HYPHEN:
-        builder.addField(FieldSpec.builder(String.class, nameKey.key())
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-            .initializer("$S", nameKey.prefix()
-                + (nameKey.plural() ? lowerHyphenPlural : lowerHyphenSingular) + nameKey.suffix())
-            .build());
+      case UPPER_UNDERSCORE:
+        builder.addField(constant(nameKey.key(),
+            nameKey.prefix() + (nameKey.plural() ? upperUnderscorePlural : upperUnderscoreSingular)
+                + nameKey.suffix()));
         break;
       case LOWER_UNDERSCORE:
-        builder.addField(FieldSpec.builder(String.class, nameKey.key())
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-            .initializer("$S",
-                nameKey.prefix()
-                    + (nameKey.plural() ? lowerUnderscorePlural : lowerUnderscoreSingular)
-                    + nameKey.suffix())
-            .build());
+        builder.addField(constant(nameKey.key(),
+            nameKey.prefix() + (nameKey.plural() ? lowerUnderscorePlural : lowerUnderscoreSingular)
+                + nameKey.suffix()));
         break;
       case UPPER_CAMEL:
-        builder.addField(FieldSpec.builder(String.class, nameKey.key())
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-            .initializer("$S", nameKey.prefix()
-                + (nameKey.plural() ? upperCamelPlural : upperCamelSingular) + nameKey.suffix())
-            .build());
+        builder.addField(constant(nameKey.key(), nameKey.prefix()
+            + (nameKey.plural() ? upperCamelPlural : upperCamelSingular) + nameKey.suffix()));
         break;
-      case UPPER_UNDERSCORE:
-        builder.addField(FieldSpec.builder(String.class, nameKey.key())
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-            .initializer("$S",
-                nameKey.prefix()
-                    + (nameKey.plural() ? upperUnderscorePlural : upperUnderscoreSingular)
-                    + nameKey.suffix())
-            .build());
+      case LOWER_CAMEL:
+        builder.addField(constant(nameKey.key(), nameKey.prefix()
+            + (nameKey.plural() ? lowerCamelPlural : lowerCamelSingular) + nameKey.suffix()));
         break;
-      default:
+      case LOWER_HYPHEN:
+        builder.addField(constant(nameKey.key(), nameKey.prefix()
+            + (nameKey.plural() ? lowerHyphenPlural : lowerHyphenSingular) + nameKey.suffix()));
         break;
     }
+  }
+
+  private FieldSpec constant(String name, String value) {
+    return FieldSpec.builder(String.class, name)
+        .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL).initializer("$S", value)
+        .build();
   }
 
 }
