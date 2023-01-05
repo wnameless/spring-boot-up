@@ -11,50 +11,34 @@ public @interface NamedResource {
 
   boolean injectable() default false;
 
-  NameValue singular() default @NameValue(value = "", type = NameType.UPPER_CAMEL);
-
-  NameValue plural() default @NameValue(value = "", type = NameType.UPPER_CAMEL);
-
   String classNamePrefix() default "NR";
 
   String classNameSuffix() default "";
 
-  NameKey resourceNameKey() default @NameKey(key = "RESOURCE", plural = false,
-      type = NameType.LOWER_HYPHEN);
+  NameValue singular() default @NameValue(value = "", type = NamingType.UPPER_CAMEL);
 
-  NameKey resourcesNameKey() default @NameKey(key = "RESOURCES", plural = true,
-      type = NameType.LOWER_HYPHEN);
+  NameValue plural() default @NameValue(value = "", type = NamingType.UPPER_CAMEL);
 
-  NameKey resourcePathNameKey() default @NameKey(key = "RESOURCE_PATH", plural = true,
-      type = NameType.LOWER_HYPHEN, prefix = "/");
+  InferredConstant resource() default @InferredConstant(name = "RESOURCE", plural = false,
+      type = NamingType.LOWER_HYPHEN);
 
-  NameType[] literalSingularConstants() default {};
+  InferredConstant resources() default @InferredConstant(name = "RESOURCES", plural = true,
+      type = NamingType.LOWER_HYPHEN);
 
-  NameType[] literalPluralConstants() default {};
+  InferredConstant resourcePath() default @InferredConstant(name = "RESOURCE_PATH", plural = true,
+      type = NamingType.LOWER_HYPHEN, prefix = "/");
 
-  NameKey[] nameKeys() default {};
+  NamingType[] literalSingularConstants() default {};
 
-  NameKeyValue[] nameKeyValues() default {};
+  NamingType[] literalPluralConstants() default {};
 
-  public enum NameType {
+  InferredConstant[] inferredConstants() default {};
+
+  Constant[] constants() default {};
+
+  public enum NamingType {
 
     UPPER_CAMEL, LOWER_CAMEL, UPPER_UNDERSCORE, LOWER_UNDERSCORE, LOWER_HYPHEN;
-
-  }
-
-  @Target(ElementType.ANNOTATION_TYPE)
-  @Retention(RetentionPolicy.SOURCE)
-  public @interface NameKey {
-
-    String key();
-
-    boolean plural();
-
-    NameType type();
-
-    String prefix() default "";
-
-    String suffix() default "";
 
   }
 
@@ -64,15 +48,31 @@ public @interface NamedResource {
 
     String value();
 
-    NameType type();
+    NamingType type();
 
   }
 
   @Target(ElementType.ANNOTATION_TYPE)
   @Retention(RetentionPolicy.SOURCE)
-  public @interface NameKeyValue {
+  public @interface InferredConstant {
 
-    String key();
+    String name();
+
+    boolean plural();
+
+    NamingType type();
+
+    String prefix() default "";
+
+    String suffix() default "";
+
+  }
+
+  @Target(ElementType.ANNOTATION_TYPE)
+  @Retention(RetentionPolicy.SOURCE)
+  public @interface Constant {
+
+    String name();
 
     String value();
 

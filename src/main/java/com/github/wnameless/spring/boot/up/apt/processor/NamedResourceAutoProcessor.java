@@ -12,9 +12,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import org.atteo.evo.inflector.English;
-import com.github.wnameless.spring.boot.up.apt.processor.NamedResource.NameKey;
-import com.github.wnameless.spring.boot.up.apt.processor.NamedResource.NameKeyValue;
-import com.github.wnameless.spring.boot.up.apt.processor.NamedResource.NameType;
+import com.github.wnameless.spring.boot.up.apt.processor.NamedResource.Constant;
+import com.github.wnameless.spring.boot.up.apt.processor.NamedResource.InferredConstant;
+import com.github.wnameless.spring.boot.up.apt.processor.NamedResource.NamingType;
 import com.google.auto.service.AutoService;
 import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.FieldSpec;
@@ -84,10 +84,6 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
           CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, upperCamelPlural);
       lowerHyphenPlural = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, upperCamelPlural);
 
-      NameKey resourceNameKey = nr.resourceNameKey();
-      NameKey resourcesNameKey = nr.resourcesNameKey();
-      NameKey resourcePathNameKey = nr.resourcePathNameKey();
-
       TypeSpec.Builder builder =
           TypeSpec.classBuilder(nr.classNamePrefix() + classSimpleName + nr.classNameSuffix())
               .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
@@ -98,12 +94,15 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
         builder.addSuperinterface(INamedResource.class);
       }
 
+      InferredConstant resource = nr.resource();
+      InferredConstant resources = nr.resources();
+      InferredConstant resourcePath = nr.resourcePath();
       // RESUORCE
-      this.nameKeyBuilder(builder, resourceNameKey);
+      this.nameKeyBuilder(builder, resource);
       // RESUORCES
-      this.nameKeyBuilder(builder, resourcesNameKey);
+      this.nameKeyBuilder(builder, resources);
       // RESUORCE_PATH
-      this.nameKeyBuilder(builder, resourcePathNameKey);
+      this.nameKeyBuilder(builder, resourcePath);
 
       Ruby.Hash.of( //
           "SINGULAR", singularName, //
@@ -128,7 +127,7 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
             builder.addField(constant(k, v));
           });
 
-      for (NameType nameType : nr.literalSingularConstants()) {
+      for (NamingType nameType : nr.literalSingularConstants()) {
         switch (nameType) {
           case UPPER_CAMEL:
             builder.addField(constant(upperCamelSingular, upperCamelSingular));
@@ -147,7 +146,7 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
         }
       }
 
-      for (NameType nameType : nr.literalPluralConstants()) {
+      for (NamingType nameType : nr.literalPluralConstants()) {
         switch (nameType) {
           case UPPER_CAMEL:
             builder.addField(constant(upperCamelPlural, upperCamelPlural));
@@ -166,12 +165,12 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
         }
       }
 
-      for (NameKey nameKey : nr.nameKeys()) {
+      for (InferredConstant nameKey : nr.inferredConstants()) {
         nameKeyBuilder(builder, nameKey);
       }
 
-      for (NameKeyValue nameKeyValue : nr.nameKeyValues()) {
-        builder.addField(constant(nameKeyValue.key(), nameKeyValue.value()));
+      for (Constant constant : nr.constants()) {
+        builder.addField(constant(constant.name(), constant.value()));
       }
 
       // Writes to file
@@ -188,29 +187,31 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
     return !elements.isEmpty();
   }
 
-  private void nameKeyBuilder(TypeSpec.Builder builder, NameKey nameKey) {
-    switch (nameKey.type()) {
+  private void nameKeyBuilder(TypeSpec.Builder builder, InferredConstant constant) {
+    switch (constant.type()) {
       case UPPER_UNDERSCORE:
-        builder.addField(constant(nameKey.key(),
-            nameKey.prefix() + (nameKey.plural() ? upperUnderscorePlural : upperUnderscoreSingular)
-                + nameKey.suffix()));
+        builder.addField(constant(constant.name(),
+            constant.prefix()
+                + (constant.plural() ? upperUnderscorePlural : upperUnderscoreSingular)
+                + constant.suffix()));
         break;
       case LOWER_UNDERSCORE:
-        builder.addField(constant(nameKey.key(),
-            nameKey.prefix() + (nameKey.plural() ? lowerUnderscorePlural : lowerUnderscoreSingular)
-                + nameKey.suffix()));
+        builder.addField(constant(constant.name(),
+            constant.prefix()
+                + (constant.plural() ? lowerUnderscorePlural : lowerUnderscoreSingular)
+                + constant.suffix()));
         break;
       case UPPER_CAMEL:
-        builder.addField(constant(nameKey.key(), nameKey.prefix()
-            + (nameKey.plural() ? upperCamelPlural : upperCamelSingular) + nameKey.suffix()));
+        builder.addField(constant(constant.name(), constant.prefix()
+            + (constant.plural() ? upperCamelPlural : upperCamelSingular) + constant.suffix()));
         break;
       case LOWER_CAMEL:
-        builder.addField(constant(nameKey.key(), nameKey.prefix()
-            + (nameKey.plural() ? lowerCamelPlural : lowerCamelSingular) + nameKey.suffix()));
+        builder.addField(constant(constant.name(), constant.prefix()
+            + (constant.plural() ? lowerCamelPlural : lowerCamelSingular) + constant.suffix()));
         break;
       case LOWER_HYPHEN:
-        builder.addField(constant(nameKey.key(), nameKey.prefix()
-            + (nameKey.plural() ? lowerHyphenPlural : lowerHyphenSingular) + nameKey.suffix()));
+        builder.addField(constant(constant.name(), constant.prefix()
+            + (constant.plural() ? lowerHyphenPlural : lowerHyphenSingular) + constant.suffix()));
         break;
     }
   }
