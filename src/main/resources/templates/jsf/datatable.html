@@ -1,0 +1,125 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Start Table -->
+<div layout:fragment="crud"
+  th:with="route=${route}, user=${@user}, page=${page}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, queryConfig=${queryConfig}">
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
+    <div class="offcanvas-header">
+      <h4>[[#{jsf.datatable.filter_option.title} ?: 'Filter Option']]</h4>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div th:if="${queryConfig}" class="offcanvas-body">
+      <form class="row g-3" hx:get="${route.indexPath}" hx:target="${'#' + ajaxTargetId}"
+        hx-ext="json-enc">
+        <th:block th:each="field : ${queryConfig.fields}">
+          <div class="col-8">
+            <label class="form-label">[[${field}]]</label>
+            <input th:name="${field}" type="text" class="form-control"
+              th:value="${queryConfig.getFieldQueryString(field)}">
+          </div>
+          <div class="col-4">
+            <th:block th:if="${queryConfig.getFieldSortName(field)}">
+              <label class="form-label">Sort</label>
+              <select name="sort" class="form-select">
+                <option value="">None</option>
+                <option th:value="|${queryConfig.getFieldSortName(field)},ASC|"
+                  th:selected="${queryConfig.getFieldOrder(field)?.direction?.name == 'ASC'}">
+                  ASC
+                </option>
+                <option th:value="|${queryConfig.getFieldSortName(field)},DESC|"
+                  th:selected="${queryConfig.getFieldOrder(field)?.direction?.name == 'DESC'}">
+                  DESC
+                </option>
+              </select>
+          </div>
+        </th:block>
+        </th:block>
+
+        <div class="col-12 input-group mb-3">
+          <button class="btn btn-outline-secondary" type="button">Size</button>
+          <select name="size" class="form-select">
+            <option th:value="${queryConfig.pageable.pageSize}">
+              [[${queryConfig.pageable.pageSize}]]</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </select>
+        </div>
+
+        <div class="col-6">
+          <button type="submit" class="btn btn-primary">
+            [[#{jsf.datatable.filter_option.filter} ?: 'Filter']]</button>
+        </div>
+        <div class="col-6">
+          <button hx:get="${route.indexPath}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
+            type="button" class="btn btn-warning">
+            [[#{jsf.datatable.filter_option.reset} ?: 'Reset']]</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">
+          <div class="btn-group">
+            <button class="btn btn-outline-success" hx:get="${route.newPath}"
+              hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
+              <i class="fas fa-file-circle-plus"></i>
+            </button>
+            <button class="btn btn-info" data-bs-toggle="offcanvas" data-bs-target="#filterOption">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </th>
+        <th:block layout:fragment="header"></th:block>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="item : ${page}">
+        <th>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-gear"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a th:classappend="${user != null && (user.canUpdateOn(item, item.id) || user.canManageOn(item, item.id))} ? 'text-primary' : 'disabled'"
+                  hx:get="${item.editPath}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
+                  class="dropdown-item">
+                  [[#{ui.edit} ?: 'Edit']]</a>
+              </li>
+              <li>
+                <a th:classappend="${user != null && (user.canDeleteOn(item, item.id) || user.canManageOn(item, item.id))} ? 'text-danger' : 'disabled'"
+                  hx:delete="${item.deletePath}" hx:confirm="#{ui.confirmation.delete}"
+                  hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
+                  [[#{ui.delete} ?: 'Delete']]</a>
+              </li>
+            </ul>
+          </div>
+        </th>
+        <th:block layout:fragment="data"></th:block>
+      </tr>
+    </tbody>
+  </table>
+
+  <nav class="d-flex justify-content-center">
+    <ul class="pagination" sd:pagination-split="7" sd:pagination="full"
+      sd:pagination-url="@{${route.indexPath + queryConfig?.toQueryString()}}">
+      <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+      <li class="disabled"><a href="#" aria-label="Previous"><span
+            aria-hidden="true">&laquo;</span></a></li>
+      <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </nav>
+
+  <script th:inline="javascript" defer>
+    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+</div>
+<!-- End Table -->
+
+</html>

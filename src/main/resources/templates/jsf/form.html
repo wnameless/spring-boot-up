@@ -1,0 +1,118 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="new"
+  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}"
+  class="card">
+  <div class="card-header">
+    <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
+      type="button" class="me-auto btn-close" aria-label="Close"></button>
+  </div>
+  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
+    <react-form th:id="${'newForm' + rid}" th:action="${item.createPath}" method="POST"
+      ajax:target="${ajaxTargetId}">
+    </react-form>
+
+    <script th:inline="javascript">
+      var formDataset = /*[[${item.toDataset()}]]*/ null;
+      var newFormId = /*[[${'newForm' + rid}]]*/ null;
+      var newForm = document.getElementById(newFormId);
+      newForm.setAttribute('props-var', 'formDataset');
+    </script>
+  </div>
+  <script th:inline="javascript" defer>
+    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+</div>
+
+<div th:fragment="edit"
+  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}"
+  class="card">
+  <div class="card-header">
+    <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
+      type="button" class="me-auto btn-close" aria-label="Close"></button>
+  </div>
+  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
+    <react-form th:id="${'editForm' + rid}"
+      th:action="@{${item.updatePath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
+      method="POST" ajax:target="${ajaxTargetId}">
+    </react-form>
+
+    <script th:inline="javascript">
+      var formDataset = /*[[${item.toDataset()}]]*/ null;
+      var editFormId = /*[[${'editForm' + rid}]]*/ null;
+      var editForm = document.getElementById(editFormId);
+      editForm.setAttribute('props-var', 'formDataset');
+    </script>
+  </div>
+  <script th:inline="javascript" defer>
+    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+</div>
+
+<div th:fragment="show"
+  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}"
+  class="card">
+  <div class="card-header">
+    <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
+      type="button" class="me-auto btn-close" aria-label="Close"></button>
+  </div>
+  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
+    <react-form th:id="${'showForm' + rid}" th:action="${item.backPath}" method="GET"
+      ajax:target="${ajaxTargetId}" disabled="true">
+      <th:block th:if="${item.hasBackPathname}">
+        <div></div>
+      </th:block>
+      <th:block th:unless="${item.hasBackPathname}">
+        <button class="btn" type="submit">Return</button>
+      </th:block>
+    </react-form>
+
+    <script th:inline="javascript">
+      var formDataset = /*[[${item.toDataset()}]]*/ null;
+      var showFormId = /*[[${'showForm' + rid}]]*/ null;
+      var showForm = document.getElementById(showFormId);
+      showForm.setAttribute('props-var', 'formDataset');
+    </script>
+  </div>
+  <script th:inline="javascript" defer>
+    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+</div>
+
+<div th:fragment="show-edit"
+  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedId=${embeddedId ?: ajaxTargetId}"
+  class="card">
+  <div class="card-header">
+    <div class="d-flex">
+      <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
+        type="button" class="me-auto btn-close" aria-label="Close"></button>
+      <a th:if="${item.editable}" class="pe-2 orange" th:href="${item.editPath}"
+        hx:get="@{${item.editPath}(ajaxTargetId=${embeddedId}, backTargetId=${ajaxTargetId})}"
+        hx:target="${'#' + embeddedId}" hx-ext="json-enc">
+        <i class="fas fa-edit"></i></a>
+    </div>
+  </div>
+  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
+    <react-form th:id="${'showEditForm' + rid }" th:action="${item.backPath}" method="GET"
+      ajax:target="${ajaxTargetId}" disabled="true">
+      <th:block th:if="${item.hasBackPathname}">
+        <div></div>
+      </th:block>
+      <th:block th:unless="${item.hasBackPathname}">
+        <button class="btn" type="submit">Return</button>
+      </th:block>
+    </react-form>
+
+    <script th:inline="javascript">
+      var formDataset = /*[[${item.toDataset()}]]*/ null;
+      var showEditFormId = /*[[${'showEditForm' + rid}]]*/ null;
+      var showEditForm = document.getElementById(showEditFormId);
+      showEditForm.setAttribute('props-var', 'formDataset');
+    </script>
+  </div>
+  <script th:inline="javascript" defer>
+    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+</div>
+
+</html>
