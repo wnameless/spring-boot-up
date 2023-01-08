@@ -9,11 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 public interface SingularHtmlRestfulWebAction<D, ID>
-    extends BaseWebAction<D>, RestfulRouteProvider<Void> {
-
-  default ModelAndView indexHtml(ModelAndView mav) {
-    return mav;
-  }
+    extends SingularBaseWebAction<D>, RestfulRouteProvider<Void> {
 
   @GetMapping
   default ModelAndView showHtml(ModelAndView mav) {
