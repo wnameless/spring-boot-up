@@ -20,6 +20,10 @@ import com.google.common.base.CaseFormat;
 
 public interface RestfulItem<ID> extends JoinablePath {
 
+  default boolean isSingular() {
+    return false;
+  }
+
   default boolean hasBackPathname() {
     return getBackPathname() != null && !getBackPathname().trim().isEmpty();
   }
@@ -59,19 +63,35 @@ public interface RestfulItem<ID> extends JoinablePath {
   }
 
   default String getEditPath() {
-    return getBasePath() + "/" + getId() + "/edit";
+    if (isSingular()) {
+      return getBasePath() + "/edit";
+    } else {
+      return getBasePath() + "/" + getId() + "/edit";
+    }
   }
 
   default String getShowPath() {
-    return getBasePath() + "/" + getId();
+    if (isSingular()) {
+      return getBasePath();
+    } else {
+      return getBasePath() + "/" + getId();
+    }
   }
 
   default String getUpdatePath() {
-    return getBasePath() + "/" + getId();
+    if (isSingular()) {
+      return getBasePath();
+    } else {
+      return getBasePath() + "/" + getId();
+    }
   }
 
   default String getDeletePath() {
-    return getBasePath() + "/" + getId();
+    if (isSingular()) {
+      return getBasePath();
+    } else {
+      return getBasePath() + "/" + getId();
+    }
   }
 
   default RestfulItem<ID> withParent(RestfulItem<?> parent) {

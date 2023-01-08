@@ -34,7 +34,7 @@
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
     <react-form th:id="${'editForm' + rid}"
       th:action="@{${item.updatePath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
-      method="POST" ajax:target="${ajaxTargetId}">
+      method="PUT" ajax:target="${ajaxTargetId}">
     </react-form>
 
     <script th:inline="javascript">

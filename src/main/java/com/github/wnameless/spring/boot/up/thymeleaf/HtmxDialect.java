@@ -16,6 +16,8 @@ public class HtmxDialect extends AbstractProcessorDialect {
     processors.add(new HtmxGetTagProcessor(dialectPrefix));
     processors.add(new HtmxPostTagProcessor(dialectPrefix));
     processors.add(new HtmxDeleteTagProcessor(dialectPrefix));
+    processors.add(new HtmxPutTagProcessor(dialectPrefix));
+    processors.add(new HtmxPatchTagProcessor(dialectPrefix));
     processors.add(new HtmxHxTargetTagProcessor(dialectPrefix));
     processors.add(new HtmxConfirmTagProcessor(dialectPrefix));
     return processors;

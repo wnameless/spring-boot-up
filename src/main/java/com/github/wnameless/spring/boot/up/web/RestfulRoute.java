@@ -91,14 +91,6 @@ public interface RestfulRoute<ID> extends JoinablePath {
     return getUpdatePath(id);
   }
 
-  default String getDestroyPath(ID id) {
-    return getIndexPath() + "/" + idToParam(id);
-  }
-
-  default String destroyPath(ID id) {
-    return getDestroyPath(id);
-  }
-
   default String getDeletePath(ID id) {
     return getIndexPath() + "/" + idToParam(id);
   }
