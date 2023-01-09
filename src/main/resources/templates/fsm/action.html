@@ -1,0 +1,67 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bar" th:with="item=${item}, ajaxTarget=${ajaxTarget ?: 'ajaxTarget'}"
+  class="card mb-2">
+  <div class="card-body">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
+      <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-route"></i>
+        [[${item.stateMachine.state.name}]]
+      </button>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-success">
+          <i class="fas fa-location-arrow"></i>
+        </button>
+        <th:block th:each="trigger : ${item.externalTriggers}">
+          <button type="button" class="btn btn-outline-success"
+            hx:get="${item.joinPath('triggers', trigger.name)}" hx:target="${'#' + ajaxTarget}"
+            hx-ext="json-enc">[[${trigger.name}]]</button>
+        </th:block>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:fragment="status" th:with="item=${item}"
+  class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
+  <button type="button" class="btn btn-outline-primary">
+    <i class="fas fa-diagram-project"></i>
+    [[${item.stateMachine.state.name}]]
+  </button>
+</div>
+
+<div th:fragment="editor"
+  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, fid=${(T(java.lang.Math).random() * 10000).intValue()}">
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" data-bs-toggle="tab"
+        th:attr="data-bs-target=${'#mainForm' + fid}" type="button" role="tab">Main</button>
+    </li>
+    <li th:if="${item.stateRecord.hasViewableForm(item.stateMachine)}" class="nav-item"
+      role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" th:attr="data-bs-target=${'#stateForm' + fid}"
+        type="button" role="tab">State Forms</button>
+    </li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane fade show active" th:id="${'mainForm' + fid}" role="tabpanel">
+      <div th:replace="~{jsf/form :: show-edit(item=${item}, ajaxTargetId=${ajaxTargetId})}"></div>
+    </div>
+    <div th:if="${item.stateRecord.hasViewableForm(item.stateMachine)}" class="tab-pane fade"
+      th:id="${'stateForm' + fid}" role="tabpanel">
+      <th:block th:if="${item.stateRecord.hasForm}">
+        <th:block th:each="stateForm :${item.stateRecord.state.forms}"
+          th:with="rid=${(T(java.lang.Math).random() * 10000).intValue()}">
+          <div th:if="${item.stateMachine.canFire(stateForm.viewableTriggerStock.get)}"
+            th:id="${'embedded' + rid}" class="pt-2">
+            <a hx:target="${'#embedded' + rid}"
+              hx:get="@{${item.joinPath('forms', stateForm.formTypeStock.get)}(ajaxTargetId=${'embedded' + rid})}"
+              hx-ext="json-enc" hx-trigger="load"></a>
+          </div>
+        </th:block>
+      </th:block>
+    </div>
+  </div>
+</div>
+
+</html>

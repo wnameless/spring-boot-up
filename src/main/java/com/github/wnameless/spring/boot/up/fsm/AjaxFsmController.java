@@ -10,8 +10,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import com.github.oxo42.stateless4j.StateMachine;
@@ -81,8 +82,10 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       @PathVariable String formType, @RequestParam(required = true) String ajaxTargetId,
       @RequestParam(required = false) String embeddedId) {
     if (embeddedId == null || embeddedId.isBlank()) embeddedId = ajaxTargetId;
-    mav.setViewName(String.format("jsf/form :: show-edit(ajaxTargetId='%s', embeddedId='%s')",
-        ajaxTargetId, embeddedId));
+    mav.setViewName("jsf/form :: show-edit");
+    mav.addObject("ajaxTargetId", ajaxTargetId);
+    mav.addObject("embeddedId", embeddedId);
+
     showAndEditAction(mav, id, formType, true);
     return mav;
   }
@@ -93,8 +96,10 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       @PathVariable String formType, @RequestParam(required = true) String ajaxTargetId,
       @RequestParam(required = false) String backTargetId) {
     if (backTargetId == null || backTargetId.isBlank()) backTargetId = ajaxTargetId;
-    mav.setViewName(String.format("jsf/form :: edit(ajaxTargetId='%s', backTargetId='%s')",
-        ajaxTargetId, backTargetId));
+    mav.setViewName("jsf/form :: edit");
+    mav.addObject("ajaxTargetId", ajaxTargetId);
+    mav.addObject("backTargetId", backTargetId);
+
     showAndEditAction(mav, id, formType, false);
     return mav;
   }
@@ -140,13 +145,15 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
   }
 
   @SuppressWarnings("unchecked")
-  @PostMapping(path = "/{id}/forms/{formType}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @RequestMapping(path = "/{id}/forms/{formType}", method = {RequestMethod.PUT, RequestMethod.PUT},
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView updateFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType, @RequestBody Map<String, Object> formData,
       @RequestParam(required = true) String ajaxTargetId,
       @RequestParam(required = true) String backTargetId) {
-    mav.setViewName(String.format("jsf/form :: show-edit(ajaxTargetId='%s', embeddedId='%s'",
-        backTargetId, ajaxTargetId));
+    mav.setViewName("jsf/form :: show-edit");
+    mav.addObject("ajaxTargetId", backTargetId);
+    mav.addObject("embeddedId", ajaxTargetId);
 
     P phase = getPhaseRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
