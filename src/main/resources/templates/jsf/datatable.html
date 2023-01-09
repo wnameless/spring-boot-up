@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <!-- Start Table -->
-<div layout:fragment="crud"
+<div th:fragment="crud(th, td)"
   th:with="route=${route}, user=${@user}, page=${page}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, queryConfig=${queryConfig}">
   <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
     <div class="offcanvas-header">
@@ -73,7 +73,7 @@
             </button>
           </div>
         </th>
-        <th:block layout:fragment="header"></th:block>
+        <th:block th:replace="${th}"></th:block>
       </tr>
     </thead>
     <tbody>
@@ -100,7 +100,7 @@
             </ul>
           </div>
         </th>
-        <th:block layout:fragment="data"></th:block>
+        <th:block th:replace="${td}"></th:block>
       </tr>
     </tbody>
   </table>
