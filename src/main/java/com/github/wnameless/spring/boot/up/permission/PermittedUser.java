@@ -165,7 +165,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canManage(Object obj) {
-    return entityAccessControlProcess(obj, MANAGE, canManage(obj.getClass()));
+    return processEntityAccessControl(obj, MANAGE, canManage(obj.getClass()));
     // return canManage(obj.getClass());
   }
 
@@ -243,7 +243,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canCRUD(Object obj) {
-    return entityAccessControlProcess(obj, CRUD, canCRUD(obj.getClass()));
+    return processEntityAccessControl(obj, CRUD, canCRUD(obj.getClass()));
     // return canCRUD(obj.getClass());
   }
 
@@ -298,7 +298,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canCreate(Object obj) {
-    return entityAccessControlProcess(obj, CREATE, canCreate(obj.getClass()));
+    return processEntityAccessControl(obj, CREATE, canCreate(obj.getClass()));
     // return canCreate(obj.getClass());
   }
 
@@ -355,7 +355,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canRead(Object obj) {
-    return entityAccessControlProcess(obj, READ, canRead(obj.getClass()));
+    return processEntityAccessControl(obj, READ, canRead(obj.getClass()));
     // return canRead(obj.getClass());
   }
 
@@ -433,7 +433,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canUpdate(Object obj) {
-    return entityAccessControlProcess(obj, UPDATE, canUpdate(obj.getClass()));
+    return processEntityAccessControl(obj, UPDATE, canUpdate(obj.getClass()));
     // return canUpdate(obj.getClass());
   }
 
@@ -511,7 +511,7 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canDelete(Object obj) {
-    return entityAccessControlProcess(obj, DELETE, canDelete(obj.getClass()));
+    return processEntityAccessControl(obj, DELETE, canDelete(obj.getClass()));
     // return canDelete(obj.getClass());
   }
 
@@ -625,7 +625,7 @@ public interface PermittedUser<ID> {
     return meta == null ? new LinkedHashSet<>() : meta;
   }
 
-  default boolean entityAccessControlProcess(Object entity, RestAbility action,
+  default boolean processEntityAccessControl(Object entity, RestAbility action,
       boolean filterResult) {
     if (entity instanceof AccessControlAware aca) {
       switch (action) {
