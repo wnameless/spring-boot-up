@@ -2,29 +2,30 @@ package com.github.wnameless.spring.boot.up.jsf;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.springframework.data.annotation.Transient;
-import com.github.wnameless.spring.boot.up.permission.resource.AbstractAccessControlAware;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.RestfulItem;
 import lombok.Data;
 
 @Data
-public class RestfulJsonSchemaForm<ID> extends AbstractAccessControlAware
-    implements JsonSchemaForm, RestfulItem<ID> {
+public class RestfulJsonSchemaForm<ID>
+    implements JsonSchemaForm, RestfulItem<ID>, AccessControlAware {
 
   private ID id;
 
+  private Map<String, Object> formData = new LinkedHashMap<>();
+  private Map<String, Object> schema = new LinkedHashMap<>();
+  private Map<String, Object> uiSchema = new LinkedHashMap<>();
+
   private String basePath;
-
   private String indexPath;
-
-  @Transient
   private String backPathname;
 
-  private Map<String, Object> formData = new LinkedHashMap<>();
-
-  private Map<String, Object> schema = new LinkedHashMap<>();
-
-  private Map<String, Object> uiSchema = new LinkedHashMap<>();
+  AccessControlRule manageable = new AccessControlRule(false, () -> true);
+  AccessControlRule crudable = new AccessControlRule(false, () -> true);
+  AccessControlRule readable = new AccessControlRule(false, () -> true);
+  AccessControlRule updatable = new AccessControlRule(false, () -> true);
+  AccessControlRule deletable = new AccessControlRule(false, () -> true);
 
   public RestfulJsonSchemaForm(String basePath, ID id) {
     this.basePath = basePath;
