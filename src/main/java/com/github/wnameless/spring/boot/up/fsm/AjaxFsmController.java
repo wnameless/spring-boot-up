@@ -23,6 +23,7 @@ import com.github.wnameless.spring.boot.up.jsf.model.JsfData;
 import com.github.wnameless.spring.boot.up.jsf.model.JsfSchema;
 import com.github.wnameless.spring.boot.up.jsf.repository.JsfDataRepository;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 
 public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, P extends Phase<P, S, T, ID>, S extends State<T>, T extends Trigger, ID>
@@ -136,9 +137,8 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       item.setSchema(data.getJsfSchema().getSchema());
       item.setUiSchema(data.getJsfSchema().getUiSchema());
       item.setFormData(data.getFormData());
-      if (editable) {
-        item.setEditable(phase.getStateMachine().canFire(sf.editableTriggerStock().get()));
-      }
+      item.setUpdatable(new AccessControlRule(true,
+          () -> phase.getStateMachine().canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
       mav.addObject("item", item);
     }
@@ -194,7 +194,8 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       item.setSchema(data.getJsfSchema().getSchema());
       item.setUiSchema(data.getJsfSchema().getUiSchema());
       item.setFormData(data.getFormData());
-      item.setEditable(phase.getStateMachine().canFire(sf.editableTriggerStock().get()));
+      item.setUpdatable(new AccessControlRule(true,
+          () -> phase.getStateMachine().canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
       mav.addObject("item", item);
     }

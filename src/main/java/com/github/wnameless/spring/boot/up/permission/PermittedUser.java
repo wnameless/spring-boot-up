@@ -31,6 +31,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
 import com.github.wnameless.spring.boot.up.permission.ability.Ability;
 import com.github.wnameless.spring.boot.up.permission.ability.ResourceAbility;
+import com.github.wnameless.spring.boot.up.permission.ability.RestAbility;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
 import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceAccessRule;
 import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceFilterRepository;
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceAccessRule;
@@ -163,7 +165,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canManage(Object obj) {
-    return canManage(obj.getClass());
+    return entityAccessControlProcess(obj, MANAGE, canManage(obj.getClass()));
+    // return canManage(obj.getClass());
   }
 
   default boolean canManageOn(String resourceName, ID id) {
@@ -240,7 +243,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canCRUD(Object obj) {
-    return canCRUD(obj.getClass());
+    return entityAccessControlProcess(obj, CRUD, canCRUD(obj.getClass()));
+    // return canCRUD(obj.getClass());
   }
 
   default boolean canCRUDOn(String resourceName, ID id) {
@@ -294,7 +298,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canCreate(Object obj) {
-    return canCreate(obj.getClass());
+    return entityAccessControlProcess(obj, CREATE, canCreate(obj.getClass()));
+    // return canCreate(obj.getClass());
   }
 
   default boolean canRead(String resourceName, String fieldName) {
@@ -350,7 +355,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canRead(Object obj) {
-    return canRead(obj.getClass());
+    return entityAccessControlProcess(obj, READ, canRead(obj.getClass()));
+    // return canRead(obj.getClass());
   }
 
   default boolean canReadOn(String resourceName, ID id) {
@@ -427,7 +433,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canUpdate(Object obj) {
-    return canUpdate(obj.getClass());
+    return entityAccessControlProcess(obj, UPDATE, canUpdate(obj.getClass()));
+    // return canUpdate(obj.getClass());
   }
 
   default boolean canUpdateOn(String resourceName, ID id) {
@@ -504,7 +511,8 @@ public interface PermittedUser<ID> {
   }
 
   default boolean canDelete(Object obj) {
-    return canDelete(obj.getClass());
+    return entityAccessControlProcess(obj, DELETE, canDelete(obj.getClass()));
+    // return canDelete(obj.getClass());
   }
 
   default boolean canDeleteOn(String resourceName, ID id) {
@@ -615,6 +623,51 @@ public interface PermittedUser<ID> {
   default Set<String> getUserMeta(String key) {
     Set<String> meta = getUserMetadata().get(key);
     return meta == null ? new LinkedHashSet<>() : meta;
+  }
+
+  default boolean entityAccessControlProcess(Object entity, RestAbility action,
+      boolean filterResult) {
+    if (entity instanceof AccessControlAware aca) {
+      switch (action) {
+        case MANAGE:
+          if (aca.getManageable().isOverridable()) {
+            return aca.getManageable().accessControlRuleStock().getAsBoolean();
+          } else {
+            return filterResult && aca.getManageable().accessControlRuleStock().getAsBoolean();
+          }
+        case CRUD:
+          if (aca.getCrudable().isOverridable()) {
+            return aca.getCrudable().accessControlRuleStock().getAsBoolean();
+          } else {
+            return filterResult && aca.getCrudable().accessControlRuleStock().getAsBoolean();
+          }
+        case CREATE:
+          if (aca.getCreatable().isOverridable()) {
+            return aca.getCreatable().accessControlRuleStock().getAsBoolean();
+          } else {
+            return filterResult && aca.getCreatable().accessControlRuleStock().getAsBoolean();
+          }
+        case READ:
+          if (aca.getReadable().isOverridable()) {
+            return aca.getReadable().accessControlRuleStock().getAsBoolean();
+          } else {
+            return filterResult && aca.getReadable().accessControlRuleStock().getAsBoolean();
+          }
+        case UPDATE:
+          if (aca.getUpdatable().isOverridable()) {
+            return aca.getUpdatable().accessControlRuleStock().getAsBoolean();
+          } else {
+            return filterResult && aca.getUpdatable().accessControlRuleStock().getAsBoolean();
+          }
+        case DELETE:
+          if (aca.getDeletable().isOverridable()) {
+            return aca.getDeletable().accessControlRuleStock().getAsBoolean();
+          } else {
+            return filterResult && aca.getDeletable().accessControlRuleStock().getAsBoolean();
+          }
+      }
+    }
+    return filterResult;
   }
 
 }

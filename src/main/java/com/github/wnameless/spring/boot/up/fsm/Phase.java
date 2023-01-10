@@ -7,8 +7,10 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
 
-public interface Phase<SELF extends Phase<SELF, S, T, ID>, S extends State<T>, T extends Trigger, ID> {
+public interface Phase<SELF extends Phase<SELF, S, T, ID>, S extends State<T>, T extends Trigger, ID>
+    extends AccessControlAware {
 
   @SuppressWarnings("unchecked")
   @AfterDeleteFromMongo

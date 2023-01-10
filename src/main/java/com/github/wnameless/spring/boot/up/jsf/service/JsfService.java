@@ -1,6 +1,5 @@
 package com.github.wnameless.spring.boot.up.jsf.service;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -16,6 +15,8 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
 public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, ID> {
+
+  org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JsfService.class);
 
   JsfSchemaRepository<JS, ID> getJsfSchemaRepository();
 
@@ -58,7 +59,8 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
           .getResource(getTemplatePath() + "/" + formType + "/" + formType + ".schema.json");
       String json = Resources.toString(schemaUrl, Charsets.UTF_8);
       return JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
-    } catch (IOException e) {
+    } catch (Exception e) {
+      log.info("Schema template not found", e);
       return JsonSchemaFormUtils.defaultSchema();
     }
   }
@@ -69,7 +71,8 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
           .getResource(getTemplatePath() + "/" + formType + "/" + formType + ".uiSchema.json");
       String json = Resources.toString(schemaUrl, Charsets.UTF_8);
       return JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
-    } catch (IOException e) {
+    } catch (Exception e) {
+      log.info("UiSchema template not found", e);
       return JsonSchemaFormUtils.defaultUiSchema();
     }
   }

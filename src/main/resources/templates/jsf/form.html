@@ -80,13 +80,14 @@
 </div>
 
 <div th:fragment="show-edit"
-  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedId=${embeddedId ?: ajaxTargetId}"
+  th:with="user=${@user}, item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedId=${embeddedId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <div class="d-flex">
       <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
         type="button" class="me-auto btn-close" aria-label="Close"></button>
-      <a th:if="${item.editable}" class="pe-2 orange" th:href="${item.editPath}"
+      <a th:if="${user != null && user.canUpdate(item)}" class="pe-2 orange"
+        th:href="${item.editPath}"
         hx:get="@{${item.editPath}(ajaxTargetId=${embeddedId}, backTargetId=${ajaxTargetId})}"
         hx:target="${'#' + embeddedId}" hx-ext="json-enc">
         <i class="fas fa-edit"></i></a>
