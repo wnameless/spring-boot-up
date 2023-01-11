@@ -86,13 +86,13 @@
             </button>
             <ul class="dropdown-menu">
               <li>
-                <a th:classappend="${user != null && user.canUpdateOn(item, item.id)} ? 'text-primary' : 'disabled'"
+                <a th:classappend="${user != null && user.canUpdate(item)} ? 'text-primary' : 'disabled'"
                   hx:get="${item.editPath}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
                   class="dropdown-item">
                   [[#{ui.edit} ?: 'Edit']]</a>
               </li>
               <li>
-                <a th:classappend="${user != null && user.canDeleteOn(item, item.id)} ? 'text-danger' : 'disabled'"
+                <a th:classappend="${user != null && user.canDelete(item)} ? 'text-danger' : 'disabled'"
                   hx:delete="${item.deletePath}" hx:confirm="#{ui.confirmation.delete}"
                   hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
                   [[#{ui.delete} ?: 'Delete']]</a>
