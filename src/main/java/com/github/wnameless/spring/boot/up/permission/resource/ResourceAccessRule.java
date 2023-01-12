@@ -26,9 +26,7 @@ public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, 
 
   Class<T> getResourceType();
 
-  default String getResourceName() {
-    return getResourceType().getSimpleName();
-  }
+  String getResourceName();
 
   RF getResourceFilterRepository();
 
