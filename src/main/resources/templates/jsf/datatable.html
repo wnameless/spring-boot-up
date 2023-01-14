@@ -2,7 +2,7 @@
 
 <!-- Start Table -->
 <div th:fragment="crud(th, td)"
-  th:with="route=${route}, user=${@user}, page=${page}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, queryConfig=${queryConfig}">
+  th:with="route=${route}, user=${@user}, page=${page}, ajaxTargetId=${ajaxTargetId ?: @springBootUpWebEnv.ajaxTargetId}, queryConfig=${queryConfig}">
   <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
     <div class="offcanvas-header">
       <h4>[[#{jsf.datatable.filter_option.title} ?: 'Filter Option']]</h4>

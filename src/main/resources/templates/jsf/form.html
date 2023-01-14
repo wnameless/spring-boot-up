@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="new"
-  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}"
+  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: @springBootUpWebEnv.ajaxTargetId}, backTargetId=${backTargetId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
@@ -25,7 +25,7 @@
 </div>
 
 <div th:fragment="edit"
-  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}"
+  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: @springBootUpWebEnv.ajaxTargetId}, backTargetId=${backTargetId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
@@ -50,7 +50,7 @@
 </div>
 
 <div th:fragment="show"
-  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}"
+  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: @springBootUpWebEnv.ajaxTargetId}, backTargetId=${backTargetId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
@@ -80,7 +80,7 @@
 </div>
 
 <div th:fragment="show-edit"
-  th:with="user=${@user}, item=${item}, ajaxTargetId=${ajaxTargetId ?: 'ajaxTarget'}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedId=${embeddedId ?: ajaxTargetId}"
+  th:with="user=${@user}, item=${item}, ajaxTargetId=${ajaxTargetId ?: @springBootUpWebEnv.ajaxTargetId}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedId=${embeddedId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <div class="d-flex">

@@ -25,19 +25,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.ui.Model;
 import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoProjectionRepository;
 import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoQuerydslUtils;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.WebPermissionManager;
-import com.github.wnameless.spring.boot.up.web.WebUiModelHolder;
+import com.github.wnameless.spring.boot.up.web.SpringBootUpWebEnv;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Validator;
 
 @NoRepositoryBean
@@ -256,16 +254,8 @@ public interface ResourceFilterRepository<T, ID>
     return save(entity);
   }
 
-  default T filterSaveWithValidation(T entity) {
-    WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
-    HttpServletRequest request = SpringBootUp.currentHttpServletRequest().get();
-    Model model = webUiModelHolder.retrieveModel(request);
-
-    return filterSaveWithValidation(entity, model);
-  }
-
   @SuppressWarnings({"rawtypes", "unchecked"})
-  default T filterSaveWithValidation(T entity, Model model) {
+  default T filterSaveWithValidation(T entity) {
     Validator validator = SpringBootUp.getBean(Validator.class);
 
     ResourceAccessRule rar = getResourceAccessRule();
@@ -277,19 +267,21 @@ public interface ResourceFilterRepository<T, ID>
     List<String> messages =
         validator.validate(entity).stream().map(e -> e.getMessage()).collect(Collectors.toList());
     if (messages.size() > 0) {
-      model.addAttribute("messages", messages);
+      SpringBootUp.currentHttpServletRequest().get().setAttribute(
+          SpringBootUp.getBean(SpringBootUpWebEnv.class).getModelAttrMessages(), messages);
       return entity;
     }
 
     // new entity
     if (!target.isPresent()) {
       if (!user.canCreate(rar.getResourceType())) {
-        model.addAttribute("messages", "No permission to CREATE");
+        SpringBootUp.currentHttpServletRequest().get().setAttribute(
+            SpringBootUp.getBean(SpringBootUpWebEnv.class).getModelAttrMessages(),
+            "No permission to CREATE");
         return entity;
-        // throw new UnsupportedOperationException("No permission to CREATE");
       }
 
-      return trySave(entity, model);
+      return trySave(entity);
     }
 
     // checks if entity existed and accessible
@@ -299,26 +291,21 @@ public interface ResourceFilterRepository<T, ID>
       target = findOne(ExpressionUtils.allOf(rar.getPredicateOfUpdateAbility(), idEq));
     }
     if (!target.isPresent()) {
-      model.addAttribute("messages", "No permission to UPDATE");
+      SpringBootUp.currentHttpServletRequest().get().setAttribute(
+          SpringBootUp.getBean(SpringBootUpWebEnv.class).getModelAttrMessages(),
+          "No permission to UPDATE");
       return entity;
-      // throw new UnsupportedOperationException("No permission to UPDATE");
     }
 
-    return trySave(entity, model);
+    return trySave(entity);
   }
 
   default T trySave(T entity) {
-    WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
-    HttpServletRequest request = SpringBootUp.currentHttpServletRequest().get();
-    Model model = webUiModelHolder.retrieveModel(request);
-    return trySave(entity, model);
-  }
-
-  default T trySave(T entity, Model model) {
     try {
       return save(entity);
     } catch (Exception e) {
-      model.addAttribute("messages", e.getMessage());
+      SpringBootUp.currentHttpServletRequest().get().setAttribute(
+          SpringBootUp.getBean(SpringBootUpWebEnv.class).getModelAttrMessages(), e.getMessage());
       return entity;
     }
   }

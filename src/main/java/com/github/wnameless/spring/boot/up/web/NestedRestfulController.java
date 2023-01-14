@@ -24,18 +24,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.github.wnameless.spring.boot.up.SpringBootUp;
-import jakarta.servlet.http.HttpServletRequest;
 
 public interface NestedRestfulController< //
     PR extends CrudRepository<P, PID>, P, PID, //
     CR extends CrudRepository<C, CID>, C, CID> {
-
-  @ModelAttribute
-  default void cacheModel(HttpServletRequest req, Model model) {
-    WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
-    webUiModelHolder.cacheModel(req, model);
-  }
 
   Function<P, ? extends RestfulRoute<CID>> getRoute();
 
