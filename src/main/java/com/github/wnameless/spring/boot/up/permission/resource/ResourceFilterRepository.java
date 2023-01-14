@@ -258,9 +258,10 @@ public interface ResourceFilterRepository<T, ID>
 
   default T filterSaveWithValidation(T entity) {
     WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
-    HttpServletRequest request = SpringBootUp.getCurrentHttpRequest().get();
+    HttpServletRequest request = SpringBootUp.currentHttpRequestStock().get();
+    Model model = webUiModelHolder.retrieveModel(request);
 
-    return filterSaveWithValidation(entity, webUiModelHolder.retrieveModel(request));
+    return filterSaveWithValidation(entity, model);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -283,10 +284,12 @@ public interface ResourceFilterRepository<T, ID>
     // new entity
     if (!target.isPresent()) {
       if (!user.canCreate(rar.getResourceType())) {
-        throw new UnsupportedOperationException("No permission to CREATE");
+        model.addAttribute("messages", "No permission to CREATE");
+        return entity;
+        // throw new UnsupportedOperationException("No permission to CREATE");
       }
 
-      return save(entity);
+      return trySave(entity, model);
     }
 
     // checks if entity existed and accessible
@@ -296,10 +299,28 @@ public interface ResourceFilterRepository<T, ID>
       target = findOne(ExpressionUtils.allOf(rar.getPredicateOfUpdateAbility(), idEq));
     }
     if (!target.isPresent()) {
-      throw new UnsupportedOperationException("No permission to UPDATE");
+      model.addAttribute("messages", "No permission to UPDATE");
+      return entity;
+      // throw new UnsupportedOperationException("No permission to UPDATE");
     }
 
-    return save(entity);
+    return trySave(entity, model);
+  }
+
+  default T trySave(T entity) {
+    WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
+    HttpServletRequest request = SpringBootUp.currentHttpRequestStock().get();
+    Model model = webUiModelHolder.retrieveModel(request);
+    return trySave(entity, model);
+  }
+
+  default T trySave(T entity, Model model) {
+    try {
+      return save(entity);
+    } catch (Exception e) {
+      model.addAttribute("messages", e.getMessage());
+      return entity;
+    }
   }
 
   default Optional<T> filterFindById(ID id) {

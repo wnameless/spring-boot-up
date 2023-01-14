@@ -99,7 +99,7 @@ public final class SpringBootUp {
     return existingBean;
   }
 
-  public static Optional<HttpServletRequest> getCurrentHttpRequest() {
+  public static Optional<HttpServletRequest> currentHttpRequestStock() {
     return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
         .filter(ServletRequestAttributes.class::isInstance)
         .map(ServletRequestAttributes.class::cast).map(ServletRequestAttributes::getRequest);
