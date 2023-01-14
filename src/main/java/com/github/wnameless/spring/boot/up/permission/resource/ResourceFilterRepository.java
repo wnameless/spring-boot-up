@@ -258,7 +258,7 @@ public interface ResourceFilterRepository<T, ID>
 
   default T filterSaveWithValidation(T entity) {
     WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
-    HttpServletRequest request = SpringBootUp.currentHttpRequestStock().get();
+    HttpServletRequest request = SpringBootUp.currentHttpServletRequest().get();
     Model model = webUiModelHolder.retrieveModel(request);
 
     return filterSaveWithValidation(entity, model);
@@ -309,7 +309,7 @@ public interface ResourceFilterRepository<T, ID>
 
   default T trySave(T entity) {
     WebUiModelHolder webUiModelHolder = SpringBootUp.getBean(WebUiModelHolder.class);
-    HttpServletRequest request = SpringBootUp.currentHttpRequestStock().get();
+    HttpServletRequest request = SpringBootUp.currentHttpServletRequest().get();
     Model model = webUiModelHolder.retrieveModel(request);
     return trySave(entity, model);
   }

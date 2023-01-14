@@ -15,13 +15,14 @@
  */
 package com.github.wnameless.spring.boot.up;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * 
@@ -42,67 +43,83 @@ public final class SpringBootUp {
   }
 
   /**
-   * {@link BeanFactory#getBean}
-   * 
-   * @param <T> the type of a bean
-   * @param name of a bean
-   * @param requiredType of a bean
-   * @return a bean instance
+   * @see {@link ApplicationContext#getBean(Class)}
+   */
+  public static <T> T getBean(Class<T> requiredType) {
+    return applicationContext().getBean(requiredType);
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBean(Class, Object...)}
+   */
+  public static <T> T getBean(Class<T> requiredType, Object... args) {
+    return applicationContext().getBean(requiredType, args);
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBean(String)}
+   */
+  public static Object getBean(String name) {
+    return applicationContext().getBean(name);
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBean(Class)}
    */
   public static <T> T getBean(String name, Class<T> requiredType) {
     return applicationContext().getBean(name, requiredType);
   }
 
-  public static Object getBean(String name) {
-    return applicationContext().getBean(name);
-  }
-
+  /**
+   * @see {@link ApplicationContext#getBean(Class, Object...)}
+   */
   public static Object getBean(String name, Object... args) {
     return applicationContext().getBean(name, args);
   }
 
-  public static <T> T getBean(Class<T> requiredType) {
-    return applicationContext().getBean(requiredType);
-  }
-
-  public static <T> T getBean(Class<T> requiredType, Object... args) {
-    return applicationContext().getBean(requiredType, args);
-  }
-
+  /**
+   * @see {@link ApplicationContext#getBeansOfType(Class)}
+   */
   public static <T> Map<String, T> getBeansOfType(Class<T> type) {
     return applicationContext().getBeansOfType(type);
   }
 
+  /**
+   * @see {@link ApplicationContext#getBeansOfType(Class, boolean, boolean)}
+   */
   public static <T> Map<String, T> getBeansOfType(Class<T> type, boolean includeNonSingletons,
       boolean allowEagerInit) {
     return applicationContext().getBeansOfType(type, includeNonSingletons, allowEagerInit);
   }
 
-  public static AutowireCapableBeanFactory autowireCapableBeanFactory() {
-    return applicationContext().getAutowireCapableBeanFactory();
+  /**
+   * @see {@link ApplicationContext#getBeansWithAnnotation(Class)}
+   */
+  public static Map<String, Object> getBeansWithAnnotation(
+      Class<? extends Annotation> annotationType) {
+    return applicationContext().getBeansWithAnnotation(annotationType);
   }
 
-  public static <T> T autowire(Class<T> beanClass, int autowireMode, boolean dependencyCheck) {
-    return beanClass
-        .cast(autowireCapableBeanFactory().autowire(beanClass, autowireMode, dependencyCheck));
-  }
-
-  public static <T> T autowireBean(T existingBean) {
-    autowireCapableBeanFactory().autowireBean(existingBean);
-    return existingBean;
-  }
-
-  public static <T> T autowireBeanProperties(T existingBean, int autowireMode,
-      boolean dependencyCheck) {
-    autowireCapableBeanFactory().autowireBeanProperties(existingBean, autowireMode,
-        dependencyCheck);
-    return existingBean;
-  }
-
-  public static Optional<HttpServletRequest> currentHttpRequestStock() {
+  /**
+   * Finds current {@link HttpServletRequest}.
+   * 
+   * @return a {@link Optional} of {@link HttpServletRequest}
+   */
+  public static Optional<HttpServletRequest> currentHttpServletRequest() {
     return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
         .filter(ServletRequestAttributes.class::isInstance)
         .map(ServletRequestAttributes.class::cast).map(ServletRequestAttributes::getRequest);
+  }
+
+  /**
+   * Finds current {@link HttpServletResponse}.
+   * 
+   * @return a {@link Optional} of {@link HttpServletResponse}
+   */
+  public static Optional<HttpServletResponse> currentHttpServletResponse() {
+    return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+        .filter(ServletRequestAttributes.class::isInstance)
+        .map(ServletRequestAttributes.class::cast).map(ServletRequestAttributes::getResponse);
   }
 
 }
