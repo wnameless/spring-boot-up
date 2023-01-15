@@ -32,8 +32,8 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getSchema() {
-    if (getJsfSchemaProcessor() != null) {
-      return getJsfSchemaProcessor().apply(getJsfData().getJsfSchema()).getSchema();
+    if (jsfSchemaStrategy() != null) {
+      return jsfSchemaStrategy().apply(getJsfData().getJsfSchema()).getSchema();
     }
 
     return getJsfData().getJsfSchema().getSchema();
@@ -44,8 +44,8 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getUiSchema() {
-    if (getJsfSchemaProcessor() != null) {
-      return getJsfSchemaProcessor().apply(getJsfData().getJsfSchema()).getUiSchema();
+    if (jsfSchemaStrategy() != null) {
+      return jsfSchemaStrategy().apply(getJsfData().getJsfSchema()).getUiSchema();
     }
 
     return getJsfData().getJsfSchema().getUiSchema();
@@ -55,7 +55,7 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
     getJsfData().getJsfSchema().setUiSchema(uiSchema);
   }
 
-  default Function<JS, JS> getJsfSchemaProcessor() {
+  default Function<JS, JS> jsfSchemaStrategy() {
     return null;
   }
 
