@@ -12,5 +12,9 @@ public class SpringBootUpWebEnv {
   private String ajaxTargetId;
   @Value("${spring.boot.up.web.env.model-attr-messages:messages}")
   private String modelAttrMessages;
+  @Value("${spring.boot.up.web.env.model-attr-page:page}")
+  private String modelAttrPage;
+  @Value("${spring.boot.up.web.env.model-attr-items:items}")
+  private String modelAttrItems;
 
 }
