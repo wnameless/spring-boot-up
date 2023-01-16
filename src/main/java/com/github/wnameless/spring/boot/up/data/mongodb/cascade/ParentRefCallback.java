@@ -83,12 +83,17 @@ public class ParentRefCallback implements ReflectionUtils.FieldCallback {
           String refFieldName = parentRef.value();
 
           if (refFieldName.isEmpty()) {
-            f.set(value, source);
-            mongoOperations.save(value);
+            if (f.getType().isAssignableFrom(source.getClass())) {
+              f.set(value, source);
+              mongoOperations.save(value);
+            }
           } else {
             Field srcField = ReflectionUtils.findField(source.getClass(), refFieldName);
-            f.set(value, ReflectionUtils.getField(srcField, source));
-            mongoOperations.save(value);
+            Object srcFieldVal = ReflectionUtils.getField(srcField, source);
+            if (f.getType().isAssignableFrom(srcFieldVal.getClass())) {
+              f.set(value, srcFieldVal);
+              mongoOperations.save(value);
+            }
           }
         }
       }
