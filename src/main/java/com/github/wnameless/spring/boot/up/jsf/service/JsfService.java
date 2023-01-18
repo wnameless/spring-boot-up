@@ -102,7 +102,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
         formBranch);
   }
 
-  default JS findOrCreateBreachingJsfSchema(String formType, String formBranch) {
+  default JS findOrCreateBranchingJsfSchema(String formType, String formBranch) {
     JS js = findBreachingJsfSchema(formType, formBranch);
     if (js != null) return js;
 
@@ -110,7 +110,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
   }
 
   default JD newJsfData(String formType, String formBranch) {
-    JS js = findOrCreateBreachingJsfSchema(formType, formBranch);
+    JS js = findOrCreateBranchingJsfSchema(formType, formBranch);
 
     JD jd = newJsfData();
     jd.setFormData(JsonSchemaFormUtils.defaultFormData());
