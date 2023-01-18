@@ -31,6 +31,7 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
 
   Map<String, JD> getJsfDataParts();
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   default Map<String, JS> getJsfSchemaParts() {
     return getCompositeFormParts().stream().collect(toMap(cfp -> cfp.formKeyStock().get(), cfp -> {
       JsfService jsfService = SpringBootUp.getBean(JsfService.class);
@@ -46,6 +47,7 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
         .collect(toMap(e -> e.getKey(), e -> e.getValue().getFormData()));
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   default void setFormData(Map<String, Object> formData) {
     formData.forEach((k, v) -> {
@@ -63,6 +65,7 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
     return compositeSchema;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   default void setSchema(Map<String, Object> schema) {
     var schemaParts = (Map<String, Map<String, Object>>) schema.get("properties");
@@ -78,6 +81,7 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
         .collect(toMap(e -> e.getKey(), e -> e.getValue().getJsfSchema().getUiSchema()));
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   default void setUiSchema(Map<String, Object> uiSchema) {
     uiSchema.forEach((k, v) -> {
