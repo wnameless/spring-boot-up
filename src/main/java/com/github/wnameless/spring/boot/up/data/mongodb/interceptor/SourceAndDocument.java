@@ -15,7 +15,7 @@ public class SourceAndDocument {
   }
 
   public boolean hasSource(Class<?> type) {
-    return type.getClass().isAssignableFrom(source.getClass());
+    return type.isAssignableFrom(source.getClass());
   }
 
   @SuppressWarnings("unchecked")
