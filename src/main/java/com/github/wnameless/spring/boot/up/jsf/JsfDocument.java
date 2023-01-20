@@ -21,7 +21,7 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getFormData() {
-    var documentStrategy = getJsfDocumentStrategy();
+    var documentStrategy = getJsonSchemaFormStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().formDataStrategy() != null) {
       return documentStrategy.get().formDataStrategy().apply(getJsfData().getFormData());
     }
@@ -38,7 +38,7 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getSchema() {
-    var documentStrategy = getJsfDocumentStrategy();
+    var documentStrategy = getJsonSchemaFormStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().schemaStrategy() != null) {
       return documentStrategy.get().schemaStrategy().apply(getJsfData().getJsfSchema().getSchema());
     }
@@ -51,7 +51,7 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getUiSchema() {
-    var documentStrategy = getJsfDocumentStrategy();
+    var documentStrategy = getJsonSchemaFormStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().uiSchemaStrategy() != null) {
       return documentStrategy.get().uiSchemaStrategy()
           .apply(getJsfData().getJsfSchema().getUiSchema());
@@ -64,8 +64,8 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
     getJsfData().getJsfSchema().setUiSchema(uiSchema);
   }
 
-  default Optional<JsfDocumentStrategy> getJsfDocumentStrategy() {
-    return SpringBootUp.getBeansOfType(JsfDocumentStrategy.class).values().stream()
+  default Optional<JsonSchemaFormStrategy> getJsonSchemaFormStrategy() {
+    return SpringBootUp.getBeansOfType(JsonSchemaFormStrategy.class).values().stream()
         .filter(dc -> dc.getDocumentType().equals(this.getClass()))
         .filter(dc -> dc.activeStatus().getAsBoolean()).findFirst();
   }

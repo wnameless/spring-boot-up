@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
-public interface JsfDocumentStrategy {
+public interface JsonSchemaFormStrategy {
 
   default BooleanSupplier activeStatus() {
     return () -> true;
