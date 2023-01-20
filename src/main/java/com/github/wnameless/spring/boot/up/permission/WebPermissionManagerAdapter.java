@@ -48,14 +48,12 @@ import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceF
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceAccessRule;
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceFilterRepository;
 import com.github.wnameless.spring.boot.up.permission.role.Role;
-import com.github.wnameless.spring.boot.up.permission.role.RolifyUser;
 import com.github.wnameless.spring.boot.up.permission.role.WebRole;
 import jakarta.annotation.PostConstruct;
 import net.sf.rubycollect4j.Ruby;
 import net.sf.rubycollect4j.RubyArray;
 
-public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
-    implements WebPermissionManager {
+public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionManager {
 
   @Autowired
   protected ApplicationContext ctx;
@@ -82,11 +80,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
     }
   }
 
-  // protected abstract CrudRepository<U, ID> getRolifyUserRepository();
-
-  // protected abstract U newRolifyUser();
-
-  protected abstract Set<U> findAllRolifyUsersByUsername(String username);
+  protected abstract Set<Role> findAllRolesByUsername(String username);
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   @PostConstruct
@@ -237,8 +231,7 @@ public abstract class WebPermissionManagerAdapter<U extends RolifyUser, ID>
   @Override
   public Set<Role> getUserRoles() {
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    Set<Role> roles = findAllRolifyUsersByUsername(username).stream().map(r -> Role.of(r.getRole()))
-        .collect(Collectors.toSet());
+    Set<Role> roles = findAllRolesByUsername(username);
     roles.addAll(retrieveMinorRoles(roles));
     return ensureWebRoles(roles);
   }
