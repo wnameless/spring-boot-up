@@ -19,6 +19,8 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
@@ -120,6 +122,21 @@ public final class SpringBootUp {
     return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
         .filter(ServletRequestAttributes.class::isInstance)
         .map(ServletRequestAttributes.class::cast).map(ServletRequestAttributes::getResponse);
+  }
+
+  /**
+   * @see {@link MessageSource#getMessage(String, Object[], java.util.Locale)}
+   */
+  public static String getMessage(String code, Object... args) {
+    return getBean(MessageSource.class).getMessage(code, args, LocaleContextHolder.getLocale());
+  }
+
+  /**
+   * @see {@link MessageSource#getMessage(String, Object[], String, java.util.Locale)}
+   */
+  public static String getMessage(String code, String defaultMessage, Object... args) {
+    return getBean(MessageSource.class).getMessage(code, args, defaultMessage,
+        LocaleContextHolder.getLocale());
   }
 
 }
