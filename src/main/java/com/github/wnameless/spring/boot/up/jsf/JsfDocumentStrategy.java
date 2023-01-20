@@ -12,10 +12,10 @@ public interface JsfDocumentStrategy {
 
   Class<? extends JsonSchemaForm> getDocumentType();
 
-  Function<JsonSchemaForm, Map<String, Object>> schemaStrategy();
+  Function<Map<String, Object>, Map<String, Object>> schemaStrategy();
 
-  Function<JsonSchemaForm, Map<String, Object>> uiSchemaStrategy();
+  Function<Map<String, Object>, Map<String, Object>> uiSchemaStrategy();
 
-  Function<JsonSchemaForm, Map<String, Object>> formDataStrategy();
+  Function<Map<String, Object>, Map<String, Object>> formDataStrategy();
 
 }

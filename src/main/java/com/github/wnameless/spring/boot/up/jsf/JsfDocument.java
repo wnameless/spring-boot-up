@@ -23,7 +23,7 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   default Map<String, Object> getFormData() {
     var documentStrategy = getJsfDocumentStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().formDataStrategy() != null) {
-      return documentStrategy.get().formDataStrategy().apply(this);
+      return documentStrategy.get().formDataStrategy().apply(getJsfData().getFormData());
     }
 
     return getJsfData().getFormData();
@@ -40,7 +40,7 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   default Map<String, Object> getSchema() {
     var documentStrategy = getJsfDocumentStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().schemaStrategy() != null) {
-      return documentStrategy.get().schemaStrategy().apply(this);
+      return documentStrategy.get().schemaStrategy().apply(getJsfData().getJsfSchema().getSchema());
     }
 
     return getJsfData().getJsfSchema().getSchema();
@@ -53,7 +53,8 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   default Map<String, Object> getUiSchema() {
     var documentStrategy = getJsfDocumentStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().uiSchemaStrategy() != null) {
-      return documentStrategy.get().uiSchemaStrategy().apply(this);
+      return documentStrategy.get().uiSchemaStrategy()
+          .apply(getJsfData().getJsfSchema().getUiSchema());
     }
 
     return getJsfData().getJsfSchema().getUiSchema();
