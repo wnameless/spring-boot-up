@@ -1,8 +1,9 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Optional;
 import com.github.wnameless.json.base.JsonObjectBase;
+import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.model.JsfData;
 import com.github.wnameless.spring.boot.up.jsf.model.JsfSchema;
 
@@ -20,6 +21,11 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getFormData() {
+    var documentStrategy = getJsfDocumentStrategy();
+    if (documentStrategy.isPresent() && documentStrategy.get().formDataStrategy() != null) {
+      return documentStrategy.get().formDataStrategy().apply(this);
+    }
+
     return getJsfData().getFormData();
   }
 
@@ -32,8 +38,9 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getSchema() {
-    if (jsfSchemaStrategy() != null) {
-      return jsfSchemaStrategy().apply(getJsfData().getJsfSchema()).getSchema();
+    var documentStrategy = getJsfDocumentStrategy();
+    if (documentStrategy.isPresent() && documentStrategy.get().schemaStrategy() != null) {
+      return documentStrategy.get().schemaStrategy().apply(this);
     }
 
     return getJsfData().getJsfSchema().getSchema();
@@ -44,8 +51,9 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getUiSchema() {
-    if (jsfSchemaStrategy() != null) {
-      return jsfSchemaStrategy().apply(getJsfData().getJsfSchema()).getUiSchema();
+    var documentStrategy = getJsfDocumentStrategy();
+    if (documentStrategy.isPresent() && documentStrategy.get().uiSchemaStrategy() != null) {
+      return documentStrategy.get().uiSchemaStrategy().apply(this);
     }
 
     return getJsfData().getJsfSchema().getUiSchema();
@@ -55,8 +63,10 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
     getJsfData().getJsfSchema().setUiSchema(uiSchema);
   }
 
-  default Function<JS, JS> jsfSchemaStrategy() {
-    return null;
+  default Optional<JsfDocumentStrategy> getJsfDocumentStrategy() {
+    return SpringBootUp.getBeansOfType(JsfDocumentStrategy.class).values().stream()
+        .filter(dc -> dc.getDocumentType().equals(this.getClass()))
+        .filter(dc -> dc.activeStatus().getAsBoolean()).findFirst();
   }
 
 }

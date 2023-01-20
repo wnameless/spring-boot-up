@@ -15,11 +15,11 @@ public final class SpringBootUpExtensions {
     return (T) SpringBootUp.getBean(requiredType, args);
   }
 
-  public static <T> Map<String, T> toBeansOfType(Class<T> type) {
+  public static <T> Map<String, T> toBeans(Class<T> type) {
     return SpringBootUp.getBeansOfType(type);
   }
 
-  public static <T> Map<String, T> toBeansOfType(Class<T> type, boolean includeNonSingletons,
+  public static <T> Map<String, T> toBeans(Class<T> type, boolean includeNonSingletons,
       boolean allowEagerInit) {
     return SpringBootUp.getBeansOfType(type, includeNonSingletons, allowEagerInit);
   }
