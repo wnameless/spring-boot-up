@@ -42,11 +42,17 @@ import jakarta.validation.Validator;
 public interface ResourceFilterRepository<T, ID>
     extends CrudRepository<T, ID>, QuerydslPredicateExecutor<T>, MongoProjectionRepository<T> {
 
+  org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ResourceFilterRepository.class);
+
   @SuppressWarnings("rawtypes")
   default ResourceAccessRule getResourceAccessRule() {
     ApplicationContext ctx = ApplicationContextProvider.getApplicationContext();
     WebPermissionManager wpm = ctx.getBean(WebPermissionManager.class);
     ResourceAccessRule rar = wpm.findUserResourceAccessRuleByRepositoryType(this.getClass());
+    if (rar == null) {
+      log.info("User {} with roles: {} don't have enough permission",
+          getCurrentUser().getUsername(), getCurrentUser().getAllRoles());
+    }
     return rar;
   }
 

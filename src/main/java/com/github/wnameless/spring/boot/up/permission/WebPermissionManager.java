@@ -40,10 +40,6 @@ public interface WebPermissionManager {
 
   Set<Role> getAllRoles();
 
-  // boolean addUserRole(String username, Role role);
-
-  // boolean removeUserRole(String username, Role role);
-
   Map<String, Set<String>> getUserMetadata();
 
 }
