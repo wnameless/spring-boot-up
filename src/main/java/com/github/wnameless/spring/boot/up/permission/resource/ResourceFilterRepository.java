@@ -16,7 +16,7 @@ import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoProjection
 import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoQuerydslUtils;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.WebPermissionManager;
-import com.github.wnameless.spring.boot.up.web.SpringBootUpWebEnv;
+import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Path;
@@ -258,16 +258,15 @@ public interface ResourceFilterRepository<T, ID>
     List<String> messages =
         validator.validate(entity).stream().map(e -> e.getMessage()).collect(Collectors.toList());
     if (messages.size() > 0) {
-      SpringBootUp.currentHttpServletRequest().get().setAttribute(
-          SpringBootUp.getBean(SpringBootUpWebEnv.class).getModelAttrMessages(), messages);
+      SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+          messages);
       return entity;
     }
 
     // new entity
     if (!target.isPresent()) {
       if (!user.canCreate(rar.getResourceType())) {
-        SpringBootUp.currentHttpServletRequest().get().setAttribute(
-            SpringBootUp.getBean(SpringBootUpWebEnv.class).getModelAttrMessages(),
+        SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
             "No permission to CREATE");
         return entity;
       }
@@ -282,8 +281,7 @@ public interface ResourceFilterRepository<T, ID>
       target = findOne(ExpressionUtils.allOf(rar.getPredicateOfUpdateAbility(), idEq));
     }
     if (!target.isPresent()) {
-      SpringBootUp.currentHttpServletRequest().get().setAttribute(
-          SpringBootUp.getBean(SpringBootUpWebEnv.class).getModelAttrMessages(),
+      SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
           "No permission to UPDATE");
       return entity;
     }
@@ -295,8 +293,8 @@ public interface ResourceFilterRepository<T, ID>
     try {
       return save(entity);
     } catch (Exception e) {
-      SpringBootUp.currentHttpServletRequest().get().setAttribute(
-          SpringBootUp.getBean(SpringBootUpWebEnv.class).getModelAttrMessages(), e.getMessage());
+      SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+          e.getMessage());
       return entity;
     }
   }

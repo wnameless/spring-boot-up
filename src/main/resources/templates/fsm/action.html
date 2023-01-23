@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bar"
-  th:with="item=${item}, ajaxTarget=${ajaxTarget ?: @springBootUpWebEnv.ajaxTargetId}"
+  th:with="item=${item}, ajaxTarget=${ajaxTarget ?: @webModelAttribute.AJAX_TARGET_ID}"
   class="card mb-2">
   <div class="card-body">
     <div class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
@@ -32,7 +32,7 @@
 </div>
 
 <div th:fragment="editor"
-  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: @springBootUpWebEnv.ajaxTargetId}, fid=${(T(java.lang.Math).random() * 10000).intValue()}">
+  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, fid=${(T(java.lang.Math).random() * 10000).intValue()}">
   <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item" role="presentation">
       <button class="nav-link active" data-bs-toggle="tab"
