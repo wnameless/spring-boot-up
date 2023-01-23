@@ -14,7 +14,7 @@ public final class JacksonExtensions {
   private JacksonExtensions() {}
 
   public static Map<String, Object> valueToMap(ObjectMapper om, Object val) {
-    return toMap(om.valueToTree(val), om);
+    return om.convertValue(val, new TypeReference<Map<String, Object>>() {});
   }
 
   public static ObjectNode asObject(JsonNode node) {
