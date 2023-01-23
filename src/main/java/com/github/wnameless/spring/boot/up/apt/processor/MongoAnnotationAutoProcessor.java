@@ -21,7 +21,7 @@ import com.querydsl.core.annotations.QueryTransient;
 
 @SupportedAnnotationTypes({"com.querydsl.core.annotations.*",
     "org.springframework.data.mongodb.core.mapping.*"})
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
 public class MongoAnnotationAutoProcessor extends AbstractQuerydslProcessor {
 

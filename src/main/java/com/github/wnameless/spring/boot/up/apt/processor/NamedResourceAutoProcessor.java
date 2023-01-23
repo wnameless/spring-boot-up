@@ -24,7 +24,7 @@ import jakarta.inject.Named;
 import net.sf.rubycollect4j.Ruby;
 
 @SupportedAnnotationTypes("com.github.wnameless.spring.boot.up.apt.processor.NamedResource")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
 public class NamedResourceAutoProcessor extends AbstractProcessor {
 
