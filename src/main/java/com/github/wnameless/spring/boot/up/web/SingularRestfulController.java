@@ -40,7 +40,7 @@ public interface SingularRestfulController<R extends CrudRepository<I, ID>, I, I
   Function<R, Optional<I>> itemStrategy();
 
   default String getItemKey() {
-    return "item";
+    return WebModelAttribute.QUERY_CONFIG;
   }
 
   default I updateItem(Model model, I item) {
@@ -49,7 +49,7 @@ public interface SingularRestfulController<R extends CrudRepository<I, ID>, I, I
   }
 
   default String getQueryConfigKey() {
-    return "queryConfig";
+    return WebModelAttribute.QUERY_CONFIG;
   }
 
   @ModelAttribute

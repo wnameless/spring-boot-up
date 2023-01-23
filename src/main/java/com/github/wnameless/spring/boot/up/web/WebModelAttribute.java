@@ -13,6 +13,7 @@ public class WebModelAttribute {
   public static String PAGE;
   public static String ITEM;
   public static String ITEMS;
+  public static String QUERY_CONFIG;
 
   @Value("${spring.boot.up.web.model.attribute.ajax-target-id:ajaxTarget}")
   public void setAjaxTargetId(String ajaxTargetId) {
@@ -37,6 +38,11 @@ public class WebModelAttribute {
   @Value("${spring.boot.up.web.model.attribute.items:items}")
   public void setModelAttrItems(String items) {
     WebModelAttribute.ITEMS = items;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.query-config:queryConfig}")
+  public void setModelAttQueryConfig(String queryConfig) {
+    WebModelAttribute.QUERY_CONFIG = queryConfig;
   }
 
 }

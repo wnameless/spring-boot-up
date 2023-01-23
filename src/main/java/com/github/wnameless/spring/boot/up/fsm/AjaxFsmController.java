@@ -25,6 +25,7 @@ import com.github.wnameless.spring.boot.up.jsf.repository.JsfDataRepository;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
+import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 
 public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, P extends Phase<P, S, T, ID>, S extends State<T>, T extends Trigger, ID>
     extends RestfulRouteProvider<ID> {
@@ -72,7 +73,7 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       stateRecord.setState(stateMachine.getState());
       phase.setStateRecord(stateRecord);
       getPhaseRepository().save(phase);
-      mav.addObject("item", phase);
+      mav.addObject(WebModelAttribute.ITEM, phase);
     }
 
     return mav;
@@ -140,7 +141,7 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       item.setUpdatable(new AccessControlRule(true,
           () -> phase.getStateMachine().canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
-      mav.addObject("item", item);
+      mav.addObject(WebModelAttribute.ITEM, item);
     }
   }
 
@@ -197,7 +198,7 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       item.setUpdatable(new AccessControlRule(true,
           () -> phase.getStateMachine().canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
-      mav.addObject("item", item);
+      mav.addObject(WebModelAttribute.ITEM, item);
     }
 
     return mav;

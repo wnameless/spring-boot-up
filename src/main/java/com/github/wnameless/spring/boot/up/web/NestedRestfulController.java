@@ -181,7 +181,7 @@ public interface NestedRestfulController< //
   }
 
   default String getQueryConfigKey() {
-    return "queryConfig";
+    return WebModelAttribute.QUERY_CONFIG;
   }
 
   @ModelAttribute

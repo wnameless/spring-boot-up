@@ -40,7 +40,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
   }
 
   default String getItemKey() {
-    return "item";
+    return WebModelAttribute.ITEM;
   }
 
   default I getItem(ID id) {
@@ -60,7 +60,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
   }
 
   default String getQueryConfigKey() {
-    return "queryConfig";
+    return WebModelAttribute.QUERY_CONFIG;
   }
 
   @ModelAttribute
