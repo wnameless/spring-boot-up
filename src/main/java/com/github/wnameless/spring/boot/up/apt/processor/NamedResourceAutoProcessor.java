@@ -28,6 +28,9 @@ import net.sf.rubycollect4j.Ruby;
 @AutoService(Processor.class)
 public class NamedResourceAutoProcessor extends AbstractProcessor {
 
+  private static final org.slf4j.Logger log =
+      org.slf4j.LoggerFactory.getLogger(NamedResourceAutoProcessor.class);
+
   private String singularName;
   private String pluralName;
 
@@ -50,6 +53,7 @@ public class NamedResourceAutoProcessor extends AbstractProcessor {
     Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(NamedResource.class);
     for (Element element : elements) {
       String className = ((TypeElement) element).getQualifiedName().toString();
+      log.info("NamedResource: constants generating for class: {}", className);;
       String classSimpleName = element.getSimpleName().toString();
       String packageName = null;
       int lastDot = className.lastIndexOf('.');
