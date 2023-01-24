@@ -39,7 +39,8 @@ public class ParentRefCallback implements ReflectionUtils.FieldCallback {
     Object fieldValue = field.get(source);
     if (fieldValue == null) return;
     // Collection field
-    if (Collection.class.isAssignableFrom(fieldValue.getClass())) {
+    if (Collection.class.isAssignableFrom(fieldValue.getClass())
+        || Map.class.isAssignableFrom(fieldValue.getClass())) {
       Collection<?> collection;
       if (Map.class.isAssignableFrom(fieldValue.getClass())) {
         collection = ((Map<?, ?>) fieldValue).values();

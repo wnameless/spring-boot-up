@@ -17,6 +17,13 @@ public class CompositeFormPart {
   @Accessors(fluent = true)
   Supplier<String> formBranchStock;
 
+  public CompositeFormPart(Supplier<String> formTypeStock) {
+    this.formKeyStock = formTypeStock;
+    this.formTypeStock = formTypeStock;
+    this.formBranchStock = () -> JsfConfig.getDefaultBranchName();
+  }
+
+
   public CompositeFormPart(Supplier<String> formKeyStock, Supplier<String> formTypeStock) {
     this.formKeyStock = formKeyStock;
     this.formTypeStock = formTypeStock;

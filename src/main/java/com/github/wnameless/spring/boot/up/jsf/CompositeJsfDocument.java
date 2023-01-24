@@ -18,8 +18,31 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
 
   List<CompositeFormPart> getCompositeFormParts();
 
+  @SuppressWarnings({"unchecked"})
+  default JD initJsfData(String formType, String formBranch) {
+    return (JD) SpringBootUp.getBean(JsfService.class).newJsfData(formType, formBranch);
+  }
+
+  default Map<String, JD> getJsfDataPartsInternal() {
+    Map<String, JD> jsfDataParts = getJsfDataParts();
+    if (jsfDataParts == null) jsfDataParts = new LinkedHashMap<>();
+
+    for (var cfp : getCompositeFormParts()) {
+      JD jsonSchema = jsfDataParts.getOrDefault(cfp.formKeyStock().get(),
+          initJsfData(cfp.formTypeStock().get(), cfp.formBranchStock().get()));
+      jsfDataParts.put(cfp.formKeyStock().get(), jsonSchema);
+    }
+    setJsfDataParts(jsfDataParts);
+
+    return jsfDataParts;
+  }
+
+  Map<String, JD> getJsfDataParts();
+
+  void setJsfDataParts(Map<String, JD> jsfDataParts);
+
   default Map<String, JsonSchemaForm> getJsonSchemaFormParts() {
-    return getJsfDataParts().entrySet().stream().collect(toMap(e -> e.getKey(), e -> {
+    return getJsfDataPartsInternal().entrySet().stream().collect(toMap(e -> e.getKey(), e -> {
       var jsf = new SimpleJsonSchemaForm();
       JD jd = e.getValue();
       jsf.setFormData(jd.getFormData());
@@ -28,8 +51,6 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
       return jsf;
     }));
   }
-
-  Map<String, JD> getJsfDataParts();
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Map<String, JS> getJsfSchemaParts() {
@@ -43,7 +64,7 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
 
   @Override
   default Map<String, Object> getFormData() {
-    return getJsfDataParts().entrySet().stream()
+    return getJsfDataPartsInternal().entrySet().stream()
         .collect(toMap(e -> e.getKey(), e -> e.getValue().getFormData()));
   }
 
@@ -51,7 +72,7 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
   @Override
   default void setFormData(Map<String, Object> formData) {
     formData.forEach((k, v) -> {
-      var jd = getJsfDataParts().get(k);
+      var jd = getJsfDataPartsInternal().get(k);
       if (jd != null) jd.setFormData((Map<String, Object>) v);
     });
   }
@@ -60,7 +81,7 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
   default Map<String, Object> getSchema() {
     var compositeSchema = new LinkedHashMap<String, Object>();
     compositeSchema.put("type", "object");
-    compositeSchema.put("properties", getJsfDataParts().entrySet().stream()
+    compositeSchema.put("properties", getJsfDataPartsInternal().entrySet().stream()
         .collect(toMap(e -> e.getKey(), e -> e.getValue().getJsfSchema().getSchema())));
     return compositeSchema;
   }
@@ -70,14 +91,14 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
   default void setSchema(Map<String, Object> schema) {
     var schemaParts = (Map<String, Map<String, Object>>) schema.get("properties");
     schemaParts.forEach((k, v) -> {
-      var jd = getJsfDataParts().get(k);
+      var jd = getJsfDataPartsInternal().get(k);
       if (jd != null) jd.getJsfSchema().setSchema(v);
     });
   }
 
   @Override
   default Map<String, Object> getUiSchema() {
-    return getJsfDataParts().entrySet().stream()
+    return getJsfDataPartsInternal().entrySet().stream()
         .collect(toMap(e -> e.getKey(), e -> e.getValue().getJsfSchema().getUiSchema()));
   }
 
@@ -85,7 +106,7 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
   @Override
   default void setUiSchema(Map<String, Object> uiSchema) {
     uiSchema.forEach((k, v) -> {
-      var jd = getJsfDataParts().get(k);
+      var jd = getJsfDataPartsInternal().get(k);
       if (jd != null) jd.getJsfSchema().setUiSchema((Map<String, Object>) v);
     });
   }
