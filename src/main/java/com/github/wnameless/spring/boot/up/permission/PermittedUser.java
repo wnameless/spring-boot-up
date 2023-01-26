@@ -282,11 +282,20 @@ public interface PermittedUser<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr = findResourceFilterRepository(type, CRUD, MANAGE);
-    if (rfr == null) return false;
+    ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
+    ResourceAccessRule rar;
+    boolean ret;
 
-    ResourceAccessRule rar = rfr.getResourceAccessRule();
-    boolean ret = rfr.exists(rar.getPredicateOfCRUDById(id));
+    if (rfr != null) {
+      rar = rfr.getResourceAccessRule();
+      ret = rfr.exists(rar.getPredicateOfManageById(id));
+      if (ret) return ret;
+    }
+
+    rfr = findResourceFilterRepository(type, CRUD);
+    if (rfr == null) return false;
+    rar = rfr.getResourceAccessRule();
+    ret = rfr.exists(rar.getPredicateOfCRUDById(id));
     return ret;
   }
 
@@ -406,11 +415,20 @@ public interface PermittedUser<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr = findResourceFilterRepository(type, READ, CRUD, MANAGE);
-    if (rfr == null) return false;
+    ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
+    ResourceAccessRule rar;
+    boolean ret;
 
-    ResourceAccessRule rar = rfr.getResourceAccessRule();
-    boolean ret = rfr.exists(rar.getPredicateOfReadById(id));
+    if (rfr != null) {
+      rar = rfr.getResourceAccessRule();
+      ret = rfr.exists(rar.getPredicateOfManageById(id));
+      if (ret) return ret;
+    }
+
+    rfr = findResourceFilterRepository(type, READ, CRUD);
+    if (rfr == null) return false;
+    rar = rfr.getResourceAccessRule();
+    ret = rfr.exists(rar.getPredicateOfReadById(id));
     return ret;
   }
 
@@ -497,11 +515,20 @@ public interface PermittedUser<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr = findResourceFilterRepository(type, UPDATE, CRUD, MANAGE);
-    if (rfr == null) return false;
+    ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
+    ResourceAccessRule rar;
+    boolean ret;
 
-    ResourceAccessRule rar = rfr.getResourceAccessRule();
-    boolean ret = rfr.exists(rar.getPredicateOfUpdateById(id));
+    if (rfr != null) {
+      rar = rfr.getResourceAccessRule();
+      ret = rfr.exists(rar.getPredicateOfManageById(id));
+      if (ret) return ret;
+    }
+
+    rfr = findResourceFilterRepository(type, UPDATE, CRUD);
+    if (rfr == null) return false;
+    rar = rfr.getResourceAccessRule();
+    ret = rfr.exists(rar.getPredicateOfUpdateById(id));
     return ret;
   }
 
@@ -589,11 +616,20 @@ public interface PermittedUser<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr = findResourceFilterRepository(type, DELETE, CRUD, MANAGE);
-    if (rfr == null) return false;
+    ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
+    ResourceAccessRule rar;
+    boolean ret;
 
-    ResourceAccessRule rar = rfr.getResourceAccessRule();
-    boolean ret = rfr.exists(rar.getPredicateOfDeleteById(id));
+    if (rfr != null) {
+      rar = rfr.getResourceAccessRule();
+      ret = rfr.exists(rar.getPredicateOfManageById(id));
+      if (ret) return ret;
+    }
+
+    rfr = findResourceFilterRepository(type, DELETE, CRUD);
+    if (rfr == null) return false;
+    rar = rfr.getResourceAccessRule();
+    ret = rfr.exists(rar.getPredicateOfDeleteById(id));
     return ret;
   }
 
