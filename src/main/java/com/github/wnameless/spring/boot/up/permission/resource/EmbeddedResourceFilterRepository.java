@@ -40,11 +40,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default Optional<ER> embeddedFilterFindOne(Predicate predicate) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return erar.getEmbeddedResource(
           findOne(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), predicate)));
     }
@@ -56,11 +56,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default Iterable<ER> embeddedFilterFindAll() {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return Ruby.LazyEnumerator.of(findAll(erar.getPredicateOfManageAbility()))
           .map(e -> (ER) erar.getEmbeddedResource(e));
     }
@@ -72,11 +72,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default Iterable<ER> embeddedFilterFindAll(Predicate predicate) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return Ruby.LazyEnumerator
           .of(findAll(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), predicate)))
           .map(e -> (ER) erar.getEmbeddedResource(e));
@@ -90,11 +90,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default Iterable<ER> embeddedFilterFindAll(Sort sort) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return Ruby.LazyEnumerator.of(findAll(erar.getPredicateOfManageAbility(), sort))
           .map(e -> (ER) erar.getEmbeddedResource(e));
     }
@@ -106,11 +106,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default Iterable<ER> embeddedFilterFindAll(Predicate predicate, Sort sort) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return Ruby.LazyEnumerator
           .of(findAll(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), predicate), sort))
           .map(e -> (ER) erar.getEmbeddedResource(e));
@@ -124,11 +124,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default Iterable<ER> embeddedFilterFindAll(OrderSpecifier<?>... orders) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return Ruby.LazyEnumerator
           .of(findAll(ExpressionUtils.allOf(erar.getPredicateOfManageAbility()), orders))
           .map(e -> (ER) erar.getEmbeddedResource(e));
@@ -142,11 +142,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default Iterable<ER> embeddedFilterFindAll(Predicate predicate, OrderSpecifier<?>... orders) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return Ruby.LazyEnumerator
           .of(findAll(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), predicate), orders))
           .map(e -> (ER) erar.getEmbeddedResource(e));
@@ -160,11 +160,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default Page<ER> embeddedFilterFindAll(Pageable pageable) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return findAll(erar.getPredicateOfManageAbility(), pageable)
           .map(e -> (ER) erar.getEmbeddedResource(e));
     }
@@ -176,11 +176,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default Page<ER> embeddedFilterFindAll(Predicate predicate, Pageable pageable) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return findAll(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), predicate), pageable)
           .map(e -> (ER) erar.getEmbeddedResource(e));
     }
@@ -192,11 +192,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default long embeddedFilterCount() {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return count(erar.getPredicateOfManageAbility());
     }
     return count(erar.getPredicateOfReadAbility());
@@ -206,11 +206,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default long embeddedFilterCount(Predicate predicate) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return count(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), predicate));
     }
     return count(ExpressionUtils.allOf(erar.getPredicateOfReadAbility(), predicate));
@@ -220,11 +220,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default boolean embeddedFilterExists(Predicate predicate) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canRead(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       return exists(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), predicate));
     }
     return exists(ExpressionUtils.allOf(erar.getPredicateOfReadAbility(), predicate));
@@ -244,7 +244,7 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
     ER dbEmbedded = (ER) erar.getEmbeddedResource(entity);
 
     if (dbEmbedded == null) {
-      if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+      if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
         target = findOne(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), idEq));
       } else {
         target = findOne(ExpressionUtils.allOf(erar.getPredicateOfCreateAbility(), idEq));
@@ -258,7 +258,7 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
       entity = save(entity);
       return (ER) erar.getEmbeddedResource(entity);
     } else {
-      if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+      if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
         target = findOne(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), idEq));
       } else {
         target = findOne(ExpressionUtils.allOf(erar.getPredicateOfUpdateAbility(), idEq));
@@ -290,13 +290,13 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   default void embeddedFilterDeleteById(ID id) {
     EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
     PermittedUser user = getPermittedUser();
-    if (!user.canDelete(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (!user.canDeleteField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to DELETE");
     }
 
     Predicate idEq = erar.getPredicateOfEntityId(id);
     Optional<T> target;
-    if (user.canManage(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    if (user.canManageField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       target = findOne(ExpressionUtils.allOf(erar.getPredicateOfManageAbility(), idEq));
     } else {
       target = findOne(ExpressionUtils.allOf(erar.getPredicateOfDeleteAbility(), idEq));
