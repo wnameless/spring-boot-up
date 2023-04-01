@@ -51,6 +51,13 @@ public final class SpringBootUp {
   }
 
   /**
+   * @see {@link ApplicationContext#containsBean(String)}
+   */
+  public static boolean containsBean(String name) {
+    return applicationContext().containsBean(name);
+  }
+
+  /**
    * @see {@link ApplicationContext#getBean(Class)}
    */
   public static <T> T getBean(String name, Class<T> requiredType) {

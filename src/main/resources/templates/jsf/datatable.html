@@ -2,10 +2,10 @@
 
 <!-- Start Table -->
 <div th:fragment="crud(th, td)"
-  th:with="route=${route}, user=${@user}, page=${page}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, queryConfig=${queryConfig}">
+  th:with="route=${route}, user=${T(com.github.wnameless.spring.boot.up.SpringBootUp).containsBean('user') ? @user : null}, page=${page}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, queryConfig=${queryConfig}">
   <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
     <div class="offcanvas-header">
-      <h4>[[#{jsf.datatable.filter_option.title} ?: 'Filter Option']]</h4>
+      <h4>[[${#messages.msgOrNull('jsf.datatable.filter_option.title') ?: 'Filter Option'}]]</h4>
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
     </div>
     <div th:if="${queryConfig}" class="offcanvas-body">
@@ -48,12 +48,12 @@
 
         <div class="col-6">
           <button type="submit" class="btn btn-primary">
-            [[#{jsf.datatable.filter_option.filter} ?: 'Filter']]</button>
+            [[${#messages.msgOrNull('jsf.datatable.filter_option.filter') ?: 'Filter'}]]</button>
         </div>
         <div class="col-6">
           <button hx:get="${route.indexPath}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
             type="button" class="btn btn-warning">
-            [[#{jsf.datatable.filter_option.reset} ?: 'Reset']]</button>
+            [[${#messages.msgOrNull('jsf.datatable.filter_option.reset') ?: 'Reset'}]]</button>
         </div>
       </form>
     </div>
@@ -86,16 +86,16 @@
             </button>
             <ul class="dropdown-menu">
               <li>
-                <a th:classappend="${user != null && user.canUpdate(item)} ? 'text-primary' : 'disabled'"
+                <a th:classappend="${user == null || (user != null && user.canUpdate(item))} ? 'text-primary' : 'disabled'"
                   hx:get="${item.editPath}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
                   class="dropdown-item">
-                  [[#{ui.edit} ?: 'Edit']]</a>
+                  [[${#messages.msgOrNull('ui.edit') ?: 'Edit'}]]</a>
               </li>
               <li>
-                <a th:classappend="${user != null && user.canDelete(item)} ? 'text-danger' : 'disabled'"
+                <a th:classappend="${user == null || (user != null && user.canDelete(item))} ? 'text-danger' : 'disabled'"
                   hx:delete="${item.deletePath}" hx:confirm="#{ui.confirmation.delete}"
                   hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
-                  [[#{ui.delete} ?: 'Delete']]</a>
+                  [[${#messages.msgOrNull('ui.delete') ?: 'Delete'}]]</a>
               </li>
             </ul>
           </div>
