@@ -93,7 +93,8 @@
               </li>
               <li>
                 <a th:classappend="${user == null || (user != null && user.canDelete(item))} ? 'text-danger' : 'disabled'"
-                  hx:delete="${item.deletePath}" hx:confirm="#{ui.confirmation.delete}"
+                  hx:delete="${item.deletePath}"
+                  hx:confirm="${#messages.msgOrNull('ui.confirmation.delete') ?: 'Are you sure?'}"
                   hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
                   [[${#messages.msgOrNull('ui.delete') ?: 'Delete'}]]</a>
               </li>

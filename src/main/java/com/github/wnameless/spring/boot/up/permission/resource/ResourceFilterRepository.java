@@ -289,6 +289,21 @@ public interface ResourceFilterRepository<T, ID>
     return trySave(entity);
   }
 
+  default T saveWithValidation(T entity) {
+    Validator validator = SpringBootUp.getBean(Validator.class);
+
+    // validates bean
+    List<String> messages =
+        validator.validate(entity).stream().map(e -> e.getMessage()).collect(Collectors.toList());
+    if (messages.size() > 0) {
+      SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+          messages);
+      return entity;
+    }
+
+    return trySave(entity);
+  }
+
   default T trySave(T entity) {
     try {
       return save(entity);
