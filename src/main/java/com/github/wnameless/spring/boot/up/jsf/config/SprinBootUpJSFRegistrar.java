@@ -25,7 +25,7 @@ public class SprinBootUpJSFRegistrar implements ImportBeanDefinitionRegistrar {
         importBeanNameGenerator.generateBeanName(ajaxDialectBean, registry), ajaxDialectBean);
 
     GenericBeanDefinition springDataDialectBean = new GenericBeanDefinition();
-    htmxDialectBean.setBeanClass(SpringDataDialect.class);
+    springDataDialectBean.setBeanClass(SpringDataDialect.class);
     registry.registerBeanDefinition(
         importBeanNameGenerator.generateBeanName(springDataDialectBean, registry),
         springDataDialectBean);
