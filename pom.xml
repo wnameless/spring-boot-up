@@ -14,7 +14,7 @@
 
   <name>spring-boot-up</name>
   <description>A common useful utilities for Spring Boot</description>
-  <url>https://github.com/wnameless/thymeleaf-dropdown-dialect</url>
+  <url>https://github.com/wnameless/spring/spring-boot-up</url>
 
   <licenses>
     <license>
@@ -86,6 +86,11 @@
           <artifactId>mongo-java-driver</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.github.jpenren</groupId>
+      <artifactId>thymeleaf-spring-data-dialect</artifactId>
+      <version>3.5.0</version>
     </dependency>
 
     <!-- Util -->
