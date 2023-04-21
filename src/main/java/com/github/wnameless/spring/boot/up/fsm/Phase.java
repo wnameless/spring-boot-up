@@ -4,23 +4,12 @@ import java.util.List;
 import java.util.function.Function;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.StateMachineConfig;
-import com.github.wnameless.spring.boot.up.SpringBootUp;
-import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
-import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
 
-public interface Phase<SELF extends Phase<SELF, S, T, ID>, S extends State<T>, T extends Trigger, ID>
+public interface Phase<E extends PhaseAware<E, S, T, ID>, S extends State<T>, T extends Trigger, ID>
     extends AccessControlAware {
 
-  @SuppressWarnings("unchecked")
-  @AfterDeleteFromMongo
-  default void cleanUpByFormDataTable() {
-    var ids = getSelf().getStateRecord().getFormDataTable().values().stream()
-        .flatMap(m -> m.values().stream()).toList();
-    SpringBootUp.getBean(JsfService.class).getJsfDataRepository().deleteAllById(ids);
-  }
-
-  SELF getSelf();
+  E getEntity();
 
   default List<T> getExternalTriggers() {
     return getStateMachine().getPermittedTriggers().stream()
@@ -49,7 +38,7 @@ public interface Phase<SELF extends Phase<SELF, S, T, ID>, S extends State<T>, T
   }
 
   default Function<T, Boolean> verifyTrigger() {
-    return (t) -> true;
+    return t -> true;
   }
 
 }

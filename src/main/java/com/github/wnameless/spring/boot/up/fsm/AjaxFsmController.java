@@ -27,26 +27,26 @@ import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 
-public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, P extends Phase<P, S, T, ID>, S extends State<T>, T extends Trigger, ID>
+public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, PA extends PhaseAware<PA, S, T, ID>, S extends State<T>, T extends Trigger, ID>
     extends RestfulRouteProvider<ID> {
 
-  default BiFunction<P, T, ?> getTriggerParameterStrategy() {
+  default BiFunction<PA, T, ?> getTriggerParameterStrategy() {
     return null;
   }
 
-  default BiFunction<JD, P, JD> afterLoadJsf() {
+  default BiFunction<JD, PA, JD> afterLoadJsf() {
     return null;
   }
 
-  default BiFunction<JD, P, JD> beforeSaveJsf() {
+  default BiFunction<JD, PA, JD> beforeSaveJsf() {
     return null;
   }
 
-  default BiFunction<JD, P, JD> afterSaveJsf() {
+  default BiFunction<JD, PA, JD> afterSaveJsf() {
     return null;
   }
 
-  CrudRepository<P, ID> getPhaseRepository();
+  CrudRepository<PA, ID> getPhaseRepository();
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   @GetMapping(path = "/{id}/triggers/{triggerName}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -54,13 +54,13 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       @PathVariable String triggerName) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
 
-    P phase = getPhaseRepository().findById(id).get();
-    StateMachine<S, T> stateMachine = phase.getStateMachine();
+    PA phaseAware = getPhaseRepository().findById(id).get();
+    StateMachine<S, T> stateMachine = phaseAware.getPhase().getStateMachine();
 
-    T trigger = phase.getTrigger(triggerName);
+    T trigger = phaseAware.getPhase().getTrigger(triggerName);
     Object triggerParameter = null;
     if (getTriggerParameterStrategy() != null) {
-      triggerParameter = getTriggerParameterStrategy().apply(phase, trigger);
+      triggerParameter = getTriggerParameterStrategy().apply(phaseAware, trigger);
     }
     if (stateMachine.canFire(trigger)) {
       if (triggerParameter != null) {
@@ -69,11 +69,11 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       } else {
         stateMachine.fire(trigger);
       }
-      StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
+      StateRecord<S, T, ID> stateRecord = phaseAware.getStateRecord();
       stateRecord.setState(stateMachine.getState());
-      phase.setStateRecord(stateRecord);
-      getPhaseRepository().save(phase);
-      mav.addObject(WebModelAttribute.ITEM, phase);
+      phaseAware.setStateRecord(stateRecord);
+      getPhaseRepository().save(phaseAware);
+      mav.addObject(WebModelAttribute.ITEM, phaseAware);
     }
 
     return mav;
@@ -108,7 +108,7 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
 
   @SuppressWarnings("unchecked")
   default void showAndEditAction(ModelAndView mav, ID id, String formType, boolean editable) {
-    P phase = getPhaseRepository().findById(id).get();
+    PA phase = getPhaseRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
     S state = stateRecord.getState();
 
@@ -139,7 +139,7 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       item.setUiSchema(data.getJsfSchema().getUiSchema());
       item.setFormData(data.getFormData());
       item.setUpdatable(new AccessControlRule(true,
-          () -> phase.getStateMachine().canFire(sf.editableTriggerStock().get())));
+          () -> phase.getPhase().getStateMachine().canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
       mav.addObject(WebModelAttribute.ITEM, item);
     }
@@ -156,7 +156,7 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
     mav.addObject("ajaxTargetId", backTargetId);
     mav.addObject("embeddedId", ajaxTargetId);
 
-    P phase = getPhaseRepository().findById(id).get();
+    PA phase = getPhaseRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
     S state = stateRecord.getState();
 
@@ -196,7 +196,7 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
       item.setUiSchema(data.getJsfSchema().getUiSchema());
       item.setFormData(data.getFormData());
       item.setUpdatable(new AccessControlRule(true,
-          () -> phase.getStateMachine().canFire(sf.editableTriggerStock().get())));
+          () -> phase.getPhase().getStateMachine().canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
       mav.addObject(WebModelAttribute.ITEM, item);
     }
