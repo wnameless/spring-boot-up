@@ -13,12 +13,17 @@ public interface Phase<E extends PhaseAware<E, S, T, ID>, S extends State<T>, T 
 
   default List<T> getExternalTriggers() {
     return getStateMachine().getPermittedTriggers().stream()
-        .filter(t -> t.getTriggerType() != TriggerType.INTERNAL).toList();
+        .filter(t -> t.getTriggerType() == TriggerType.SIMPLE).toList();
   }
 
   default List<T> getInternalTriggers() {
     return getStateMachine().getPermittedTriggers().stream()
         .filter(t -> t.getTriggerType() == TriggerType.INTERNAL).toList();
+  }
+
+  default List<T> getAlwaysTriggers() {
+    return getStateMachine().getPermittedTriggers().stream()
+        .filter(t -> t.getTriggerType() == TriggerType.ALWAYS).toList();
   }
 
   T getTrigger(String triggerName);
