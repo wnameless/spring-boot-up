@@ -14,42 +14,42 @@ public interface SingularHtmlRestfulWebAction<D, ID>
   @GetMapping
   default ModelAndView showHtml(ModelAndView mav) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
-    showAction(mav);
+    showProcedure().accept(mav);
     return mav;
   }
 
   @GetMapping("/new")
   default ModelAndView newHtml(ModelAndView mav) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("new :: complete"));
-    newAction(mav);
+    newProcedure().accept(mav);
     return mav;
   }
 
   @PostMapping
   default ModelAndView createHtml(ModelAndView mav, @RequestBody D data) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
-    createAction(mav, data);
+    createProcedure().accept(mav, data);
     return mav;
   }
 
   @GetMapping("edit")
   default ModelAndView editHtml(ModelAndView mav) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("edit :: complete"));
-    editAction(mav);
+    editProcedure().accept(mav);
     return mav;
   }
 
   @RequestMapping(method = {RequestMethod.PUT, RequestMethod.PATCH})
   default ModelAndView updateHtml(ModelAndView mav, @RequestBody D data) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
-    updateAction(mav, data);
+    updateProcedure().accept(mav, data);
     return mav;
   }
 
   @DeleteMapping
   default ModelAndView deleteHtml(ModelAndView mav) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
-    deleteAction(mav);
+    deleteProcedure().accept(mav);
     return mav;
   }
 

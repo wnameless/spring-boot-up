@@ -24,11 +24,27 @@ import com.github.wnameless.spring.boot.up.jsf.model.JsfSchema;
 import com.github.wnameless.spring.boot.up.jsf.repository.JsfDataRepository;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
+import com.github.wnameless.spring.boot.up.web.BaseWebAction;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 
-public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, PA extends PhaseAware<PA, S, T, ID>, S extends State<T>, T extends Trigger, ID>
-    extends RestfulRouteProvider<ID> {
+public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, PA extends PhaseAware<PA, S, T, ID>, S extends State<T>, T extends Trigger, D, ID>
+    extends RestfulRouteProvider<ID>, BaseWebAction<D> {
+
+  PA getPhaseAware();
+
+  default void excuateAlwaysTriggers() {
+    for (T alwaysTrigger : getPhaseAware().getPhase().getAlwaysTriggers()) {
+      if (getPhaseAware().getPhase().getStateMachine().canFire(alwaysTrigger)) {
+        getPhaseAware().getPhase().getStateMachine().fire(alwaysTrigger);
+      }
+    }
+  }
+
+  @Override
+  default void showPreAction(ModelAndView mav) {
+    excuateAlwaysTriggers();
+  }
 
   default BiFunction<PA, T, ?> getTriggerParameterStrategy() {
     return null;

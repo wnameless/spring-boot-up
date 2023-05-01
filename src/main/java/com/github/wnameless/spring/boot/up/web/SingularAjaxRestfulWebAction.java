@@ -15,28 +15,28 @@ public interface SingularAjaxRestfulWebAction<D, ID>
   @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView showAjax(ModelAndView mav) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
-    showAction(mav);
+    showProcedure().accept(mav);
     return mav;
   }
 
   @GetMapping(path = "/new", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView newAjax(ModelAndView mav) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("new :: partial"));
-    newAction(mav);
+    newProcedure().accept(mav);
     return mav;
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView createAjax(ModelAndView mav, @RequestBody D data) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
-    createAction(mav, data);
+    createProcedure().accept(mav, data);
     return mav;
   }
 
   @GetMapping(path = "edit", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView editAjax(ModelAndView mav) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("edit :: partial"));
-    editAction(mav);
+    editProcedure().accept(mav);
     return mav;
   }
 
@@ -44,14 +44,14 @@ public interface SingularAjaxRestfulWebAction<D, ID>
       consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView updateAjax(ModelAndView mav, @RequestBody D data) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
-    updateAction(mav, data);
+    updateProcedure().accept(mav, data);
     return mav;
   }
 
   @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView deleteAjax(ModelAndView mav) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
-    deleteAction(mav);
+    deleteProcedure().accept(mav);
     return mav;
   }
 
