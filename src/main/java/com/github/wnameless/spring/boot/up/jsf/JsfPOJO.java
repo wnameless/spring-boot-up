@@ -23,6 +23,7 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning {
     }
   }
 
+  @SuppressWarnings("unchecked")
   default void setFormData(Map<String, Object> formData) {
     T pojo = getPojo();
     if (pojo != null) {
