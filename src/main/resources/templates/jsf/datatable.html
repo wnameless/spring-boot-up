@@ -109,7 +109,7 @@
 
   <nav class="d-flex justify-content-center">
     <ul class="pagination" sd:pagination-split="7" sd:pagination="full"
-      sd:pagination-url="@{${route.indexPath + queryConfig?.toQueryString()}}">
+      sd:pagination-url="@{${route.getIndexPath(queryConfig, true, false)}}">
       <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
       <li class="disabled"><a href="#" aria-label="Previous"><span
             aria-hidden="true">&laquo;</span></a></li>

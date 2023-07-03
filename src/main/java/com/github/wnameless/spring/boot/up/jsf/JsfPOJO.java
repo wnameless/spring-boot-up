@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
+import java.util.HashMap;
 import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,22 +15,31 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning {
 
   default Map<String, Object> getFormData() {
     T pojo = getPojo();
-    return SpringBootUp.getBean(ObjectMapper.class).convertValue(pojo,
-        new TypeReference<Map<String, Object>>() {});
+    if (pojo == null) {
+      return new HashMap<>();
+    } else {
+      return SpringBootUp.getBean(ObjectMapper.class).convertValue(pojo,
+          new TypeReference<Map<String, Object>>() {});
+    }
   }
 
   default void setFormData(Map<String, Object> formData) {
     T pojo = getPojo();
-    pojo = (T) SpringBootUp.getBean(ObjectMapper.class).convertValue(formData, pojo.getClass());
-    setPojo(pojo);
+    if (pojo != null) {
+      ObjectMapper objectMapper = SpringBootUp.getBean(ObjectMapper.class);
+      pojo = (T) objectMapper.convertValue(formData, pojo.getClass());
+      setPojo(pojo);
+    }
   }
 
   default Map<String, Object> getSchema() {
-    return SpringBootUp.getBean(JsfService.class).getSchemaTemplate(getFormType());
+    JsfService<?, ?, ?> jsfService = SpringBootUp.getBean(JsfService.class);
+    return jsfService.getSchemaTemplate(getFormType());
   }
 
   default Map<String, Object> getUiSchema() {
-    return SpringBootUp.getBean(JsfService.class).getUiSchemaTemplate(getFormType());
+    JsfService<?, ?, ?> jsfService = SpringBootUp.getBean(JsfService.class);
+    return jsfService.getUiSchemaTemplate(getFormType());
   }
 
   default String getFormType() {

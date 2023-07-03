@@ -4,8 +4,8 @@
   th:with="item=${__${@webModelAttribute.ITEM}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
-    <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
-      type="button" class="me-auto btn-close" aria-label="Close"></button>
+    <button hx:get="${item.getBackPath(queryConfig)}" hx:target="${'#' + backTargetId}"
+      hx-ext="json-enc" type="button" class="me-auto btn-close" aria-label="Close"></button>
   </div>
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
     <react-form th:id="${'newForm' + rid}" th:action="${item.createPath}" method="POST"
@@ -28,8 +28,8 @@
   th:with="item=${__${@webModelAttribute.ITEM}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
-    <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
-      type="button" class="me-auto btn-close" aria-label="Close"></button>
+    <button hx:get="${item.getBackPath(queryConfig)}" hx:target="${'#' + backTargetId}"
+      hx-ext="json-enc" type="button" class="me-auto btn-close" aria-label="Close"></button>
   </div>
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
     <react-form th:id="${'editForm' + rid}"
@@ -53,8 +53,8 @@
   th:with="item=${__${@webModelAttribute.ITEM}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
-    <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
-      type="button" class="me-auto btn-close" aria-label="Close"></button>
+    <button hx:get="${item.getBackPath(queryConfig)}" hx:target="${'#' + backTargetId}"
+      hx-ext="json-enc" type="button" class="me-auto btn-close" aria-label="Close"></button>
   </div>
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
     <react-form th:id="${'showForm' + rid}" th:action="${item.backPath}" method="GET"
@@ -85,8 +85,8 @@
   class="card">
   <div class="card-header">
     <div class="d-flex">
-      <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
-        type="button" class="me-auto btn-close" aria-label="Close"></button>
+      <button hx:get="${item.getBackPath(queryConfig)}" hx:target="${'#' + backTargetId}"
+        hx-ext="json-enc" type="button" class="me-auto btn-close" aria-label="Close"></button>
       <a th:if="${user == null || (user != null && user.canUpdate(item))}" class="pe-2 orange"
         th:href="${item.editPath}"
         hx:get="@{${item.editPath}(ajaxTargetId=${embeddedId}, backTargetId=${ajaxTargetId})}"

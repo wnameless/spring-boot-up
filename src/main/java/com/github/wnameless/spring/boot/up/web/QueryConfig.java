@@ -63,8 +63,18 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
   }
 
   @SneakyThrows
-  public String toQueryString() {
+  public String toQueryString(boolean excludePage, boolean excludeSort) {
     StringBuilder queryStr = new StringBuilder("?");
+
+    if (!excludePage) {
+      String pageKey = pageableParams.getPageParameter();
+      if (requestParams.containsKey(pageKey)) {
+        queryStr.append(URLEncoder.encode(pageKey, "UTF-8"));
+        queryStr.append('=');
+        queryStr.append(getPage());
+        queryStr.append('&');
+      }
+    }
 
     String sizeKey = pageableParams.getSizeParameter();
     if (requestParams.containsKey(sizeKey)) {
@@ -73,17 +83,20 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
       queryStr.append(getSize());
       queryStr.append('&');
     }
-    String sortKey = pageableParams.getSortParameter();
-    for (Order order : getSort()) {
-      String property = order.getProperty();
-      String direction = order.getDirection().toString();
 
-      queryStr.append(URLEncoder.encode(sortKey, "UTF-8"));
-      queryStr.append('=');
-      queryStr.append(URLEncoder.encode(property, "UTF-8"));
-      queryStr.append(',');
-      queryStr.append(direction);
-      queryStr.append('&');
+    if (!excludeSort) {
+      String sortKey = pageableParams.getSortParameter();
+      for (Order order : getSort()) {
+        String property = order.getProperty();
+        String direction = order.getDirection().toString();
+
+        queryStr.append(URLEncoder.encode(sortKey, "UTF-8"));
+        queryStr.append('=');
+        queryStr.append(URLEncoder.encode(property, "UTF-8"));
+        queryStr.append(',');
+        queryStr.append(direction);
+        queryStr.append('&');
+      }
     }
 
     for (Entry<String, FilterableField<E>> entry : filterFields.entrySet()) {
@@ -98,6 +111,11 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
       queryStr.append('&');
     }
     return queryStr.toString();
+  }
+
+  @SneakyThrows
+  public String toQueryString() {
+    return toQueryString(false, false);
   }
 
   @SneakyThrows

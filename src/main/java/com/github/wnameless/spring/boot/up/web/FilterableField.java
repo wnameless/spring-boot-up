@@ -45,13 +45,8 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   }
 
   private String getEntryFieldName(Path<?> path) {
-    Path<?> last = path;
-    Path<?> current = path;
-    while (current.getMetadata().getParent() != null) {
-      last = current;
-      current = current.getMetadata().getParent();
-    }
-    return last.getMetadata().getName();
+    String entryFieldName = path.toString();
+    return entryFieldName.substring(entryFieldName.indexOf('.') + 1);
   }
 
 }

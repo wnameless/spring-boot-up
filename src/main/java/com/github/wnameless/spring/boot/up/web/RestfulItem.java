@@ -21,6 +21,16 @@ public interface RestfulItem<ID> extends JoinablePath {
     return hasBackPathname() ? getBackPathname() : getIndexPath();
   }
 
+  default String getBackPath(QueryConfig<?> queryConfig) {
+    return getBackPath(queryConfig, false, false);
+  }
+
+  default String getBackPath(QueryConfig<?> queryConfig, boolean excludePage, boolean excludeSort) {
+    return hasBackPathname()
+        ? getBackPathname() + queryConfig.toQueryString(excludePage, excludeSort)
+        : getIndexPath(queryConfig, excludePage, excludeSort);
+  }
+
   @Override
   default String getRootPath() {
     return getShowPath();
@@ -39,12 +49,47 @@ public interface RestfulItem<ID> extends JoinablePath {
     return getBasePath();
   }
 
+  default String getIndexPath(QueryConfig<?> queryConfig) {
+    return getIndexPath(queryConfig, false, false);
+  }
+
+  default String getIndexPath(QueryConfig<?> queryConfig, boolean excludePage,
+      boolean excludeSort) {
+    if (queryConfig != null) {
+      return getIndexPath() + queryConfig.toQueryString(excludePage, excludeSort);
+    }
+    return getIndexPath();
+  }
+
   default String getCreatePath() {
     return getBasePath();
   }
 
+  default String getCreatePath(QueryConfig<?> queryConfig) {
+    return getCreatePath(queryConfig, false, false);
+  }
+
+  default String getCreatePath(QueryConfig<?> queryConfig, boolean excludePage,
+      boolean excludeSort) {
+    if (queryConfig != null) {
+      return getCreatePath() + queryConfig.toQueryString(excludePage, excludeSort);
+    }
+    return getCreatePath();
+  }
+
   default String getNewPath() {
     return getBasePath() + "/new";
+  }
+
+  default String getNewPath(QueryConfig<?> queryConfig) {
+    return getNewPath(queryConfig, false, false);
+  }
+
+  default String getNewPath(QueryConfig<?> queryConfig, boolean excludePage, boolean excludeSort) {
+    if (queryConfig != null) {
+      return getNewPath() + queryConfig.toQueryString(excludePage, excludeSort);
+    }
+    return getNewPath();
   }
 
   default String getEditPath() {
@@ -55,12 +100,34 @@ public interface RestfulItem<ID> extends JoinablePath {
     }
   }
 
+  default String getEditPath(QueryConfig<?> queryConfig) {
+    return getEditPath(queryConfig, false, false);
+  }
+
+  default String getEditPath(QueryConfig<?> queryConfig, boolean excludePage, boolean excludeSort) {
+    if (queryConfig != null) {
+      return getEditPath() + queryConfig.toQueryString(excludePage, excludeSort);
+    }
+    return getEditPath();
+  }
+
   default String getShowPath() {
     if (isSingular()) {
       return getBasePath();
     } else {
       return getBasePath() + "/" + getId();
     }
+  }
+
+  default String getShowPath(QueryConfig<?> queryConfig) {
+    return getShowPath(queryConfig, false, false);
+  }
+
+  default String getShowPath(QueryConfig<?> queryConfig, boolean excludePage, boolean excludeSort) {
+    if (queryConfig != null) {
+      return getShowPath() + queryConfig.toQueryString(excludePage, excludeSort);
+    }
+    return getShowPath();
   }
 
   default String getUpdatePath() {
@@ -71,12 +138,36 @@ public interface RestfulItem<ID> extends JoinablePath {
     }
   }
 
+  default String getUpdatePath(QueryConfig<?> queryConfig) {
+    return getUpdatePath(queryConfig, false, false);
+  }
+
+  default String getUpdatePath(QueryConfig<?> queryConfig, boolean excludePage,
+      boolean excludeSort) {
+    if (queryConfig != null) {
+      return getUpdatePath() + queryConfig.toQueryString(excludePage, excludeSort);
+    }
+    return getUpdatePath();
+  }
+
   default String getDeletePath() {
     if (isSingular()) {
       return getBasePath();
     } else {
       return getBasePath() + "/" + getId();
     }
+  }
+
+  default String getDeletePath(QueryConfig<?> queryConfig) {
+    return getDeletePath(queryConfig, false, false);
+  }
+
+  default String getDeletePath(QueryConfig<?> queryConfig, boolean excludePage,
+      boolean excludeSort) {
+    if (queryConfig != null) {
+      return getDeletePath() + queryConfig.toQueryString(excludePage, excludeSort);
+    }
+    return getDeletePath();
   }
 
   default RestfulItem<ID> withParent(RestfulItem<?> parent) {
