@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="new"
-  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}"
+  th:with="item=${__${@webModelAttribute.ITEM}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
@@ -25,7 +25,7 @@
 </div>
 
 <div th:fragment="edit"
-  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}"
+  th:with="item=${__${@webModelAttribute.ITEM}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
@@ -50,7 +50,7 @@
 </div>
 
 <div th:fragment="show"
-  th:with="item=${item}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}"
+  th:with="item=${__${@webModelAttribute.ITEM}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <button hx:get="${item.backPath}" hx:target="${'#' + backTargetId}" hx-ext="json-enc"
@@ -81,7 +81,7 @@
 </div>
 
 <div th:fragment="show-edit"
-  th:with="user=${T(com.github.wnameless.spring.boot.up.SpringBootUp).containsBean(@webModelAttribute.USER) ? T(com.github.wnameless.spring.boot.up.SpringBootUp).getBean(@webModelAttribute.USER) : null}, item=${item}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedId=${embeddedId ?: ajaxTargetId}"
+  th:with="item=${__${@webModelAttribute.ITEM}__}, user=${T(com.github.wnameless.spring.boot.up.SpringBootUp).containsBean(@webModelAttribute.USER) ? T(com.github.wnameless.spring.boot.up.SpringBootUp).getBean(@webModelAttribute.USER) : null}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedId=${embeddedId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <div class="d-flex">

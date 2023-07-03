@@ -37,6 +37,13 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     }
 
     model.addAttribute(getItemKey(), item);
+    if (item != null) {
+      model.addAttribute(getItemClassKey(), item.getClass());
+    }
+  }
+
+  default String getItemClassKey() {
+    return WebModelAttribute.ITEM_CLASS;
   }
 
   default String getItemKey() {

@@ -10,11 +10,11 @@ public interface RestfulRouteController<ID> extends RestfulRouteProvider<ID> {
   }
 
   default String getRouteKey() {
-    return "route";
+    return WebModelAttribute.ROUTE;
   }
 
   default String getTemplateRouteKey() {
-    return "template";
+    return WebModelAttribute.TEMPLATE;
   }
 
   @ModelAttribute

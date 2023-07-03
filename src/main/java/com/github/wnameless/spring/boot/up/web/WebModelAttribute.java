@@ -8,13 +8,27 @@ import lombok.Data;
 @Data
 public class WebModelAttribute {
 
+  public static String ROUTE;
+  public static String TEMPLATE;
   public static String AJAX_TARGET_ID;
   public static String MESSAGES;
   public static String PAGE;
   public static String ITEM;
+  public static String ITEM_CLASS;
   public static String ITEMS;
   public static String QUERY_CONFIG;
   public static String USER;
+
+  @Value("${spring.boot.up.web.model.attribute.route:route}")
+  public void setRoute(String route) {
+    WebModelAttribute.ROUTE = route;
+  }
+
+
+  @Value("${spring.boot.up.web.model.attribute.template:template}")
+  public void setTemplate(String template) {
+    WebModelAttribute.TEMPLATE = template;
+  }
 
   @Value("${spring.boot.up.web.model.attribute.ajax-target-id:ajaxTarget}")
   public void setAjaxTargetId(String ajaxTargetId) {
@@ -34,6 +48,11 @@ public class WebModelAttribute {
   @Value("${spring.boot.up.web.model.attribute.item:item}")
   public void setModelAttrItem(String item) {
     WebModelAttribute.ITEM = item;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.item-class:itemClass}")
+  public void setModelAttrItemClass(String itemClass) {
+    WebModelAttribute.ITEM_CLASS = itemClass;
   }
 
   @Value("${spring.boot.up.web.model.attribute.items:items}")
