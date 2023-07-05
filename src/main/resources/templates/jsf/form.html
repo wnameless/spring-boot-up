@@ -81,7 +81,7 @@
 </div>
 
 <div th:fragment="show-edit"
-  th:with="item=${__${@webModelAttribute.ITEM}__}, user=${T(com.github.wnameless.spring.boot.up.SpringBootUp).containsBean(@webModelAttribute.USER) ? T(com.github.wnameless.spring.boot.up.SpringBootUp).getBean(@webModelAttribute.USER) : null}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedId=${embeddedId ?: ajaxTargetId}"
+  th:with="item=${__${@webModelAttribute.ITEM}__}, user=${__${'@' + @webModelAttribute.USER}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET_ID}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedId=${embeddedId ?: ajaxTargetId}"
   class="card">
   <div class="card-header">
     <div class="d-flex">

@@ -6,7 +6,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.github.wnameless.spring.boot.up.SpringBootUp;
 
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID> {
@@ -37,7 +36,6 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
       item = getModelPolicy().onItemInitialized().apply(item);
     }
 
-    model.addAttribute(WebModelAttribute.USER, SpringBootUp.getBean(WebModelAttribute.USER));
     model.addAttribute(getItemKey(), item);
     if (item != null) {
       model.addAttribute(getItemClassKey(), item.getClass());
