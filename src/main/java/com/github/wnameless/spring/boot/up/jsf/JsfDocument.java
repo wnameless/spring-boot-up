@@ -1,7 +1,6 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
 import java.util.Map;
-import java.util.Optional;
 import com.github.wnameless.json.base.JsonObjectBase;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.model.JsfData;
@@ -9,7 +8,7 @@ import com.github.wnameless.spring.boot.up.jsf.model.JsfSchema;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 
 public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, ID>
-    extends JsonSchemaForm, JsfVersioning {
+    extends JsonSchemaForm, JsfVersioning, JsfStratrgyAware {
 
   JD getJsfData();
 
@@ -24,7 +23,7 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
     return (JD) SpringBootUp.getBean(JsfService.class).newJsfData(formType, formBranch);
   }
 
-  default JD getJsfDataInternal() {
+  default JD _getJsfData() {
     JD data = getJsfData();
     if (data == null) {
       data = initJsfData();
@@ -42,54 +41,34 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getFormData() {
-    var documentStrategy = getJsonSchemaFormStrategy();
-    if (documentStrategy.isPresent() && documentStrategy.get().formDataStrategy() != null) {
-      return documentStrategy.get().formDataStrategy().apply(getJsfDataInternal().getFormData());
-    }
-
-    return getJsfDataInternal().getFormData();
+    return applyFormDataStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
+        _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
   }
 
   default void setFormData(Map<String, Object> formData) {
-    getJsfDataInternal().setFormData(formData);
+    _getJsfData().setFormData(formData);
   }
 
   default void setFormData(JsonObjectBase<?> formData) {
-    getJsfDataInternal().setFormData(formData.toMap());
+    _getJsfData().setFormData(formData.toMap());
   }
 
   default Map<String, Object> getSchema() {
-    var documentStrategy = getJsonSchemaFormStrategy();
-    if (documentStrategy.isPresent() && documentStrategy.get().schemaStrategy() != null) {
-      return documentStrategy.get().schemaStrategy()
-          .apply(getJsfDataInternal().getJsfSchema().getSchema());
-    }
-
-    return getJsfDataInternal().getJsfSchema().getSchema();
+    return applySchemaStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
+        _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
   }
 
   default void setSchema(Map<String, Object> schema) {
-    getJsfDataInternal().getJsfSchema().setSchema(schema);
+    _getJsfData().getJsfSchema().setSchema(schema);
   }
 
   default Map<String, Object> getUiSchema() {
-    var documentStrategy = getJsonSchemaFormStrategy();
-    if (documentStrategy.isPresent() && documentStrategy.get().uiSchemaStrategy() != null) {
-      return documentStrategy.get().uiSchemaStrategy()
-          .apply(getJsfDataInternal().getJsfSchema().getUiSchema());
-    }
-
-    return getJsfDataInternal().getJsfSchema().getUiSchema();
+    return applyUiSchemaStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
+        _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
   }
 
   default void setUiSchema(Map<String, Object> uiSchema) {
-    getJsfDataInternal().getJsfSchema().setUiSchema(uiSchema);
-  }
-
-  default Optional<JsonSchemaFormStrategy> getJsonSchemaFormStrategy() {
-    return SpringBootUp.getBeansOfType(JsonSchemaFormStrategy.class).values().stream()
-        .filter(dc -> dc.getDocumentType().equals(this.getClass()))
-        .filter(dc -> dc.activeStatus().getAsBoolean()).findFirst();
+    _getJsfData().getJsfSchema().setUiSchema(uiSchema);
   }
 
 }

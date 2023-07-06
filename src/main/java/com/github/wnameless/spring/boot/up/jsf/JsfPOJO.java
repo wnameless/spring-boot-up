@@ -7,13 +7,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 
-public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning {
+public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAware {
 
   T getPojo();
 
   void setPojo(T pojo);
 
-  default Map<String, Object> getFormData() {
+  default Map<String, Object> _getFormData() {
     T pojo = getPojo();
     if (pojo == null) {
       return new HashMap<>();
@@ -21,6 +21,13 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning {
       return SpringBootUp.getBean(ObjectMapper.class).convertValue(pojo,
           new TypeReference<Map<String, Object>>() {});
     }
+  }
+
+  default Map<String, Object> getFormData() {
+    JsfService<?, ?, ?> jsfService = SpringBootUp.getBean(JsfService.class);
+    return applyFormDataStrategy(
+        new SimpleJsonSchemaForm(jsfService.getSchemaTemplate(getFormType()),
+            jsfService.getUiSchemaTemplate(getFormType()), _getFormData()));
   }
 
   @SuppressWarnings("unchecked")
@@ -35,12 +42,15 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning {
 
   default Map<String, Object> getSchema() {
     JsfService<?, ?, ?> jsfService = SpringBootUp.getBean(JsfService.class);
-    return jsfService.getSchemaTemplate(getFormType());
+    return applySchemaStrategy(new SimpleJsonSchemaForm(jsfService.getSchemaTemplate(getFormType()),
+        jsfService.getUiSchemaTemplate(getFormType()), _getFormData()));
   }
 
   default Map<String, Object> getUiSchema() {
     JsfService<?, ?, ?> jsfService = SpringBootUp.getBean(JsfService.class);
-    return jsfService.getUiSchemaTemplate(getFormType());
+    return applyUiSchemaStrategy(
+        new SimpleJsonSchemaForm(jsfService.getSchemaTemplate(getFormType()),
+            jsfService.getUiSchemaTemplate(getFormType()), _getFormData()));
   }
 
   default String getFormType() {

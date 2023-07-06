@@ -11,6 +11,15 @@ public class SimpleJsonSchemaForm implements JsonSchemaForm {
 
   private Map<String, Object> uiSchema = new LinkedHashMap<>();
 
+  public SimpleJsonSchemaForm() {}
+
+  public SimpleJsonSchemaForm(Map<String, Object> schema, Map<String, Object> uiSchema,
+      Map<String, Object> formData) {
+    this.formData = formData;
+    this.schema = schema;
+    this.uiSchema = uiSchema;
+  }
+
   @Override
   public Map<String, Object> getFormData() {
     return formData;

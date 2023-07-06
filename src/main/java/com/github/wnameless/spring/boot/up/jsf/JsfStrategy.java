@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
-public interface JsonSchemaFormStrategy {
+public interface JsfStrategy {
 
   default BooleanSupplier activeStatus() {
     return () -> true;
@@ -12,10 +12,10 @@ public interface JsonSchemaFormStrategy {
 
   Class<? extends JsonSchemaForm> getDocumentType();
 
-  Function<Map<String, Object>, Map<String, Object>> schemaStrategy();
+  Function<JsonSchemaForm, Map<String, Object>> schemaStrategy();
 
-  Function<Map<String, Object>, Map<String, Object>> uiSchemaStrategy();
+  Function<JsonSchemaForm, Map<String, Object>> uiSchemaStrategy();
 
-  Function<Map<String, Object>, Map<String, Object>> formDataStrategy();
+  Function<JsonSchemaForm, Map<String, Object>> formDataStrategy();
 
 }
