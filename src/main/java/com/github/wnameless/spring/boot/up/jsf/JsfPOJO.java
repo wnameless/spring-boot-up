@@ -5,7 +5,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
-import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
+import com.github.wnameless.spring.boot.up.jsf.service.JsfPOJOService;
 
 public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAware {
 
@@ -24,10 +24,10 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAw
   }
 
   default Map<String, Object> getFormData() {
-    JsfService<?, ?, ?> jsfService = SpringBootUp.getBean(JsfService.class);
+    JsfPOJOService jsfPojoService = SpringBootUp.getBean(JsfPOJOService.class);
     return applyFormDataStrategy(
-        new SimpleJsonSchemaForm(jsfService.getSchemaTemplate(getFormType()),
-            jsfService.getUiSchemaTemplate(getFormType()), _getFormData()));
+        new SimpleJsonSchemaForm(jsfPojoService.getSchemaTemplate(getFormType()),
+            jsfPojoService.getUiSchemaTemplate(getFormType()), _getFormData()));
   }
 
   @SuppressWarnings("unchecked")
@@ -41,16 +41,17 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAw
   }
 
   default Map<String, Object> getSchema() {
-    JsfService<?, ?, ?> jsfService = SpringBootUp.getBean(JsfService.class);
-    return applySchemaStrategy(new SimpleJsonSchemaForm(jsfService.getSchemaTemplate(getFormType()),
-        jsfService.getUiSchemaTemplate(getFormType()), _getFormData()));
+    JsfPOJOService jsfPojoService = SpringBootUp.getBean(JsfPOJOService.class);
+    return applySchemaStrategy(
+        new SimpleJsonSchemaForm(jsfPojoService.getSchemaTemplate(getFormType()),
+            jsfPojoService.getUiSchemaTemplate(getFormType()), _getFormData()));
   }
 
   default Map<String, Object> getUiSchema() {
-    JsfService<?, ?, ?> jsfService = SpringBootUp.getBean(JsfService.class);
+    JsfPOJOService jsfPojoService = SpringBootUp.getBean(JsfPOJOService.class);
     return applyUiSchemaStrategy(
-        new SimpleJsonSchemaForm(jsfService.getSchemaTemplate(getFormType()),
-            jsfService.getUiSchemaTemplate(getFormType()), _getFormData()));
+        new SimpleJsonSchemaForm(jsfPojoService.getSchemaTemplate(getFormType()),
+            jsfPojoService.getUiSchemaTemplate(getFormType()), _getFormData()));
   }
 
   default String getFormType() {
