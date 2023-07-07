@@ -1,11 +1,15 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
+
 public final class JsfConfig {
 
   private JsfConfig() {}
 
   private static String templatePath = "jsf-templates";
   private static String defaultBranchName = "main";
+  private static ModelMapper modelMapper;
 
   public static String getTemplatePath() {
     return templatePath;
@@ -21,6 +25,19 @@ public final class JsfConfig {
 
   public static void setDefaultBranchName(String defaultBranchName) {
     JsfConfig.defaultBranchName = defaultBranchName;
+  }
+
+  public static ModelMapper getModelMapper() {
+    if (modelMapper != null) return modelMapper;
+
+    modelMapper = new ModelMapper();
+    modelMapper.getConfiguration().setSkipNullEnabled(true)
+        .setMatchingStrategy(MatchingStrategies.STRICT);
+    return modelMapper;
+  }
+
+  public static void setModelMapper(ModelMapper modelMapper) {
+    JsfConfig.modelMapper = modelMapper;
   }
 
 }

@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.jsf;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.core.ResolvableType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
@@ -12,6 +13,19 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAw
   T getPojo();
 
   void setPojo(T pojo);
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  default void populate() {
+    T pojo = getPojo();
+    if (pojo == null) return;
+
+    String[] names = SpringBootUp.applicationContext().getBeanNamesForType(ResolvableType
+        .forClassWithGenerics(MapModelConverter.class, pojo.getClass(), this.getClass()));
+    if (names.length > 0) {
+      MapModelConverter converter = SpringBootUp.getBean(names[0], MapModelConverter.class);
+      converter.map(pojo, this);
+    }
+  }
 
   default Map<String, Object> _getFormData() {
     T pojo = getPojo();
