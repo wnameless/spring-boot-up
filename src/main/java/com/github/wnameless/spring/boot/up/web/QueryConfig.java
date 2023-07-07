@@ -149,6 +149,9 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
 
     for (String field : getFields()) {
       if (requestParams.containsKey(field)) {
+        String param = requestParams.getFirst(field);
+        if (param == null || param.isEmpty()) continue;
+
         FilterableField<E> ff = filterFields.get(field);
         if (predicate == null) {
           predicate = ff.getFilterLogic(entity).apply(requestParams.getFirst(field));
