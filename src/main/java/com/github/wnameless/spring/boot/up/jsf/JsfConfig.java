@@ -32,7 +32,7 @@ public final class JsfConfig {
 
     modelMapper = new ModelMapper();
     modelMapper.getConfiguration().setSkipNullEnabled(true)
-        .setMatchingStrategy(MatchingStrategies.STRICT);
+        .setMatchingStrategy(MatchingStrategies.STANDARD);
     return modelMapper;
   }
 

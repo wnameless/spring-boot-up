@@ -14,15 +14,15 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAw
 
   void setPojo(T pojo);
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
+  @SuppressWarnings({"unchecked"})
   default void populate() {
     T pojo = getPojo();
     if (pojo == null) return;
 
     String[] names = SpringBootUp.applicationContext().getBeanNamesForType(ResolvableType
-        .forClassWithGenerics(MapModelConverter.class, pojo.getClass(), this.getClass()));
+        .forClassWithGenerics(JsfPOJOConverter.class, pojo.getClass(), this.getClass()));
     if (names.length > 0) {
-      MapModelConverter converter = SpringBootUp.getBean(names[0], MapModelConverter.class);
+      var converter = SpringBootUp.getBean(names[0], JsfPOJOConverter.class);
       converter.map(pojo, this);
     }
   }
