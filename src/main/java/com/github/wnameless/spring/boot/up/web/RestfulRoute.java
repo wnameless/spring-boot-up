@@ -29,6 +29,22 @@ public interface RestfulRoute<ID> extends JoinablePath {
     };
   }
 
+  default String getPaginationPath(QueryConfig<?> queryConfig) {
+    return getIndexPath(queryConfig, true, false);
+  }
+
+  default String paginationPath(QueryConfig<?> queryConfig) {
+    return getPaginationPath(queryConfig);
+  }
+
+  default String getSortingPath(QueryConfig<?> queryConfig) {
+    return getIndexPath(queryConfig, true, true);
+  }
+
+  default String sortingPath(QueryConfig<?> queryConfig) {
+    return getSortingPath(queryConfig);
+  }
+
   @Override
   default String getRootPath() {
     return getIndexPath();

@@ -2,8 +2,6 @@ package com.github.wnameless.spring.boot.up;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,9 +12,10 @@ import org.springframework.stereotype.Component;
  * @author Wei-Ming Wu
  * 
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@Component
+@Component(ApplicationContextProvider.BEAN_NAME)
 public final class ApplicationContextProvider implements ApplicationContextAware {
+
+  public static final String BEAN_NAME = "springBootUpApplicationContextProvider";
 
   private static final class AplicationContextHolder {
 
