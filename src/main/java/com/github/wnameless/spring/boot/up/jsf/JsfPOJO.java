@@ -14,6 +14,11 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAw
 
   void setPojo(T pojo);
 
+  default void setPojoWithPopulation(T pojo) {
+    setPojo(pojo);
+    populate();
+  }
+
   @SuppressWarnings({"unchecked"})
   default void populate() {
     T pojo = getPojo();
