@@ -162,7 +162,8 @@ public interface AjaxFsmController<JD extends JsfData<JS, ID>, JS extends JsfSch
   }
 
   @SuppressWarnings("unchecked")
-  @RequestMapping(path = "/{id}/forms/{formType}", method = {RequestMethod.PUT, RequestMethod.PUT},
+  @RequestMapping(path = "/{id}/forms/{formType}",
+      method = {RequestMethod.PUT, RequestMethod.PATCH},
       consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView updateFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType, @RequestBody Map<String, Object> formData,
