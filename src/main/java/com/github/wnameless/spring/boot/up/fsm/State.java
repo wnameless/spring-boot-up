@@ -2,7 +2,7 @@ package com.github.wnameless.spring.boot.up.fsm;
 
 import java.util.List;
 
-public interface State<T extends Trigger> {
+public interface State<T extends Trigger, ID> {
 
   String getName();
 
@@ -10,6 +10,6 @@ public interface State<T extends Trigger> {
 
   StateType getStateType();
 
-  List<StateForm<T>> getForms();
+  List<StateForm<T, ID>> getForms();
 
 }

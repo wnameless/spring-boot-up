@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.ResolvableType;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,19 @@ import jakarta.servlet.http.HttpServletResponse;
 public final class SpringBootUp {
 
   private SpringBootUp() {}
+
+  /**
+   * @see {@link ApplicationContext#getBeanNamesForType(ResolvableType)}
+   * 
+   * @return first match bean
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Optional<T> findGenericBean(Class<T> clazz, Class<?>... generics) {
+    String[] beanNamesForType = applicationContext()
+        .getBeanNamesForType(ResolvableType.forClassWithGenerics(clazz, generics));
+    if (beanNamesForType.length == 0) return Optional.empty();
+    return Optional.of((T) applicationContext().getBean(beanNamesForType[0]));
+  }
 
   /**
    * Retuens the Spring {@link ApplicationContext}.

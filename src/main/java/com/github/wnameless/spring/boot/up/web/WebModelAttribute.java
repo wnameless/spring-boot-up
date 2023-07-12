@@ -10,7 +10,9 @@ public class WebModelAttribute {
 
   public static String ROUTE;
   public static String TEMPLATE;
-  public static String AJAX_TARGET_ID;
+  public static String AJAX_TARGET;
+  public static String EMBEDDED_TARGET;
+  public static String BACK_TARGET;
   public static String MESSAGES;
   public static String PAGE;
   public static String ITEM;
@@ -30,9 +32,19 @@ public class WebModelAttribute {
     WebModelAttribute.TEMPLATE = template;
   }
 
-  @Value("${spring.boot.up.web.model.attribute.ajax-target-id:ajaxTarget}")
-  public void setAjaxTargetId(String ajaxTargetId) {
-    WebModelAttribute.AJAX_TARGET_ID = ajaxTargetId;
+  @Value("${spring.boot.up.web.model.attribute.ajax-target:ajaxTarget}")
+  public void setAjaxTarget(String ajaxTarget) {
+    WebModelAttribute.AJAX_TARGET = ajaxTarget;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.embedded-target:embeddedTarget}")
+  public void setEmbeddedTarget(String embeddedTarget) {
+    WebModelAttribute.EMBEDDED_TARGET = embeddedTarget;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.back-target:backTarget}")
+  public void setBackTarget(String backTarget) {
+    WebModelAttribute.BACK_TARGET = backTarget;
   }
 
   @Value("${spring.boot.up.web.model.attribute.messages:messages}")

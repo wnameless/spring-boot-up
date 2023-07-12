@@ -6,7 +6,7 @@ import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.StateMachineConfig;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
 
-public interface Phase<E extends PhaseAware<E, S, T, ID>, S extends State<T>, T extends Trigger, ID>
+public interface Phase<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
     extends AccessControlAware {
 
   E getEntity();

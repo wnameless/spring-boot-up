@@ -6,7 +6,7 @@ import com.github.oxo42.stateless4j.StateMachine;
 import lombok.Data;
 
 @Data
-public class StateRecord<S extends State<T>, T extends Trigger, ID> {
+public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
 
   private S state;
 

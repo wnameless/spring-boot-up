@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfPOJOService;
 
-public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAware {
+public interface JsfPOJO<T, ID> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAware {
+
+  ID getId();
 
   T getPojo();
 
