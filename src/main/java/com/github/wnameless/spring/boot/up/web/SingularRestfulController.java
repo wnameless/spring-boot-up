@@ -34,13 +34,20 @@ public interface SingularRestfulController<R extends CrudRepository<I, ID>, I, I
       item = getModelPolicy().onItemInitialized().apply(item);
     }
 
-    updateItem(model, item);
+    model.addAttribute(getItemKey(), item);
+    if (item != null) {
+      model.addAttribute(getItemClassKey(), item.getClass());
+    }
+  }
+
+  default String getItemClassKey() {
+    return WebModelAttribute.ITEM_CLASS;
   }
 
   Function<R, Optional<I>> itemStrategy();
 
   default String getItemKey() {
-    return WebModelAttribute.QUERY_CONFIG;
+    return WebModelAttribute.ITEM;
   }
 
   default I updateItem(Model model, I item) {
