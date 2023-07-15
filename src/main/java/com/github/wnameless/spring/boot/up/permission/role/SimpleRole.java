@@ -8,7 +8,9 @@ import lombok.NonNull;
 public class SimpleRole implements Role {
 
   @EqualsAndHashCode.Include
-  private final String roleName;
+  private String roleName;
+
+  SimpleRole() {}
 
   public SimpleRole(@NonNull Role role) {
     this.roleName = role.getRoleName().toUpperCase();
