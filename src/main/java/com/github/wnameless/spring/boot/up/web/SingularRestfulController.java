@@ -34,10 +34,7 @@ public interface SingularRestfulController<R extends CrudRepository<I, ID>, I, I
       item = getModelPolicy().onItemInitialized().apply(item);
     }
 
-    model.addAttribute(getItemKey(), item);
-    if (item != null) {
-      model.addAttribute(getItemClassKey(), item.getClass());
-    }
+    updateItem(model, item);
   }
 
   default String getItemClassKey() {
@@ -52,6 +49,9 @@ public interface SingularRestfulController<R extends CrudRepository<I, ID>, I, I
 
   default I updateItem(Model model, I item) {
     model.addAttribute(getItemKey(), item);
+    if (item != null) {
+      model.addAttribute(getItemClassKey(), item.getClass());
+    }
     return item;
   }
 

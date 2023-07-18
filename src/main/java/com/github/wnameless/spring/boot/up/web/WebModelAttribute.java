@@ -20,6 +20,11 @@ public class WebModelAttribute {
   public static String ITEMS;
   public static String QUERY_CONFIG;
   public static String USER;
+  public static String PARENT;
+  public static String PARENT_CLASS;
+  public static String CHILD;
+  public static String CHILD_CLASS;
+  public static String CHILDREN;
 
   @Value("${spring.boot.up.web.model.attribute.route:route}")
   public void setRoute(String route) {
@@ -73,13 +78,38 @@ public class WebModelAttribute {
   }
 
   @Value("${spring.boot.up.web.model.attribute.query-config:queryConfig}")
-  public void setModelAttQueryConfig(String queryConfig) {
+  public void setModelAttrQueryConfig(String queryConfig) {
     WebModelAttribute.QUERY_CONFIG = queryConfig;
   }
 
   @Value("${spring.boot.up.web.model.attribute.user:user}")
-  public void setModelAttUser(String user) {
+  public void setModelAttrUser(String user) {
     WebModelAttribute.USER = user;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.parent:parent}")
+  public void setModelAttrParent(String parent) {
+    WebModelAttribute.PARENT = parent;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.parent-class:parentClass}")
+  public void setModelAttrParentClass(String parentClass) {
+    WebModelAttribute.PARENT_CLASS = parentClass;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.child:child}")
+  public void setModelAttrChild(String child) {
+    WebModelAttribute.CHILD = child;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.child-class:childClass}")
+  public void setModelAttrChildClass(String childClass) {
+    WebModelAttribute.CHILD_CLASS = childClass;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.children:children}")
+  public void setModelAttrChildren(String children) {
+    WebModelAttribute.CHILDREN = children;
   }
 
 }

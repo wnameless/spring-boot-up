@@ -36,10 +36,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
       item = getModelPolicy().onItemInitialized().apply(item);
     }
 
-    model.addAttribute(getItemKey(), item);
-    if (item != null) {
-      model.addAttribute(getItemClassKey(), item.getClass());
-    }
+    updateItem(model, item);
   }
 
   default String getItemClassKey() {
@@ -63,6 +60,9 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
 
   default I updateItem(Model model, I item) {
     model.addAttribute(getItemKey(), item);
+    if (item != null) {
+      model.addAttribute(getItemClassKey(), item.getClass());
+    }
     return item;
   }
 

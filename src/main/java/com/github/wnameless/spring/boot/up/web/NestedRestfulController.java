@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import org.springframework.data.repository.CrudRepository;
@@ -115,11 +116,15 @@ public interface NestedRestfulController< //
   }
 
   default String getRouteKey() {
-    return "route";
+    return WebModelAttribute.ROUTE;
+  }
+
+  default String getParentClassKey() {
+    return WebModelAttribute.PARENT_CLASS;
   }
 
   default String getParentKey() {
-    return "parent";
+    return WebModelAttribute.PARENT;
   }
 
   default P getParent(PID parentId) {
@@ -136,11 +141,18 @@ public interface NestedRestfulController< //
 
   default P updateParent(Model model, P parent) {
     model.addAttribute(getParentKey(), parent);
+    if (parent != null) {
+      model.addAttribute(getParentClassKey(), parent.getClass());
+    }
     return parent;
   }
 
+  default String getChildClassKey() {
+    return WebModelAttribute.CHILD_CLASS;
+  }
+
   default String getChildKey() {
-    return "child";
+    return WebModelAttribute.CHILD;
   }
 
   default C getChild(PID parentId, CID id) {
@@ -162,21 +174,28 @@ public interface NestedRestfulController< //
 
   default C updateChild(Model model, C child) {
     model.addAttribute(getChildKey(), child);
+    if (child != null) {
+      model.addAttribute(getChildClassKey(), child.getClass());
+    }
     return child;
   }
 
   default String getChildrenKey() {
-    return "children";
+    return WebModelAttribute.CHILDREN;
   }
 
   default Iterable<C> updateChildren(Model model, Iterable<C> children) {
     model.addAttribute(getChildrenKey(), children);
+    Iterator<C> iter = children.iterator();
+    if (iter.hasNext()) {
+      model.addAttribute(getChildClassKey(), iter.next().getClass());
+    }
     return children;
   }
 
   default Iterable<C> updateChildrenByParent(Model model, P parent) {
     Iterable<C> children = getChildren(parent);
-    model.addAttribute(getChildrenKey(), children);
+    updateChildren(model, children);
     return children;
   }
 
