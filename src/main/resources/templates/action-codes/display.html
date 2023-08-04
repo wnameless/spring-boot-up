@@ -1,0 +1,42 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bar(ajaxTargetId)">
+  <div class="input-group mb-3">
+    <input id="actionCodeInput" type="text" class="form-control" th:value="${code}" readonly="true">
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+      data-bs-toggle="dropdown" aria-expanded="false">Action</button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li>
+        <a class="dropdown-item" href="#" onclick="copyActionCodeUrl()">Copy</a>
+      </li>
+      <li>
+        <a hx:post="@{${item.joinPath('action-codes', 'JOIN')}(ajaxTargetId=${ajaxTargetId})}"
+          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">Generate</a>
+      </li>
+      <li th:if="${code}">
+        <a hx:delete="@{${item.joinPath('action-codes', 'JOIN', code)}(ajaxTargetId=${ajaxTargetId})}"
+          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">Clear</a>
+      </li>
+    </ul>
+  </div>
+
+  <script th:inline="javascript">
+    function copyActionCodeUrl() {
+      var pageOrigin = document.location.origin;
+      var actionPath = /*[[${item.joinPath(action)}]]*/ null;
+      actionPath = pageOrigin + actionPath;
+
+      var copyText = document.getElementById("actionCodeInput");
+      copyText.select();
+      copyText.setSelectionRange(0, 99999); // For mobile devices
+
+      if (!copyText.value) {
+        alert("No action code !");
+      } else {
+        navigator.clipboard.writeText(actionPath + '/' + copyText.value);
+      }
+    }
+  </script>
+</div>
+
+</html>
