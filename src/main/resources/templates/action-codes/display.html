@@ -23,7 +23,7 @@
   <script th:inline="javascript">
     function copyActionCodeUrl() {
       var pageOrigin = document.location.origin;
-      var actionPath = /*[[${item.joinPath(action)}]]*/ null;
+      var actionPath = /*[[${item.joinPath('action-codes', action)}]]*/ null;
       actionPath = pageOrigin + actionPath;
 
       var copyText = document.getElementById("actionCodeInput");
