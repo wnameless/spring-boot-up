@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
-import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 
 public interface ActionCodeController<AC extends ActionCode<A>, A extends Enum<?>, ID>
     extends RestfulRouteProvider<ID> {
@@ -36,7 +35,7 @@ public interface ActionCodeController<AC extends ActionCode<A>, A extends Enum<?
     mav.setViewName("action-codes/display :: bar");
     generation().accept(mav, getActionCodeService().getActionEnum(actionName));
     mav.addObject(ActionCodeAttribute.ACTION, actionName);
-    mav.addObject(WebModelAttribute.AJAX_TARGET, ajaxTargetId);
+    mav.addObject("ajaxTargetId", ajaxTargetId);
     return mav;
   }
 
@@ -46,7 +45,7 @@ public interface ActionCodeController<AC extends ActionCode<A>, A extends Enum<?
     mav.setViewName("action-codes/display :: bar");
     request().accept(mav, getActionCodeService().getActionEnum(actionName));
     mav.addObject(ActionCodeAttribute.ACTION, actionName);
-    mav.addObject(WebModelAttribute.AJAX_TARGET, ajaxTargetId);
+    mav.addObject("ajaxTargetId", ajaxTargetId);
     return mav;
   }
 
@@ -62,7 +61,7 @@ public interface ActionCodeController<AC extends ActionCode<A>, A extends Enum<?
     }
     mav.addObject(ActionCodeAttribute.ACTION, actionName);
     mav.addObject(ActionCodeAttribute.CODE, "");
-    mav.addObject(WebModelAttribute.AJAX_TARGET, ajaxTargetId);
+    mav.addObject("ajaxTargetId", ajaxTargetId);
     return mav;
   }
 
