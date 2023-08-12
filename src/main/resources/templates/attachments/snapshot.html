@@ -1,0 +1,90 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="panel" class="m-2">
+
+  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+        data-bs-target="#pills-file-list" type="button" role="tab">File
+        List</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+        data-bs-target="#pills-file-edit" type="button" role="tab">File
+        Edit</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+        data-bs-target="#pills-file-upload" type="button" role="tab">File
+        Upload</button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-file-list" role="tabpanel">
+
+      <div id="accordionFileList" class="accordion">
+        <div th:each="fileGroup, groupIndex : ${attachmentChecklist.getGroupNames()}"
+          class="accordion-item">
+          <h2 class="accordion-header" th:id="'heading_' + ${groupIndex.index}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              aria-expanded="false"
+              th:attr="data-bs-target='#collapse_' + ${groupIndex.index}, aria-controls='collapse_' + ${groupIndex.index}">
+              [[${fileGroup}]]
+            </button>
+          </h2>
+          <div th:id="'collapse_' + ${groupIndex.index}" class="accordion-collapse collapse"
+            th:attr="aria-labelledby='heading_' + ${groupIndex.index}"
+            data-bs-parent="#accordionFileList">
+            <div class="accordion-body">
+              <ul class="list-group">
+                <li class="list-group-item"
+                  th:each="attachment : ${attachmentGroups.get(fileGroup)}">
+                  <a th:href="${item.joinPath('attachments', attachment.id)}"
+                    th:text="${attachment.name}"></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <div class="tab-pane fade" id="pills-file-edit" role="tabpanel">
+
+      <div id="attachmentEdit">
+        <a hx:get="@{${item.joinPath('attachments', 'edit')}(ajaxTargetId=${ajaxTargetId})}"
+          hx-target="#attachmentEdit" hx-ext="json-enc" hx-trigger="revealed" class="d-none"></a>
+
+        <script th:inline="javascript" defer>
+          htmx.process(document.getElementById('attachmentEdit'));
+        </script>
+      </div>
+
+    </div>
+    <div class="tab-pane fade" id="pills-file-upload" role="tabpanel">
+
+      <div id="attachmentUpload">
+        <a hx:get="@{${item.joinPath('attachments','upload')}(ajaxTargetId=${ajaxTargetId})}"
+          hx-target="#attachmentUpload" hx-ext="json-enc" hx-trigger="revealed" class="d-none"></a>
+
+        <script th:inline="javascript" defer>
+          htmx.process(document.getElementById('attachmentUpload'));
+        </script>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div th:fragment="edit">
+  <div th:replace="~{jsf/form :: edit}"></div>
+</div>
+
+<div th:fragment="upload">
+  <div th:replace="~{jsf/form :: new}"></div>
+</div>
+
+</html>
