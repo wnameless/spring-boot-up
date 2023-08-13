@@ -20,17 +20,23 @@ import org.springframework.web.servlet.ModelAndView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
+import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 
 public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware<AA, A, ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
-    extends RestfulRouteProvider<ID> {
+    extends RestfulItemProvider<AA>, RestfulRouteProvider<ID> {
 
-  AA getAttachmentSnapshotAware(ID id);
+  default AA getAttachmentSnapshotAware(ID id) {
+    return getRestfulItem();
+  }
 
-  S getAttachmentService();
+  @SuppressWarnings("unchecked")
+  default S getAttachmentService() {
+    return (S) SpringBootUp.getBean(AttachmentService.class);
+  }
 
   default void updateSnapshot(AA attachmentSnapshotAware, List<A> attachments) {
     var original = attachmentSnapshotAware.getSnapshot().getAttachments();
@@ -50,7 +56,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   }
 
   @SneakyThrows
-  default RestfulJsonSchemaForm<?> createEditForm(AttachmentSnapshot<A, ID> snapshot, ID id) {
+  default RestfulJsonSchemaForm<?> createEditForm(AttachmentChecklist checklist,
+      AttachmentSnapshot<A, ID> snapshot, ID id) {
     var editform =
         new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id), "attachments");
     var mapper = SpringBootUp.getBean(ObjectMapper.class);
@@ -67,7 +74,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
           }
         }
           """;
-    for (String group : attachmentsGroups.keySet()) {
+    for (String group : checklist.getGroupNames().stream()
+        .filter(gn -> attachmentsGroups.keySet().contains(gn)).toList()) {
       aryProps.put(group, mapper.readValue(ary, Map.class));
     }
     editform.getSchema().put("properties", aryProps);
@@ -150,9 +158,10 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     mav.setViewName("attachments/snapshot :: edit");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
+    var checklist = attachmentSnapshotAware.getChecklist();
     var snapshot = attachmentSnapshotAware.getSnapshot();
 
-    mav.addObject(WebModelAttribute.ITEM, createEditForm(snapshot, id));
+    mav.addObject(WebModelAttribute.ITEM, createEditForm(checklist, snapshot, id));
     mav.addObject("ajaxTargetId", ajaxTargetId);
     return mav;
   }

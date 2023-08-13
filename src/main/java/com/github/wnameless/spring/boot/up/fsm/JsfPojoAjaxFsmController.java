@@ -22,13 +22,16 @@ import com.github.wnameless.spring.boot.up.jsf.JsfPOJO;
 import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.BaseWebAction;
+import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 
 public interface JsfPojoAjaxFsmController<PA extends PhaseAware<PA, S, T, ID>, S extends State<T, ID>, T extends Trigger, D, ID>
-    extends RestfulRouteProvider<ID>, BaseWebAction<D> {
+    extends RestfulItemProvider<PA>, RestfulRouteProvider<ID>, BaseWebAction<D> {
 
-  PA getPhaseAware();
+  default PA getPhaseAware() {
+    return getRestfulItem();
+  }
 
   default void excuateAlwaysTriggers() {
     for (T alwaysTrigger : getPhaseAware().getPhase().getAlwaysTriggers()) {
@@ -107,7 +110,6 @@ public interface JsfPojoAjaxFsmController<PA extends PhaseAware<PA, S, T, ID>, S
     showAndEditAction(mav, id, formType, true);
     return mav;
   }
-
 
   @GetMapping(path = "/{id}/forms/{formType}/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView editFormAjax(ModelAndView mav, @PathVariable ID id,
