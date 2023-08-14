@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.triggers.TriggerWithParameters1;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.JsfPOJO;
+import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
 import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.BaseWebAction;
@@ -50,15 +52,15 @@ public interface JsfPojoAjaxFsmController<PA extends PhaseAware<PA, S, T, ID>, S
     return null;
   }
 
-  default BiFunction<JsfPOJO<?, ID>, PA, JsfPOJO<?, ID>> afterLoadJsf() {
+  default BiConsumer<PA, JsfVersioning> afterLoadJsf() {
     return null;
   }
 
-  default BiFunction<JsfPOJO<?, ID>, PA, JsfPOJO<?, ID>> beforeSaveJsf() {
+  default BiConsumer<PA, JsfVersioning> beforeSaveJsf() {
     return null;
   }
 
-  default BiFunction<JsfPOJO<?, ID>, PA, JsfPOJO<?, ID>> afterSaveJsf() {
+  default BiConsumer<PA, JsfVersioning> afterSaveJsf() {
     return null;
   }
 
@@ -149,7 +151,7 @@ public interface JsfPojoAjaxFsmController<PA extends PhaseAware<PA, S, T, ID>, S
         data = repo.findById(dataId).get();
       }
       if (afterLoadJsf() != null) {
-        data = afterLoadJsf().apply(data, phase);
+        afterLoadJsf().accept(phase, data);
       }
 
       RestfulJsonSchemaForm<String> item = new RestfulJsonSchemaForm<>(
@@ -202,14 +204,14 @@ public interface JsfPojoAjaxFsmController<PA extends PhaseAware<PA, S, T, ID>, S
 
       data.setFormData(formData);
       if (beforeSaveJsf() != null) {
-        data = beforeSaveJsf().apply(data, phase);
+        beforeSaveJsf().accept(phase, data);
       }
       repo.save(data);
       formDataTable.computeIfAbsent(formType, k -> new LinkedHashMap<>())
           .put(sf.formBranchStock().get(), data.getId());
       getPhaseRepository().save(phase);
       if (afterSaveJsf() != null) {
-        data = afterSaveJsf().apply(data, phase);
+        afterSaveJsf().accept(phase, data);
       }
 
       RestfulJsonSchemaForm<String> item = new RestfulJsonSchemaForm<>(

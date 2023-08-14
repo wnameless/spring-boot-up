@@ -15,10 +15,10 @@
     </react-form>
 
     <script th:inline="javascript">
-      var formDataset = /*[[${item.toDataset()}]]*/ null;
+      var newFormDataset = /*[[${item.toDataset()}]]*/ null;
       var newFormId = /*[[${'newForm' + rid}]]*/ null;
       var newForm = document.getElementById(newFormId);
-      newForm.setAttribute('props-var', 'formDataset');
+      newForm.setAttribute('props-var', 'newFormDataset');
     </script>
   </div>
   <script th:inline="javascript" defer>
@@ -41,10 +41,10 @@
     </react-form>
 
     <script th:inline="javascript">
-      var formDataset = /*[[${item.toDataset()}]]*/ null;
+      var editFormDataset = /*[[${item.toDataset()}]]*/ null;
       var editFormId = /*[[${'editForm' + rid}]]*/ null;
       var editForm = document.getElementById(editFormId);
-      editForm.setAttribute('props-var', 'formDataset');
+      editForm.setAttribute('props-var', 'editFormDataset');
     </script>
   </div>
   <script th:inline="javascript" defer>
@@ -72,11 +72,18 @@
       </th:block>
     </react-form>
 
+    <div
+      th:if="${T(com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotAware).isAssignableFrom(item.class)}"
+      th:id="${'attachments' + rid}">
+      <a hx:get="@{${item.joinPath('attachments')}(ajaxTargetId=${'attachments' + rid})}"
+        hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load" class="d-none"></a>
+    </div>
+
     <script th:inline="javascript">
-      var formDataset = /*[[${item.toDataset()}]]*/ null;
+      var showFormDataset = /*[[${item.toDataset()}]]*/ null;
       var showFormId = /*[[${'showForm' + rid}]]*/ null;
       var showForm = document.getElementById(showFormId);
-      showForm.setAttribute('props-var', 'formDataset');
+      showForm.setAttribute('props-var', 'showFormDataset');
     </script>
   </div>
   <script th:inline="javascript" defer>
@@ -112,11 +119,18 @@
       </th:block>
     </react-form>
 
+    <div
+      th:if="${T(com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotAware).isAssignableFrom(item.class)}"
+      th:id="${'attachments' + rid}">
+      <a hx:get="@{${item.joinPath('attachments')}(ajaxTargetId=${'attachments' + rid})}"
+        hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load" class="d-none"></a>
+    </div>
+
     <script th:inline="javascript">
-      var formDataset = /*[[${item.toDataset()}]]*/ null;
+      var showEditFormDataset = /*[[${item.toDataset()}]]*/ null;
       var showEditFormId = /*[[${'showEditForm' + rid}]]*/ null;
       var showEditForm = document.getElementById(showEditFormId);
-      showEditForm.setAttribute('props-var', 'formDataset');
+      showEditForm.setAttribute('props-var', 'showEditFormDataset');
     </script>
   </div>
   <script th:inline="javascript" defer>
@@ -140,7 +154,7 @@
     </div>
   </div>
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
-    <react-form th:id="${'showEditForm' + rid }"
+    <react-form th:id="${'showEditForm' + rid}"
       th:action="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
       method="GET" ajax:target="${ajaxTargetId}" disabled="true">
       <th:block th:if="${item.hasBackPathname}">
@@ -152,11 +166,18 @@
       </th:block>
     </react-form>
 
+    <div
+      th:if="${T(com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotAware).isAssignableFrom(item.class)}"
+      th:id="${'attachments' + rid}">
+      <a hx:get="@{${item.joinPath('attachments')}(ajaxTargetId=${'attachments' + rid})}"
+        hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load" class="d-none"></a>
+    </div>
+
     <script th:inline="javascript">
-      var formDataset = /*[[${item.toDataset()}]]*/ null;
+      var showEditFormDataset = /*[[${item.toDataset()}]]*/ null;
       var showEditFormId = /*[[${'showEditForm' + rid}]]*/ null;
       var showEditForm = document.getElementById(showEditFormId);
-      showEditForm.setAttribute('props-var', 'formDataset');
+      showEditForm.setAttribute('props-var', 'showEditFormDataset');
     </script>
   </div>
   <script th:inline="javascript" defer>

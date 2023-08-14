@@ -1,6 +1,9 @@
 package com.github.wnameless.spring.boot.up;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +35,20 @@ public final class SpringBootUp {
         .getBeanNamesForType(ResolvableType.forClassWithGenerics(clazz, generics));
     if (beanNamesForType.length == 0) return Optional.empty();
     return Optional.of((T) applicationContext().getBean(beanNamesForType[0]));
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBeanNamesForType(ResolvableType)}
+   * 
+   * @return all match beans
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> List<T> findAllGenericBeans(Class<T> clazz, Class<?>... generics) {
+    String[] beanNamesForType = applicationContext()
+        .getBeanNamesForType(ResolvableType.forClassWithGenerics(clazz, generics));
+    if (beanNamesForType.length == 0) return Collections.emptyList();
+    return (List<T>) Arrays.asList(beanNamesForType).stream()
+        .map(beanName -> applicationContext().getBean(beanName)).toList();
   }
 
   /**

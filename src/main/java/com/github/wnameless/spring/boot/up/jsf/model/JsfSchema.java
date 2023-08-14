@@ -2,16 +2,13 @@ package com.github.wnameless.spring.boot.up.jsf.model;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
 
-public interface JsfSchema<ID> {
+public interface JsfSchema<ID> extends JsfVersioning {
 
   ID getId();
 
-  String getFormType();
-
   void setFormType(String formType);
-
-  String getFormBranch();
 
   void setFormBranch(String formBranch);
 
