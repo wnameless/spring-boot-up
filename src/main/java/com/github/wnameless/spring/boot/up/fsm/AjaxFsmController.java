@@ -223,10 +223,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
         .filter(item -> Objects.equals(item.formTypeStock().get(), formType)).findFirst();
     if (stateRecord.hasForm() && sfOpt.isPresent()) {
       StateForm<T, ID> sf = sfOpt.get();
+      ID dataId = stateRecord.findStateFormId(formType, sf.formBranchStock().get()).get();
 
-      Map<String, Map<String, ID>> formDataTable = stateRecord.getFormDataTable();
-      ID dataId = formDataTable.getOrDefault(formType, Collections.emptyMap())
-          .get(sf.formBranchStock().get());
 
       SF data;
       if (dataId == null) {
