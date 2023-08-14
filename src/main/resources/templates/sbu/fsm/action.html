@@ -47,7 +47,7 @@
   <div class="tab-content">
     <div class="tab-pane fade show active" th:id="${'mainForm' + fid}" role="tabpanel">
       <div
-        th:replace="~{jsf/form :: show-edit-alt(editable=${item.phase.updatable.accessControlRuleStock.getAsBoolean}, item=${__${@webModelAttribute.ITEM}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET})}">
+        th:replace="~{sbu/jsf/form :: show-edit-alt(editable=${item.phase.updatable.accessControlRuleStock.getAsBoolean}, item=${__${@webModelAttribute.ITEM}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET})}">
       </div>
     </div>
     <div th:if="${item.phase.stateRecord.hasViewableForm(item.phase.stateMachine)}"

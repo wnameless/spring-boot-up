@@ -32,7 +32,7 @@ public interface ActionCodeController<AC extends ActionCode<A>, A extends Enum<?
   @PostMapping(path = "/{id}/action-codes/{actionName}", consumes = APPLICATION_JSON_VALUE)
   default ModelAndView generateAction(ModelAndView mav, @PathVariable String actionName,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("action-codes/display :: bar");
+    mav.setViewName("sbu/action-codes/display :: bar");
     generation().accept(mav, getActionCodeService().getActionEnum(actionName));
     mav.addObject(ActionCodeAttribute.ACTION, actionName);
     mav.addObject("ajaxTargetId", ajaxTargetId);
@@ -42,7 +42,7 @@ public interface ActionCodeController<AC extends ActionCode<A>, A extends Enum<?
   @GetMapping(path = "/{id}/action-codes/{actionName}", consumes = APPLICATION_JSON_VALUE)
   default ModelAndView requestAction(ModelAndView mav, @PathVariable String actionName,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("action-codes/display :: bar");
+    mav.setViewName("sbu/action-codes/display :: bar");
     request().accept(mav, getActionCodeService().getActionEnum(actionName));
     mav.addObject(ActionCodeAttribute.ACTION, actionName);
     mav.addObject("ajaxTargetId", ajaxTargetId);
@@ -52,7 +52,7 @@ public interface ActionCodeController<AC extends ActionCode<A>, A extends Enum<?
   @DeleteMapping(path = "/{id}/action-codes/{actionName}/{code}", consumes = APPLICATION_JSON_VALUE)
   default ModelAndView deleteAction(ModelAndView mav, @PathVariable String actionName,
       @PathVariable String code, @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("action-codes/display :: bar");
+    mav.setViewName("sbu/action-codes/display :: bar");
     Optional<AC> actionCodeOpt = getActionCodeService()
         .findByActionAndCode(getActionCodeService().getActionEnum(actionName), code);
     if (actionCodeOpt.isPresent()) {

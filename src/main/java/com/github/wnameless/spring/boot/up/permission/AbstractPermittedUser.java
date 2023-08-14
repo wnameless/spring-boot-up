@@ -23,4 +23,24 @@ public abstract class AbstractPermittedUser<ID> implements PermittedUser<ID> {
     allResourceAbilities.addAll(getUserResourceAbilities());
   }
 
+  public boolean containsRole(Role role) {
+    return allRoles.contains(role.toRole());
+  }
+
+  public boolean containsAllRoles(Role... roles) {
+    boolean hasAll = true;
+    for (Role role : allRoles) {
+      if (!allRoles.contains(role.toRole())) return false;
+    }
+    return hasAll;
+  }
+
+  public boolean containsAnyRole(Role... roles) {
+    boolean hasAny = false;
+    for (Role role : allRoles) {
+      if (allRoles.contains(role.toRole())) return true;
+    }
+    return hasAny;
+  }
+
 }

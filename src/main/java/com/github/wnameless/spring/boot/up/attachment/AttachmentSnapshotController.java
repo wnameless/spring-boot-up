@@ -140,7 +140,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   @GetMapping("/{id}/attachments")
   default ModelAndView retrieveAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("attachments/snapshot :: panel");
+    mav.setViewName("sbu/attachments/snapshot :: panel");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var snapshot = attachmentSnapshotAware.getSnapshot();
@@ -155,7 +155,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   @GetMapping("/{id}/attachments/edit")
   default ModelAndView editAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("attachments/snapshot :: edit");
+    mav.setViewName("sbu/attachments/snapshot :: edit");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var checklist = attachmentSnapshotAware.getChecklist();
@@ -169,7 +169,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   @GetMapping("/{id}/attachments/upload")
   default ModelAndView uploadFragment(ModelAndView mav, @PathVariable ID id,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("attachments/snapshot :: upload");
+    mav.setViewName("sbu/attachments/snapshot :: upload");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var checklist = attachmentSnapshotAware.getChecklist();
@@ -183,7 +183,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   default ModelAndView uploadAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestBody Map<String, Object> jsfFiles,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("attachments/snapshot :: panel");
+    mav.setViewName("sbu/attachments/snapshot :: panel");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var service = getAttachmentService();
@@ -255,7 +255,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   default ModelAndView deleteAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestBody Map<String, Object> jsfFiles,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("attachments/snapshot :: panel");
+    mav.setViewName("sbu/attachments/snapshot :: panel");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var original = attachmentSnapshotAware.getSnapshot().getAttachments();
