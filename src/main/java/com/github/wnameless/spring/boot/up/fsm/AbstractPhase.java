@@ -33,4 +33,9 @@ public abstract class AbstractPhase<E extends PhaseAware<E, S, T, ID>, S extends
     stateRecordConsumer.accept(stateRecord);
   }
 
+  @Override
+  public S getCurrentState() {
+    return getStateRecord().getState();
+  }
+
 }

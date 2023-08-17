@@ -3,11 +3,10 @@ package com.github.wnameless.spring.boot.up.fsm;
 import java.util.List;
 import java.util.function.Function;
 import com.github.oxo42.stateless4j.StateMachine;
-import com.github.oxo42.stateless4j.StateMachineConfig;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
 
 public interface Phase<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
-    extends AccessControlAware {
+    extends AccessControlAware, StateMachineInitializable<S, T> {
 
   E getEntity();
 
@@ -33,8 +32,6 @@ public interface Phase<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>
   void setStateRecord(StateRecord<S, T, ID> stateRecord);
 
   S initialState();
-
-  StateMachineConfig<S, T> getStateMachineConfig();
 
   default StateMachine<S, T> getStateMachine() {
     S state = getStateRecord().getState();
