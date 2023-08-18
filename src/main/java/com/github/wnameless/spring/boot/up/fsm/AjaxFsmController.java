@@ -1,8 +1,6 @@
 package com.github.wnameless.spring.boot.up.fsm;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -223,14 +221,13 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
         .filter(item -> Objects.equals(item.formTypeStock().get(), formType)).findFirst();
     if (stateRecord.hasForm() && sfOpt.isPresent()) {
       StateForm<T, ID> sf = sfOpt.get();
-      ID dataId = stateRecord.findStateFormId(formType, sf.formBranchStock().get()).get();
-
+      var dataIdOpt = stateRecord.findStateFormId(formType, sf.formBranchStock().get());
 
       SF data;
-      if (dataId == null) {
+      if (dataIdOpt.isEmpty()) {
         data = newStateForm(sf, formType);
       } else {
-        data = this.getStateForm(sf, dataId);
+        data = this.getStateForm(sf, dataIdOpt.get());
       }
       if (afterLoadStateForm() != null) {
         data = afterLoadStateForm().apply(phase, data);
@@ -268,16 +265,13 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
         .filter(item -> Objects.equals(item.formTypeStock().get(), formType)).findFirst();
     if (stateRecord.hasForm() && sfOpt.isPresent()) {
       StateForm<T, ID> sf = sfOpt.get();
-
-      Map<String, Map<String, ID>> formDataTable = stateRecord.getFormDataTable();
-      ID dataId = formDataTable.getOrDefault(formType, Collections.emptyMap())
-          .get(sf.formBranchStock().get());
+      var dataIdOpt = stateRecord.findStateFormId(formType, sf.formBranchStock().get());
 
       SF data;
-      if (dataId == null) {
+      if (dataIdOpt.isEmpty()) {
         data = newStateForm(sf, formType);
       } else {
-        data = getStateForm(sf, dataId);
+        data = getStateForm(sf, dataIdOpt.get());
       }
 
       data.setFormData(formData);
@@ -285,8 +279,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
         data = beforeSaveStateForm().apply(phase, data);
       }
       data = saveStateForm(sf, data);
-      formDataTable.computeIfAbsent(formType, k -> new LinkedHashMap<>())
-          .put(sf.formBranchStock().get(), getStateFormId(data));
+      stateRecord.putStateFormId(formType, sf.formBranchStock().get(), getStateFormId(data));
       getPhaseRepository().save(phase);
       if (afterSaveStateForm() != null) {
         data = afterSaveStateForm().apply(phase, data);
