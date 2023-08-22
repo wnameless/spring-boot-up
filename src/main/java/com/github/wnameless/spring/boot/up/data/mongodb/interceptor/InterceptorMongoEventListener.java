@@ -1,11 +1,9 @@
 package com.github.wnameless.spring.boot.up.data.mongodb.interceptor;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -20,6 +18,8 @@ import org.springframework.data.mongodb.core.mapping.event.BeforeSaveEvent;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterConvertFromMongo;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterSaveToMongo;
@@ -28,7 +28,8 @@ import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.B
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.BeforeSaveToMongo;
 
 
-public class InterceptorMongoEventListener extends AbstractMongoEventListener<Object> {
+public class InterceptorMongoEventListener extends AbstractMongoEventListener<Object>
+    implements InitializingBean {
 
   private static final String ID = "_id";
 
@@ -39,47 +40,23 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
   @Value("${spring.boot.up.data.mongodb.interceptor.after_delete_object.cache.size:16}")
   private int AFTER_DELETE_OBJECT_CACHE_SIZE = 16;
 
-  // @Autowired
-  // private MongoConverter mongoConverter;
 
-  private final Map<Object, Class<?>> beforeDeleteActions = Collections.synchronizedMap(
+  // Cache<ID, Class<?>>
+  private Cache<Object, Class<?>> beforeDeleteActionCache;
+  // Cache<ID, Class<?>>
+  private Cache<Object, Class<?>> afterDeleteActionCache;
+  // Cache<ID, Object>
+  private Cache<Object, Object> afterDeleteObjectCache;
 
-      new LinkedHashMap<Object, Class<?>>() {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<Object, Class<?>> entry) {
-          return size() > BEFORE_DELETE_ACTION_CACHE_SIZE;
-        }
-
-      });
-
-  private final Map<Object, Class<?>> afterDeleteActions = Collections.synchronizedMap(
-
-      new LinkedHashMap<Object, Class<?>>() {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<Object, Class<?>> entry) {
-          return size() > AFTER_DELETE_ACTION_CACHE_SIZE;
-        }
-
-      });
-
-  private final Map<Object, Object> afterDeleteObjects = Collections.synchronizedMap(
-
-      new LinkedHashMap<Object, Object>() {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<Object, Object> entry) {
-          return size() > AFTER_DELETE_OBJECT_CACHE_SIZE;
-        }
-
-      });
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    beforeDeleteActionCache =
+        Caffeine.newBuilder().maximumSize(BEFORE_DELETE_ACTION_CACHE_SIZE).build();
+    afterDeleteActionCache =
+        Caffeine.newBuilder().maximumSize(AFTER_DELETE_ACTION_CACHE_SIZE).build();
+    afterDeleteObjectCache =
+        Caffeine.newBuilder().maximumSize(AFTER_DELETE_OBJECT_CACHE_SIZE).build();
+  }
 
   @Autowired
   private MongoOperations mongoOperations;
@@ -248,10 +225,10 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
 
     // Cache beforeDelete/afterDelete id and class
     if (docId != null && beforeDeleteMethod) {
-      beforeDeleteActions.put(docId, target.getClass());
+      beforeDeleteActionCache.put(docId, target.getClass());
     }
     if (docId != null && afterDeleteMethod) {
-      afterDeleteActions.put(docId, target.getClass());
+      afterDeleteActionCache.put(docId, target.getClass());
     }
   }
 
@@ -260,8 +237,8 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
   public void onBeforeDelete(BeforeDeleteEvent<Object> event) {
     Object docId = event.getSource().get(ID);
     // Annotation event joint point
-    if (beforeDeleteActions.containsKey(docId)) {
-      Class<?> type = beforeDeleteActions.remove(docId);
+    if (beforeDeleteActionCache.asMap().containsKey(docId)) {
+      Class<?> type = beforeDeleteActionCache.asMap().remove(docId);
       Query searchQuery = new Query(Criteria.where(ID).is(docId));
       Object target = mongoOperations.findOne(searchQuery, type);
 
@@ -296,11 +273,11 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
       }
     }
 
-    if (afterDeleteActions.containsKey(docId)) {
-      Class<?> type = afterDeleteActions.get(docId);
+    if (afterDeleteActionCache.asMap().containsKey(docId)) {
+      Class<?> type = afterDeleteActionCache.asMap().get(docId);
       Query searchQuery = new Query(Criteria.where(ID).is(docId));
       Object target = mongoOperations.findOne(searchQuery, type);
-      afterDeleteObjects.put(docId, target);
+      afterDeleteObjectCache.put(docId, target);
     }
   }
 
@@ -309,9 +286,9 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
   public void onAfterDelete(AfterDeleteEvent<Object> event) {
     Object docId = event.getSource().get(ID);
     // Annotation event joint point
-    if (afterDeleteActions.containsKey(docId)) {
-      Class<?> type = afterDeleteActions.remove(docId);
-      Object target = afterDeleteObjects.remove(docId);
+    if (afterDeleteActionCache.asMap().containsKey(docId)) {
+      Class<?> type = afterDeleteActionCache.asMap().remove(docId);
+      Object target = afterDeleteObjectCache.asMap().remove(docId);
 
       Set<String> executedNames = new HashSet<>();
       for (Method method : type.getDeclaredMethods()) {

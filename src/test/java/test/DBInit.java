@@ -16,8 +16,9 @@
 package test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import jakarta.annotation.PostConstruct;
 import test.model.Car;
 import test.model.Engine;
 import test.model.GasTank;
@@ -43,7 +44,7 @@ public class DBInit {
   @Autowired
   WheelRepository wheelRepo;
 
-  @PostConstruct
+  @EventListener(ApplicationReadyEvent.class)
   void insertDocuments() {
     carRepo.deleteAll();
     engineRepo.deleteAll();
@@ -81,7 +82,7 @@ public class DBInit {
     System.out.println(car.getWheels().get(2).getId());
     System.out.println(car.getWheels().get(3).getId());
     car = carRepo.findAll().get(0);
-    // carRepo.delete(car);
+    carRepo.delete(car);
   }
 
 }

@@ -1,8 +1,6 @@
 package com.github.wnameless.spring.boot.up.data.mongodb.cascade;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -17,27 +15,26 @@ import org.springframework.data.mongodb.core.mapping.event.BeforeSaveEvent;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
-public class CascadeMongoEventListener extends AbstractMongoEventListener<Object> {
+public class CascadeMongoEventListener extends AbstractMongoEventListener<Object>
+    implements InitializingBean {
 
   private static final String ID = "_id";
 
-  @Value("${spring.boot.up.data.mongodb.cacade.delete.cache.size:256}")
-  private int CASCADE_DELETE_CALLBACK_CACHE_SIZE = 256;
+  @Value("${spring.boot.up.data.mongodb.cacade.delete.cache.size:2020}")
+  // Default batch size of MongoDB is 101
+  private int CASCADE_DELETE_CALLBACK_CACHE_SIZE = 2020;
 
-  private final Map<Object, CascadeDeleteCallback> cascadeDeleteCallbacks =
-      Collections.synchronizedMap(
+  // Cache<ID,CascadeDeleteCallback>
+  private Cache<Object, CascadeDeleteCallback> cascadeDeleteCallbackCache;
 
-          new LinkedHashMap<Object, CascadeDeleteCallback>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<Object, CascadeDeleteCallback> entry) {
-              return size() > CASCADE_DELETE_CALLBACK_CACHE_SIZE;
-            }
-
-          });
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    cascadeDeleteCallbackCache =
+        Caffeine.newBuilder().maximumSize(CASCADE_DELETE_CALLBACK_CACHE_SIZE).build();
+  }
 
   @Autowired
   private MongoOperations mongoOperations;
@@ -79,7 +76,7 @@ public class CascadeMongoEventListener extends AbstractMongoEventListener<Object
     // Cache deletable callback
     Object docId = event.getDocument().get(ID);
     if (docId != null && !callback.getDeletableIds().isEmpty()) {
-      cascadeDeleteCallbacks.put(docId, callback);
+      cascadeDeleteCallbackCache.put(docId, callback);
     }
   }
 
@@ -92,8 +89,8 @@ public class CascadeMongoEventListener extends AbstractMongoEventListener<Object
   public void onAfterDelete(AfterDeleteEvent<Object> event) {
     // Cascade
     Object docId = event.getSource().get(ID);
-    if (cascadeDeleteCallbacks.containsKey(docId)) {
-      CascadeDeleteCallback callback = cascadeDeleteCallbacks.remove(docId);
+    if (cascadeDeleteCallbackCache.asMap().containsKey(docId)) {
+      CascadeDeleteCallback callback = cascadeDeleteCallbackCache.asMap().remove(docId);
       for (DeletableId deletableId : callback.getDeletableIds()) {
         Query searchQuery = new Query(Criteria.where(ID).is(deletableId.getId()));
         mongoOperations.remove(searchQuery, deletableId.getType());
