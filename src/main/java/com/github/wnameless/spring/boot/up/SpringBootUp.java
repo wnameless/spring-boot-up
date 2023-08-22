@@ -25,9 +25,18 @@ public final class SpringBootUp {
   private SpringBootUp() {}
 
   /**
+   * Retuens the Spring {@link ApplicationContext}.
+   * 
+   * @return a Spring {@link ApplicationContext}
+   */
+  public static ApplicationContext applicationContext() {
+    return ApplicationContextProvider.getApplicationContext();
+  }
+
+  /**
    * @see {@link ApplicationContext#getBeanNamesForType(ResolvableType)}
    * 
-   * @return first match bean
+   * @return first matched bean
    */
   @SuppressWarnings("unchecked")
   public static <T> Optional<T> findGenericBean(Class<T> clazz, Class<?>... generics) {
@@ -40,7 +49,7 @@ public final class SpringBootUp {
   /**
    * @see {@link ApplicationContext#getBeanNamesForType(ResolvableType)}
    * 
-   * @return all match beans
+   * @return all matched beans
    */
   @SuppressWarnings("unchecked")
   public static <T> List<T> findAllGenericBeans(Class<T> clazz, Class<?>... generics) {
@@ -49,15 +58,6 @@ public final class SpringBootUp {
     if (beanNamesForType.length == 0) return Collections.emptyList();
     return (List<T>) Arrays.asList(beanNamesForType).stream()
         .map(beanName -> applicationContext().getBean(beanName)).toList();
-  }
-
-  /**
-   * Retuens the Spring {@link ApplicationContext}.
-   * 
-   * @return a Spring {@link ApplicationContext}
-   */
-  public static ApplicationContext applicationContext() {
-    return ApplicationContextProvider.getApplicationContext();
   }
 
   /**
@@ -89,7 +89,14 @@ public final class SpringBootUp {
   }
 
   /**
-   * @see {@link ApplicationContext#getBean(Class)}
+   * @see {@link ApplicationContext#getBeanNamesForType(Class)}
+   */
+  public static <T> boolean containsBean(Class<T> type) {
+    return applicationContext().getBeanNamesForType(type).length > 0;
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBean(String, Class)}
    */
   public static <T> T getBean(String name, Class<T> requiredType) {
     return applicationContext().getBean(name, requiredType);
@@ -130,7 +137,7 @@ public final class SpringBootUp {
    * 
    * @return a {@link Optional} of {@link HttpServletRequest}
    */
-  public static Optional<HttpServletRequest> currentHttpServletRequest() {
+  public static Optional<HttpServletRequest> findCurrentHttpServletRequest() {
     return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
         .filter(ServletRequestAttributes.class::isInstance)
         .map(ServletRequestAttributes.class::cast).map(ServletRequestAttributes::getRequest);
@@ -141,7 +148,7 @@ public final class SpringBootUp {
    * 
    * @return a {@link Optional} of {@link HttpServletResponse}
    */
-  public static Optional<HttpServletResponse> currentHttpServletResponse() {
+  public static Optional<HttpServletResponse> findCurrentHttpServletResponse() {
     return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
         .filter(ServletRequestAttributes.class::isInstance)
         .map(ServletRequestAttributes.class::cast).map(ServletRequestAttributes::getResponse);
