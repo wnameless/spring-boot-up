@@ -258,7 +258,7 @@ public interface ResourceFilterRepository<T, ID>
     List<String> messages =
         validator.validate(entity).stream().map(e -> e.getMessage()).collect(Collectors.toList());
     if (messages.size() > 0) {
-      SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+      SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
           messages);
       return entity;
     }
@@ -266,7 +266,7 @@ public interface ResourceFilterRepository<T, ID>
     // new entity
     if (!target.isPresent()) {
       if (!user.canCreate(rar.getResourceType())) {
-        SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+        SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
             "No permission to CREATE");
         return entity;
       }
@@ -281,7 +281,7 @@ public interface ResourceFilterRepository<T, ID>
       target = findOne(ExpressionUtils.allOf(rar.getPredicateOfUpdateAbility(), idEq));
     }
     if (!target.isPresent()) {
-      SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+      SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
           "No permission to UPDATE");
       return entity;
     }
@@ -296,7 +296,7 @@ public interface ResourceFilterRepository<T, ID>
     List<String> messages =
         validator.validate(entity).stream().map(e -> e.getMessage()).collect(Collectors.toList());
     if (messages.size() > 0) {
-      SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+      SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
           messages);
       return entity;
     }
@@ -308,7 +308,7 @@ public interface ResourceFilterRepository<T, ID>
     try {
       return save(entity);
     } catch (Exception e) {
-      SpringBootUp.currentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+      SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
           e.getMessage());
       return entity;
     }
