@@ -68,6 +68,18 @@ public final class SpringBootUp {
   }
 
   /**
+   * @see {@link ApplicationContext#getBean(Class)}
+   */
+  public static <T> Optional<T> findBean(Class<T> requiredType) {
+    T bean;
+    try {
+      bean = applicationContext().getBean(requiredType);
+      return Optional.of(bean);
+    } catch (Exception e) {}
+    return Optional.empty();
+  }
+
+  /**
    * @see {@link ApplicationContext#getBean(Class, Object...)}
    */
   public static <T> T getBean(Class<T> requiredType, Object... args) {
@@ -75,10 +87,72 @@ public final class SpringBootUp {
   }
 
   /**
+   * @see {@link ApplicationContext#getBean(Class, Object...)}
+   */
+  public static <T> Optional<T> findBean(Class<T> requiredType, Object... args) {
+    T bean;
+    try {
+      bean = applicationContext().getBean(requiredType, args);
+      return Optional.of(bean);
+    } catch (Exception e) {}
+    return Optional.empty();
+  }
+
+  /**
    * @see {@link ApplicationContext#getBean(String)}
    */
   public static Object getBean(String name) {
     return applicationContext().getBean(name);
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBean(String)}
+   */
+  public static Optional<Object> findBean(String name) {
+    Object bean;
+    try {
+      bean = applicationContext().getBean(name);
+      return Optional.of(bean);
+    } catch (Exception e) {}
+    return Optional.empty();
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBean(String, Class)}
+   */
+  public static <T> T getBean(String name, Class<T> requiredType) {
+    return applicationContext().getBean(name, requiredType);
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBean(String, Class)}
+   */
+  public static <T> Optional<T> findBean(String name, Class<T> requiredType) {
+    T bean;
+    try {
+      bean = applicationContext().getBean(name, requiredType);
+      return Optional.of(bean);
+    } catch (Exception e) {}
+    return Optional.empty();
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBean(String, Object...)}
+   */
+  public static Object getBean(String name, Object... args) {
+    return applicationContext().getBean(name, args);
+  }
+
+  /**
+   * @see {@link ApplicationContext#getBean(String, Object...)}
+   */
+  public static Optional<Object> findBean(String name, Object... args) {
+    Object bean;
+    try {
+      bean = applicationContext().getBean(name, args);
+      return Optional.of(bean);
+    } catch (Exception e) {}
+    return Optional.empty();
   }
 
   /**
@@ -93,20 +167,6 @@ public final class SpringBootUp {
    */
   public static <T> boolean containsBean(Class<T> type) {
     return applicationContext().getBeanNamesForType(type).length > 0;
-  }
-
-  /**
-   * @see {@link ApplicationContext#getBean(String, Class)}
-   */
-  public static <T> T getBean(String name, Class<T> requiredType) {
-    return applicationContext().getBean(name, requiredType);
-  }
-
-  /**
-   * @see {@link ApplicationContext#getBean(Class, Object...)}
-   */
-  public static Object getBean(String name, Object... args) {
-    return applicationContext().getBean(name, args);
   }
 
   /**
