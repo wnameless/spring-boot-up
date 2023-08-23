@@ -1,7 +1,7 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
 import org.modelmapper.ModelMapper;
-import com.github.wnameless.spring.boot.up.core.MapModelConverter;
+import com.github.wnameless.spring.boot.up.model.MapModelConverter;
 
 public interface JsfPOJOConverter<P, J extends JsfPOJO<P, ?>> extends MapModelConverter<P, J> {
 

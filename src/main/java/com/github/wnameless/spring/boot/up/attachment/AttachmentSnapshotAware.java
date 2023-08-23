@@ -1,7 +1,7 @@
 package com.github.wnameless.spring.boot.up.attachment;
 
 import java.util.Objects;
-import com.github.wnameless.spring.boot.up.core.DataModelCRUDTrigger;
+import com.github.wnameless.spring.boot.up.model.DataModelCRUDTrigger;
 
 public interface AttachmentSnapshotAware<T, A extends Attachment<ID>, ID>
     extends DataModelCRUDTrigger<T> {
