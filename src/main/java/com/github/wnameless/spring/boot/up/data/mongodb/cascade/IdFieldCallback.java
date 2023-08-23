@@ -24,6 +24,10 @@ public class IdFieldCallback implements ReflectionUtils.FieldCallback {
     return idFound;
   }
 
+  public Field getIdField() {
+    return idField;
+  }
+
   public String getIdFieldName() {
     return idFieldName;
   }
