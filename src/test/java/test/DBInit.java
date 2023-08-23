@@ -52,39 +52,31 @@ public class DBInit {
     motorRepo.deleteAll();
     wheelRepo.deleteAll();
 
-    Car car = new Car();
+    for (int i = 0; i < 100; i++) {
+      Car car = new Car();
 
-    Engine engine = new Engine();
-    engine.setHorsePower(500);
+      Engine engine = new Engine();
+      engine.setHorsePower(500);
 
-    Motor motor = new Motor();
-    motor.setRpm(60000);
-    engine.setMotor(motor);
+      Motor motor = new Motor();
+      motor.setRpm(60000);
+      engine.setMotor(motor);
 
-    GasTank gasTank = new GasTank();
-    gasTank.setCapacity(100);
+      GasTank gasTank = new GasTank();
+      gasTank.setCapacity(100);
 
-    car.setEngine(engine);
-    car.setGasTank(gasTank);
+      car.setEngine(engine);
+      car.setGasTank(gasTank);
 
-    car.getFrontWheels().add(new Wheel("Michelin"));
-    car.getFrontWheels().add(new Wheel("Goodyear"));
-    car.getRareWheels().put("rareLeft", new Wheel("Continental"));
-    car.getRareWheels().put("rareRight", new Wheel("Bridgestone"));
+      car.getFrontWheels().add(new Wheel("Michelin"));
+      car.getFrontWheels().add(new Wheel("Goodyear"));
+      car.getRareWheels().put("rareLeft", new Wheel("Continental"));
+      car.getRareWheels().put("rareRight", new Wheel("Bridgestone"));
 
-    carRepo.save(car);
+      carRepo.save(car);
+    }
 
-    System.out.println(car.getEngine().getId());
-    System.out.println(car.getEngine().getMotor().getId());
-    System.out.println(car.getGasTank().getId());
-    System.out.println(car.getFrontWheels().get(0).getId());
-    System.out.println(car.getFrontWheels().get(1).getId());
-    System.out.println(car.getRareWheels().values().stream().toList().get(0).getId());
-    System.out.println(car.getRareWheels().values().stream().toList().get(1).getId());
-
-    car = carRepo.findAll().get(0);
-    System.out.println("Delete Car");
-    carRepo.delete(car);
+    carRepo.deleteAll(carRepo.findAll());
   }
 
 }

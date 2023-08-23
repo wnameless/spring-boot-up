@@ -1,12 +1,10 @@
 package com.github.wnameless.spring.boot.up.data.mongodb.interceptor;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterConvertEvent;
 import org.springframework.data.mongodb.core.mapping.event.AfterDeleteEvent;
@@ -15,11 +13,7 @@ import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeDeleteEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeSaveEvent;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterConvertFromMongo;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterSaveToMongo;
@@ -27,144 +21,30 @@ import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.B
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.BeforeDeleteFromMongo;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.BeforeSaveToMongo;
 
-
-public class InterceptorMongoEventListener extends AbstractMongoEventListener<Object>
-    implements InitializingBean {
-
-  private static final String ID = "_id";
-
-  @Value("${spring.boot.up.data.mongodb.interceptor.before_delete_action.cache.size:256}")
-  private int BEFORE_DELETE_ACTION_CACHE_SIZE = 256;
-  @Value("${spring.boot.up.data.mongodb.interceptor.after_delete_action.cache.size:256}")
-  private int AFTER_DELETE_ACTION_CACHE_SIZE = 256;
-  @Value("${spring.boot.up.data.mongodb.interceptor.after_delete_object.cache.size:16}")
-  private int AFTER_DELETE_OBJECT_CACHE_SIZE = 16;
-
-
-  // Cache<ID, Class<?>>
-  private Cache<Object, Class<?>> beforeDeleteActionCache;
-  // Cache<ID, Class<?>>
-  private Cache<Object, Class<?>> afterDeleteActionCache;
-  // Cache<ID, Object>
-  private Cache<Object, Object> afterDeleteObjectCache;
-
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    beforeDeleteActionCache =
-        Caffeine.newBuilder().maximumSize(BEFORE_DELETE_ACTION_CACHE_SIZE).build();
-    afterDeleteActionCache =
-        Caffeine.newBuilder().maximumSize(AFTER_DELETE_ACTION_CACHE_SIZE).build();
-    afterDeleteObjectCache =
-        Caffeine.newBuilder().maximumSize(AFTER_DELETE_OBJECT_CACHE_SIZE).build();
-  }
-
-  @Autowired
-  private MongoOperations mongoOperations;
-
+public class InterceptorMongoEventListener extends AbstractMongoEventListener<Object> {
 
   // event.getSource() -> Java Object
   @Override
   public void onBeforeConvert(BeforeConvertEvent<Object> event) {
-    // Annotation event joint point
     Object target = event.getSource();
-
-    Set<String> executedNames = new HashSet<>();
-    for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(BeforeConvertToMongo.class)) {
-        executedNames.add(method.getName());
-        method.setAccessible(true);
-        if (method.getParameterTypes().length == 1
-            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
-          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-        } else {
-          ReflectionUtils.invokeMethod(method, target);
-        }
-      }
-    }
-    for (Method method : target.getClass().getMethods()) {
-      if (!executedNames.contains(method.getName())
-          && method.isAnnotationPresent(BeforeConvertToMongo.class)) {
-        method.setAccessible(true);
-        if (method.getParameterTypes().length == 1
-            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
-          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-        } else {
-          ReflectionUtils.invokeMethod(method, target);
-        }
-      }
-    }
+    mongoEventExecutor(BeforeConvertToMongo.class, target,
+        new SourceAndDocument(target, event.getDocument()));
   }
 
   // event.getSource() -> Java Object
   @Override
   public void onBeforeSave(BeforeSaveEvent<Object> event) {
-    // Annotation event joint point
     Object target = event.getSource();
-
-    Set<String> executedNames = new HashSet<>();
-    for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(BeforeSaveToMongo.class)) {
-        executedNames.add(method.getName());
-        method.setAccessible(true);
-        if (method.getParameterTypes().length == 1
-            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
-          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-        } else {
-          ReflectionUtils.invokeMethod(method, target);
-        }
-      }
-    }
-    for (Method method : target.getClass().getMethods()) {
-      if (!executedNames.contains(method.getName())
-          && method.isAnnotationPresent(BeforeSaveToMongo.class)) {
-        method.setAccessible(true);
-        if (method.getParameterTypes().length == 1
-            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
-          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-        } else {
-          ReflectionUtils.invokeMethod(method, target);
-        }
-      }
-    }
+    mongoEventExecutor(BeforeSaveToMongo.class, target,
+        new SourceAndDocument(target, event.getDocument()));
   }
 
   // event.getSource() -> Java Object
   @Override
   public void onAfterSave(AfterSaveEvent<Object> event) {
-    // Annotation event point
     Object target = event.getSource();
-
-    Set<String> executedNames = new HashSet<>();
-    for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(AfterSaveToMongo.class)) {
-        executedNames.add(method.getName());
-        method.setAccessible(true);
-        if (method.getParameterTypes().length == 1
-            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
-          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-        } else {
-          ReflectionUtils.invokeMethod(method, target);
-        }
-      }
-    }
-    for (Method method : target.getClass().getMethods()) {
-      if (!executedNames.contains(method.getName())
-          && method.isAnnotationPresent(AfterSaveToMongo.class)) {
-        method.setAccessible(true);
-        if (method.getParameterTypes().length == 1
-            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
-          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-        } else {
-          ReflectionUtils.invokeMethod(method, target);
-        }
-      }
-    }
+    mongoEventExecutor(AfterSaveToMongo.class, target,
+        new SourceAndDocument(target, event.getDocument()));
   }
 
   // event.getSource() -> BSON Document
@@ -174,152 +54,65 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
   // event.getSource() -> Java Object
   @Override
   public void onAfterConvert(AfterConvertEvent<Object> event) {
-    Object docId = event.getDocument().get(ID);
-    // Annotation event joint point
-    boolean beforeDeleteMethod = false;
-    boolean afterDeleteMethod = false;
-
     Object target = event.getSource();
-
-    Set<String> executedNames = new HashSet<>();
-    for (Method method : target.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(AfterConvertFromMongo.class)) {
-        executedNames.add(method.getName());
-        method.setAccessible(true);
-        if (method.getParameterTypes().length == 1
-            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
-          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-        } else {
-          ReflectionUtils.invokeMethod(method, target);
-        }
-      }
-
-      if (method.isAnnotationPresent(BeforeDeleteFromMongo.class)) {
-        beforeDeleteMethod = true;
-      }
-      if (method.isAnnotationPresent(AfterDeleteFromMongo.class)) {
-        afterDeleteMethod = true;
-      }
-    }
-    for (Method method : target.getClass().getMethods()) {
-      if (!executedNames.contains(method.getName())
-          && method.isAnnotationPresent(AfterConvertFromMongo.class)) {
-        method.setAccessible(true);
-        if (method.getParameterTypes().length == 1
-            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-          SourceAndDocument sourceAndDocument = new SourceAndDocument(target, event.getDocument());
-          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-        } else {
-          ReflectionUtils.invokeMethod(method, target);
-        }
-      }
-
-      if (method.isAnnotationPresent(BeforeDeleteFromMongo.class)) {
-        beforeDeleteMethod = true;
-      }
-      if (method.isAnnotationPresent(AfterDeleteFromMongo.class)) {
-        afterDeleteMethod = true;
-      }
-    }
-
-    // Cache beforeDelete/afterDelete id and class
-    if (docId != null && beforeDeleteMethod) {
-      beforeDeleteActionCache.put(docId, target.getClass());
-    }
-    if (docId != null && afterDeleteMethod) {
-      afterDeleteActionCache.put(docId, target.getClass());
-    }
+    mongoEventExecutor(AfterConvertFromMongo.class, target,
+        new SourceAndDocument(target, event.getDocument()));
   }
 
   // event.getSource() -> BSON Document
   @Override
   public void onBeforeDelete(BeforeDeleteEvent<Object> event) {
-    Object docId = event.getSource().get(ID);
-    // Annotation event joint point
-    if (beforeDeleteActionCache.asMap().containsKey(docId)) {
-      Class<?> type = beforeDeleteActionCache.asMap().remove(docId);
-      Query searchQuery = new Query(Criteria.where(ID).is(docId));
-      Object target = mongoOperations.findOne(searchQuery, type);
-
-      Set<String> executedNames = new HashSet<>();
-      for (Method method : type.getDeclaredMethods()) {
-        if (method.isAnnotationPresent(BeforeDeleteFromMongo.class)) {
-          executedNames.add(method.getName());
-          method.setAccessible(true);
-          if (method.getParameterTypes().length == 1
-              && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-            SourceAndDocument sourceAndDocument =
-                new SourceAndDocument(target, event.getDocument());
-            ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-          } else {
-            ReflectionUtils.invokeMethod(method, target);
-          }
-        }
-      }
-      for (Method method : type.getMethods()) {
-        if (!executedNames.contains(method.getName())
-            && method.isAnnotationPresent(BeforeDeleteFromMongo.class)) {
-          method.setAccessible(true);
-          if (method.getParameterTypes().length == 1
-              && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-            SourceAndDocument sourceAndDocument =
-                new SourceAndDocument(target, event.getDocument());
-            ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-          } else {
-            ReflectionUtils.invokeMethod(method, target);
-          }
-        }
-      }
-    }
-
-    if (afterDeleteActionCache.asMap().containsKey(docId)) {
-      Class<?> type = afterDeleteActionCache.asMap().get(docId);
-      Query searchQuery = new Query(Criteria.where(ID).is(docId));
-      Object target = mongoOperations.findOne(searchQuery, type);
-      afterDeleteObjectCache.put(docId, target);
-    }
+    Object target;
+    try {
+      target = event.getType().getDeclaredConstructor().newInstance();
+      mongoEventExecutor(BeforeDeleteFromMongo.class, target,
+          new SourceAndDocument(event.getSource(), event.getDocument()));
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {}
   }
 
   // event.getSource() -> BSON Document
   @Override
   public void onAfterDelete(AfterDeleteEvent<Object> event) {
-    Object docId = event.getSource().get(ID);
-    // Annotation event joint point
-    if (afterDeleteActionCache.asMap().containsKey(docId)) {
-      Class<?> type = afterDeleteActionCache.asMap().remove(docId);
-      Object target = afterDeleteObjectCache.asMap().remove(docId);
+    Object target;
+    try {
+      target = event.getType().getDeclaredConstructor().newInstance();
+      mongoEventExecutor(AfterDeleteFromMongo.class, target,
+          new SourceAndDocument(event.getSource(), event.getDocument()));
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {}
+  }
 
-      Set<String> executedNames = new HashSet<>();
-      for (Method method : type.getDeclaredMethods()) {
-        if (method.isAnnotationPresent(AfterDeleteFromMongo.class)) {
-          executedNames.add(method.getName());
-          method.setAccessible(true);
-          if (method.getParameterTypes().length == 1
-              && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-            SourceAndDocument sourceAndDocument =
-                new SourceAndDocument(target, event.getDocument());
-            ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-          } else {
-            ReflectionUtils.invokeMethod(method, target);
-          }
+
+
+  private void mongoEventExecutor(Class<? extends Annotation> annoType, Object target,
+      SourceAndDocument sourceAndDocument) {
+    Set<String> executedNames = new HashSet<>();
+    for (Method method : target.getClass().getDeclaredMethods()) {
+      if (method.isAnnotationPresent(annoType)) {
+        executedNames.add(method.getName());
+        method.setAccessible(true);
+        if (method.getParameterTypes().length == 1
+            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
+          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
+        } else {
+          ReflectionUtils.invokeMethod(method, target);
         }
       }
-      for (Method method : type.getMethods()) {
-        if (!executedNames.contains(method.getName())
-            && method.isAnnotationPresent(AfterDeleteFromMongo.class)) {
-          method.setAccessible(true);
-          if (method.getParameterTypes().length == 1
-              && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
-            SourceAndDocument sourceAndDocument =
-                new SourceAndDocument(target, event.getDocument());
-            ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
-          } else {
-            ReflectionUtils.invokeMethod(method, target);
-          }
+    }
+    for (Method method : target.getClass().getMethods()) {
+      if (!executedNames.contains(method.getName()) && method.isAnnotationPresent(annoType)) {
+        method.setAccessible(true);
+        if (method.getParameterTypes().length == 1
+            && method.getParameterTypes()[0].isAssignableFrom(SourceAndDocument.class)) {
+          ReflectionUtils.invokeMethod(method, target, sourceAndDocument);
+        } else {
+          ReflectionUtils.invokeMethod(method, target);
         }
       }
     }
   }
 
 }
+
+

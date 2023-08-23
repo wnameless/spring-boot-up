@@ -24,6 +24,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType;
 import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.CascadeRef;
+import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -50,5 +51,10 @@ public class Car {
   @CascadeRef(CascadeType.ALL)
   @DBRef
   Map<String, Wheel> rareWheels = new HashMap<>();
+
+  @AfterDeleteFromMongo
+  void printAfterDeleteFromMongoEvent() {
+    System.out.println("AfterDeleteFromMongo");
+  }
 
 }
