@@ -15,7 +15,6 @@
  */
 package test.model;
 
-import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,15 +25,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @Data
 @Document
-public class Wheel implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+public class Wheel {
 
   @Id
   String id;
 
   @ParentRef
-  @DBRef
+  @DBRef(lazy = true)
   Car car;
 
   String tireBrand;

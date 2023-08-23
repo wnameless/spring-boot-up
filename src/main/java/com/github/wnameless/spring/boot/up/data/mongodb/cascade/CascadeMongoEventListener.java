@@ -1,8 +1,6 @@
 package com.github.wnameless.spring.boot.up.data.mongodb.cascade;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterConvertEvent;
@@ -12,29 +10,11 @@ import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeDeleteEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeSaveEvent;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 
-public class CascadeMongoEventListener extends AbstractMongoEventListener<Object>
-    implements InitializingBean {
+public class CascadeMongoEventListener extends AbstractMongoEventListener<Object> {
 
   private static final String ID = "_id";
-
-  @Value("${spring.boot.up.data.mongodb.cacade.delete.cache.size:2020}")
-  // Default batch size of MongoDB is 101
-  private int CASCADE_DELETE_CALLBACK_CACHE_SIZE = 2020;
-
-  // Cache<ID,CascadeDeleteCallback>
-  private Cache<Object, CascadeDeleteCallback> cascadeDeleteCallbackCache;
-
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    cascadeDeleteCallbackCache =
-        Caffeine.newBuilder().maximumSize(CASCADE_DELETE_CALLBACK_CACHE_SIZE).build();
-  }
 
   @Autowired
   private MongoOperations mongoOperations;
@@ -67,35 +47,20 @@ public class CascadeMongoEventListener extends AbstractMongoEventListener<Object
 
   // event.getSource() -> Java Object
   @Override
-  public void onAfterConvert(AfterConvertEvent<Object> event) {
-    // Cascade
-    Object source = event.getSource();
-    CascadeDeleteCallback callback = new CascadeDeleteCallback(source);
-    ReflectionUtils.doWithFields(source.getClass(), callback);
-
-    // Cache deletable callback
-    Object docId = event.getDocument().get(ID);
-    if (docId != null && !callback.getDeletableIds().isEmpty()) {
-      cascadeDeleteCallbackCache.put(docId, callback);
-    }
-  }
+  public void onAfterConvert(AfterConvertEvent<Object> event) {}
 
   // event.getSource() -> BSON Document
   @Override
-  public void onBeforeDelete(BeforeDeleteEvent<Object> event) {}
-
-  // event.getSource() -> BSON Document
-  @Override
-  public void onAfterDelete(AfterDeleteEvent<Object> event) {
+  public void onBeforeDelete(BeforeDeleteEvent<Object> event) {
     // Cascade
     Object docId = event.getSource().get(ID);
-    if (cascadeDeleteCallbackCache.asMap().containsKey(docId)) {
-      CascadeDeleteCallback callback = cascadeDeleteCallbackCache.asMap().remove(docId);
-      for (DeletableId deletableId : callback.getDeletableIds()) {
-        Query searchQuery = new Query(Criteria.where(ID).is(deletableId.getId()));
-        mongoOperations.remove(searchQuery, deletableId.getType());
-      }
-    }
+    Object source = mongoOperations.findById(docId, event.getType());
+    CascadeDeleteCallback callback = new CascadeDeleteCallback(source, mongoOperations);
+    ReflectionUtils.doWithFields(source.getClass(), callback);
   }
+
+  // event.getSource() -> BSON Document
+  @Override
+  public void onAfterDelete(AfterDeleteEvent<Object> event) {}
 
 }

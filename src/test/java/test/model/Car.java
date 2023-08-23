@@ -15,12 +15,14 @@
  */
 package test.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType;
 import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.CascadeRef;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,9 +30,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @Data
 @Document
-public class Car implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+public class Car {
 
   @Id
   String id;
@@ -45,6 +45,10 @@ public class Car implements Serializable {
 
   @CascadeRef
   @DBRef
-  List<Wheel> wheels = new ArrayList<>();
+  List<Wheel> frontWheels = new ArrayList<>();
+
+  @CascadeRef(CascadeType.ALL)
+  @DBRef
+  Map<String, Wheel> rareWheels = new HashMap<>();
 
 }

@@ -67,21 +67,23 @@ public class DBInit {
     car.setEngine(engine);
     car.setGasTank(gasTank);
 
-    car.getWheels().add(new Wheel("Michelin"));
-    car.getWheels().add(new Wheel("Goodyear"));
-    car.getWheels().add(new Wheel("Continental"));
-    car.getWheels().add(new Wheel("Bridgestone"));
+    car.getFrontWheels().add(new Wheel("Michelin"));
+    car.getFrontWheels().add(new Wheel("Goodyear"));
+    car.getRareWheels().put("rareLeft", new Wheel("Continental"));
+    car.getRareWheels().put("rareRight", new Wheel("Bridgestone"));
 
     carRepo.save(car);
 
     System.out.println(car.getEngine().getId());
     System.out.println(car.getEngine().getMotor().getId());
     System.out.println(car.getGasTank().getId());
-    System.out.println(car.getWheels().get(0).getId());
-    System.out.println(car.getWheels().get(1).getId());
-    System.out.println(car.getWheels().get(2).getId());
-    System.out.println(car.getWheels().get(3).getId());
+    System.out.println(car.getFrontWheels().get(0).getId());
+    System.out.println(car.getFrontWheels().get(1).getId());
+    System.out.println(car.getRareWheels().values().stream().toList().get(0).getId());
+    System.out.println(car.getRareWheels().values().stream().toList().get(1).getId());
+
     car = carRepo.findAll().get(0);
+    System.out.println("Delete Car");
     carRepo.delete(car);
   }
 

@@ -5,11 +5,10 @@ import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeTy
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
 import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.CascadeRef;
@@ -17,10 +16,11 @@ import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.Casca
 public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
 
   private final Object source;
-  private final Set<DeletableId> deletableIds = new LinkedHashSet<DeletableId>();
+  private final MongoOperations mongoOperations;
 
-  public CascadeDeleteCallback(Object source) {
+  public CascadeDeleteCallback(Object source, MongoOperations mongoOperations) {
     this.source = source;
+    this.mongoOperations = mongoOperations;
   }
 
   @Override
@@ -47,25 +47,20 @@ public class CascadeDeleteCallback implements ReflectionUtils.FieldCallback {
         collection = (Collection<?>) fieldValue;
       }
       for (Object element : collection) {
-        cascadeDeletable(element);
+        cascadeDelete(element);
       }
     } else { // Non-Collection field
-      cascadeDeletable(fieldValue);
+      cascadeDelete(fieldValue);
     }
   }
 
-  private void cascadeDeletable(Object value)
-      throws IllegalArgumentException, IllegalAccessException {
+  private void cascadeDelete(Object value) throws IllegalArgumentException, IllegalAccessException {
     IdFieldCallback callback = new IdFieldCallback();
     ReflectionUtils.doWithFields(value.getClass(), callback);
 
     if (callback.isIdFound() && callback.getId(value) != null) {
-      deletableIds.add(DeletableId.of(value.getClass(), callback.getId(value)));
+      mongoOperations.remove(value);
     }
-  }
-
-  public Set<DeletableId> getDeletableIds() {
-    return deletableIds;
   }
 
 }
