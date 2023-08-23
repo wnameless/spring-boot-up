@@ -2,7 +2,6 @@ package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -255,10 +254,9 @@ public interface ResourceFilterRepository<T, ID>
     Optional<T> target = findOne(idEq);
 
     // validates bean
-    List<String> messages =
-        validator.validate(entity).stream().map(e -> e.getMessage()).collect(Collectors.toList());
+    List<String> messages = validator.validate(entity).stream().map(e -> e.getMessage()).toList();
     if (messages.size() > 0) {
-      SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+      SpringBootUp.findHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
           messages);
       return entity;
     }
@@ -266,7 +264,7 @@ public interface ResourceFilterRepository<T, ID>
     // new entity
     if (!target.isPresent()) {
       if (!user.canCreate(rar.getResourceType())) {
-        SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+        SpringBootUp.findHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
             "No permission to CREATE");
         return entity;
       }
@@ -281,7 +279,7 @@ public interface ResourceFilterRepository<T, ID>
       target = findOne(ExpressionUtils.allOf(rar.getPredicateOfUpdateAbility(), idEq));
     }
     if (!target.isPresent()) {
-      SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+      SpringBootUp.findHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
           "No permission to UPDATE");
       return entity;
     }
@@ -293,10 +291,9 @@ public interface ResourceFilterRepository<T, ID>
     Validator validator = SpringBootUp.getBean(Validator.class);
 
     // validates bean
-    List<String> messages =
-        validator.validate(entity).stream().map(e -> e.getMessage()).collect(Collectors.toList());
+    List<String> messages = validator.validate(entity).stream().map(e -> e.getMessage()).toList();
     if (messages.size() > 0) {
-      SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+      SpringBootUp.findHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
           messages);
       return entity;
     }
@@ -308,7 +305,7 @@ public interface ResourceFilterRepository<T, ID>
     try {
       return save(entity);
     } catch (Exception e) {
-      SpringBootUp.findCurrentHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
+      SpringBootUp.findHttpServletRequest().get().setAttribute(WebModelAttribute.MESSAGES,
           e.getMessage());
       return entity;
     }

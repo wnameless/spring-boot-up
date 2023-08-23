@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.MessageSource;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.ResolvableType;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -25,7 +26,7 @@ public final class SpringBootUp {
   private SpringBootUp() {}
 
   /**
-   * Retuens the Spring {@link ApplicationContext}.
+   * Returns the Spring {@link ApplicationContext}.
    * 
    * @return a Spring {@link ApplicationContext}
    */
@@ -38,12 +39,11 @@ public final class SpringBootUp {
    * 
    * @return first matched bean
    */
-  @SuppressWarnings("unchecked")
   public static <T> Optional<T> findGenericBean(Class<T> clazz, Class<?>... generics) {
     String[] beanNamesForType = applicationContext()
         .getBeanNamesForType(ResolvableType.forClassWithGenerics(clazz, generics));
     if (beanNamesForType.length == 0) return Optional.empty();
-    return Optional.of((T) applicationContext().getBean(beanNamesForType[0]));
+    return Optional.of(applicationContext().getBean(beanNamesForType[0], clazz));
   }
 
   /**
@@ -51,13 +51,12 @@ public final class SpringBootUp {
    * 
    * @return all matched beans
    */
-  @SuppressWarnings("unchecked")
   public static <T> List<T> findAllGenericBeans(Class<T> clazz, Class<?>... generics) {
     String[] beanNamesForType = applicationContext()
         .getBeanNamesForType(ResolvableType.forClassWithGenerics(clazz, generics));
     if (beanNamesForType.length == 0) return Collections.emptyList();
-    return (List<T>) Arrays.asList(beanNamesForType).stream()
-        .map(beanName -> applicationContext().getBean(beanName)).toList();
+    return Arrays.asList(beanNamesForType).stream()
+        .map(beanName -> applicationContext().getBean(beanName, clazz)).toList();
   }
 
   /**
@@ -75,8 +74,9 @@ public final class SpringBootUp {
     try {
       bean = applicationContext().getBean(requiredType);
       return Optional.of(bean);
-    } catch (Exception e) {}
-    return Optional.empty();
+    } catch (Exception e) {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -94,8 +94,9 @@ public final class SpringBootUp {
     try {
       bean = applicationContext().getBean(requiredType, args);
       return Optional.of(bean);
-    } catch (Exception e) {}
-    return Optional.empty();
+    } catch (Exception e) {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -113,8 +114,9 @@ public final class SpringBootUp {
     try {
       bean = applicationContext().getBean(name);
       return Optional.of(bean);
-    } catch (Exception e) {}
-    return Optional.empty();
+    } catch (Exception e) {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -132,8 +134,9 @@ public final class SpringBootUp {
     try {
       bean = applicationContext().getBean(name, requiredType);
       return Optional.of(bean);
-    } catch (Exception e) {}
-    return Optional.empty();
+    } catch (Exception e) {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -151,8 +154,9 @@ public final class SpringBootUp {
     try {
       bean = applicationContext().getBean(name, args);
       return Optional.of(bean);
-    } catch (Exception e) {}
-    return Optional.empty();
+    } catch (Exception e) {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -193,40 +197,91 @@ public final class SpringBootUp {
   }
 
   /**
-   * Finds current {@link HttpServletRequest}.
+   * Finds the {@link HttpServletRequest} bound to the thread.
    * 
-   * @return a {@link Optional} of {@link HttpServletRequest}
+   * @return an {@link Optional} of {@link HttpServletRequest}
    */
-  public static Optional<HttpServletRequest> findCurrentHttpServletRequest() {
+  public static Optional<HttpServletRequest> findHttpServletRequest() {
     return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
         .filter(ServletRequestAttributes.class::isInstance)
         .map(ServletRequestAttributes.class::cast).map(ServletRequestAttributes::getRequest);
   }
 
   /**
-   * Finds current {@link HttpServletResponse}.
+   * Finds the {@link HttpServletResponse} bound to the thread.
    * 
-   * @return a {@link Optional} of {@link HttpServletResponse}
+   * @return an {@link Optional} of {@link HttpServletResponse}
    */
-  public static Optional<HttpServletResponse> findCurrentHttpServletResponse() {
+  public static Optional<HttpServletResponse> findHttpServletResponse() {
     return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
         .filter(ServletRequestAttributes.class::isInstance)
         .map(ServletRequestAttributes.class::cast).map(ServletRequestAttributes::getResponse);
   }
 
   /**
-   * @see {@link MessageSource#getMessage(String, Object[], java.util.Locale)}
+   * @see {@link ApplicationContext#getMessage(String, Object[], java.util.Locale)}
    */
   public static String getMessage(String code, Object... args) {
-    return getBean(MessageSource.class).getMessage(code, args, LocaleContextHolder.getLocale());
+    return applicationContext().getMessage(code, args, LocaleContextHolder.getLocale());
   }
 
   /**
-   * @see {@link MessageSource#getMessage(String, Object[], String, java.util.Locale)}
+   * @see {@link ApplicationContext#getMessage(String, Object[], java.util.Locale)}
+   * 
+   * @return an {@link Optional} of resolved message
+   */
+  public static Optional<String> findMessage(String code, Object... args) {
+    String msg;
+    try {
+      msg = applicationContext().getMessage(code, args, LocaleContextHolder.getLocale());
+      return Optional.of(msg);
+    } catch (Exception e) {
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * @see {@link ApplicationContext#getMessage(String, Object[], String, java.util.Locale)}
    */
   public static String getMessage(String code, String defaultMessage, Object... args) {
-    return getBean(MessageSource.class).getMessage(code, args, defaultMessage,
+    return applicationContext().getMessage(code, args, defaultMessage,
         LocaleContextHolder.getLocale());
+  }
+
+  /**
+   * @see {@link ApplicationContext#getMessage(MessageSourceResolvable, java.util.Locale)}
+   */
+  public static String getMessage(MessageSourceResolvable resolvable) {
+    return applicationContext().getMessage(resolvable, LocaleContextHolder.getLocale());
+  }
+
+  /**
+   * @see {@link ApplicationContext#getMessage(MessageSourceResolvable, java.util.Locale)}
+   * 
+   * @return an {@link Optional} of resolved message
+   */
+  public static Optional<String> findMessage(MessageSourceResolvable resolvable) {
+    String msg;
+    try {
+      msg = applicationContext().getMessage(resolvable, LocaleContextHolder.getLocale());
+      return Optional.of(msg);
+    } catch (Exception e) {
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * @see {@link ApplicationContext#publishEvent(Object)}
+   */
+  public static void publishEvent(Object event) {
+    applicationContext().publishEvent(event);
+  }
+
+  /**
+   * @see {@link ApplicationContext#publishEvent(ApplicationEvent)}
+   */
+  public static void publishEvent(ApplicationEvent event) {
+    applicationContext().publishEvent(event);
   }
 
 }

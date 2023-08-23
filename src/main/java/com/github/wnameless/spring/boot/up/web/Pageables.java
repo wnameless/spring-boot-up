@@ -3,7 +3,6 @@ package com.github.wnameless.spring.boot.up.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -59,8 +58,7 @@ public final class Pageables {
   }
 
   public static List<String> sortToParam(Sort sort) {
-    return sort.stream().map(o -> o.getProperty() + "," + o.getDirection())
-        .collect(Collectors.toList());
+    return sort.stream().map(o -> o.getProperty() + "," + o.getDirection()).toList();
   }
 
   public static Sort paramToSort(String... params) {

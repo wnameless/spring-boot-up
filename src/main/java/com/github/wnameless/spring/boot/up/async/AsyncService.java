@@ -3,7 +3,6 @@ package com.github.wnameless.spring.boot.up.async;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 import org.springframework.scheduling.annotation.Scheduled;
 import net.sf.rubycollect4j.Ruby;
 import net.sf.rubycollect4j.RubyArray;
@@ -13,8 +12,7 @@ public interface AsyncService<T> {
   CopyOnWriteArrayList<AsyncTask<T>> getAllAsyncTasks();
 
   default List<AsyncTaskState> getAllAsyncTaskStates() {
-    return getAllAsyncTasks().stream().map(at -> new AsyncTaskState(at))
-        .collect(Collectors.toList());
+    return getAllAsyncTasks().stream().map(at -> new AsyncTaskState(at)).toList();
   }
 
   default void addAsyncTask(AsyncTask<T> task) {

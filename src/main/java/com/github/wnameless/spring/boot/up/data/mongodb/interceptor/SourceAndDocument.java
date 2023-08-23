@@ -23,8 +23,4 @@ public class SourceAndDocument {
     return (T) source;
   }
 
-  public Object getSource() {
-    return source;
-  }
-
 }
