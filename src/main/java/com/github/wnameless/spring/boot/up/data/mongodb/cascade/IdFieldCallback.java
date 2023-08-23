@@ -8,7 +8,6 @@ public class IdFieldCallback implements ReflectionUtils.FieldCallback {
 
   private Field idField;
   private boolean idFound;
-  private String idFieldName;
 
   @Override
   public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
@@ -16,7 +15,6 @@ public class IdFieldCallback implements ReflectionUtils.FieldCallback {
       ReflectionUtils.makeAccessible(field);
       idField = field;
       idFound = true;
-      idFieldName = field.getName();
     }
   }
 
@@ -26,10 +24,6 @@ public class IdFieldCallback implements ReflectionUtils.FieldCallback {
 
   public Field getIdField() {
     return idField;
-  }
-
-  public String getIdFieldName() {
-    return idFieldName;
   }
 
   public Object getId(Object obj) throws IllegalArgumentException, IllegalAccessException {

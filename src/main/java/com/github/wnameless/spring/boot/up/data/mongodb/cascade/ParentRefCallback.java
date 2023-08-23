@@ -1,7 +1,7 @@
 package com.github.wnameless.spring.boot.up.data.mongodb.cascade;
 
 import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.ALL;
-import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.SAVE;
+import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.CREATE;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +34,7 @@ public class ParentRefCallback implements ReflectionUtils.FieldCallback {
 
     CascadeRef cascade = AnnotationUtils.getAnnotation(field, CascadeRef.class);
     List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
-    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)) return;
+    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(CREATE)) return;
 
     Object fieldValue = field.get(source);
     if (fieldValue == null) return;

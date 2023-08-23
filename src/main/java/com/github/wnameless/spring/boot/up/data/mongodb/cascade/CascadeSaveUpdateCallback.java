@@ -1,7 +1,7 @@
 package com.github.wnameless.spring.boot.up.data.mongodb.cascade;
 
 import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.ALL;
-import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.SAVE;
+import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.CREATE;
 import static com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType.UPDATE;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class CascadeSaveUpdateCallback implements ReflectionUtils.FieldCallback 
 
     CascadeRef cascade = AnnotationUtils.getAnnotation(field, CascadeRef.class);
     List<CascadeType> cascadeTypes = Arrays.asList(cascade.value());
-    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(SAVE)
+    if (!cascadeTypes.contains(ALL) && !cascadeTypes.contains(CREATE)
         && !cascadeTypes.contains(UPDATE)) {
       return;
     }
@@ -66,7 +66,7 @@ public class CascadeSaveUpdateCallback implements ReflectionUtils.FieldCallback 
     if (callback.isIdFound()) {
       Object id = callback.getId(value);
       if (id == null) {
-        if (cascadeTypes.contains(ALL) || cascadeTypes.contains(SAVE)) {
+        if (cascadeTypes.contains(ALL) || cascadeTypes.contains(CREATE)) {
           mongoOperations.save(value);
         }
       } else { // id != null
