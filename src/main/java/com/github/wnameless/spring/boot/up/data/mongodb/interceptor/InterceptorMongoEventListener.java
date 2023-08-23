@@ -68,7 +68,9 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
       mongoEventExecutor(BeforeDeleteFromMongo.class, target,
           new SourceAndDocument(event.getSource(), event.getDocument()));
     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-        | InvocationTargetException | NoSuchMethodException | SecurityException e) {}
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   // event.getSource() -> BSON Document
@@ -80,7 +82,9 @@ public class InterceptorMongoEventListener extends AbstractMongoEventListener<Ob
       mongoEventExecutor(AfterDeleteFromMongo.class, target,
           new SourceAndDocument(event.getSource(), event.getDocument()));
     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-        | InvocationTargetException | NoSuchMethodException | SecurityException e) {}
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 
