@@ -9,13 +9,13 @@ public interface StateMachineInitializable<S, T> {
 
   default StateMachineConfig<S, T> getStateMachineConfig() {
     if (stateMachineConfigStrategy() == null) {
-      return getStateMachineConfigInternally();
+      return getStateMachineConfigInternal();
     } else {
-      return stateMachineConfigStrategy().apply(getStateMachineConfigInternally());
+      return stateMachineConfigStrategy().apply(getStateMachineConfigInternal());
     }
   }
 
-  StateMachineConfig<S, T> getStateMachineConfigInternally();
+  StateMachineConfig<S, T> getStateMachineConfigInternal();
 
   default Function<StateMachineConfig<S, T>, StateMachineConfig<S, T>> stateMachineConfigStrategy() {
     return null;

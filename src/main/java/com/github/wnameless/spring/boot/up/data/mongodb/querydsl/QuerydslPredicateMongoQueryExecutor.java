@@ -3,17 +3,15 @@ package com.github.wnameless.spring.boot.up.data.mongodb.querydsl;
 import java.util.List;
 import java.util.function.Function;
 import org.bson.Document;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
-import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
+import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.querydsl.core.types.Predicate;
 
 public interface QuerydslPredicateMongoQueryExecutor<E> {
 
   default MongoOperations getMongoOperations() {
-    ApplicationContext appCtx = ApplicationContextProvider.getApplicationContext();
-    return appCtx.getBean(MongoOperations.class);
+    return SpringBootUp.getBean(MongoOperations.class);
   }
 
   default E findOne(Query query, Class<E> entityClass) {

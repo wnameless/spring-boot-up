@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 
-public final class MongoConverter {
+public final class MongoConverters {
 
-  private MongoConverter() {}
+  private MongoConverters() {}
 
   public static MongoCustomConversions timeConversions() {
     List<Converter<?, ?>> converters = new ArrayList<>();
