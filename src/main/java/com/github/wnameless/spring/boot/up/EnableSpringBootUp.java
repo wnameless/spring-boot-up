@@ -10,8 +10,8 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * 
  * {@link EnableSpringBootUp} is made for Spring to activate all features brought by SpringBootUp
- * library. SpringBootUp components under package {@code com.github.wnameless.spring.boot.up} will
- * be found automatically.<br>
+ * library. All SpringBootUp components under package {@code com.github.wnameless.spring.boot.up}
+ * will be found automatically.<br>
  * <br>
  * Add this annotation to an {@code @Configuration} class to enable SpringBootUp.<br>
  * <br>
