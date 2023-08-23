@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.core;
+package com.github.wnameless.spring.boot.up.model;
 
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;

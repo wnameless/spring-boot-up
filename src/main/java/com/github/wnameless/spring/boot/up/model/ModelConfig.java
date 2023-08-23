@@ -1,13 +1,13 @@
-package com.github.wnameless.spring.boot.up.core;
+package com.github.wnameless.spring.boot.up.model;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 
-public final class CoreConfig {
+public final class ModelConfig {
 
   private static ModelMapper modelMapper;
 
-  private CoreConfig() {}
+  private ModelConfig() {}
 
   public static ModelMapper getModelMapper() {
     if (modelMapper != null) return modelMapper;
@@ -19,7 +19,7 @@ public final class CoreConfig {
   }
 
   public static void setModelMapper(ModelMapper modelMapper) {
-    CoreConfig.modelMapper = modelMapper;
+    ModelConfig.modelMapper = modelMapper;
   }
 
 }
