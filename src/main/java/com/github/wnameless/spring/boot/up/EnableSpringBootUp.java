@@ -23,7 +23,7 @@ import org.springframework.context.annotation.ComponentScan;
  * public class MyWebConfiguration {}
  * </pre>
  *
- * @see ApplicationContextProvider
+ * @see SpringBootUpApplicationContextProvider
  *
  * @author Wei-Ming Wu
  * 
@@ -31,5 +31,5 @@ import org.springframework.context.annotation.ComponentScan;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ComponentScan(basePackageClasses = {ApplicationContextProvider.class})
+@ComponentScan(basePackageClasses = {SpringBootUpApplicationContextProvider.class})
 public @interface EnableSpringBootUp {}

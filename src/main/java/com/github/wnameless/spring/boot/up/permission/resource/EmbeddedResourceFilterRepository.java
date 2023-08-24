@@ -1,14 +1,13 @@
 package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.util.Optional;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
+import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.WebPermissionManager;
 import com.querydsl.core.types.ExpressionUtils;
@@ -22,17 +21,15 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings("rawtypes")
   default EmbeddedResourceAccessRule getEmbeddedResourceAccessRule() {
-    ApplicationContext ctx = ApplicationContextProvider.getApplicationContext();
-    WebPermissionManager wpm = ctx.getBean(WebPermissionManager.class);
+    WebPermissionManager wpm = SpringBootUp.getBean(WebPermissionManager.class);
     EmbeddedResourceAccessRule erar =
         wpm.findUserEmbeddedResourceAccessRuleByRepositoryType(this.getClass());
     return erar;
   }
 
   default PermittedUser<ID> getPermittedUser() {
-    ApplicationContext ctx = ApplicationContextProvider.getApplicationContext();
     @SuppressWarnings("unchecked")
-    PermittedUser<ID> user = ctx.getBean(PermittedUser.class);
+    PermittedUser<ID> user = SpringBootUp.getBean(PermittedUser.class);
     return user;
   }
 

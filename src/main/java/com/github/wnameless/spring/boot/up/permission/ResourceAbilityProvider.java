@@ -5,11 +5,10 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.util.ClassUtils;
-import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
+import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.permission.ability.Ability;
 import com.github.wnameless.spring.boot.up.permission.ability.ResourceAbility;
 import net.sf.rubycollect4j.Ruby;
@@ -41,8 +40,7 @@ public interface ResourceAbilityProvider<ID> {
   Set<ResourceAbility> getAllResourceAbilities();
 
   default WebPermissionManager getWebPermissionManager() {
-    ApplicationContext appCtx = ApplicationContextProvider.getApplicationContext();
-    return appCtx.getBean(WebPermissionManager.class);
+    return SpringBootUp.getBean(WebPermissionManager.class);
   }
 
   default Class<?> getResourceType(String resourceName) {

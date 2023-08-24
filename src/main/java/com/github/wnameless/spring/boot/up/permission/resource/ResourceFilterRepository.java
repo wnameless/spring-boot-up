@@ -2,14 +2,12 @@ package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoProjectionRepository;
 import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoQuerydslUtils;
@@ -30,8 +28,7 @@ public interface ResourceFilterRepository<T, ID>
 
   @SuppressWarnings("rawtypes")
   default ResourceAccessRule getResourceAccessRule() {
-    ApplicationContext ctx = ApplicationContextProvider.getApplicationContext();
-    WebPermissionManager wpm = ctx.getBean(WebPermissionManager.class);
+    WebPermissionManager wpm = SpringBootUp.getBean(WebPermissionManager.class);
     ResourceAccessRule rar = wpm.findUserResourceAccessRuleByRepositoryType(this.getClass());
     if (rar == null) {
       log.info("User {} with roles: {} don't have enough permission",
@@ -42,8 +39,7 @@ public interface ResourceFilterRepository<T, ID>
 
   @SuppressWarnings("rawtypes")
   default PermittedUser getCurrentUser() {
-    ApplicationContext ctx = ApplicationContextProvider.getApplicationContext();
-    PermittedUser user = ctx.getBean(PermittedUser.class);
+    PermittedUser user = SpringBootUp.getBean(PermittedUser.class);
     return user;
   }
 

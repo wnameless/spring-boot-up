@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.env.Environment;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,16 @@ public final class SpringBootUp {
    * @return a Spring {@link ApplicationContext}
    */
   public static ApplicationContext applicationContext() {
-    return ApplicationContextProvider.getApplicationContext();
+    return SpringBootUpApplicationContextProvider.getApplicationContext();
+  }
+
+  /**
+   * Returns the Spring {@link Environment}.
+   * 
+   * @return a Spring {@link Environment}
+   */
+  public static Environment environment() {
+    return SpringBootUpApplicationContextProvider.getApplicationContext().getEnvironment();
   }
 
   /**

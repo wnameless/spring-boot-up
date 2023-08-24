@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-import com.github.wnameless.spring.boot.up.ApplicationContextProvider;
+import com.github.wnameless.spring.boot.up.SpringBootUp;
 
 public interface JsonableModelController {
 
@@ -21,8 +21,8 @@ public interface JsonableModelController {
   }
 
   default ModelAndView jsonableMAV(Model model, String viewName) {
-    String format = ApplicationContextProvider.getApplicationContext().getEnvironment()
-        .getProperty("spring.web.common.model.format.key", "format");
+    String format =
+        SpringBootUp.environment().getProperty("spring.web.common.model.format.key", "format");
 
     ModelAndView mav = new ModelAndView();
 

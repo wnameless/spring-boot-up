@@ -6,14 +6,14 @@ import org.springframework.stereotype.Component;
 
 /**
  * 
- * {@link ApplicationContextProvider} is made for SpringBootUp library to store the Spring
- * {@link ApplicationContext} of current running application.
+ * {@link SpringBootUpApplicationContextProvider} is made for SpringBootUp library to store the
+ * Spring {@link ApplicationContext} of current running application.
  * 
  * @author Wei-Ming Wu
  * 
  */
-@Component(ApplicationContextProvider.BEAN_NAME)
-public final class ApplicationContextProvider implements ApplicationContextAware {
+@Component(SpringBootUpApplicationContextProvider.BEAN_NAME)
+public final class SpringBootUpApplicationContextProvider implements ApplicationContextAware {
 
   public static final String BEAN_NAME = "springBootUpApplicationContextProvider";
 
