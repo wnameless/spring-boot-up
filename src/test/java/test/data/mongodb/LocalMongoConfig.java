@@ -13,7 +13,7 @@
  * the License.
  *
  */
-package test;
+package test.data.mongodb;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;

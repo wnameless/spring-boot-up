@@ -13,22 +13,22 @@
  * the License.
  *
  */
-package test;
+package test.data.mongodb;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import test.model.Car;
-import test.model.Engine;
-import test.model.GasTank;
-import test.model.Motor;
-import test.model.Wheel;
-import test.repository.CarRepository;
-import test.repository.EngineRepository;
-import test.repository.GasTankRepository;
-import test.repository.MotorRepository;
-import test.repository.WheelRepository;
+import test.data.mongodb.model.Car;
+import test.data.mongodb.model.Engine;
+import test.data.mongodb.model.GasTank;
+import test.data.mongodb.model.Motor;
+import test.data.mongodb.model.Wheel;
+import test.data.mongodb.repository.CarRepository;
+import test.data.mongodb.repository.EngineRepository;
+import test.data.mongodb.repository.GasTankRepository;
+import test.data.mongodb.repository.MotorRepository;
+import test.data.mongodb.repository.WheelRepository;
 
 @Component
 public class DBInit {

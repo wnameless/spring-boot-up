@@ -13,11 +13,11 @@
  * the License.
  *
  */
-package test.repository;
+package test.data.mongodb.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import test.model.Wheel;
+import test.data.mongodb.model.Motor;
 
 @Repository
-public interface WheelRepository extends MongoRepository<Wheel, String> {}
+public interface MotorRepository extends MongoRepository<Motor, String> {}

@@ -253,7 +253,7 @@ public final class SpringBootUp {
   /**
    * @see {@link ApplicationContext#getMessage(String, Object[], String, java.util.Locale)}
    */
-  public static String getMessage(String code, String defaultMessage, Object... args) {
+  public static String getMessage(String code, Object[] args, String defaultMessage) {
     return applicationContext().getMessage(code, args, defaultMessage,
         LocaleContextHolder.getLocale());
   }

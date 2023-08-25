@@ -13,7 +13,7 @@
  * the License.
  *
  */
-package test.model;
+package test.data.mongodb.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;

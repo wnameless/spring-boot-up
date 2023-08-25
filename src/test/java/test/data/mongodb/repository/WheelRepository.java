@@ -13,27 +13,11 @@
  * the License.
  *
  */
-package test.model;
+package test.data.mongodb.repository;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.ParentRef;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+import test.data.mongodb.model.Wheel;
 
-@EqualsAndHashCode(callSuper = false, of = {"id"})
-@Data
-@Document
-public class GasTank {
-
-  @Id
-  String id;
-
-  @ParentRef
-  @DBRef
-  Car car;
-
-  double capacity;
-
-}
+@Repository
+public interface WheelRepository extends MongoRepository<Wheel, String> {}

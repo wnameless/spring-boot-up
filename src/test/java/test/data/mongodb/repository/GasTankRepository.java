@@ -13,16 +13,11 @@
  * the License.
  *
  */
-package test;
+package test.data.mongodb.repository;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+import test.data.mongodb.model.GasTank;
 
-@SpringBootApplication
-public class SpringBootUpTestApp {
-
-  public static void main(String... args) {
-    SpringApplication.run(SpringBootUpTestApp.class, args);
-  }
-
-}
+@Repository
+public interface GasTankRepository extends MongoRepository<GasTank, String> {}

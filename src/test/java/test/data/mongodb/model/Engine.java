@@ -13,50 +13,32 @@
  * the License.
  *
  */
-package test.model;
+package test.data.mongodb.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import com.github.wnameless.spring.boot.up.data.mongodb.cascade.CascadeType;
 import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.CascadeRef;
-import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.SourceAndDocument;
-import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
+import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.ParentRef;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @Data
 @Document
-public class Car {
+public class Engine {
 
   @Id
   String id;
 
-  @CascadeRef
+  @ParentRef
   @DBRef
-  Engine engine;
+  Car car;
+
+  double horsePower;
 
   @CascadeRef
   @DBRef
-  GasTank gasTank;
-
-  @CascadeRef
-  @DBRef
-  List<Wheel> frontWheels = new ArrayList<>();
-
-  @CascadeRef(CascadeType.ALL)
-  @DBRef
-  Map<String, Wheel> rareWheels = new HashMap<>();
-
-  @AfterDeleteFromMongo
-  void printAfterDeleteFromMongoEvent(SourceAndDocument sad) {
-    System.out
-        .println("AfterDeleteFromMongo: " + sad.getSource(Car.class).getEngine().getHorsePower());
-  }
+  Motor motor;
 
 }

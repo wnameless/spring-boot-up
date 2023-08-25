@@ -13,11 +13,11 @@
  * the License.
  *
  */
-package test.repository;
+package test.data.mongodb.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import test.model.GasTank;
+import test.data.mongodb.model.Engine;
 
 @Repository
-public interface GasTankRepository extends MongoRepository<GasTank, String> {}
+public interface EngineRepository extends MongoRepository<Engine, String> {}

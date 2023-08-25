@@ -13,11 +13,16 @@
  * the License.
  *
  */
-package test.repository;
+package test.core;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
-import test.model.Motor;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Repository
-public interface MotorRepository extends MongoRepository<Motor, String> {}
+@SpringBootApplication
+public class SpringBootUpCoreTestApp {
+
+  public static void main(String... args) {
+    SpringApplication.run(SpringBootUpCoreTestApp.class, args);
+  }
+
+}

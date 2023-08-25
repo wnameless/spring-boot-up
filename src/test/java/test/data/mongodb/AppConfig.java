@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2021 Wei-Ming Wu
+ * Copyright 2020 Wei-Ming Wu
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,27 +13,13 @@
  * the License.
  *
  */
-package test.model;
+package test.data.mongodb;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-import com.github.wnameless.spring.boot.up.data.mongodb.cascade.annotation.ParentRef;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.springframework.context.annotation.Configuration;
+import com.github.wnameless.spring.boot.up.EnableSpringBootUp;
+import com.github.wnameless.spring.boot.up.data.mongodb.config.EnableSpringBootUpMongo;
 
-@EqualsAndHashCode(callSuper = false, of = {"id"})
-@Data
-@Document
-public class Motor {
-
-  @Id
-  String id;
-
-  @ParentRef
-  @DBRef
-  Engine engine;
-
-  double rpm;
-
-}
+@EnableSpringBootUpMongo
+@EnableSpringBootUp
+@Configuration
+public class AppConfig {}
