@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.wnameless.spring</groupId>
   <artifactId>spring-boot-up</artifactId>
-  <version>0.4.3-SNAPSHOT</version>
+  <version>0.4.4-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -67,7 +67,7 @@
     <dependency>
       <groupId>com.github.wnameless.spring.boot.up</groupId>
       <artifactId>spring-boot-up-data-mongodb</artifactId>
-      <version>3.0.0</version>
+      <version>3.0.1</version>
     </dependency>
 
     <!-- Spring -->
