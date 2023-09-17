@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import lombok.Data;
 
-@Component("webModelAttribute")
+@Component(WebModelAttribute.BEAN_NAME)
 @Data
 public class WebModelAttribute {
+
+  public static final String BEAN_NAME = "webModelAttribute";
 
   public static String ROUTE;
   public static String TEMPLATE;
