@@ -29,7 +29,7 @@ public abstract class AbstractPermittedUser<ID> implements PermittedUser<ID> {
 
   public boolean containsAllRoles(Role... roles) {
     boolean hasAll = true;
-    for (Role role : allRoles) {
+    for (Role role : roles) {
       if (!allRoles.contains(role.toRole())) return false;
     }
     return hasAll;
@@ -37,7 +37,7 @@ public abstract class AbstractPermittedUser<ID> implements PermittedUser<ID> {
 
   public boolean containsAnyRole(Role... roles) {
     boolean hasAny = false;
-    for (Role role : allRoles) {
+    for (Role role : roles) {
       if (allRoles.contains(role.toRole())) return true;
     }
     return hasAny;
