@@ -1,8 +1,6 @@
-package com.github.wnameless.spring.boot.up.web.modelattributes;
+package com.github.wnameless.spring.boot.up.web;
 
-import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
-
-public class Attr {
+public class ModelAttributes {
 
   public static class Page {
 
