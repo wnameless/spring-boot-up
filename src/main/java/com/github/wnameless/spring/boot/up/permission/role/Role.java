@@ -1,19 +1,31 @@
 package com.github.wnameless.spring.boot.up.permission.role;
 
-public interface Role {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
-  public static Role of(Role role) {
-    return new SimpleRole(role);
+@Data
+public final class Role implements Rolify {
+
+  public static Role of(Rolify role) {
+    return new Role(role);
   }
 
   public static Role of(String roleName) {
-    return new SimpleRole(roleName);
+    return new Role(roleName);
   }
 
-  String getRoleName();
+  @EqualsAndHashCode.Include
+  private String roleName;
 
-  default Role toRole() {
-    return Role.of(this);
+  Role() {}
+
+  public Role(@NonNull Rolify role) {
+    this.roleName = role.getRoleName().toUpperCase();
+  }
+
+  public Role(@NonNull String roleName) {
+    this.roleName = roleName.toUpperCase();
   }
 
 }

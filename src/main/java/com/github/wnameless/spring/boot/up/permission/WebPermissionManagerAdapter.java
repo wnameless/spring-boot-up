@@ -33,6 +33,7 @@ import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceF
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceAccessRule;
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceFilterRepository;
 import com.github.wnameless.spring.boot.up.permission.role.Role;
+import com.github.wnameless.spring.boot.up.permission.role.Rolify;
 import com.github.wnameless.spring.boot.up.permission.role.WebRole;
 import jakarta.annotation.PostConstruct;
 import net.sf.rubycollect4j.Ruby;
@@ -98,7 +99,7 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
     }
 
     for (WebRole wr : ctx.getBeansOfType(WebRole.class).values()) {
-      String role = wr.getRole().getRoleName();
+      String role = wr.toRole().getRoleName();
       webRoles.put(role, wr);
 
       // Abilities
@@ -238,7 +239,7 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
       }
     }
 
-    return result.map(r -> Role.of(r)).toSet();
+    return result.toSet();
   }
 
   @Override
@@ -288,38 +289,8 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
 
   @Override
   public Set<Role> getAllRoles() {
-    return Ruby.Array.copyOf(webRoles.values()).map(WebRole::getRole).toSet();
+    return Ruby.Array.copyOf(webRoles.values()).map(WebRole::toRole).toSet();
   }
-
-  // @Override
-  // public boolean addUserRole(String username, Role role) {
-  // Set<U> roles = findAllRolifyUsersByUsername(username);
-  // if (roles.stream().anyMatch(
-  // r -> Objects.equals(r.getRole().getRoleName(), role.getRoleName()))) {
-  // return false;
-  // }
-
-  // U newRole = newRolifyUser();
-  // newRole.setUsername(username);
-  // newRole.setRole(role);
-  // getRolifyUserRepository().save(newRole);
-
-  // return true;
-  // }
-
-  // @Override
-  // public boolean removeUserRole(String username, Role role) {
-  // Set<U> roles = findAllRolifyUsersByUsername(username);
-  // U target = Ruby.Set.copyOf(roles).find(
-  // r -> Objects.equals(r.getRole().getRoleName(), role.getRoleName()));
-  // if (target != null) {
-  // getRolifyUserRepository().delete(target);
-
-  // return true;
-  // }
-
-  // return false;
-  // }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   private Map<Class<?>, Set<AccessAbility>> buildAccessAbilities(Object bean) {
@@ -478,7 +449,7 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
   public Map<String, Set<String>> getUserMetadata() {
     Map<String, Set<String>> metadata = new LinkedHashMap<>();
 
-    for (Role role : getUserRoles()) {
+    for (Rolify role : getUserRoles()) {
       Map<String, Set<String>> roleMeta = role2Metadata.get(role.getRoleName());
       if (roleMeta != null) {
         metadata = Stream.concat(metadata.entrySet().stream(), roleMeta.entrySet().stream())
