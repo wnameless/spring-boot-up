@@ -62,7 +62,6 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
       repo2Rules = new HashMap<>();
       repo2EmbeddedRules = new HashMap<>();
       resourceLookup = new LinkedCaseInsensitiveMap<>();
-
     }
   }
 

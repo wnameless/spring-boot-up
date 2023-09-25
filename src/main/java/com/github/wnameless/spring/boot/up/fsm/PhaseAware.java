@@ -8,8 +8,12 @@ import java.util.function.Supplier;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAwareAdapter;
+import com.github.wnameless.spring.boot.up.permission.resource.ForwardableAccessControlAware;
 
-public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID> {
+public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
+    extends AccessControlAwareAdapter {
 
   Class<? extends AbstractPhase<E, S, T, ID>> getPhaseType();
 
@@ -27,6 +31,10 @@ public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T
   }
 
   E getPhaseAwareEntity();
+
+  default AccessControlAware getEntityAccessControlAware() {
+    return new AccessControlAware() {};
+  }
 
   StateRecord<S, T, ID> getStateRecord();
 
@@ -52,7 +60,11 @@ public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T
         SpringBootUp.getBean(JsfService.class).getJsfDataRepository().deleteAllById(ids);
       }
     }
+  }
 
+  @Override
+  default ForwardableAccessControlAware getForwardableAccessControlAware() {
+    return getPhase();
   }
 
 }

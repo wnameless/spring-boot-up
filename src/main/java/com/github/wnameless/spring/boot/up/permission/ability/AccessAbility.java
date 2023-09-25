@@ -25,7 +25,6 @@ public interface AccessAbility extends Ability {
 
   default boolean isResourceEmbedded() {
     return getFieldName() != null;
-
   }
 
 }
