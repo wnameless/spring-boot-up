@@ -6,31 +6,31 @@ import com.github.wnameless.spring.boot.up.model.DataModelCRUDTrigger;
 public interface AttachmentSnapshotAware<T, A extends Attachment<ID>, ID>
     extends DataModelCRUDTrigger<T> {
 
-  AttachmentSnapshot<A, ID> getSnapshot();
+  AttachmentSnapshot<A, ID> getAttachmentSnapshot();
 
-  AttachmentChecklist getChecklist();
+  AttachmentChecklist getAttachmentChecklist();
 
   default void saveAttachmentSnapshotAware() {
     updateThisDataModel();
   }
 
   default boolean isValidAttachment(A attachment) {
-    return getChecklist().getAttachmentGroups().stream().filter(g -> {
+    return getAttachmentChecklist().getAttachmentGroups().stream().filter(g -> {
       return Objects.equals(attachment.getGroup(), g.getGroup());
     }).findAny().isPresent();
   }
 
   default boolean isExistedAttachment(A attachment) {
-    if (getSnapshot().getAttachments() == null) return false;
-    return getSnapshot().getAttachments().stream().filter(a -> {
+    if (getAttachmentSnapshot().getAttachments() == null) return false;
+    return getAttachmentSnapshot().getAttachments().stream().filter(a -> {
       return Objects.equals(a.getGroup(), attachment.getGroup())
           && Objects.equals(a.getName(), attachment.getName());
     }).findAny().isPresent();
   }
 
   default boolean removeExistedAttachment(A attachment) {
-    if (getSnapshot().getAttachments() == null) return false;
-    return getSnapshot().getAttachments().removeIf(a -> {
+    if (getAttachmentSnapshot().getAttachments() == null) return false;
+    return getAttachmentSnapshot().getAttachments().removeIf(a -> {
       return Objects.equals(a.getGroup(), attachment.getGroup())
           && Objects.equals(a.getName(), attachment.getName());
     });

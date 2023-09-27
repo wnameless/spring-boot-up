@@ -1,24 +1,28 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="panel" class="m-2 pt-2 border-top">
+<div th:fragment="panel" class="p-2 border rounded-3 border-primary">
 
   <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+    <li class="nav-item">
+      <button class="nav-link disabled" href="#">[[${#messages.msgOrNull('sbu.attachment.title') ?:
+        'Attachments'}]]</button>
+    </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
-        data-bs-target="#pills-file-list" type="button" role="tab">File
-        List</button>
+        data-bs-target="#pills-file-list" type="button"
+        role="tab">[[${#messages.msgOrNull('sbu.attachment.list') ?: 'List'}]]</button>
     </li>
     <li th:if="${user == null || (user != null && user.canDelete(item))}" class="nav-item"
       role="presentation">
       <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-        data-bs-target="#pills-file-edit" type="button" role="tab">File
-        Edit</button>
+        data-bs-target="#pills-file-edit" type="button"
+        role="tab">[[${#messages.msgOrNull('sbu.attachment.edit') ?: 'Edit'}]]</button>
     </li>
     <li th:if="${user == null || (user != null && user.canUpdate(item))}" class="nav-item"
       role="presentation">
       <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-        data-bs-target="#pills-file-upload" type="button" role="tab">File
-        Upload</button>
+        data-bs-target="#pills-file-upload" type="button"
+        role="tab">[[${#messages.msgOrNull('sbu.attachment.upload') ?: 'Upload'}]]</button>
     </li>
   </ul>
 
@@ -81,11 +85,11 @@
 </div>
 
 <div th:fragment="edit">
-  <div th:replace="~{sbu/jsf/form :: edit}"></div>
+  <div th:replace="~{sbu/jsf/form :: edit(backable=${false})}"></div>
 </div>
 
 <div th:fragment="upload">
-  <div th:replace="~{sbu/jsf/form :: new}"></div>
+  <div th:replace="~{sbu/jsf/form :: new(backable=${false})}"></div>
 </div>
 
 </html>

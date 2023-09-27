@@ -39,7 +39,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   }
 
   default void updateSnapshot(AA attachmentSnapshotAware, List<A> attachments) {
-    var original = attachmentSnapshotAware.getSnapshot().getAttachments();
+    var original = attachmentSnapshotAware.getAttachmentSnapshot().getAttachments();
     if (original == null) original = new ArrayList<>();
 
     for (var a : attachments) {
@@ -51,7 +51,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
       }
     }
 
-    attachmentSnapshotAware.getSnapshot().setAttachments(original);
+    attachmentSnapshotAware.getAttachmentSnapshot().setAttachments(original);
     attachmentSnapshotAware.saveAttachmentSnapshotAware();
   }
 
@@ -63,7 +63,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     var mapper = SpringBootUp.getBean(ObjectMapper.class);
     var attachmentsGroups = snapshot.getAttachmentsByGroup();
 
-    editform.getSchema().put("title", "Files");
+    // editform.getSchema().put("title", "Files");
     editform.getSchema().put("type", "object");
     var aryProps = new LinkedHashMap<>();
     String ary = """
@@ -107,7 +107,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
         new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id) + "/attachments", "");
     var mapper = SpringBootUp.getBean(ObjectMapper.class);
 
-    uploadform.getSchema().put("title", "Files");
+    // uploadform.getSchema().put("title", "Files");
     uploadform.getSchema().put("type", "object");
     var fileProps = new LinkedHashMap<>();
     String single = """
@@ -143,8 +143,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     mav.setViewName("sbu/attachments/snapshot :: panel");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
-    var snapshot = attachmentSnapshotAware.getSnapshot();
-    var checklist = attachmentSnapshotAware.getChecklist();
+    var snapshot = attachmentSnapshotAware.getAttachmentSnapshot();
+    var checklist = attachmentSnapshotAware.getAttachmentChecklist();
 
     mav.addObject("attachmentChecklist", checklist);
     mav.addObject("attachmentGroups", snapshot.getAttachmentsByGroup());
@@ -158,8 +158,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     mav.setViewName("sbu/attachments/snapshot :: edit");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
-    var checklist = attachmentSnapshotAware.getChecklist();
-    var snapshot = attachmentSnapshotAware.getSnapshot();
+    var checklist = attachmentSnapshotAware.getAttachmentChecklist();
+    var snapshot = attachmentSnapshotAware.getAttachmentSnapshot();
 
     mav.addObject(WebModelAttribute.ITEM, createEditForm(checklist, snapshot, id));
     mav.addObject("ajaxTargetId", ajaxTargetId);
@@ -172,7 +172,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     mav.setViewName("sbu/attachments/snapshot :: upload");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
-    var checklist = attachmentSnapshotAware.getChecklist();
+    var checklist = attachmentSnapshotAware.getAttachmentChecklist();
 
     mav.addObject(WebModelAttribute.ITEM, createUploadForm(checklist, id));
     mav.addObject("ajaxTargetId", ajaxTargetId);
@@ -223,9 +223,9 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     });
     updateSnapshot(attachmentSnapshotAware, attachments);
 
-    mav.addObject("attachmentChecklist", attachmentSnapshotAware.getChecklist());
+    mav.addObject("attachmentChecklist", attachmentSnapshotAware.getAttachmentChecklist());
     mav.addObject("attachmentGroups",
-        attachmentSnapshotAware.getSnapshot().getAttachmentsByGroup());
+        attachmentSnapshotAware.getAttachmentSnapshot().getAttachmentsByGroup());
     mav.addObject("ajaxTargetId", ajaxTargetId);
     return mav;
   }
@@ -234,7 +234,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   @GetMapping(path = "/{id}/attachments/{attachmentId}")
   default void downloadAttachment(HttpServletResponse response, @PathVariable ID id,
       @PathVariable ID attachmentId) {
-    var attachmentSnapshot = getAttachmentSnapshotAware(id).getSnapshot();
+    var attachmentSnapshot = getAttachmentSnapshotAware(id).getAttachmentSnapshot();
     Optional<A> attachmentOpt = attachmentSnapshot.findAttachment(attachmentId);
 
     if (attachmentOpt.isEmpty()) return;
@@ -258,7 +258,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     mav.setViewName("sbu/attachments/snapshot :: panel");
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
-    var original = attachmentSnapshotAware.getSnapshot().getAttachments();
+    var original = attachmentSnapshotAware.getAttachmentSnapshot().getAttachments();
     var filtered = new ArrayList<A>();
 
     jsfFiles.entrySet().forEach(pair -> {
@@ -280,12 +280,12 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
             .toList());
       }
     });
-    attachmentSnapshotAware.getSnapshot().setAttachments(filtered);
+    attachmentSnapshotAware.getAttachmentSnapshot().setAttachments(filtered);
     attachmentSnapshotAware.saveAttachmentSnapshotAware();
 
-    mav.addObject("attachmentChecklist", attachmentSnapshotAware.getChecklist());
+    mav.addObject("attachmentChecklist", attachmentSnapshotAware.getAttachmentChecklist());
     mav.addObject("attachmentGroups",
-        attachmentSnapshotAware.getSnapshot().getAttachmentsByGroup());
+        attachmentSnapshotAware.getAttachmentSnapshot().getAttachmentsByGroup());
     mav.addObject("ajaxTargetId", ajaxTargetId);
     return mav;
   }
