@@ -1,17 +1,20 @@
 package com.github.wnameless.spring.boot.up.notification;
 
-public interface NotificationCallback<NS extends NotificationSource<ID>, SM extends NotifiableStateMachine<SM, S, T>, S, T, ID> {
+import com.github.wnameless.spring.boot.up.fsm.State;
+import com.github.wnameless.spring.boot.up.fsm.Trigger;
+
+public interface NotificationCallback<NS extends NotificationSource<ID>, ID> {
 
   ID getId();
 
-  ID getStateMachineId();
+  ID getStateMachineEntityId();
 
   NS getNotificationSource();
 
   NotificationAdvice getAdvice();
 
-  S getState();
+  State<?, ID> getState();
 
-  T getTrigger();
+  Trigger getTrigger();
 
 }

@@ -15,6 +15,8 @@ import com.github.wnameless.spring.boot.up.permission.resource.ForwardableAccess
 public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
     extends AccessControlAwareAdapter {
 
+  ID getId();
+
   Class<? extends AbstractPhase<E, S, T, ID>> getPhaseType();
 
   default Phase<E, S, T, ID> getPhase() {

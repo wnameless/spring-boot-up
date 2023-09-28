@@ -3,17 +3,30 @@ package com.github.wnameless.spring.boot.up.notification;
 import com.github.oxo42.stateless4j.delegates.Action1;
 import com.github.oxo42.stateless4j.delegates.Action2;
 import com.github.oxo42.stateless4j.transitions.Transition;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
-public interface NotificationRule<S, T> {
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class NotificationRule<S, T> implements NotificationPlan<S, T> {
 
-  S getState();
+  T trigger;
 
-  T getTrigger();
+  S state;
 
-  NotificationAdvice getAdvice();
+  NotificationAdvice advice;
 
-  Action1<Transition<S, T>> getExitAction();
+  Action1<Transition<S, T>> exitAction;
 
-  Action2<Transition<S, T>, Object[]> getEntryAction();
+  Action2<Transition<S, T>, Object[]> entryAction;
+
+  public NotificationRule() {}
+
+  public NotificationRule(T trigger, S state, NotificationAdvice advice) {
+    this.trigger = trigger;
+    this.state = state;
+    this.advice = advice;
+  }
 
 }

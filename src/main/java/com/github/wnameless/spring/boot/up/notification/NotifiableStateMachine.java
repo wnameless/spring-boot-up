@@ -8,7 +8,6 @@ import com.github.wnameless.spring.boot.up.fsm.StateMachineInitializable;
 public interface NotifiableStateMachine<SM extends NotifiableStateMachine<SM, S, T>, S, T>
     extends StateMachineInitializable<S, T> {
 
-
   @SuppressWarnings("unchecked")
   default SM getNotifiableStateMachine() {
     return (SM) this;
