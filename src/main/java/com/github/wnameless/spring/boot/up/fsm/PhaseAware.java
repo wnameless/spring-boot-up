@@ -30,7 +30,10 @@ public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T
     }
   }
 
-  E getPhaseAwareEntity();
+  @SuppressWarnings("unchecked")
+  default E getPhaseAwareEntity() {
+    return (E) this;
+  }
 
   default AccessControlAware getEntityAccessControlAware() {
     return new AccessControlAware() {};

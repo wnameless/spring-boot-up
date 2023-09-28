@@ -12,7 +12,7 @@ public interface NotificationStrategy<NT extends NotificationTarget<NS, NR, M, I
 
   default void applyNotificationStrategy(StateMachineConfig<S, T> stateMachineConfig,
       SM stateMachine) {
-    for (NotificationRule<SM, S, T> rule : getNotificationRules(stateMachine)) {
+    for (NotificationRule<S, T> rule : getNotificationRules(stateMachine)) {
       StateRepresentation<S, T> representation =
           stateMachineConfig.getRepresentation(rule.getState());
 
@@ -30,7 +30,7 @@ public interface NotificationStrategy<NT extends NotificationTarget<NS, NR, M, I
     }
   }
 
-  List<NotificationRule<SM, S, T>> getNotificationRules(SM stateMachine);
+  List<NotificationRule<S, T>> getNotificationRules(SM stateMachine);
 
   List<NotificationCallback<NS, SM, S, T, ID>> getNotificationCallbacks(SM stateMachine);
 

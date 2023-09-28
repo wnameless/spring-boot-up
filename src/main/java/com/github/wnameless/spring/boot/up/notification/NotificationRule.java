@@ -4,7 +4,7 @@ import com.github.oxo42.stateless4j.delegates.Action1;
 import com.github.oxo42.stateless4j.delegates.Action2;
 import com.github.oxo42.stateless4j.transitions.Transition;
 
-public interface NotificationRule<SM extends NotifiableStateMachine<SM, S, T>, S, T> {
+public interface NotificationRule<S, T> {
 
   S getState();
 

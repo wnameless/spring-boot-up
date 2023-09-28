@@ -9,7 +9,10 @@ public interface NotifiableStateMachine<SM extends NotifiableStateMachine<SM, S,
     extends StateMachineInitializable<S, T> {
 
 
-  SM getNotifiableStateMachine();
+  @SuppressWarnings("unchecked")
+  default SM getNotifiableStateMachine() {
+    return (SM) this;
+  }
 
   @SuppressWarnings("unchecked")
   @Override
