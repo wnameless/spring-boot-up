@@ -18,9 +18,10 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, N
 
   default void applyNotificationStrategy(StateMachineConfig<S, T> stateMachineConfig,
       SM stateMachine) {
-    for (NotificationPlan<S, T> rule : getNotificationRules(stateMachine)) {
+    for (NotificationPlan<S, T> rule : getNotificationPlans(stateMachine)) {
       StateRepresentation<S, T> representation =
           stateMachineConfig.getRepresentation(rule.getState());
+      if (representation == null) continue;
 
       switch (rule.getAdvice()) {
         case ENTRY:
@@ -56,7 +57,7 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, N
     }
   }
 
-  List<NotificationPlan<S, T>> getNotificationRules(SM stateMachine);
+  List<NotificationPlan<S, T>> getNotificationPlans(SM stateMachine);
 
   default List<NC> getNotificationCallbacks(SM stateMachine) {
     return getNotificationService().getNotificationCallbackRepository()

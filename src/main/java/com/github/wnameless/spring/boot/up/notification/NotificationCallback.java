@@ -1,7 +1,7 @@
 package com.github.wnameless.spring.boot.up.notification;
 
-import com.github.wnameless.spring.boot.up.fsm.State;
-import com.github.wnameless.spring.boot.up.fsm.Trigger;
+import java.util.Objects;
+import lombok.SneakyThrows;
 
 public interface NotificationCallback<NS extends NotificationSource<ID>, ID> {
 
@@ -13,8 +13,40 @@ public interface NotificationCallback<NS extends NotificationSource<ID>, ID> {
 
   NotificationAdvice getAdvice();
 
-  State<?, ID> getState();
+  String getStateName();
 
-  Trigger getTrigger();
+  String getTriggerName();
+
+  // Class<? extends Enum<? extends State<?, ID>>>
+  String getStateEnumTypeName();
+
+  // Class<? extends Enum<? extends Trigger>>
+  String getTriggerEnumTypeName();
+
+  @SuppressWarnings("unchecked")
+  @SneakyThrows
+  default Enum<?> getState() {
+    Class<? extends Enum<?>> enumType =
+        (Class<? extends Enum<?>>) Class.forName(getStateEnumTypeName());
+    for (Enum<?> e : enumType.getEnumConstants()) {
+      if (Objects.equals(e.name(), getStateName())) {
+        return e;
+      }
+    }
+    return null;
+  }
+
+  @SuppressWarnings("unchecked")
+  @SneakyThrows
+  default Enum<?> getTrigger() {
+    Class<? extends Enum<?>> enumType =
+        (Class<? extends Enum<?>>) Class.forName(getTriggerEnumTypeName());
+    for (Enum<?> e : enumType.getEnumConstants()) {
+      if (Objects.equals(e.name(), getTriggerName())) {
+        return e;
+      }
+    }
+    return null;
+  }
 
 }
