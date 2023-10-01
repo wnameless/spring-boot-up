@@ -12,6 +12,8 @@
     <react-form th:id="${'newForm' + rid}"
       th:action="@{${item.createPath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
       method="POST" ajax:target="${ajaxTargetId}">
+      <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('ui.submit') ?:
+        'Submit'}]]</button>
     </react-form>
 
     <script th:inline="javascript">
@@ -38,6 +40,8 @@
     <react-form th:id="${'editForm' + rid}"
       th:action="@{${item.updatePath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
       method="PUT" ajax:target="${ajaxTargetId}">
+      <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('ui.submit') ?:
+        'Submit'}]]</button>
     </react-form>
 
     <script th:inline="javascript">
