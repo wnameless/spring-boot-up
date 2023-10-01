@@ -112,6 +112,11 @@
 
     <!-- Util -->
     <dependency>
+      <groupId>com.scalified</groupId>
+      <artifactId>tree</artifactId>
+      <version>0.2.5</version>
+    </dependency>
+    <dependency>
       <groupId>net.sf.rubycollect4j</groupId>
       <artifactId>rubycollect4j</artifactId>
       <version>2.1.2</version>
