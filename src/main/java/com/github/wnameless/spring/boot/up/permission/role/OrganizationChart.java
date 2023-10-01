@@ -11,6 +11,8 @@ public interface OrganizationChart {
 
   List<RolePosition> getRolePositions();
 
+  String getI18nRoleName(Rolify role);
+
   default TreeNode<Role> toTreeNode() {
     var positions = Ruby.Array.copyOf(getRolePositions());
     var topPositions = positions.findAll(p -> p.getManager().isEmpty());
