@@ -1,10 +1,12 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
 import java.util.Map;
+import java.util.Optional;
 import com.github.wnameless.json.base.JsonObjectBase;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.model.JsfData;
 import com.github.wnameless.spring.boot.up.jsf.model.JsfSchema;
+import com.github.wnameless.spring.boot.up.jsf.service.JsfPatchService;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 
 public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, ID>
@@ -41,8 +43,20 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getFormData() {
-    return applyFormDataStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
-        _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
+    Map<String, Object> formData =
+        applyFormDataStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
+            _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
+
+    Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
+    if (jsfPatchServiceOpt.isPresent()) {
+      JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
+      if (jsfPatchService.formDataPatch() != null) {
+        formData = jsfPatchService.formDataPatch().apply(formData);
+        return formData;
+      }
+    }
+
+    return formData;
   }
 
   default void setFormData(Map<String, Object> formData) {
@@ -54,8 +68,20 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getSchema() {
-    return applySchemaStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
-        _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
+    Map<String, Object> schema =
+        applySchemaStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
+            _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
+
+    Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
+    if (jsfPatchServiceOpt.isPresent()) {
+      JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
+      if (jsfPatchService.schemaPatch() != null) {
+        schema = jsfPatchService.schemaPatch().apply(schema);
+        return schema;
+      }
+    }
+
+    return schema;
   }
 
   default void setSchema(Map<String, Object> schema) {
@@ -63,8 +89,20 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getUiSchema() {
-    return applyUiSchemaStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
-        _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
+    Map<String, Object> uiSchema =
+        applyUiSchemaStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
+            _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
+
+    Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
+    if (jsfPatchServiceOpt.isPresent()) {
+      JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
+      if (jsfPatchService.uiSchemaPatch() != null) {
+        uiSchema = jsfPatchService.uiSchemaPatch().apply(uiSchema);
+        return uiSchema;
+      }
+    }
+
+    return uiSchema;
   }
 
   default void setUiSchema(Map<String, Object> uiSchema) {

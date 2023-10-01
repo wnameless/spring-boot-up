@@ -8,10 +8,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfPOJOService;
+import com.github.wnameless.spring.boot.up.jsf.service.JsfPatchService;
 
 @Inherited
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({SprinBootUpJSFRegistrar.class, JsfPOJOService.class})
+@Import({SprinBootUpJSFRegistrar.class, JsfPOJOService.class, JsfPatchService.class})
 public @interface EnableSpringBootUpJSF {}

@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.jsf.service;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -17,19 +18,22 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public final class JsfPOJOService {
 
+  // Cache needs defensive copy
   private final Map<String, Map<String, Object>> schemaCache = new HashMap<>();
 
   public Map<String, Object> getSchemaTemplate(String formType, Locale locale) {
     String templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".schema."
         + locale + ".json";
-    if (schemaCache.containsKey(templatePath)) return schemaCache.get(templatePath);
+    if (schemaCache.containsKey(templatePath)) {
+      return new LinkedHashMap<>(schemaCache.get(templatePath));
+    }
 
     try {
       URL schemaUrl = Resources.getResource(templatePath);
       String json = Resources.toString(schemaUrl, Charsets.UTF_8);
       Map<String, Object> template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
       schemaCache.put(templatePath, template);
-      return template;
+      return new LinkedHashMap<>(template);
     } catch (Exception e) {
       return null;
     }
@@ -38,18 +42,22 @@ public final class JsfPOJOService {
   public Map<String, Object> getSchemaTemplate(String formType) {
     Locale locale = LocaleContextHolder.getLocale();
     Map<String, Object> template = getSchemaTemplate(formType, locale);
-    if (template != null) return template;
+    if (template != null) {
+      return template;
+    }
 
     String templatePath =
         JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".schema.json";
-    if (schemaCache.containsKey(templatePath)) return schemaCache.get(templatePath);
+    if (schemaCache.containsKey(templatePath)) {
+      return new LinkedHashMap<>(schemaCache.get(templatePath));
+    }
 
     try {
       URL schemaUrl = Resources.getResource(templatePath);
       String json = Resources.toString(schemaUrl, Charsets.UTF_8);
       template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
       schemaCache.put(templatePath, template);
-      return template;
+      return new LinkedHashMap<>(template);
     } catch (Exception e) {
       log.info("Schema template not found", e);
       return JsonSchemaFormUtils.defaultSchema();
@@ -59,14 +67,16 @@ public final class JsfPOJOService {
   public Map<String, Object> getUiSchemaTemplate(String formType, Locale locale) {
     String templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType
         + ".uiSchema." + locale + ".json";
-    if (schemaCache.containsKey(templatePath)) return schemaCache.get(templatePath);
+    if (schemaCache.containsKey(templatePath)) {
+      return new LinkedHashMap<>(schemaCache.get(templatePath));
+    }
 
     try {
       URL schemaUrl = Resources.getResource(templatePath);
       String json = Resources.toString(schemaUrl, Charsets.UTF_8);
       Map<String, Object> template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
       schemaCache.put(templatePath, template);
-      return template;
+      return new LinkedHashMap<>(template);
     } catch (Exception e) {
       return null;
     }
@@ -75,18 +85,22 @@ public final class JsfPOJOService {
   public Map<String, Object> getUiSchemaTemplate(String formType) {
     Locale locale = LocaleContextHolder.getLocale();
     Map<String, Object> template = getUiSchemaTemplate(formType, locale);
-    if (template != null) return template;
+    if (template != null) {
+      return template;
+    }
 
     String templatePath =
         JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".uiSchema.json";
-    if (schemaCache.containsKey(templatePath)) return schemaCache.get(templatePath);
+    if (schemaCache.containsKey(templatePath)) {
+      return new LinkedHashMap<>(schemaCache.get(templatePath));
+    }
 
     try {
       URL schemaUrl = Resources.getResource(templatePath);
       String json = Resources.toString(schemaUrl, Charsets.UTF_8);
       template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
       schemaCache.put(templatePath, template);
-      return template;
+      return new LinkedHashMap<>(template);
     } catch (Exception e) {
       log.info("UiSchema template not found", e);
       return JsonSchemaFormUtils.defaultUiSchema();
