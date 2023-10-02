@@ -1,7 +1,6 @@
 package com.github.wnameless.spring.boot.up.permission.resource;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.google.common.base.CaseFormat;
@@ -28,8 +27,8 @@ public interface QuickResourceAccessRule<EP extends EntityPathBase<T>, RF extend
   @SuppressWarnings("unchecked")
   @Override
   default Class<T> getResourceType() {
-    ResolvableType resolvableType =
-        ResolvableType.forClass(getResourceFilterRepository().getClass()).as(CrudRepository.class);
+    ResolvableType resolvableType = ResolvableType.forClass(getResourceFilterRepositoryType())
+        .as(ResourceFilterRepository.class);
     return (Class<T>) resolvableType.getGeneric(0).getRawClass();
   }
 

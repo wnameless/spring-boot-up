@@ -10,7 +10,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedCaseInsensitiveMap;
@@ -35,7 +37,6 @@ import com.github.wnameless.spring.boot.up.permission.resource.ResourceFilterRep
 import com.github.wnameless.spring.boot.up.permission.role.Role;
 import com.github.wnameless.spring.boot.up.permission.role.Rolify;
 import com.github.wnameless.spring.boot.up.permission.role.WebRole;
-import jakarta.annotation.PostConstruct;
 import net.sf.rubycollect4j.Ruby;
 import net.sf.rubycollect4j.RubyArray;
 
@@ -68,7 +69,7 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
   protected abstract Set<Role> findAllRolesByUsername(String username);
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  @PostConstruct
+  @EventListener(ApplicationReadyEvent.class)
   private void init() {
     for (ResourceAccessRule rar : ctx.getBeansOfType(ResourceAccessRule.class).values()) {
       if (rar instanceof EmbeddedResourceAccessRule) continue;
