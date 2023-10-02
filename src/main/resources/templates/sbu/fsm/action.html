@@ -7,7 +7,7 @@
     <div class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
       <button type="button" class="btn btn-outline-primary">
         <i class="fas fa-route"></i>
-        [[${item.phase.stateMachine.state.name}]]
+        [[${item.phase.stateMachine.state.displayName}]]
       </button>
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-outline-success">
@@ -16,7 +16,7 @@
         <th:block th:each="trigger : ${item.phase.externalTriggers}">
           <button type="button" class="btn btn-outline-success"
             hx:get="${item.joinPath('triggers', trigger.name)}" hx:target="${'#' + ajaxTargetId}"
-            hx-ext="json-enc">[[${trigger.name}]]</button>
+            hx-ext="json-enc">[[${trigger.displayName}]]</button>
         </th:block>
       </div>
     </div>
@@ -27,7 +27,7 @@
   class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
   <button type="button" class="btn btn-outline-primary">
     <i class="fas fa-diagram-project"></i>
-    [[${item.phase.stateMachine.state.name}]]
+    [[${item.phase.stateMachine.state.displayName}]]
   </button>
 </div>
 
