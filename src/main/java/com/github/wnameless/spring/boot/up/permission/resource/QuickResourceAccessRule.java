@@ -1,27 +1,35 @@
 package com.github.wnameless.spring.boot.up.permission.resource;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.google.common.base.CaseFormat;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Ops;
+import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.StringPath;
 
-public interface MongoIdResourceAccessRule<EP extends EntityPathBase<T>, RF extends ResourceFilterRepository<T, String>, T>
-    extends ResourceAccessRule<RF, T, String> {
+public interface QuickResourceAccessRule<EP extends EntityPathBase<T>, RF extends ResourceFilterRepository<T, ID>, T, ID>
+    extends ResourceAccessRule<RF, T, ID> {
 
   Class<RF> getResourceFilterRepositoryType();
+
+  Path<ID> getIdFieldPath();
+
+  Expression<ID> getIdValueExpression(ID id);
+
+  default String getIdFieldName() {
+    return "id";
+  }
 
   @SuppressWarnings("unchecked")
   @Override
   default Class<T> getResourceType() {
     ResolvableType resolvableType =
-        ResolvableType.forClass(getResourceFilterRepository().getClass()).as(MongoRepository.class);
+        ResolvableType.forClass(getResourceFilterRepository().getClass()).as(CrudRepository.class);
     return (Class<T>) resolvableType.getGeneric(0).getRawClass();
   }
 
@@ -43,19 +51,16 @@ public interface MongoIdResourceAccessRule<EP extends EntityPathBase<T>, RF exte
   }
 
   @Override
-  default Predicate getPredicateOfEntityId(String id) {
-    StringPath idField = Expressions.stringPath(q(), "id");
+  default Predicate getPredicateOfEntityId(ID id) {
     if (id == null) {
-      return Expressions.predicate(Ops.IS_NULL, idField);
+      return Expressions.predicate(Ops.IS_NULL, getIdFieldPath());
     }
-    Expression<String> constant = Expressions.constant(id);
-    return Expressions.predicate(Ops.EQ, idField, constant);
+    return Expressions.predicate(Ops.EQ, getIdFieldPath(), getIdValueExpression(id));
   }
 
   @Override
   default Predicate getPredicateOfManageAbility() {
-    StringPath idField = Expressions.stringPath(q(), "id");
-    return Expressions.predicate(Ops.IS_NOT_NULL, idField);
+    return Expressions.predicate(Ops.IS_NOT_NULL, getIdFieldPath());
   }
 
   @Override
@@ -64,4 +69,3 @@ public interface MongoIdResourceAccessRule<EP extends EntityPathBase<T>, RF exte
   }
 
 }
-
