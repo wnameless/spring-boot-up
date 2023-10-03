@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
-    extends RestfulRouteController<ID> {
-
-  R getRepository();
+    extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
 
   void configure(ModelPolicy<I> policy);
 
@@ -27,7 +25,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     I item = null;
 
     if (id != null) {
-      item = getRepository().findById(id).orElseGet(getModelPolicy().onDefaultItem());
+      item = getRestfulRepository().findById(id).orElseGet(getModelPolicy().onDefaultItem());
     } else {
       item = getModelPolicy().onDefaultItem().get();
     }
@@ -53,7 +51,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
 
   default I getItem(ID id, I defaultItem) {
     if (id != null) {
-      return getRepository().findById(id).get();
+      return getRestfulRepository().findById(id).get();
     }
     return defaultItem;
   }

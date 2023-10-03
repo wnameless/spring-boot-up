@@ -27,13 +27,15 @@ import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.BaseWebAction;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
+import com.github.wnameless.spring.boot.up.web.RestfulRepositoryProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
 public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA extends PhaseAware<PA, S, T, ID>, S extends State<T, ID>, T extends Trigger, D, ID>
-    extends RestfulItemProvider<PA>, RestfulRouteProvider<ID>, BaseWebAction<D> {
+    extends RestfulRepositoryProvider<PA, ID>, RestfulItemProvider<PA>, RestfulRouteProvider<ID>,
+    BaseWebAction<D> {
 
   @SneakyThrows
   @SuppressWarnings("unchecked")
@@ -152,15 +154,13 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
     };
   }
 
-  CrudRepository<PA, ID> getPhaseRepository();
-
   @SuppressWarnings({"unchecked", "rawtypes"})
   @GetMapping(path = "/{id}/triggers/{triggerName}", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView triggerAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String triggerName) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
 
-    PA phaseAware = getPhaseRepository().findById(id).get();
+    PA phaseAware = getRestfulRepository().findById(id).get();
     StateMachine<S, T> stateMachine = phaseAware.getPhase().getStateMachine();
 
     T trigger = phaseAware.getPhase().getTrigger(triggerName);
@@ -178,7 +178,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       StateRecord<S, T, ID> stateRecord = phaseAware.getStateRecord();
       stateRecord.setState(stateMachine.getState());
       phaseAware.setStateRecord(stateRecord);
-      getPhaseRepository().save(phaseAware);
+      getRestfulRepository().save(phaseAware);
       mav.addObject(WebModelAttribute.ITEM, phaseAware);
     }
 
@@ -198,7 +198,6 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
     return mav;
   }
 
-
   @GetMapping(path = "/{id}/forms/{formType}/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView editFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType, @RequestParam(required = true) String ajaxTargetId,
@@ -213,7 +212,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
   }
 
   default void showAndEditAction(ModelAndView mav, ID id, String formType, boolean editable) {
-    PA phase = getPhaseRepository().findById(id).get();
+    PA phase = getRestfulRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
     S state = stateRecord.getState();
 
@@ -257,7 +256,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
     mav.addObject("ajaxTargetId", backTargetId);
     mav.addObject("embeddedTargetId", ajaxTargetId);
 
-    PA phase = getPhaseRepository().findById(id).get();
+    PA phase = getRestfulRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
     S state = stateRecord.getState();
 
@@ -280,7 +279,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       }
       data = saveStateForm(sf, data);
       stateRecord.putStateFormId(formType, sf.formBranchStock().get(), getStateFormId(data));
-      getPhaseRepository().save(phase);
+      getRestfulRepository().save(phase);
       if (afterSaveStateForm() != null) {
         data = afterSaveStateForm().apply(phase, data);
       }
@@ -299,6 +298,5 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
 
     return mav;
   }
-
 
 }

@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 
 public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware<AA, A, ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
-    extends RestfulItemProvider<AA>, RestfulRouteProvider<ID> {
+    extends RestfulRouteProvider<ID>, RestfulItemProvider<AA> {
 
   default AA getAttachmentSnapshotAware(ID id) {
     return getRestfulItem();
@@ -229,7 +229,6 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     mav.addObject("ajaxTargetId", ajaxTargetId);
     return mav;
   }
-
 
   @GetMapping(path = "/{id}/attachments/{attachmentId}")
   default void downloadAttachment(HttpServletResponse response, @PathVariable ID id,
