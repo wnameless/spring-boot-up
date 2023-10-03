@@ -26,10 +26,12 @@ import com.github.wnameless.spring.boot.up.jsf.repository.JsfDataRepository;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.BaseWebAction;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.AjaxTargetId;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.EmbeddedTargetId;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRepositoryProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
-import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
@@ -179,7 +181,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       stateRecord.setState(stateMachine.getState());
       phaseAware.setStateRecord(stateRecord);
       getRestfulRepository().save(phaseAware);
-      mav.addObject(WebModelAttribute.ITEM, phaseAware);
+      mav.addObject(Item.name(), phaseAware);
     }
 
     return mav;
@@ -191,8 +193,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @RequestParam(required = false) String embeddedTargetId) {
     if (embeddedTargetId == null || embeddedTargetId.isBlank()) embeddedTargetId = ajaxTargetId;
     mav.setViewName("sbu/jsf/form :: show-edit");
-    mav.addObject("ajaxTargetId", ajaxTargetId);
-    mav.addObject("embeddedTargetId", embeddedTargetId);
+    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    mav.addObject(EmbeddedTargetId.name(), embeddedTargetId);
 
     showAndEditAction(mav, id, formType, true);
     return mav;
@@ -204,8 +206,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @RequestParam(required = false) String backTargetId) {
     if (backTargetId == null || backTargetId.isBlank()) backTargetId = ajaxTargetId;
     mav.setViewName("sbu/jsf/form :: edit");
-    mav.addObject("ajaxTargetId", ajaxTargetId);
-    mav.addObject("backTargetId", backTargetId);
+    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    mav.addObject(EmbeddedTargetId.name(), backTargetId);
 
     showAndEditAction(mav, id, formType, false);
     return mav;
@@ -241,7 +243,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       item.setUpdatable(new AccessControlRule(true,
           () -> phase.getPhase().getStateMachine().canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
-      mav.addObject(WebModelAttribute.ITEM, item);
+      mav.addObject(Item.name(), item);
     }
   }
 
@@ -253,8 +255,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @RequestParam(required = true) String ajaxTargetId,
       @RequestParam(required = true) String backTargetId) {
     mav.setViewName("sbu/jsf/form :: show-edit");
-    mav.addObject("ajaxTargetId", backTargetId);
-    mav.addObject("embeddedTargetId", ajaxTargetId);
+    mav.addObject(AjaxTargetId.name(), backTargetId);
+    mav.addObject(EmbeddedTargetId.name(), ajaxTargetId);
 
     PA phase = getRestfulRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
@@ -293,7 +295,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       item.setUpdatable(new AccessControlRule(true,
           () -> phase.getPhase().getStateMachine().canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
-      mav.addObject(WebModelAttribute.ITEM, item);
+      mav.addObject(Item.name(), item);
     }
 
     return mav;

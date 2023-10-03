@@ -6,6 +6,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.ItemClass;
 
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
@@ -38,11 +40,11 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
   }
 
   default String getItemClassKey() {
-    return WebModelAttribute.ITEM_CLASS;
+    return ItemClass.name();
   }
 
   default String getItemKey() {
-    return WebModelAttribute.ITEM;
+    return Item.name();
   }
 
   default I getItem(ID id) {
@@ -65,7 +67,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
   }
 
   default String getQueryConfigKey() {
-    return WebModelAttribute.QUERY_CONFIG;
+    return com.github.wnameless.spring.boot.up.web.ModelAttributes.QueryConfig.name();
   }
 
   @ModelAttribute

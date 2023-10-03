@@ -10,6 +10,12 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Child;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.ChildClass;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Children;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Parent;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.ParentClass;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Route;
 
 public interface NestedRestfulController< //
     PR extends CrudRepository<P, PID>, P, PID, //
@@ -116,15 +122,15 @@ public interface NestedRestfulController< //
   }
 
   default String getRouteKey() {
-    return WebModelAttribute.ROUTE;
+    return Route.name();
   }
 
   default String getParentClassKey() {
-    return WebModelAttribute.PARENT_CLASS;
+    return ParentClass.name();
   }
 
   default String getParentKey() {
-    return WebModelAttribute.PARENT;
+    return Parent.name();
   }
 
   default P getParent(PID parentId) {
@@ -148,11 +154,11 @@ public interface NestedRestfulController< //
   }
 
   default String getChildClassKey() {
-    return WebModelAttribute.CHILD_CLASS;
+    return ChildClass.name();
   }
 
   default String getChildKey() {
-    return WebModelAttribute.CHILD;
+    return Child.name();
   }
 
   default C getChild(PID parentId, CID id) {
@@ -181,7 +187,7 @@ public interface NestedRestfulController< //
   }
 
   default String getChildrenKey() {
-    return WebModelAttribute.CHILDREN;
+    return Children.name();
   }
 
   default Iterable<C> updateChildren(Model model, Iterable<C> children) {
@@ -200,7 +206,7 @@ public interface NestedRestfulController< //
   }
 
   default String getQueryConfigKey() {
-    return WebModelAttribute.QUERY_CONFIG;
+    return com.github.wnameless.spring.boot.up.web.ModelAttributes.QueryConfig.name();
   }
 
   @ModelAttribute

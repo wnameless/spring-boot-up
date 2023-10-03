@@ -20,9 +20,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.AjaxTargetId;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
-import com.github.wnameless.spring.boot.up.web.WebModelAttribute;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 
@@ -148,7 +149,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
 
     mav.addObject("attachmentChecklist", checklist);
     mav.addObject("attachmentGroups", snapshot.getAttachmentsByGroup());
-    mav.addObject("ajaxTargetId", ajaxTargetId);
+    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
 
@@ -161,8 +162,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     var checklist = attachmentSnapshotAware.getAttachmentChecklist();
     var snapshot = attachmentSnapshotAware.getAttachmentSnapshot();
 
-    mav.addObject(WebModelAttribute.ITEM, createEditForm(checklist, snapshot, id));
-    mav.addObject("ajaxTargetId", ajaxTargetId);
+    mav.addObject(Item.name(), createEditForm(checklist, snapshot, id));
+    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
 
@@ -174,8 +175,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var checklist = attachmentSnapshotAware.getAttachmentChecklist();
 
-    mav.addObject(WebModelAttribute.ITEM, createUploadForm(checklist, id));
-    mav.addObject("ajaxTargetId", ajaxTargetId);
+    mav.addObject(Item.name(), createUploadForm(checklist, id));
+    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
 
@@ -226,7 +227,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     mav.addObject("attachmentChecklist", attachmentSnapshotAware.getAttachmentChecklist());
     mav.addObject("attachmentGroups",
         attachmentSnapshotAware.getAttachmentSnapshot().getAttachmentsByGroup());
-    mav.addObject("ajaxTargetId", ajaxTargetId);
+    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
 
@@ -285,7 +286,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     mav.addObject("attachmentChecklist", attachmentSnapshotAware.getAttachmentChecklist());
     mav.addObject("attachmentGroups",
         attachmentSnapshotAware.getAttachmentSnapshot().getAttachmentsByGroup());
-    mav.addObject("ajaxTargetId", ajaxTargetId);
+    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
 

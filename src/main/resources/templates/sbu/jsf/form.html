@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="new"
-  th:with="item=${__${@webModelAttribute.ITEM}__}, queryConfig=${__${@webModelAttribute.QUERY_CONFIG}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET}, backTargetId=${backTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
   class="card">
   <div class="card-header" th:if="${backable}">
     <button hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
@@ -29,7 +29,7 @@
 </div>
 
 <div th:fragment="edit"
-  th:with="item=${__${@webModelAttribute.ITEM}__}, queryConfig=${__${@webModelAttribute.QUERY_CONFIG}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET}, backTargetId=${backTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
   class="card">
   <div class="card-header" th:if="${backable}">
     <button hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
@@ -57,7 +57,7 @@
 </div>
 
 <div th:fragment="show"
-  th:with="item=${__${@webModelAttribute.ITEM}__}, queryConfig=${__${@webModelAttribute.QUERY_CONFIG}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET}, backTargetId=${backTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
   class="card">
   <div class="card-header" th:if="${backable}">
     <button hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
@@ -96,7 +96,7 @@
 </div>
 
 <div th:fragment="show-edit"
-  th:with="item=${__${@webModelAttribute.ITEM}__}, queryConfig=${__${@webModelAttribute.QUERY_CONFIG}__}, user=${__${'@' + @webModelAttribute.USER}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedTargetId=${embeddedTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedTargetId=${embeddedTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
   class="card">
   <div class="card-header">
     <div class="d-flex">
@@ -144,7 +144,7 @@
 </div>
 
 <div th:fragment="show-edit-alt"
-  th:with="item=${__${@webModelAttribute.ITEM}__}, queryConfig=${__${@webModelAttribute.QUERY_CONFIG}__}, user=${__${'@' + @webModelAttribute.USER}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedTargetId=${embeddedTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedTargetId=${embeddedTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
   class="card">
   <div class="card-header">
     <div class="d-flex">

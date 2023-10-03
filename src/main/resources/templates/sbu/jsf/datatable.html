@@ -2,7 +2,7 @@
 
 <!-- Start Table -->
 <div th:fragment="crud(th, td)"
-  th:with="li=${li}, page=${__${@webModelAttribute.PAGE}__}, queryConfig=${__${@webModelAttribute.QUERY_CONFIG}__}, itemClass=${__${@webModelAttribute.ITEM_CLASS}__}, route=${__${@webModelAttribute.ROUTE}__}, user=${__${'@' + @webModelAttribute.USER}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttribute.AJAX_TARGET}">
+  th:with="li=${li}, page=${__${@webModelAttributes.PAGE_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, itemClass=${__${@webModelAttributes.ITEM_CLASS_NAME}__}, route=${__${@webModelAttributes.ROUTE_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
   <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
     <div class="offcanvas-header">
       <h4>[[${#messages.msgOrNull('jsf.datatable.filter_option.title') ?: 'Filter Option'}]]</h4>
