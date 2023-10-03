@@ -2,20 +2,20 @@ package com.github.wnameless.spring.boot.up.actioncode;
 
 import java.time.LocalDateTime;
 import java.util.Random;
-import org.apache.commons.lang3.function.TriFunction;
+import java.util.function.BiFunction;
 import org.springframework.web.servlet.ModelAndView;
 
-public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?>, T, ID> {
+public interface SingularActionCodeService<AC extends SingularActionCode<A>, A extends Enum<?>, ID> {
 
-  ActionCodeRepository<AC, A, T, ID> getActionCodeRepository();
+  SingularActionCodeRepository<AC, A, ID> getActionCodeRepository();
 
   AC newActionCode();
 
   A getActionEnum(String actionName);
 
-  default TriFunction<ModelAndView, A, T, ModelAndView> actionCodeRequest() {
-    return (mav, action, item) -> {
-      var rgOpt = getActionCodeRepository().findByActionTargetAndAction(item, action);
+  default BiFunction<ModelAndView, A, ModelAndView> actionCodeRequest() {
+    return (mav, action) -> {
+      var rgOpt = getActionCodeRepository().findByAction(action);
       if (rgOpt.isPresent()) {
         var rg = rgOpt.get();
         if (rg.isValid()) {
@@ -26,9 +26,9 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
     };
   }
 
-  default TriFunction<ModelAndView, A, T, ModelAndView> actionCodeGeneration() {
-    return (mav, action, item) -> {
-      var acOpt = getActionCodeRepository().findByActionTargetAndAction(item, action);
+  default BiFunction<ModelAndView, A, ModelAndView> actionCodeGeneration() {
+    return (mav, action) -> {
+      var acOpt = getActionCodeRepository().findByAction(action);
       if (acOpt.isPresent() && acOpt.get().isValid()) {
         var ac = acOpt.get();
         if (ac.isExpired()) {
@@ -41,7 +41,6 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
         AC actionCode = newActionCode();
         actionCode.setAction(action);
         actionCode.setCode(getRandomCode());
-        actionCode.setActionTarget(item);
         actionCode.setExpiredAt(LocalDateTime.now().plusDays(30));
         getActionCodeRepository().save(actionCode);
         mav.addObject(ActionCodeAttributes.CODE, actionCode.getCode());
@@ -50,10 +49,10 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
     };
   }
 
-  TriFunction<ModelAndView, AC, T, ModelAndView> actionCodeExecution();
+  BiFunction<ModelAndView, AC, ModelAndView> actionCodeExecution();
 
-  default TriFunction<ModelAndView, AC, T, ModelAndView> actionCodeDeletion() {
-    return (mav, actionCode, item) -> {
+  default BiFunction<ModelAndView, AC, ModelAndView> actionCodeDeletion() {
+    return (mav, actionCode) -> {
       getActionCodeRepository().delete(actionCode);
       return mav;
     };

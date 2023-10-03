@@ -2,11 +2,7 @@ package com.github.wnameless.spring.boot.up.actioncode;
 
 import java.time.LocalDateTime;
 
-public interface ActionCode<A extends Enum<?>, T> {
-
-  T getActionTarget();
-
-  void setActionTarget(T target);
+public interface SingularActionCode<A extends Enum<?>> {
 
   A getAction();
 
