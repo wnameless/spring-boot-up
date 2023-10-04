@@ -28,6 +28,7 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
       mav = getActionCodeService().actionCodeExecution().apply(mav, actionCodeOpt.get(),
           getRestfulItem());
     }
+    mav.addObject(ActionCodeAttributes.ACTION, actionName);
     return mav;
   }
 

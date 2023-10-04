@@ -26,6 +26,7 @@ public interface SingularActionCodeController<AC extends SingularActionCode<A>, 
     if (actionCodeOpt.isPresent()) {
       mav = getActionCodeService().actionCodeExecution().apply(mav, actionCodeOpt.get());
     }
+    mav.addObject(ActionCodeAttributes.ACTION, actionName);
     mav.addObject(ActionCodeAttributes.SINGULAR, true);
     return mav;
   }

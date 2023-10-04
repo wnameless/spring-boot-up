@@ -15,28 +15,28 @@
           'Copy'}]]</a>
       </li>
       <li th:if="${singular}">
-        <a hx:post="@{${route.joinPath('action-codes', 'JOIN')}(ajaxTargetId=${ajaxTargetId})}"
+        <a hx:post="@{${route.joinPath('action-codes', action)}(ajaxTargetId=${ajaxTargetId})}"
           hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-link"></span>
           [[${#messages.msgOrNull('sbu.actioncode.generate') ?:
           'Generate'}]]</a>
       </li>
       <li th:unless="${singular}">
-        <a hx:post="@{${item.joinPath('action-codes', 'JOIN')}(ajaxTargetId=${ajaxTargetId})}"
+        <a hx:post="@{${item.joinPath('action-codes', action)}(ajaxTargetId=${ajaxTargetId})}"
           hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-link"></span>
           [[${#messages.msgOrNull('sbu.actioncode.generate') ?:
           'Generate'}]]</a>
       </li>
       <li th:if="${singular} and ${code}">
-        <a hx:delete="@{${route.joinPath('action-codes', 'JOIN', code)}(ajaxTargetId=${ajaxTargetId})}"
+        <a hx:delete="@{${route.joinPath('action-codes', action, code)}(ajaxTargetId=${ajaxTargetId})}"
           hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-trash"></span>
           [[${#messages.msgOrNull('sbu.actioncode.clear') ?:
           'Clear'}]]</a>
       </li>
       <li th:unless="${singular}" th:if="${code}">
-        <a hx:delete="@{${item.joinPath('action-codes', 'JOIN', code)}(ajaxTargetId=${ajaxTargetId})}"
+        <a hx:delete="@{${item.joinPath('action-codes', action, code)}(ajaxTargetId=${ajaxTargetId})}"
           hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-trash"></span>
           [${#messages.msgOrNull('sbu.actioncode.clear') ?:
