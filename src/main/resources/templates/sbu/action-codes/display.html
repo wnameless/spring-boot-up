@@ -4,26 +4,44 @@
   <div class="input-group mb-3">
     <input id="actionCodeInput" type="text" class="form-control" th:value="${code}" readonly="true">
     <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-      data-bs-toggle="dropdown" aria-expanded="false">Action</button>
+      data-bs-toggle="dropdown" aria-expanded="false">
+      <span class="fas fa-code"></span>
+      [[${#messages.msgOrNull('sbu.actioncode.action') ?: 'Action'}]]</button>
     <ul class="dropdown-menu dropdown-menu-end">
       <li>
-        <a class="dropdown-item" href="#" onclick="copyActionCodeUrl()">Copy</a>
+        <a class="dropdown-item" href="#" onclick="copyActionCodeUrl()">
+          <span class="fas fa-fw fa-copy"></span>
+          [[${#messages.msgOrNull('sbu.actioncode.copy') ?:
+          'Copy'}]]</a>
       </li>
       <li th:if="${singular}">
         <a hx:post="@{${route.joinPath('action-codes', 'JOIN')}(ajaxTargetId=${ajaxTargetId})}"
-          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">Generate</a>
+          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
+          <span class="fas fa-fw fa-link"></span>
+          [[${#messages.msgOrNull('sbu.actioncode.generate') ?:
+          'Generate'}]]</a>
       </li>
       <li th:unless="${singular}">
         <a hx:post="@{${item.joinPath('action-codes', 'JOIN')}(ajaxTargetId=${ajaxTargetId})}"
-          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">Generate</a>
+          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
+          <span class="fas fa-fw fa-link"></span>
+          [[${#messages.msgOrNull('sbu.actioncode.generate') ?:
+          'Generate'}]]</a>
       </li>
       <li th:if="${singular} and ${code}">
         <a hx:delete="@{${route.joinPath('action-codes', 'JOIN', code)}(ajaxTargetId=${ajaxTargetId})}"
-          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">Clear</a>
+          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
+          <span class="fas fa-fw fa-trash"></span>
+          [[${#messages.msgOrNull('sbu.actioncode.clear') ?:
+          'Clear'}]]</a>
       </li>
       <li th:unless="${singular}" th:if="${code}">
         <a hx:delete="@{${item.joinPath('action-codes', 'JOIN', code)}(ajaxTargetId=${ajaxTargetId})}"
-          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">Clear</a>
+          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
+          <span class="fas fa-fw fa-trash"></span>
+          [${#messages.msgOrNull('sbu.actioncode.clear') ?:
+          'Clear'}]]
+        </a>
       </li>
     </ul>
   </div>
