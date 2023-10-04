@@ -149,6 +149,11 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
     return type;
   }
 
+  @Override
+  public boolean existsResourceType(Class<?> resourceType) {
+    return resourceLookup.values().contains(resourceType);
+  }
+
   private Set<AccessAbility> findUserAccessAbilities(Class<?> resourceType,
       boolean isResourceEmbedded) {
     Set<AccessAbility> accessRuleAbilities = new HashSet<>();
@@ -462,7 +467,5 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
 
     return metadata;
   }
-
-
 
 }

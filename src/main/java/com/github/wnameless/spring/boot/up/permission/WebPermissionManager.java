@@ -13,6 +13,8 @@ public interface WebPermissionManager {
 
   Class<?> findResourceTypeByName(String resourceName);
 
+  boolean existsResourceType(Class<?> resourceType);
+
   ResourceAccessRule<?, ?, ?> findUserResourceAccessRuleByRepositoryType(
       @SuppressWarnings("rawtypes") Class<? extends ResourceFilterRepository> repo);
 

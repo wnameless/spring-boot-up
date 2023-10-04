@@ -26,6 +26,15 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
     return raOpt.get().getResourceFilterRepository();
   }
 
+  // Exists
+  default boolean existsPermission(Class<?> type) {
+    return getWebPermissionManager().existsResourceType(ClassUtils.getUserClass(type));
+  }
+
+  default boolean existsPermission(String resourceName) {
+    return getWebPermissionManager().findResourceTypeByName(resourceName) != null;
+  }
+
   // MANAGE
   default boolean canManage(Class<?> type) {
     if (type == null) return false;
