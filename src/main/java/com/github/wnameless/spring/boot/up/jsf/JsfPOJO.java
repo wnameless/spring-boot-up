@@ -12,8 +12,6 @@ import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfPOJOService;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfPatchService;
 
-
-
 public interface JsfPOJO<T, ID> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAware {
 
   static final Logger log = LoggerFactory.getLogger(JsfPOJO.class);
