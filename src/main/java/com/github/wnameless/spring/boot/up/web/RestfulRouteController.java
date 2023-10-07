@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Route;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.TemplateRoute;
 
-public interface RestfulRouteController<ID> extends RestfulRouteProvider<ID> {
+public interface RestfulRouteController<ID> extends WebActionAlertHelper, RestfulRouteProvider<ID> {
 
   default RestfulRoute<ID> getTemplateRoute() {
     return getRestfulRoute().toTemplateRoute();

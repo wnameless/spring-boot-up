@@ -12,7 +12,7 @@ import lombok.Data;
 public interface WebActionAlertHelper {
 
   default void alert(String action) {
-    addAlertMessages(SpringBootUp.getBean(ModelAndViewControllerAdvice.class).getModelAndView(),
+    addAlertMessages(SpringBootUp.getBean(SpringBootUpControllerAdvice.class).getModelAndView(),
         action);
   }
 
