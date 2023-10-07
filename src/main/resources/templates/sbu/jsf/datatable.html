@@ -5,7 +5,8 @@
   th:with="li=${li}, page=${__${@webModelAttributes.PAGE_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, itemClass=${__${@webModelAttributes.ITEM_CLASS_NAME}__}, route=${__${@webModelAttributes.ROUTE_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
   <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
     <div class="offcanvas-header">
-      <h4>[[${#messages.msgOrNull('jsf.datatable.filter_option.title') ?: 'Filter Option'}]]</h4>
+      <h4>[[${#messages.msgOrNull('sbu.jsf.datatable.filter_option.title') ?: 'Filter Option'}]]
+      </h4>
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
     </div>
     <div th:if="${queryConfig}" class="offcanvas-body">
@@ -48,12 +49,13 @@
 
         <div class="col-6">
           <button type="submit" class="btn btn-primary">
-            [[${#messages.msgOrNull('jsf.datatable.filter_option.filter') ?: 'Filter'}]]</button>
+            [[${#messages.msgOrNull('sbu.jsf.datatable.filter_option.filter') ?:
+            'Filter'}]]</button>
         </div>
         <div class="col-6">
           <button hx:get="${route.indexPath}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
             type="button" class="btn btn-warning">
-            [[${#messages.msgOrNull('jsf.datatable.filter_option.reset') ?: 'Reset'}]]</button>
+            [[${#messages.msgOrNull('sbu.jsf.datatable.filter_option.reset') ?: 'Reset'}]]</button>
         </div>
       </form>
     </div>
