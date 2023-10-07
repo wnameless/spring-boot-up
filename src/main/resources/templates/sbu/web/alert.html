@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5" th:with="alert=${alert}">
+<div th:fragment="bs5" th:with="alert=${__${@webModelAttributes.ALERT_NAME}__}">
 
   <th:block th:if="${alert}">
 
