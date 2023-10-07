@@ -27,6 +27,7 @@ public class WebModelAttributes {
   public static String CHILD_NAME;
   public static String CHILD_CLASS_NAME;
   public static String CHILDREN_NAME;
+  public static String ALERT_NAME;
 
   @Value("${spring.boot.up.web.model.attribute.route.name:route}")
   public void setRoute(String routeName) {
@@ -111,6 +112,11 @@ public class WebModelAttributes {
   @Value("${spring.boot.up.web.model.attribute.children.name:children}")
   public void setModelAttrChildren(String childrenName) {
     WebModelAttributes.CHILDREN_NAME = childrenName;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.alert.name:alert}")
+  public void setModelAttrAlert(String alertName) {
+    WebModelAttributes.ALERT_NAME = alertName;
   }
 
 }

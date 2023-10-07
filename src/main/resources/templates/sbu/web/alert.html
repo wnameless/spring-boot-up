@@ -1,0 +1,39 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5" th:with="alert=${alert}">
+
+  <th:block th:if="${alert}">
+
+    <th:block th:each="message : ${alert.danger}">
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        [[${message}]]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </th:block>
+
+    <th:block th:each="message : ${alert.warning}">
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        [[${message}]]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </th:block>
+
+    <th:block th:each="message : ${alert.info}">
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        [[${message}]]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </th:block>
+
+    <th:block th:each="message : ${alert.success}">
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        [[${message}]]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </th:block>
+
+  </th:block>
+
+</div>
+
+</html>

@@ -261,4 +261,20 @@ public class ModelAttributes {
 
   }
 
+  public Class<Alert> getAlert() {
+    return Alert.class;
+  }
+
+  public static class Alert {
+
+    public static String name() {
+      return getName();
+    }
+
+    public static String getName() {
+      return WebModelAttributes.ALERT_NAME;
+    }
+
+  }
+
 }
