@@ -12,7 +12,7 @@
     <react-form th:id="${'newForm' + rid}"
       th:action="@{${item.createPath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
       method="POST" ajax:target="${ajaxTargetId}">
-      <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('ui.submit') ?:
+      <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
         'Submit'}]]</button>
     </react-form>
 
@@ -40,7 +40,7 @@
     <react-form th:id="${'editForm' + rid}"
       th:action="@{${item.updatePath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
       method="PUT" ajax:target="${ajaxTargetId}">
-      <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('ui.submit') ?:
+      <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
         'Submit'}]]</button>
     </react-form>
 
@@ -71,7 +71,7 @@
         <div></div>
       </th:block>
       <th:block th:unless="${item.hasBackPathname}">
-        <button class="btn btn-light" type="submit">[[${#messages.msgOrNull('ui.return') ?:
+        <button class="btn btn-light" type="submit">[[${#messages.msgOrNull('sbu.ui.return') ?:
           'Return'}]]</button>
       </th:block>
     </react-form>
@@ -119,7 +119,7 @@
         <div></div>
       </th:block>
       <th:block th:unless="${item.hasBackPathname}">
-        <button class="btn btn-light" type="submit">[[${#messages.msgOrNull('ui.return') ?:
+        <button class="btn btn-light" type="submit">[[${#messages.msgOrNull('sbu.ui.return') ?:
           'Return'}]]</button>
       </th:block>
     </react-form>
@@ -167,7 +167,7 @@
         <div></div>
       </th:block>
       <th:block th:unless="${item.hasBackPathname}">
-        <button class="btn btn-light" type="submit">[[${#messages.msgOrNull('ui.return') ?:
+        <button class="btn btn-light" type="submit">[[${#messages.msgOrNull('sbu.ui.return') ?:
           'Return'}]]</button>
       </th:block>
     </react-form>

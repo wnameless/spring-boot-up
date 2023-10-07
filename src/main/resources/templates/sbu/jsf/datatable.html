@@ -92,14 +92,14 @@
                 <a th:classappend="${user == null || (user != null && user.canUpdate(item))} ? 'text-primary' : 'disabled'"
                   hx:get="${queryConfig == null ? item.editPath : item.getEditPath(queryConfig)}"
                   hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
-                  [[${#messages.msgOrNull('ui.edit') ?: 'Edit'}]]</a>
+                  [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
               </li>
               <li>
                 <a th:classappend="${user == null || (user != null && user.canDelete(item))} ? 'text-danger' : 'disabled'"
                   hx:delete="${queryConfig == null ? item.deletePath : item.getDeletePath(queryConfig)}"
-                  hx:confirm="${#messages.msgOrNull('ui.confirmation.delete') ?: 'Are you sure?'}"
+                  hx:confirm="${#messages.msgOrNull('sbu.ui.confirmation.delete') ?: 'Are you sure?'}"
                   hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
-                  [[${#messages.msgOrNull('ui.delete') ?: 'Delete'}]]</a>
+                  [[${#messages.msgOrNull('sbu.ui.delete') ?: 'Delete'}]]</a>
               </li>
               <th:block th:if="${li}">
                 <th:block th:replace="${li}"></th:block>
