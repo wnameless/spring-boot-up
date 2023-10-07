@@ -13,8 +13,9 @@ import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoProjection
 import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoQuerydslUtils;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.WebPermissionManager;
-import com.github.wnameless.spring.boot.up.web.ModelAttributes.Messages;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Alert;
 import com.github.wnameless.spring.boot.up.web.SpringBootUpWeb;
+import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper.AlertMessages;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Path;
@@ -253,15 +254,18 @@ public interface ResourceFilterRepository<T, ID>
     // validates bean
     List<String> messages = validator.validate(entity).stream().map(e -> e.getMessage()).toList();
     if (messages.size() > 0) {
-      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Messages.name(), messages);
+      var alertMessages = new AlertMessages();
+      alertMessages.setWarning(messages);
+      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
       return entity;
     }
 
     // new entity
     if (!target.isPresent()) {
       if (!user.canCreate(rar.getResourceType())) {
-        SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Messages.name(),
-            "No permission to CREATE");
+        var alertMessages = new AlertMessages();
+        alertMessages.getWarning().add("No permission to CREATE");
+        SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
         return entity;
       }
 
@@ -275,8 +279,9 @@ public interface ResourceFilterRepository<T, ID>
       target = findOne(ExpressionUtils.allOf(rar.getPredicateOfUpdateAbility(), idEq));
     }
     if (!target.isPresent()) {
-      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Messages.name(),
-          "No permission to UPDATE");
+      var alertMessages = new AlertMessages();
+      alertMessages.getWarning().add("No permission to UPDATE");
+      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
       return entity;
     }
 
@@ -289,7 +294,9 @@ public interface ResourceFilterRepository<T, ID>
     // validates bean
     List<String> messages = validator.validate(entity).stream().map(e -> e.getMessage()).toList();
     if (messages.size() > 0) {
-      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Messages.name(), messages);
+      var alertMessages = new AlertMessages();
+      alertMessages.setWarning(messages);
+      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
       return entity;
     }
 
@@ -300,7 +307,9 @@ public interface ResourceFilterRepository<T, ID>
     try {
       return save(entity);
     } catch (Exception e) {
-      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Messages.name(), e.getMessage());
+      var alertMessages = new AlertMessages();
+      alertMessages.getWarning().add(e.getMessage());
+      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
       return entity;
     }
   }

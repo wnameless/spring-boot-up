@@ -197,22 +197,6 @@ public class ModelAttributes {
 
   }
 
-  public Class<Messages> getMessages() {
-    return Messages.class;
-  }
-
-  public static class Messages {
-
-    public static String name() {
-      return getName();
-    }
-
-    public static String getName() {
-      return WebModelAttributes.MESSAGES_NAME;
-    }
-
-  }
-
   public Class<AjaxTargetId> getAjaxTargetId() {
     return AjaxTargetId.class;
   }

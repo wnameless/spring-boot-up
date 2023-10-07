@@ -15,7 +15,6 @@ public class WebModelAttributes {
   public static String AJAX_TARGET_ID_VALUE;
   public static String EMBEDDED_TARGET_ID_VALUE;
   public static String BACK_TARGET_ID_VALUE;
-  public static String MESSAGES_NAME;
   public static String PAGE_NAME;
   public static String ITEM_NAME;
   public static String ITEM_CLASS_NAME;
@@ -52,11 +51,6 @@ public class WebModelAttributes {
   @Value("${spring.boot.up.web.model.attribute.back-target-id.value:backTarget}")
   public void setBackTarget(String backTargetIdValue) {
     WebModelAttributes.BACK_TARGET_ID_VALUE = backTargetIdValue;
-  }
-
-  @Value("${spring.boot.up.web.model.attribute.messages.name:messages}")
-  public void setModelAttrMessages(String messagesName) {
-    WebModelAttributes.MESSAGES_NAME = messagesName;
   }
 
   @Value("${spring.boot.up.web.model.attribute.page.name:page}")
