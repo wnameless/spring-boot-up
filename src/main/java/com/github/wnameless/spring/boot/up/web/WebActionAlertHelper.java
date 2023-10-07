@@ -50,8 +50,6 @@ public interface WebActionAlertHelper {
     SpringBootUp.findMessage(successKey).ifPresent(message -> {
       alert.setSuccess(Arrays.asList(message.split(",")));
     });
-    System.out.println(Alert.name());
-    System.out.println(alert);
     mav.addObject(Alert.name(), alert);
   }
 
