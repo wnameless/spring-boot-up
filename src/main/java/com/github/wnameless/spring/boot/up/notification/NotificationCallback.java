@@ -11,9 +11,15 @@ public interface NotificationCallback<NS extends NotificationSource<ID>, ID> {
 
   ID getStateMachineEntityId();
 
+  void setStateMachineEntityId(ID id);
+
   NS getNotificationSource();
 
+  void setNotificationSource(NS notificationSource);
+
   NotificationAdvice getAdvice();
+
+  void setAdvice(NotificationAdvice advice);
 
   default void setState(Enum<? extends State<?, ID>> state) {
     setStateName(state.name());
