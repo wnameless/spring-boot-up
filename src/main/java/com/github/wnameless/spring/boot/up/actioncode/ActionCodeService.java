@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Random;
 import org.apache.commons.lang3.function.TriFunction;
 import org.springframework.web.servlet.ModelAndView;
+import com.github.wnameless.spring.boot.up.SpringBootUp;
 
 public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?>, T, ID> {
 
@@ -12,6 +13,12 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
   AC newActionCode();
 
   A getActionEnum(String actionName);
+
+  default String getActionEnumDisplay(A actionEnum) {
+    return SpringBootUp.getMessage("sbu.actioncode."
+        + actionEnum.getDeclaringClass().getSimpleName() + "." + actionEnum.name(),
+        new Object[] {actionEnum}, null);
+  }
 
   default TriFunction<ModelAndView, A, T, ModelAndView> actionCodeRequest() {
     return (mav, action, item) -> {

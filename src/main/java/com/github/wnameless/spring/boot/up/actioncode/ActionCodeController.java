@@ -22,13 +22,16 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
   default ModelAndView executeAction(ModelAndView mav, @PathVariable String actionName,
       @PathVariable String code) {
     mav.setView(new RedirectView(getRestfulRoute().getIndexPath()));
-    Optional<AC> actionCodeOpt = getActionCodeService().getActionCodeRepository()
-        .findByActionAndCode(getActionCodeService().getActionEnum(actionName), code);
+    A actionEnum = getActionCodeService().getActionEnum(actionName);
+    Optional<AC> actionCodeOpt =
+        getActionCodeService().getActionCodeRepository().findByActionAndCode(actionEnum, code);
     if (actionCodeOpt.isPresent()) {
       mav = getActionCodeService().actionCodeExecution().apply(mav, actionCodeOpt.get(),
           getRestfulItem());
     }
     mav.addObject(ActionCodeAttributes.ACTION, actionName);
+    mav.addObject(ActionCodeAttributes.ACTION_DISPLAY,
+        getActionCodeService().getActionEnumDisplay(actionEnum));
     return mav;
   }
 
@@ -36,9 +39,11 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
   default ModelAndView generateAction(ModelAndView mav, @PathVariable String actionName,
       @RequestParam(required = true) String ajaxTargetId) {
     mav.setViewName("sbu/action-codes/display :: bar");
-    mav = getActionCodeService().actionCodeGeneration().apply(mav,
-        getActionCodeService().getActionEnum(actionName), getRestfulItem());
+    A actionEnum = getActionCodeService().getActionEnum(actionName);
+    mav = getActionCodeService().actionCodeGeneration().apply(mav, actionEnum, getRestfulItem());
     mav.addObject(ActionCodeAttributes.ACTION, actionName);
+    mav.addObject(ActionCodeAttributes.ACTION_DISPLAY,
+        getActionCodeService().getActionEnumDisplay(actionEnum));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
@@ -47,9 +52,11 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
   default ModelAndView requestAction(ModelAndView mav, @PathVariable String actionName,
       @RequestParam(required = true) String ajaxTargetId) {
     mav.setViewName("sbu/action-codes/display :: bar");
-    mav = getActionCodeService().actionCodeRequest().apply(mav,
-        getActionCodeService().getActionEnum(actionName), getRestfulItem());
+    A actionEnum = getActionCodeService().getActionEnum(actionName);
+    mav = getActionCodeService().actionCodeRequest().apply(mav, actionEnum, getRestfulItem());
     mav.addObject(ActionCodeAttributes.ACTION, actionName);
+    mav.addObject(ActionCodeAttributes.ACTION_DISPLAY,
+        getActionCodeService().getActionEnumDisplay(actionEnum));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
@@ -58,13 +65,16 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
   default ModelAndView deleteAction(ModelAndView mav, @PathVariable String actionName,
       @PathVariable String code, @RequestParam(required = true) String ajaxTargetId) {
     mav.setViewName("sbu/action-codes/display :: bar");
-    Optional<AC> actionCodeOpt = getActionCodeService().getActionCodeRepository()
-        .findByActionAndCode(getActionCodeService().getActionEnum(actionName), code);
+    A actionEnum = getActionCodeService().getActionEnum(actionName);
+    Optional<AC> actionCodeOpt =
+        getActionCodeService().getActionCodeRepository().findByActionAndCode(actionEnum, code);
     if (actionCodeOpt.isPresent()) {
       mav = getActionCodeService().actionCodeDeletion().apply(mav, actionCodeOpt.get(),
           getRestfulItem());
     }
     mav.addObject(ActionCodeAttributes.ACTION, actionName);
+    mav.addObject(ActionCodeAttributes.ACTION_DISPLAY,
+        getActionCodeService().getActionEnumDisplay(actionEnum));
     mav.addObject(ActionCodeAttributes.CODE, "");
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
