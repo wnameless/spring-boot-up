@@ -4,6 +4,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.GenericTypeResolver;
 import com.github.wnameless.spring.boot.up.jsf.JsfConfig;
 import com.github.wnameless.spring.boot.up.jsf.JsonCoreFactory;
 import com.github.wnameless.spring.boot.up.jsf.JsonSchemaFormUtils;
@@ -13,6 +14,7 @@ import com.github.wnameless.spring.boot.up.jsf.repository.JsfDataRepository;
 import com.github.wnameless.spring.boot.up.jsf.repository.JsfSchemaRepository;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import lombok.SneakyThrows;
 
 public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, ID> {
 
@@ -22,9 +24,21 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
 
   JsfDataRepository<JD, JS, ID> getJsfDataRepository();
 
-  JS newJsfSchema();
+  @SneakyThrows
+  @SuppressWarnings("unchecked")
+  default JS newJsfSchema() {
+    var genericTypeResolver =
+        GenericTypeResolver.resolveTypeArguments(this.getClass(), JsfService.class);
+    return (JS) genericTypeResolver[1].getDeclaredConstructor().newInstance();
+  }
 
-  JD newJsfData();
+  @SneakyThrows
+  @SuppressWarnings("unchecked")
+  default JD newJsfData() {
+    var genericTypeResolver =
+        GenericTypeResolver.resolveTypeArguments(this.getClass(), JsfService.class);
+    return (JD) genericTypeResolver[0].getDeclaredConstructor().newInstance();
+  }
 
   default JS createJsfSchema(String formType, Map<String, Object> schema,
       Map<String, Object> uiSchema) {

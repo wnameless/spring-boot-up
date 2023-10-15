@@ -2,10 +2,18 @@ package com.github.wnameless.spring.boot.up.attachment;
 
 import java.io.InputStream;
 import java.net.URI;
+import org.springframework.core.GenericTypeResolver;
+import lombok.SneakyThrows;
 
 public interface AttachmentService<A extends Attachment<ID>, ID> {
 
-  A newAttachment();
+  @SneakyThrows
+  @SuppressWarnings("unchecked")
+  default A newAttachment() {
+    var genericTypeResolver =
+        GenericTypeResolver.resolveTypeArguments(this.getClass(), AttachmentService.class);
+    return (A) genericTypeResolver[0].getDeclaredConstructor().newInstance();
+  }
 
   A saveAttachment(A attachment);
 

@@ -1,11 +1,14 @@
 package com.github.wnameless.spring.boot.up.attachment;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Random;
 import org.springframework.data.repository.CrudRepository;
 import lombok.SneakyThrows;
@@ -16,8 +19,6 @@ public abstract class BaseLocalAttachmentService<A extends Attachment<ID>, ID>
   abstract public CrudRepository<A, ID> attachmentRepository();
 
   abstract public String getRootFilePath();
-
-  abstract public A newAttachment();
 
   @Override
   public A saveAttachment(A attachment) {
@@ -71,7 +72,10 @@ public abstract class BaseLocalAttachmentService<A extends Attachment<ID>, ID>
   @SneakyThrows
   @Override
   public InputStream readData(A attachment) {
-    return new FileInputStream(new File(attachment.getUri()));
+    String encodedString = new String(Files.readAllBytes(Paths.get(attachment.getUri())), "UTF-8");
+    byte[] decodedBytes = Base64.getDecoder().decode(encodedString.trim());
+    InputStream is = new ByteArrayInputStream(decodedBytes);
+    return is;
   }
 
 }
