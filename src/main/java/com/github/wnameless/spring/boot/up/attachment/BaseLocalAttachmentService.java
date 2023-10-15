@@ -9,7 +9,10 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Consumer;
 import org.springframework.data.repository.CrudRepository;
 import lombok.SneakyThrows;
 
@@ -76,6 +79,19 @@ public abstract class BaseLocalAttachmentService<A extends Attachment<ID>, ID>
     byte[] decodedBytes = Base64.getDecoder().decode(encodedString.trim());
     InputStream is = new ByteArrayInputStream(decodedBytes);
     return is;
+  }
+
+  @Override
+  public Optional<Consumer<Collection<A>>> outdatedAttachmentProcedure() {
+    return Optional.of(outdated -> {
+      outdated.forEach(a -> {
+        var file = new File(a.getUri());
+        if (file.exists()) {
+          file.delete();
+        }
+        attachmentRepository().delete(a);
+      });
+    });
   }
 
 }
