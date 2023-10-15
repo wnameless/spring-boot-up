@@ -2,9 +2,7 @@ package com.github.wnameless.spring.boot.up.organizationunit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,23 +15,13 @@ public interface OrganizationUnitService<ID> {
 
   List<? extends OrganizationUnitRepository<? extends OrganizationUnit, ID>> getOrganizationUnitRepositories();
 
-  Map<Set<Class<?>>, List<OrganizationUnitRepository<? extends OrganizationUnit, ID>>> getOrganizationTreeableRepositories();
-
-  Map<Set<Class<?>>, OrganizationUnit> getRootOrganizationUnits();
-
-  default boolean isTree(OrganizationUnit organizationUnit) {
-    return getOrganizationTreeableRepositories().keySet().stream()
-        .anyMatch(s -> s.contains(organizationUnit.getClass()))
-        || getRootOrganizationUnits().values().contains(organizationUnit);
-  }
-
-  Set<? extends OrganizationUnit> getDefaultOrganizationUnits();
+  Set<OrganizationTree> getOrganizationTrees();
 
   default Optional<? extends OrganizationUnit> findOrganizationUnit(String organizationUnitName) {
-    var defaultOuOpt = getDefaultOrganizationUnits().stream()
-        .filter(ou -> Objects.equals(ou.getOrganizationUnitName(), organizationUnitName))
+    var rootOpt = getOrganizationTrees().stream().filter(
+        ot -> Objects.equals(ot.getDefaultRoot().getOrganizationUnitName(), organizationUnitName))
         .findFirst();
-    if (defaultOuOpt.isPresent()) return defaultOuOpt;
+    if (rootOpt.isPresent()) return Optional.of(rootOpt.get().getDefaultRoot());
 
     for (var repo : getOrganizationUnitRepositories()) {
       var ouOpt = repo.findByOrganizationUnitName(organizationUnitName);
@@ -44,13 +32,11 @@ public interface OrganizationUnitService<ID> {
 
   default Optional<? extends OrganizationUnit> findOrganizationUnit(String organizationUnitName,
       Class<?> organizationUnitType) {
-    var defaultOuOpt = getDefaultOrganizationUnits().stream()
-        .filter(ou -> Objects.equals(ou.getOrganizationUnitName(), organizationUnitName))
-        .findFirst();
-    if (defaultOuOpt.isPresent()) {
-      if (organizationUnitType.isAssignableFrom(defaultOuOpt.get().getClass())) {
-        return defaultOuOpt;
-      }
+    if (SimpleOrganizationUnit.class.isAssignableFrom(organizationUnitType)) {
+      var rootOpt = getOrganizationTrees().stream().filter(
+          ot -> Objects.equals(ot.getDefaultRoot().getOrganizationUnitName(), organizationUnitName))
+          .findFirst();
+      if (rootOpt.isPresent()) return Optional.of(rootOpt.get().getDefaultRoot());
     }
 
     for (var repo : getOrganizationUnitRepositories()) {
@@ -62,6 +48,48 @@ public interface OrganizationUnitService<ID> {
       }
     }
     return Optional.empty();
+  }
+
+  default TreeNode<SimpleOrganizationUnit> toTreeNode(String organizationUnitName) {
+    var ouOpt = findOrganizationUnit(organizationUnitName);
+    if (ouOpt.isEmpty()) return null;
+    if (!(isTreeNode(ouOpt.get()))) return null;
+
+    var oues = getAllTreeOrganizationUnits(ouOpt.get());
+    var rootOpt =
+        oues.stream().filter(ou -> ou.getParentOrganizationUnitName() == null).findFirst();
+    if (rootOpt.isEmpty()) return null;
+
+    var root = rootOpt.get();
+    oues.remove(root);
+    var rootNode = new ArrayMultiTreeNode<SimpleOrganizationUnit>(new SimpleOrganizationUnit(root));
+
+    List<TreeNode<SimpleOrganizationUnit>> leaves = new ArrayList<>(Arrays.asList(rootNode));
+    do {
+      leaves = buildTree(leaves, oues);
+    } while (!leaves.isEmpty());
+
+    return rootNode;
+  }
+
+  private static List<TreeNode<SimpleOrganizationUnit>> buildTree(
+      List<TreeNode<SimpleOrganizationUnit>> leaves,
+      List<SimpleOrganizationUnit> simpleOrganizationUnits) {
+    var newLeaves = new ArrayList<TreeNode<SimpleOrganizationUnit>>();
+
+    for (var leaf : leaves) {
+      var targets = simpleOrganizationUnits.stream().filter(sou -> Objects
+          .equals(leaf.data().getOrganizationUnitName(), sou.getParentOrganizationUnitName()))
+          .toList();
+      simpleOrganizationUnits.removeAll(targets);
+      for (var target : targets) {
+        var newLeaf = new ArrayMultiTreeNode<>(target);
+        leaf.add(newLeaf);
+        newLeaves.add(newLeaf);
+      }
+    }
+
+    return newLeaves;
   }
 
   default List<Entry<String, String>> toNodeVectors(TreeNode<SimpleOrganizationUnit> source) {
@@ -85,71 +113,31 @@ public interface OrganizationUnitService<ID> {
     }
   }
 
-  default TreeNode<SimpleOrganizationUnit> toTreeNode(String organizationUnitName) {
-    var ouOpt = findOrganizationUnit(organizationUnitName);
-    if (ouOpt.isEmpty()) return null;
-    if (!(isTree(ouOpt.get()))) return null;
-
-    var oues = getAllTreeOrganizationUnits(ouOpt.get());
-    var rootOpt =
-        oues.stream().filter(ou -> ou.getParentOrganizationUnitName() == null).findFirst();
-    if (rootOpt.isEmpty()) return null;
-
-    var root = rootOpt.get();
-    oues.remove(root);
-    var rootNode = new ArrayMultiTreeNode<SimpleOrganizationUnit>(new SimpleOrganizationUnit(root));
-
-    List<TreeNode<SimpleOrganizationUnit>> leaves = new ArrayList<>(Arrays.asList(rootNode));
-    do {
-      leaves = buildTree(leaves, oues);
-    } while (!leaves.isEmpty());
-
-    return rootNode;
+  default Optional<OrganizationTree> findOrganizationTree(OrganizationUnit organizationUnit) {
+    return getOrganizationTrees().stream().filter(ot -> ot.isTreeNode(organizationUnit))
+        .findFirst();
   }
 
-  default List<TreeNode<SimpleOrganizationUnit>> buildTree(
-      List<TreeNode<SimpleOrganizationUnit>> leaves,
-      List<SimpleOrganizationUnit> simpleOrganizationUnits) {
-    var newLeaves = new ArrayList<TreeNode<SimpleOrganizationUnit>>();
-
-    for (var leaf : leaves) {
-      var targets = simpleOrganizationUnits.stream().filter(sou -> Objects
-          .equals(leaf.data().getOrganizationUnitName(), sou.getParentOrganizationUnitName()))
-          .toList();
-      simpleOrganizationUnits.removeAll(targets);
-      for (var target : targets) {
-        var newLeaf = new ArrayMultiTreeNode<>(target);
-        leaf.add(newLeaf);
-        newLeaves.add(newLeaf);
-      }
-    }
-
-    return newLeaves;
+  default boolean isTreeNode(OrganizationUnit organizationUnit) {
+    return getOrganizationTrees().stream().anyMatch(ot -> ot.isTreeNode(organizationUnit));
   }
 
   default List<SimpleOrganizationUnit> getAllTreeOrganizationUnits(
       OrganizationUnit organizationUnit) {
     var organizationUnits = new ArrayList<SimpleOrganizationUnit>();
-    for (var repo : getTreeRepositories(organizationUnit)) {
-      var oues = repo.findAllProjectedBy("organizationUnitName", "parentOrganizationUnitName")
-          .stream().map(ou -> new SimpleOrganizationUnit(ou)).toList();
-      organizationUnits.addAll(oues);
-    }
-    getRootOrganizationUnits().entrySet().stream()
-        .filter(e -> e.getKey().contains(organizationUnit.getClass())).findFirst().ifPresent(e -> {
-          organizationUnits.add(new SimpleOrganizationUnit(e.getValue()));
-        });
-    return organizationUnits;
-  }
 
-  default List<OrganizationUnitRepository<? extends OrganizationUnit, ID>> getTreeRepositories(
-      OrganizationUnit organizationUnit) {
-    for (var set : getOrganizationTreeableRepositories().keySet()) {
-      if (set.contains(organizationUnit.getClass())) {
-        return getOrganizationTreeableRepositories().get(set);
+    findOrganizationTree(organizationUnit).ifPresent(ot -> {
+      if (ot.hasDefaultRoot()) organizationUnits.add(ot.getDefaultRoot());
+      for (var treeRepo : getOrganizationUnitRepositories()) {
+        if (ot.getNodeTypes().contains(treeRepo.getResourceType())) {
+          treeRepo.findAll().forEach(ou -> {
+            organizationUnits.add(new SimpleOrganizationUnit(ou));
+          });
+        }
       }
-    }
-    return Collections.emptyList();
+    });
+
+    return organizationUnits;
   }
 
 }
