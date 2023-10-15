@@ -245,6 +245,22 @@ public class ModelAttributes {
 
   }
 
+  public Class<BackTargetId> getBackTargetId() {
+    return BackTargetId.class;
+  }
+
+  public static class BackTargetId {
+
+    public static String name() {
+      return getName();
+    }
+
+    public static String getName() {
+      return "backTargetId";
+    }
+
+  }
+
   public Class<Alert> getAlert() {
     return Alert.class;
   }
