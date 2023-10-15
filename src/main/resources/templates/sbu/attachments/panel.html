@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5" class="p-2 border rounded-3 border-primary">
-
+<div th:fragment="bs5" th:with="user=${__${'@' + @webModelAttributes.USER_NAME}__}"
+  class="p-2 border rounded-3 border-primary">
   <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
     <li class="nav-item">
       <button class="nav-link disabled" href="#">[[${#messages.msgOrNull('sbu.attachment.title') ?:
