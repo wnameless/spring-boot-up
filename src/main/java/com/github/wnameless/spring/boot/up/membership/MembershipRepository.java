@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.organizationunit;
+package com.github.wnameless.spring.boot.up.membership;
 
 import java.util.Collection;
 import java.util.List;
@@ -8,11 +8,11 @@ import org.springframework.data.repository.NoRepositoryBean;
 import com.github.wnameless.spring.boot.up.permission.role.Rolify;
 
 @NoRepositoryBean
-public interface OrganizationUnitMemberRepository<OU extends OrganizationUnit, R extends Rolify, ID>
-    extends CrudRepository<OU, ID> {
+public interface MembershipRepository<OUM extends Membership<R, ID>, R extends Rolify, ID>
+    extends CrudRepository<OUM, ID> {
 
-  Optional<OU> findByUsername();
+  Optional<OUM> findByUsername(String username);
 
-  List<OU> findAllByRolesIn(Collection<R> roles);
+  List<OUM> findAllByRolesIn(Collection<R> roles);
 
 }
