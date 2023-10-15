@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,7 +51,13 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     for (var a : attachments) {
       if (attachmentSnapshotAware.isValidAttachment(a)) {
         if (attachmentSnapshotAware.isExistedAttachment(a)) {
-          attachmentSnapshotAware.removeExistedAttachment(a);
+          var removedOne = attachmentSnapshotAware.removeExistedAttachment(a);
+          if (removedOne != null) {
+            if (getAttachmentService().outdatedAttachmentProcedure().isPresent()) {
+              getAttachmentService().outdatedAttachmentProcedure().get()
+                  .accept(Arrays.asList(removedOne));
+            }
+          }
         }
         original.add(a);
       }
@@ -284,8 +291,13 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
             .toList());
       }
     });
+    var oldAttachments = attachmentSnapshotAware.getAttachmentSnapshot().getAttachments();
     attachmentSnapshotAware.getAttachmentSnapshot().setAttachments(filtered);
     attachmentSnapshotAware.saveAttachmentSnapshotAware();
+    if (getAttachmentService().outdatedAttachmentProcedure().isPresent()) {
+      oldAttachments.removeAll(filtered);
+      getAttachmentService().outdatedAttachmentProcedure().get().accept(oldAttachments);
+    }
 
     mav.addObject("attachmentChecklist", attachmentSnapshotAware.getAttachmentChecklist());
     mav.addObject("attachmentGroups",

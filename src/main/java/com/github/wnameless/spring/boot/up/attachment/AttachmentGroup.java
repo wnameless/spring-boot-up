@@ -12,21 +12,11 @@ public class AttachmentGroup {
     return new AttachmentGroup(group, true);
   }
 
-  public static final AttachmentGroup single(String group, String title) {
-    return new AttachmentGroup(group, title, true);
-  }
-
   public static final AttachmentGroup multiple(String group) {
     return new AttachmentGroup(group, false);
   }
 
-  public static final AttachmentGroup multiple(String group, String title) {
-    return new AttachmentGroup(group, title, false);
-  }
-
   String group;
-
-  String title;
 
   boolean single;
 
@@ -34,12 +24,6 @@ public class AttachmentGroup {
 
   public AttachmentGroup(String group, boolean single) {
     this.group = group;
-    this.single = single;
-  }
-
-  public AttachmentGroup(String group, String title, boolean single) {
-    this.group = group;
-    this.title = title;
     this.single = single;
   }
 
