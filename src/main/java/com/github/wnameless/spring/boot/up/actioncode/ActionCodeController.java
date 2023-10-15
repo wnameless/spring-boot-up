@@ -16,6 +16,10 @@ import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enum<?>, T, ID>
     extends RestfulItemProvider<T>, RestfulRouteProvider<ID> {
 
+  default String fragmentName() {
+    return "bs5";
+  }
+
   ActionCodeService<AC, A, T, ID> getActionCodeService();
 
   @GetMapping(path = "/{id}/action-codes/{actionName}/{code}")
@@ -38,7 +42,7 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
   @PostMapping(path = "/{id}/action-codes/{actionName}", consumes = APPLICATION_JSON_VALUE)
   default ModelAndView generateAction(ModelAndView mav, @PathVariable String actionName,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/action-codes/display :: bar");
+    mav.setViewName("sbu/action-codes/tool-bar :: " + fragmentName());
     A actionEnum = getActionCodeService().getActionEnum(actionName);
     mav = getActionCodeService().actionCodeGeneration().apply(mav, actionEnum, getRestfulItem());
     mav.addObject(ActionCodeAttributes.ACTION, actionName);
@@ -51,7 +55,7 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
   @GetMapping(path = "/{id}/action-codes/{actionName}", consumes = APPLICATION_JSON_VALUE)
   default ModelAndView requestAction(ModelAndView mav, @PathVariable String actionName,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/action-codes/display :: bar");
+    mav.setViewName("sbu/action-codes/tool-bar :: " + fragmentName());
     A actionEnum = getActionCodeService().getActionEnum(actionName);
     mav = getActionCodeService().actionCodeRequest().apply(mav, actionEnum, getRestfulItem());
     mav.addObject(ActionCodeAttributes.ACTION, actionName);
@@ -64,7 +68,7 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
   @DeleteMapping(path = "/{id}/action-codes/{actionName}/{code}", consumes = APPLICATION_JSON_VALUE)
   default ModelAndView deleteAction(ModelAndView mav, @PathVariable String actionName,
       @PathVariable String code, @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/action-codes/display :: bar");
+    mav.setViewName("sbu/action-codes/tool-bar :: " + fragmentName());
     A actionEnum = getActionCodeService().getActionEnum(actionName);
     Optional<AC> actionCodeOpt =
         getActionCodeService().getActionCodeRepository().findByActionAndCode(actionEnum, code);
