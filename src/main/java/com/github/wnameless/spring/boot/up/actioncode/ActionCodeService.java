@@ -3,14 +3,23 @@ package com.github.wnameless.spring.boot.up.actioncode;
 import java.time.LocalDateTime;
 import java.util.Random;
 import org.apache.commons.lang3.function.TriFunction;
+import org.springframework.core.GenericTypeResolver;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.servlet.ModelAndView;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
+import lombok.SneakyThrows;
 
 public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?>, T, ID> {
 
   ActionCodeRepository<AC, A, T, ID> getActionCodeRepository();
 
-  AC newActionCode();
+  @SneakyThrows
+  @SuppressWarnings("unchecked")
+  default AC newActionCode() {
+    var genericTypeResolver = GenericTypeResolver
+        .resolveTypeArguments(getActionCodeRepository().getClass(), CrudRepository.class);
+    return (AC) genericTypeResolver[0].getDeclaredConstructor().newInstance();
+  }
 
   A getActionEnum(String actionName);
 
