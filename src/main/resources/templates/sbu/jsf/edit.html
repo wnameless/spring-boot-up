@@ -1,0 +1,31 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
+  class="card">
+  <div class="card-header" th:if="${backable}">
+    <button hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
+      hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
+      aria-label="Close"></button>
+  </div>
+  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
+    <react-form th:id="${'editForm' + rid}"
+      th:action="@{${item.updatePath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
+      method="PUT" ajax:target="${ajaxTargetId}">
+      <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
+        'Submit'}]]</button>
+    </react-form>
+
+    <script th:inline="javascript">
+      var editFormDataset = /*[[${item.toDataset()}]]*/ null;
+      var editFormId = /*[[${'editForm' + rid}]]*/ null;
+      var editForm = document.getElementById(editFormId);
+      editForm.setAttribute('props-var', 'editFormDataset');
+    </script>
+  </div>
+  <script th:inline="javascript" defer>
+    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+</div>
+
+</html>

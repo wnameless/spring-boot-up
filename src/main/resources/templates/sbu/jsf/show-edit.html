@@ -1,0 +1,51 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: ajaxTargetId}, embeddedTargetId=${embeddedTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
+  class="card">
+  <div class="card-header">
+    <div class="d-flex">
+      <button th:if="${backable}"
+        hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
+        hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
+        aria-label="Close"></button>
+      <a th:if="${user == null || (user != null && user.canUpdate(item))}" class="pe-2 orange"
+        th:href="${queryConfig == null ? item.editPath : item.getEditPath(queryConfig)}"
+        hx:get="@{${item.editPath}(ajaxTargetId=${embeddedTargetId}, backTargetId=${backTargetId})}"
+        hx:target="${'#' + embeddedTargetId}" hx-ext="json-enc">
+        <i class="fas fa-edit"></i></a>
+    </div>
+  </div>
+  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
+    <react-form th:id="${'showEditForm' + rid }"
+      th:action="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
+      method="GET" ajax:target="${ajaxTargetId}" disabled="true">
+      <th:block th:if="${item.hasBackPathname}">
+        <div></div>
+      </th:block>
+      <th:block th:unless="${item.hasBackPathname}">
+        <button class="btn btn-light" type="submit">[[${#messages.msgOrNull('sbu.ui.return') ?:
+          'Return'}]]</button>
+      </th:block>
+    </react-form>
+
+    <div
+      th:if="${T(com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotAware).isAssignableFrom(item.class)}"
+      th:id="${'attachments' + rid}">
+      <a hx:get="@{${item.joinPath('attachments')}(ajaxTargetId=${'attachments' + rid})}"
+        hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load" class="d-none"></a>
+    </div>
+
+    <script th:inline="javascript">
+      var showEditFormDataset = /*[[${item.toDataset()}]]*/ null;
+      var showEditFormId = /*[[${'showEditForm' + rid}]]*/ null;
+      var showEditForm = document.getElementById(showEditFormId);
+      showEditForm.setAttribute('props-var', 'showEditFormDataset');
+    </script>
+  </div>
+  <script th:inline="javascript" defer>
+    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+</div>
+
+</html>

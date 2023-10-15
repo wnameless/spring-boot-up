@@ -1,0 +1,42 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
+  class="card">
+  <div class="card-header" th:if="${backable}">
+    <button hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
+      hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
+      aria-label="Close"></button>
+  </div>
+  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
+    <react-form th:id="${'showForm' + rid}" th:action="${item.backPath}" method="GET"
+      ajax:target="${ajaxTargetId}" disabled="true">
+      <th:block th:if="${item.hasBackPathname}">
+        <div></div>
+      </th:block>
+      <th:block th:unless="${item.hasBackPathname}">
+        <button class="btn btn-light" type="submit">[[${#messages.msgOrNull('sbu.ui.return') ?:
+          'Return'}]]</button>
+      </th:block>
+    </react-form>
+
+    <div
+      th:if="${T(com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotAware).isAssignableFrom(item.class)}"
+      th:id="${'attachments' + rid}">
+      <a hx:get="@{${item.joinPath('attachments')}(ajaxTargetId=${'attachments' + rid})}"
+        hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load" class="d-none"></a>
+    </div>
+
+    <script th:inline="javascript">
+      var showFormDataset = /*[[${item.toDataset()}]]*/ null;
+      var showFormId = /*[[${'showForm' + rid}]]*/ null;
+      var showForm = document.getElementById(showFormId);
+      showForm.setAttribute('props-var', 'showFormDataset');
+    </script>
+  </div>
+  <script th:inline="javascript" defer>
+    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+</div>
+
+</html>

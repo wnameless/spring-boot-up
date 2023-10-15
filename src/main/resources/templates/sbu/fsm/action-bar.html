@@ -1,0 +1,27 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
+  class="card mb-2">
+  <div class="card-body">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
+      <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-route"></i>
+        [[${item.phase.stateMachine.state.displayName}]]
+      </button>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-success">
+          <i class="fas fa-location-arrow"></i>
+        </button>
+        <th:block th:each="trigger : ${item.phase.externalTriggers}">
+          <button type="button" class="btn btn-outline-success"
+            hx:get="${item.joinPath('triggers', trigger.name)}" hx:target="${'#' + ajaxTargetId}"
+            hx-ext="json-enc">[[${trigger.displayName}]]</button>
+        </th:block>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</html>

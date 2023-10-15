@@ -30,6 +30,10 @@ import lombok.SneakyThrows;
 public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware<AA, A, ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
     extends RestfulRouteProvider<ID>, RestfulItemProvider<AA> {
 
+  default String getFragmentName() {
+    return "bs5";
+  }
+
   default AA getAttachmentSnapshotAware(ID id) {
     return getRestfulItem();
   }
@@ -141,7 +145,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   @GetMapping("/{id}/attachments")
   default ModelAndView retrieveAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/attachments/snapshot :: panel");
+    mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var snapshot = attachmentSnapshotAware.getAttachmentSnapshot();
@@ -156,7 +160,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   @GetMapping("/{id}/attachments/edit")
   default ModelAndView editAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/attachments/snapshot :: edit");
+    mav.setViewName("sbu/attachments/edit :: " + getFragmentName());
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var checklist = attachmentSnapshotAware.getAttachmentChecklist();
@@ -170,7 +174,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   @GetMapping("/{id}/attachments/upload")
   default ModelAndView uploadFragment(ModelAndView mav, @PathVariable ID id,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/attachments/snapshot :: upload");
+    mav.setViewName("sbu/attachments/upload :: " + getFragmentName());
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var checklist = attachmentSnapshotAware.getAttachmentChecklist();
@@ -184,7 +188,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   default ModelAndView uploadAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestBody Map<String, Object> jsfFiles,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/attachments/snapshot :: panel");
+    mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var service = getAttachmentService();
@@ -255,7 +259,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   default ModelAndView deleteAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestBody Map<String, Object> jsfFiles,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/attachments/snapshot :: panel");
+    mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var original = attachmentSnapshotAware.getAttachmentSnapshot().getAttachments();

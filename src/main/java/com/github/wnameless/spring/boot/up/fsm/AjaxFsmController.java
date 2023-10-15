@@ -192,7 +192,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @PathVariable String formType, @RequestParam(required = true) String ajaxTargetId,
       @RequestParam(required = false) String embeddedTargetId) {
     if (embeddedTargetId == null || embeddedTargetId.isBlank()) embeddedTargetId = ajaxTargetId;
-    mav.setViewName("sbu/jsf/form :: show-edit");
+    mav.setViewName("sbu/jsf/show-edit :: bs5");
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     mav.addObject(EmbeddedTargetId.name(), embeddedTargetId);
 
@@ -205,7 +205,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @PathVariable String formType, @RequestParam(required = true) String ajaxTargetId,
       @RequestParam(required = false) String backTargetId) {
     if (backTargetId == null || backTargetId.isBlank()) backTargetId = ajaxTargetId;
-    mav.setViewName("sbu/jsf/form :: edit");
+    mav.setViewName("sbu/jsf/edit :: bs5");
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     mav.addObject(EmbeddedTargetId.name(), backTargetId);
 
@@ -254,7 +254,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @PathVariable String formType, @RequestBody Map<String, Object> formData,
       @RequestParam(required = true) String ajaxTargetId,
       @RequestParam(required = true) String backTargetId) {
-    mav.setViewName("sbu/jsf/form :: show-edit");
+    mav.setViewName("sbu/jsf/show-edit :: bs5");
     mav.addObject(AjaxTargetId.name(), backTargetId);
     mav.addObject(EmbeddedTargetId.name(), ajaxTargetId);
 
