@@ -9,7 +9,7 @@
         hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
         hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
         aria-label="Close"></button>
-      <a th:if="${user == null || (user != null && user.canUpdate(item))}" class="pe-2 orange"
+      <a th:if="${user == null || user.canUpdate(item)}" class="pe-2 orange"
         th:href="${queryConfig == null ? item.editPath : item.getEditPath(queryConfig)}"
         hx:get="@{${item.editPath}(ajaxTargetId=${embeddedTargetId}, backTargetId=${backTargetId})}"
         hx:target="${'#' + embeddedTargetId}" hx-ext="json-enc">

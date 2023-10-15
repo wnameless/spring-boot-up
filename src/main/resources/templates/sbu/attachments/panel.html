@@ -12,14 +12,12 @@
         data-bs-target="#pills-file-list" type="button"
         role="tab">[[${#messages.msgOrNull('sbu.attachment.list') ?: 'List'}]]</button>
     </li>
-    <li th:if="${user == null || (user != null && user.canDelete(item))}" class="nav-item"
-      role="presentation">
+    <li th:if="${user == null || user.canDelete(item)}" class="nav-item" role="presentation">
       <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
         data-bs-target="#pills-file-edit" type="button"
         role="tab">[[${#messages.msgOrNull('sbu.attachment.edit') ?: 'Edit'}]]</button>
     </li>
-    <li th:if="${user == null || (user != null && user.canUpdate(item))}" class="nav-item"
-      role="presentation">
+    <li th:if="${user == null || user.canUpdate(item)}" class="nav-item" role="presentation">
       <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
         data-bs-target="#pills-file-upload" type="button"
         role="tab">[[${#messages.msgOrNull('sbu.attachment.upload') ?: 'Upload'}]]</button>
@@ -56,8 +54,8 @@
       </div>
     </div>
 
-    <div th:if="${user == null || (user != null && user.canDelete(item))}" class="tab-pane fade"
-      id="pills-file-edit" role="tabpanel">
+    <div th:if="${user == null ||  user.canDelete(item)}" class="tab-pane fade" id="pills-file-edit"
+      role="tabpanel">
       <div id="attachmentEdit">
         <a hx:get="@{${item.joinPath('attachments', 'edit')}(ajaxTargetId=${ajaxTargetId})}"
           hx-target="#attachmentEdit" hx-ext="json-enc" hx-trigger="revealed" class="d-none"></a>
@@ -68,7 +66,7 @@
       </div>
     </div>
 
-    <div th:if="${user == null || (user != null && user.canUpdate(item))}" class="tab-pane fade"
+    <div th:if="${user == null || user.canUpdate(item)}" class="tab-pane fade"
       id="pills-file-upload" role="tabpanel">
       <div id="attachmentUpload">
         <a hx:get="@{${item.joinPath('attachments','upload')}(ajaxTargetId=${ajaxTargetId})}"
