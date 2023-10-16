@@ -11,6 +11,7 @@ import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAwareAdapter;
 import com.github.wnameless.spring.boot.up.permission.resource.ForwardableAccessControlAware;
+import jakarta.persistence.PostRemove;
 
 public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
     extends AccessControlAwareAdapter {
@@ -46,7 +47,8 @@ public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T
   void setStateRecord(StateRecord<S, T, ID> stateRecord);
 
   @SuppressWarnings("unchecked")
-  @AfterDeleteFromMongo
+  @PostRemove // JPA
+  @AfterDeleteFromMongo // MongoDB
   default void cleanUpByFormDataTable() {
     List<StateForm<T, ID>> stateForms = getStateRecord().getState().getForms();
     Map<String, Map<String, ID>> formDataTable = getStateRecord().getFormDataTable();
