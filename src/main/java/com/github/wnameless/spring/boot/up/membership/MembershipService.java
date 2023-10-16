@@ -25,8 +25,7 @@ public interface MembershipService<ID> {
     return roles;
   }
 
-  default List<? extends Membership<ID>> findAllMembershipsByRoles(
-      Collection<? extends Rolify> rolifies) {
+  default List<? extends Membership<ID>> findAllByRoles(Collection<? extends Rolify> rolifies) {
     var memberships = new ArrayList<Membership<ID>>();
 
     getMembershipRepositories().forEach(repo -> {
@@ -37,7 +36,7 @@ public interface MembershipService<ID> {
     return memberships;
   }
 
-  default List<? extends Membership<ID>> findAllMembershipsByMembershipOrganizationNameAndRoles(
+  default List<? extends Membership<ID>> findAllByMembershipOrganizationNameAndRoles(
       String membershipOrganizationName, Collection<? extends Rolify> rolifies) {
     var memberships = new ArrayList<Membership<ID>>();
 
