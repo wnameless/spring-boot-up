@@ -1,10 +1,10 @@
 package com.github.wnameless.spring.boot.up.membership;
 
+import static java.util.stream.Collectors.toSet;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import com.github.wnameless.spring.boot.up.permission.role.Role;
 import com.github.wnameless.spring.boot.up.permission.role.Rolify;
 
@@ -26,7 +26,7 @@ public interface EnumMembership<M extends Enum<? extends Rolify>, ID> extends Me
   }
 
   default void setEnumRoles(Set<M> enumRoles) {
-    setRoles(enumRoles.stream().map(r -> Role.of(r.name())).collect(Collectors.toSet()));
+    setRoles(enumRoles.stream().map(er -> Role.of(er.name())).collect(toSet()));
   }
 
 }
