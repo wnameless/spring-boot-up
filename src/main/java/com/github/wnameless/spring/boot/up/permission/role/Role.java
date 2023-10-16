@@ -18,7 +18,7 @@ public final class Role implements Rolify {
   @EqualsAndHashCode.Include
   private String roleName;
 
-  Role() {}
+  public Role() {}
 
   public Role(@NonNull Rolify role) {
     this.roleName = role.getRoleName().toUpperCase();

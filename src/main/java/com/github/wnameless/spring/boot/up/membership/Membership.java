@@ -1,12 +1,16 @@
 package com.github.wnameless.spring.boot.up.membership;
 
 import java.util.Set;
-import com.github.wnameless.spring.boot.up.permission.role.Rolify;
+import com.github.wnameless.spring.boot.up.permission.role.Role;
 
-public interface Membership<R extends Rolify, ID> {
+public interface Membership<ID> {
+
+  String getMembershipOrganizationName();
 
   String getUsername();
 
-  Set<R> getRoles();
+  Set<Role> getRoles();
+
+  void setRoles(Set<Role> roles);
 
 }
