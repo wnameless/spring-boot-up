@@ -7,6 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
+import com.github.wnameless.spring.boot.up.web.HtmlHelper;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes;
 import com.github.wnameless.spring.boot.up.web.SpringBootUpControllerAdvice;
 import com.github.wnameless.spring.boot.up.web.WebModelAttributes;
@@ -15,5 +16,6 @@ import com.github.wnameless.spring.boot.up.web.WebModelAttributes;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({WebModelAttributes.class, ModelAttributes.class, SpringBootUpControllerAdvice.class})
+@Import({WebModelAttributes.class, ModelAttributes.class, HtmlHelper.class,
+    SpringBootUpControllerAdvice.class})
 public @interface EnableSpringBootUpWeb {}

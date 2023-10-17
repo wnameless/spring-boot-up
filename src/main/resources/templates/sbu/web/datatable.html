@@ -14,22 +14,31 @@
         hx-ext="json-enc">
         <th:block th:each="field : ${queryConfig.fields}">
           <div class="col-8">
-            <label class="form-label">[[${field}]]</label>
+            <label class="form-label">
+              [[${#messages.msgOrNull('sbu.web.item.field.' + itemClass.simpleName + '.' +
+              field) ?:
+              field}]]
+            </label>
             <input th:name="${field}" type="text" class="form-control"
               th:value="${queryConfig.getFieldQueryString(field)}">
           </div>
           <div class="col-4">
             <th:block th:if="${queryConfig.getFieldSortName(field)}">
-              <label class="form-label">Sort</label>
+              <label
+                class="form-label">[[${#messages.msgOrNull('sbu.web.datatable.filter_option.sort')
+                ?: 'Sort'}]]</label>
               <select name="sort" class="form-select">
-                <option value="">None</option>
+                <option value="">[[${#messages.msgOrNull('sbu.web.datatable.filter_option.NONE')
+                  ?: 'None'}]]</option>
                 <option th:value="|${queryConfig.getFieldSortName(field)},ASC|"
                   th:selected="${queryConfig.getFieldOrder(field)?.direction?.name == 'ASC'}">
-                  ASC
+                  [[${#messages.msgOrNull('sbu.web.datatable.filter_option.ASC')
+                  ?: 'ASC'}]]
                 </option>
                 <option th:value="|${queryConfig.getFieldSortName(field)},DESC|"
                   th:selected="${queryConfig.getFieldOrder(field)?.direction?.name == 'DESC'}">
-                  DESC
+                  [[${#messages.msgOrNull('sbu.web.datatable.filter_option.DESC')
+                  ?: 'DESC'}]]
                 </option>
               </select>
             </th:block>
@@ -37,7 +46,9 @@
         </th:block>
 
         <div class="col-12 input-group mb-3">
-          <button class="btn btn-outline-secondary" type="button">Size</button>
+          <button class="btn btn-outline-secondary"
+            type="button">[[${#messages.msgOrNull('sbu.web.datatable.filter_option.size')
+            ?: 'Size'}]]</button>
           <select name="size" class="form-select">
             <option th:value="${queryConfig.pageable.pageSize}">
               [[${queryConfig.pageable.pageSize}]]</option>
