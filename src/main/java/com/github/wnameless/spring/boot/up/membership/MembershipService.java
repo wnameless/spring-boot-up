@@ -13,16 +13,14 @@ public interface MembershipService<ID> {
 
   List<? extends MembershipRepository<?, ID>> getMembershipRepositories();
 
-  default Set<Role> findAllRolesByUsername(String username) {
-    var roles = new LinkedHashSet<Role>();
+  default List<? extends Membership<ID>> findAllByUsername(String username) {
+    var memberships = new ArrayList<Membership<ID>>();
 
     getMembershipRepositories().forEach(repo -> {
-      repo.findByUsername(username).ifPresent(oum -> {
-        roles.addAll(oum.getRoles().stream().map(Rolify::toRole).toList());
-      });
+      repo.findByUsername(username).ifPresent(membership -> memberships.add(membership));
     });
 
-    return roles;
+    return memberships;
   }
 
   default List<? extends Membership<ID>> findAllByRoles(Collection<? extends Rolify> rolifies) {
@@ -49,6 +47,18 @@ public interface MembershipService<ID> {
     });
 
     return memberships;
+  }
+
+  default Set<Role> findAllRolesByUsername(String username) {
+    var roles = new LinkedHashSet<Role>();
+
+    getMembershipRepositories().forEach(repo -> {
+      repo.findByUsername(username).ifPresent(oum -> {
+        roles.addAll(oum.getRoles().stream().map(Rolify::toRole).toList());
+      });
+    });
+
+    return roles;
   }
 
 }
