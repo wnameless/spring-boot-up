@@ -14,12 +14,14 @@ public interface MembershipRepository<M extends Membership<ID>, ID> extends Crud
   default Optional<M> findByOrganizationBelongingAndUsername(String organizationBelonging,
       String username) {
     return findAllByUsername(username).stream()
-        .filter(m -> Objects.equals(organizationBelonging, m.getOrganizationBelonging()))
+        .filter(m -> Objects.equals(organizationBelonging, m.getMembershipOrganizationName()))
         .findFirst();
   }
 
   List<M> findAllByUsername(String username);
 
   List<M> findAllByRolesIn(Collection<Role> roles);
+
+  List<M> findAllByUsernameAndRolesIn(String username, Collection<Role> roles);
 
 }
