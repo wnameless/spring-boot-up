@@ -36,6 +36,7 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
     mav.addObject(ActionCodeAttributes.ACTION, actionName);
     mav.addObject(ActionCodeAttributes.ACTION_DISPLAY,
         getActionCodeService().getActionEnumDisplay(actionEnum));
+    mav.addObject(ActionCodeAttributes.SINGULAR, false);
     return mav;
   }
 
@@ -49,6 +50,7 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
     mav.addObject(ActionCodeAttributes.ACTION_DISPLAY,
         getActionCodeService().getActionEnumDisplay(actionEnum));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    mav.addObject(ActionCodeAttributes.SINGULAR, false);
     return mav;
   }
 
@@ -62,6 +64,7 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
     mav.addObject(ActionCodeAttributes.ACTION_DISPLAY,
         getActionCodeService().getActionEnumDisplay(actionEnum));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    mav.addObject(ActionCodeAttributes.SINGULAR, false);
     return mav;
   }
 
@@ -81,6 +84,7 @@ public interface ActionCodeController<AC extends ActionCode<A, T>, A extends Enu
         getActionCodeService().getActionEnumDisplay(actionEnum));
     mav.addObject(ActionCodeAttributes.CODE, "");
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    mav.addObject(ActionCodeAttributes.SINGULAR, false);
     return mav;
   }
 

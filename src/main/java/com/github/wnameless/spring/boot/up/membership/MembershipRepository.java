@@ -11,7 +11,10 @@ import com.github.wnameless.spring.boot.up.permission.role.Role;
 public interface MembershipRepository<OUM extends Membership<ID>, ID>
     extends CrudRepository<OUM, ID> {
 
-  Optional<OUM> findByUsername(String username);
+  Optional<OUM> findByOrganizationBelongingAndUsername(String organizationBelonging,
+      String username);
+
+  List<OUM> findAllByUsername(String username);
 
   List<OUM> findAllByRolesIn(Collection<Role> roles);
 

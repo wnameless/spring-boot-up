@@ -40,7 +40,7 @@
         <a hx:delete="@{${item.joinPath('action-codes', action, code)}(ajaxTargetId=${ajaxTargetId})}"
           hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-trash"></span>
-          [${#messages.msgOrNull('sbu.actioncode.clear') ?:
+          [[${#messages.msgOrNull('sbu.actioncode.clear') ?:
           'Clear'}]]
         </a>
       </li>

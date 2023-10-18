@@ -17,7 +17,7 @@ public interface MembershipService<ID> {
     var memberships = new ArrayList<Membership<ID>>();
 
     getMembershipRepositories().forEach(repo -> {
-      repo.findByUsername(username).ifPresent(membership -> memberships.add(membership));
+      repo.findAllByUsername(username).forEach(membership -> memberships.add(membership));
     });
 
     return memberships;
@@ -40,8 +40,8 @@ public interface MembershipService<ID> {
 
     getMembershipRepositories().forEach(repo -> {
       var targetMemberships = repo.findAllByRolesIn(rolifies.stream().map(Rolify::toRole).toList());
-      var filteredMemberships = targetMemberships.stream().filter(
-          mem -> Objects.equals(membershipOrganizationName, mem.getMembershipOrganizationName()))
+      var filteredMemberships = targetMemberships.stream()
+          .filter(mem -> Objects.equals(membershipOrganizationName, mem.getOrganizationBelonging()))
           .toList();
       memberships.addAll(filteredMemberships);
     });
@@ -53,7 +53,7 @@ public interface MembershipService<ID> {
     var roles = new LinkedHashSet<Role>();
 
     getMembershipRepositories().forEach(repo -> {
-      repo.findByUsername(username).ifPresent(oum -> {
+      repo.findAllByUsername(username).forEach(oum -> {
         roles.addAll(oum.getRoles().stream().map(Rolify::toRole).toList());
       });
     });
