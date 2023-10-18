@@ -2,20 +2,24 @@ package com.github.wnameless.spring.boot.up.membership;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 import com.github.wnameless.spring.boot.up.permission.role.Role;
 
 @NoRepositoryBean
-public interface MembershipRepository<OUM extends Membership<ID>, ID>
-    extends CrudRepository<OUM, ID> {
+public interface MembershipRepository<M extends Membership<ID>, ID> extends CrudRepository<M, ID> {
 
-  Optional<OUM> findByOrganizationBelongingAndUsername(String organizationBelonging,
-      String username);
+  default Optional<M> findByOrganizationBelongingAndUsername(String organizationBelonging,
+      String username) {
+    return findAllByUsername(username).stream()
+        .filter(m -> Objects.equals(organizationBelonging, m.getOrganizationBelonging()))
+        .findFirst();
+  }
 
-  List<OUM> findAllByUsername(String username);
+  List<M> findAllByUsername(String username);
 
-  List<OUM> findAllByRolesIn(Collection<Role> roles);
+  List<M> findAllByRolesIn(Collection<Role> roles);
 
 }
