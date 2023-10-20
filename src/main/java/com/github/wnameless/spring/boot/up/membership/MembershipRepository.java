@@ -11,10 +11,10 @@ import com.github.wnameless.spring.boot.up.permission.role.Role;
 @NoRepositoryBean
 public interface MembershipRepository<M extends Membership<ID>, ID> extends CrudRepository<M, ID> {
 
-  default Optional<M> findByOrganizationBelongingAndUsername(String organizationBelonging,
+  default Optional<M> findByMemberOrganizationNameAndUsername(String membershipOrganizationName,
       String username) {
     return findAllByUsername(username).stream()
-        .filter(m -> Objects.equals(organizationBelonging, m.getMembershipOrganizationName()))
+        .filter(m -> Objects.equals(membershipOrganizationName, m.getMembershipOrganizationName()))
         .findFirst();
   }
 
