@@ -54,8 +54,13 @@ public interface OrganizationUnitService<ID> {
     var ouOpt = findOrganizationUnit(organizationUnitName);
     if (ouOpt.isEmpty()) return null;
     if (!(isTreeNode(ouOpt.get()))) return null;
+    return toTreeNode(ouOpt.get());
+  }
 
-    var oues = getAllTreeOrganizationUnits(ouOpt.get());
+  default TreeNode<SimpleOrganizationUnit> toTreeNode(OrganizationUnit organizationUnit) {
+    if (organizationUnit == null) return null;
+
+    var oues = getAllTreeOrganizationUnits(organizationUnit);
     var rootOpt =
         oues.stream().filter(ou -> ou.getParentOrganizationUnitName() == null).findFirst();
     if (rootOpt.isEmpty()) return null;
