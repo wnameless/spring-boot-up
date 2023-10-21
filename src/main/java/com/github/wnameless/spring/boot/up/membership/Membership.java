@@ -5,7 +5,7 @@ import com.github.wnameless.spring.boot.up.permission.role.Role;
 
 public interface Membership<ID> {
 
-  String getMembershipOrganizationName();
+  ID getMembershipOrganizationId();
 
   String getUsername();
 

@@ -2,7 +2,10 @@ package com.github.wnameless.spring.boot.up.organizationalunit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,6 +19,27 @@ public interface OrganizationalUnitService<ID> {
   List<? extends OrganizationalUnitRepository<? extends OrganizationalUnit<ID>, ID>> getOrganizationalUnitRepositories();
 
   Set<OrganizationalChart<ID>> getOrganizationCharts();
+
+  default List<Optional<? extends OrganizationalUnit<ID>>> findAllOrganizationalUnits(
+      Collection<ID> organizationalUnitIds) {
+    List<Optional<? extends OrganizationalUnit<ID>>> result = new ArrayList<>();
+    Map<ID, OrganizationalUnit<ID>> map = new LinkedHashMap<>();
+
+    for (var repo : getOrganizationalUnitRepositories()) {
+      repo.findAllByOrganizationalUnitIds(organizationalUnitIds).forEach(ou -> {
+        map.put(ou.getOrganizationalUnitId(), ou);
+      });
+    }
+
+    organizationalUnitIds.forEach(id -> {
+      if (map.containsKey(id)) {
+        result.add(Optional.of(map.get(id)));
+      } else {
+        result.add(Optional.empty());
+      }
+    });
+    return result;
+  }
 
   default Optional<? extends OrganizationalUnit<ID>> findOrganizationalUnit(
       ID organizationalUnitId) {

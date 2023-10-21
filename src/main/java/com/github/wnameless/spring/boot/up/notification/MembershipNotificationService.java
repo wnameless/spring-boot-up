@@ -19,11 +19,11 @@ public interface MembershipNotificationService<MS extends MembershipService<ID>,
     }).collect(toSet());
   }
 
-  default Set<RolifyNotificationReceiver> findAllByMembershipOrganizationNameAndRoles(
-      String membershipOrganizationName, Collection<? extends Rolify> rolifies) {
+  default Set<RolifyNotificationReceiver> findAllByMembershipOrganizationIdAndRoles(
+      ID membershipOrganizationId, Collection<? extends Rolify> rolifies) {
     var roles = rolifies.stream().map(Rolify::toRole).toList();
     return getMembershipService()
-        .findAllByMembershipOrganizationNameAndRoles(membershipOrganizationName, roles).stream()
+        .findAllByMembershipOrganizationIdAndRoles(membershipOrganizationId, roles).stream()
         .map(mem -> {
           var remainRoles = Ruby.Array.copyOf(roles).intersection(mem.getRoles());
           return new RolifyNotificationReceiver(mem.getUsername(), remainRoles);

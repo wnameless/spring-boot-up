@@ -1,5 +1,7 @@
 package com.github.wnameless.spring.boot.up.organizationalunit;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.repository.CrudRepository;
@@ -16,5 +18,7 @@ public interface OrganizationalUnitRepository<OU extends OrganizationalUnit<ID>,
   }
 
   Optional<OU> findByOrganizationalUnitId(ID organizationalUnitId);
+
+  List<OU> findAllByOrganizationalUnitIds(Collection<ID> organizationalUnitIds);
 
 }

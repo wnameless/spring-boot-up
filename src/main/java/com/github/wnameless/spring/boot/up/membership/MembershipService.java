@@ -34,14 +34,15 @@ public interface MembershipService<ID> {
     return memberships;
   }
 
-  default List<? extends Membership<ID>> findAllByMembershipOrganizationNameAndRoles(
-      String membershipOrganizationName, Collection<? extends Rolify> rolifies) {
+  default List<? extends Membership<ID>> findAllByMembershipOrganizationIdAndRoles(
+      ID membershipOrganizationId, Collection<? extends Rolify> rolifies) {
     var memberships = new ArrayList<Membership<ID>>();
 
     getMembershipRepositories().forEach(repo -> {
       var targetMemberships = repo.findAllByRolesIn(rolifies.stream().map(Rolify::toRole).toList());
-      var filteredMemberships = targetMemberships.stream().filter(
-          mem -> Objects.equals(membershipOrganizationName, mem.getMembershipOrganizationName()))
+      var filteredMemberships = targetMemberships.stream()
+          .filter(
+              mem -> Objects.equals(membershipOrganizationId, mem.getMembershipOrganizationId()))
           .toList();
       memberships.addAll(filteredMemberships);
     });
