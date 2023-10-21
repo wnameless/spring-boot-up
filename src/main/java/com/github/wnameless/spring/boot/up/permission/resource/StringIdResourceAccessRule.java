@@ -17,4 +17,3 @@ public interface StringIdResourceAccessRule<EP extends EntityPathBase<T>, RF ext
   }
 
 }
-

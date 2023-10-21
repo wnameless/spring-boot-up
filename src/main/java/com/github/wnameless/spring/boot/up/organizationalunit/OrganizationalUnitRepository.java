@@ -1,4 +1,4 @@
-package com.github.wnameless.spring.boot.up.organizationunit;
+package com.github.wnameless.spring.boot.up.organizationalunit;
 
 import java.util.Optional;
 import org.springframework.core.GenericTypeResolver;
@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface OrganizationUnitRepository<OU extends OrganizationUnit, ID>
+public interface OrganizationalUnitRepository<OU extends OrganizationalUnit<ID>, ID>
     extends CrudRepository<OU, ID> {
 
   default Class<?> getResourceType() {
@@ -15,6 +15,6 @@ public interface OrganizationUnitRepository<OU extends OrganizationUnit, ID>
     return genericTypeResolver[0];
   }
 
-  Optional<OU> findByOrganizationUnitName(String organizationUnitName);
+  Optional<OU> findByOrganizationalUnitId(ID organizationalUnitId);
 
 }
