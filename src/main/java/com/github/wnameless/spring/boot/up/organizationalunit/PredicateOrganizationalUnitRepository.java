@@ -26,4 +26,13 @@ public interface PredicateOrganizationalUnitRepository<OU extends Organizational
             .toArray(BooleanExpression[]::new)));
   }
 
+  default Function<String, Predicate> getOrganizationalUnitNamePredicate() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  default List<OU> findAllByOrganizationalUnitName(String organizationalUnitName) {
+    return findAll(getOrganizationalUnitNamePredicate().apply(organizationalUnitName));
+  }
+
 }

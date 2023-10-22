@@ -21,4 +21,8 @@ public interface OrganizationalUnitRepository<OU extends OrganizationalUnit<ID>,
 
   List<OU> findAllByOrganizationalUnitIds(Collection<ID> organizationalUnitIds);
 
+  default List<OU> findAllByOrganizationalUnitName(String organizationalUnitName) {
+    throw new UnsupportedOperationException();
+  }
+
 }
