@@ -3,3 +3,7 @@
 /.classpath
 /.settings
 .DS_Store
+
+### NodeJS ###
+node_modules/
+webpack/
