@@ -2,10 +2,10 @@ import validator from '@rjsf/validator-ajv8';
 import parse from 'html-react-parser';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-// import Form from '@rjsf/core';
-import Form from '@rjsf/bootstrap-4';
+//import Form from '@rjsf/core';
+//import Form from '@rjsf/bootstrap-4';
 // import { StyledEngineProvider } from '@mui/material/styles';
-// import Form from '@rjsf/mui';
+import Form from '@rjsf/mui';
 
 class ReactFormElement extends HTMLElement {
   constructor() {
@@ -13,7 +13,7 @@ class ReactFormElement extends HTMLElement {
 
     this.mountPoint = document.createElement('div');
     this.root = ReactDOM.createRoot(this.mountPoint);
-    this.attachShadow({ mode: 'open' }).appendChild(this.mountPoint);
+    // this.attachShadow({ mode: 'open' }).appendChild(this.mountPoint);
 
     // Copys all tag attrs but id
     this.attrs = {};
@@ -128,23 +128,42 @@ class ReactFormElement extends HTMLElement {
       // <link rel="stylesheet" href={this.attrs.cssHref || 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css'}></link>
       // <link rel="stylesheet" href={this.attrs.cssHref || 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'}></link>
 
-      this.root.render(
-        <React.Fragment>
-          <link rel="stylesheet" href={this.attrs.cssHref || 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'}></link>
+      // this.root.render(
+      //   <React.Fragment>
+      //     <link rel="stylesheet" href={this.attrs.cssHref || 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'}></link>
 
-          <Form
-            {...this.attrs}
-            onSubmit={this.state.onSubmit}
-            {...this.props}
-            schema={data.schema}
-            uiSchema={data.uiSchema}
-            formData={data.formData}
-            validator={validator}
-          >
-            {this.children.length > 0 && parse(this.innerHTML)}
-          </Form>
-        </React.Fragment>
+      //     <Form
+      //       {...this.attrs}
+      //       onSubmit={this.state.onSubmit}
+      //       {...this.props}
+      //       schema={data.schema}
+      //       uiSchema={data.uiSchema}
+      //       formData={data.formData}
+      //       validator={validator}
+      //     >
+      //       {this.children.length > 0 && parse(this.innerHTML)}
+      //     </Form>
+      //   </React.Fragment>
+      // );
+
+      this.root.render(
+        <Form
+          {...this.attrs}
+          onSubmit={this.state.onSubmit}
+          {...this.props}
+          schema={data.schema}
+          uiSchema={data.uiSchema}
+          formData={data.formData}
+          validator={validator}
+        >
+          {this.children.length > 0 && parse(this.innerHTML)}
+        </Form>
       );
+
+      while (this.firstChild) {
+        this.removeChild(this.firstChild);
+      }
+      this.append(this.mountPoint);
     });
   }
 
