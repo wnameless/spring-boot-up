@@ -3,7 +3,6 @@ import * as ReactDOM from 'react-dom/client';
 //import Form from '@rjsf/core';
 import Form from '@rjsf/bootstrap-4';
 import validator from '@rjsf/validator-ajv8';
-//import axios from 'axios';
 import parse from 'html-react-parser';
 
 class ReactFormElement extends HTMLElement {
