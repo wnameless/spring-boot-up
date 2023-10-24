@@ -3,6 +3,8 @@
 <!-- Start Table -->
 <div th:fragment="bs5(th, td)"
   th:with="li=${li}, page=${__${@webModelAttributes.PAGE_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, itemClass=${__${@webModelAttributes.ITEM_CLASS_NAME}__}, route=${__${@webModelAttributes.ROUTE_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
+
+  <!-- Filter Options Begin -->
   <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
     <div class="offcanvas-header">
       <h4>[[${#messages.msgOrNull('sbu.web.datatable.filter_option.title') ?: 'Filter Option'}]]
@@ -10,9 +12,12 @@
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
     </div>
     <div th:if="${queryConfig}" class="offcanvas-body">
-      <!-- <form class="row g-3" hx:get="${route.indexPath}" hx:target="${'#' + ajaxTargetId}"
-        hx-ext="json-enc"> -->
-      <form class="row g-3" method="GET" th:action="${route.indexPath}">
+      <!-- hx-on::before-request is important for remove offcanvas style attributes from html body -->
+      <form
+        hx-on::before-request="bootstrap.Offcanvas.getInstance(document.getElementById('filterOption')).hide();"
+        class="row g-3" hx:get="${route.indexPath}" hx:target="${'#' + ajaxTargetId}"
+        hx-ext="json-enc">
+        <!--   <form class="row g-3" method="GET" th:action="${route.indexPath}"> -->
         <th:block th:each="field : ${queryConfig.fields}">
           <div class="col-8">
             <label class="form-label" th:if="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
@@ -78,6 +83,7 @@
       </form>
     </div>
   </div>
+  <!-- Filter Options End-->
 
   <table class="table">
     <thead>
