@@ -12,7 +12,7 @@
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
     </div>
     <div th:if="${queryConfig}" class="offcanvas-body">
-      <!-- hx-on::before-request is important for remove offcanvas style attributes from html body -->
+      <!-- This hx-on::before-request is important for removing offcanvas style attributes from html body -->
       <form
         hx-on::before-request="bootstrap.Offcanvas.getInstance(document.getElementById('filterOption')).hide();"
         class="row g-3" hx:get="${route.indexPath}" hx:target="${'#' + ajaxTargetId}"
