@@ -1,66 +1,53 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5(ajaxTargetId)">
+<div th:fragment="bs5(ajaxTargetId)"
+  th:with="rid=${(T(java.lang.Math).random() * 10000).intValue()}">
   <div class="input-group mb-3">
-    <input id="actionCodeInput" type="text" class="form-control" th:value="${code}" readonly="true">
+    <input th:id="${'actionCodeInput' + rid}" type="text" class="form-control" th:value="${code}"
+      readonly="true">
     <button class="btn btn-outline-secondary dropdown-toggle" type="button"
       data-bs-toggle="dropdown" aria-expanded="false">
       <span class="fas fa-code"></span>
       [[${actionDisplay != null ? actionDisplay : #messages.msgOrNull('sbu.actioncode.action') ?:
       'Action'}]]</button>
     <ul class="dropdown-menu dropdown-menu-end">
-      <li>
-        <a class="dropdown-item" href="#" onclick="copyActionCodeUrl()">
+      <li th:unless="${#strings.isEmpty(code)}">
+        <a class="dropdown-item" href="#"
+          th:onclick="copyActionCodeUrl([[${'actionCodeInput' + rid}]], [[${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}]])">
           <span class="fas fa-fw fa-copy"></span>
           [[${#messages.msgOrNull('sbu.actioncode.copy') ?:
           'Copy'}]]</a>
       </li>
-      <li th:if="${singular}">
-        <a hx:post="@{${route.joinPath('action-codes', action)}(ajaxTargetId=${ajaxTargetId})}"
+      <li>
+        <a hx:post="@{${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}(ajaxTargetId=${ajaxTargetId})}"
           hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-link"></span>
           [[${#messages.msgOrNull('sbu.actioncode.generate') ?:
           'Generate'}]]</a>
       </li>
-      <li th:unless="${singular}">
-        <a hx:post="@{${item.joinPath('action-codes', action)}(ajaxTargetId=${ajaxTargetId})}"
-          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
-          <span class="fas fa-fw fa-link"></span>
-          [[${#messages.msgOrNull('sbu.actioncode.generate') ?:
-          'Generate'}]]</a>
-      </li>
-      <li th:if="${singular} and ${code}">
-        <a hx:delete="@{${route.joinPath('action-codes', action, code)}(ajaxTargetId=${ajaxTargetId})}"
+      <li th:unless="${#strings.isEmpty(code)}">
+        <a hx:delete="@{${singular ? route.joinPath('action-codes', action, code) : item.joinPath('action-codes', action, code)}(ajaxTargetId=${ajaxTargetId})}"
           hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-trash"></span>
           [[${#messages.msgOrNull('sbu.actioncode.clear') ?:
           'Clear'}]]</a>
       </li>
-      <li th:unless="${singular}" th:if="${code}">
-        <a hx:delete="@{${item.joinPath('action-codes', action, code)}(ajaxTargetId=${ajaxTargetId})}"
-          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
-          <span class="fas fa-fw fa-trash"></span>
-          [[${#messages.msgOrNull('sbu.actioncode.clear') ?:
-          'Clear'}]]
-        </a>
-      </li>
     </ul>
   </div>
 
   <script th:inline="javascript">
-    function copyActionCodeUrl() {
+    function copyActionCodeUrl(actionCodeInputId, actionPath) {
       var pageOrigin = document.location.origin;
-      var actionPath = /*[[${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}]]*/ null;
-      actionPath = pageOrigin + actionPath;
+      var actionFullPath = pageOrigin + actionPath;
 
-      var copyText = document.getElementById("actionCodeInput");
+      var copyText = document.getElementById(actionCodeInputId);
       copyText.select();
       copyText.setSelectionRange(0, 99999); // For mobile devices
 
       if (!copyText.value) {
-        alert("No action code !");
+        alert(/*[[${#messages.msgOrNull('sbu.actioncode.no_code') ?: 'No action code !'}]]*/ null);
       } else {
-        navigator.clipboard.writeText(actionPath + '/' + copyText.value);
+        navigator.clipboard.writeText(actionFullPath + '/' + copyText.value);
       }
     }
   </script>
