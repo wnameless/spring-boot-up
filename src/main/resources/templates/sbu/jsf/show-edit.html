@@ -16,7 +16,7 @@
         <i class="fas fa-edit"></i></a>
     </div>
   </div>
-  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
+  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
     <react-form th:id="${'showEditForm' + rid}"
       th:action="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
       method="GET" ajax:target="${ajaxTargetId}" disabled="true">

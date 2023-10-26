@@ -6,6 +6,7 @@ public final class ActionCodeAttributes {
   public static final String CODE = "code";
   public static final String SINGULAR = "singular";
   public static final String ACTION_DISPLAY = "actionDisplay";
+  public static final String ACTION_CODE_ENUM = "actionCodeEnum";
 
   private ActionCodeAttributes() {}
 

@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5(ajaxTargetId)"
-  th:with="rid=${(T(java.lang.Math).random() * 10000).intValue()}">
+  th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
   <div class="input-group mb-3">
     <input th:id="${'actionCodeInput' + rid}" type="text" class="form-control" th:value="${code}"
       readonly="true">
@@ -20,14 +20,14 @@
       </li>
       <li>
         <a hx:post="@{${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}(ajaxTargetId=${ajaxTargetId})}"
-          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
+          hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-link"></span>
           [[${#messages.msgOrNull('sbu.actioncode.generate') ?:
           'Generate'}]]</a>
       </li>
       <li th:unless="${#strings.isEmpty(code)}">
         <a hx:delete="@{${singular ? route.joinPath('action-codes', action, code) : item.joinPath('action-codes', action, code)}(ajaxTargetId=${ajaxTargetId})}"
-          hx-target="#actionCode" hx-ext="json-enc" class="dropdown-item">
+          hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-trash"></span>
           [[${#messages.msgOrNull('sbu.actioncode.clear') ?:
           'Clear'}]]</a>

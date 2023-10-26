@@ -41,7 +41,7 @@ public interface SingularActionCodeController<AC extends SingularActionCode<A>, 
   @PostMapping(path = "/action-codes/{actionName}", consumes = APPLICATION_JSON_VALUE)
   default ModelAndView generateAction(ModelAndView mav, @PathVariable String actionName,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/action-codes/tool-bar :: " + fragmentName());
+    mav.setViewName("sbu/action-codes/toolbar :: " + fragmentName());
     A actionEnum = getActionCodeService().getActionEnum(actionName);
     mav = getActionCodeService().actionCodeGeneration().apply(mav, actionEnum);
     mav.addObject(ActionCodeAttributes.ACTION, actionName);
@@ -55,7 +55,7 @@ public interface SingularActionCodeController<AC extends SingularActionCode<A>, 
   @GetMapping(path = "/action-codes/{actionName}", consumes = APPLICATION_JSON_VALUE)
   default ModelAndView requestAction(ModelAndView mav, @PathVariable String actionName,
       @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/action-codes/tool-bar :: " + fragmentName());
+    mav.setViewName("sbu/action-codes/toolbar :: " + fragmentName());
     A actionEnum = getActionCodeService().getActionEnum(actionName);
     mav = getActionCodeService().actionCodeRequest().apply(mav, actionEnum);
     mav.addObject(ActionCodeAttributes.ACTION, actionName);
@@ -69,7 +69,7 @@ public interface SingularActionCodeController<AC extends SingularActionCode<A>, 
   @DeleteMapping(path = "/action-codes/{actionName}/{code}", consumes = APPLICATION_JSON_VALUE)
   default ModelAndView deleteAction(ModelAndView mav, @PathVariable String actionName,
       @PathVariable String code, @RequestParam(required = true) String ajaxTargetId) {
-    mav.setViewName("sbu/action-codes/tool-bar :: " + fragmentName());
+    mav.setViewName("sbu/action-codes/toolbar :: " + fragmentName());
     A actionEnum = getActionCodeService().getActionEnum(actionName);
     Optional<AC> actionCodeOpt =
         getActionCodeService().getActionCodeRepository().findByActionAndCode(actionEnum, code);

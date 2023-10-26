@@ -8,7 +8,7 @@
       hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
       aria-label="Close"></button>
   </div>
-  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 10000000).intValue()}">
+  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
     <react-form th:id="${'newForm' + rid}"
       th:action="@{${item.createPath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
       method="POST" ajax:target="${ajaxTargetId}">

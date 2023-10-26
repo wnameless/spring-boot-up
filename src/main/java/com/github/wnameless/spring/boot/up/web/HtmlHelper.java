@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.web;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -15,10 +16,20 @@ public class HtmlHelper {
   @Autowired
   MessageSource messageSource;
 
+  public String enumDisplay(Enum<?> enumVal) {
+    return messageSource.getMessage( //
+        ITEM_FIELD_PREFIX + enumVal.getDeclaringClass().getSimpleName() + "." + enumVal.name(), //
+        null, enumVal.name(), LocaleContextHolder.getLocale());
+  }
+
   public String fieldDisplay(Class<?> type, String fieldName) {
     return messageSource.getMessage( //
         ITEM_FIELD_PREFIX + type.getSimpleName() + "." + fieldName, //
         null, fieldName, LocaleContextHolder.getLocale());
+  }
+
+  public int randomInt() {
+    return Math.abs(new Random().nextInt());
   }
 
   public String toTimeAgo(LocalDateTime dateTime) {

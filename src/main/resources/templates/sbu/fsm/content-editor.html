@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, fid=${(T(java.lang.Math).random() * 10000).intValue()}">
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, fid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
   <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item" role="presentation">
       <button class="nav-link active" data-bs-toggle="tab"
@@ -23,7 +23,7 @@
       class="tab-pane fade" th:id="${'stateForm' + fid}" role="tabpanel">
       <th:block th:if="${item.phase.stateRecord.hasForm}">
         <th:block th:each="stateForm :${item.phase.stateRecord.state.forms}"
-          th:with="rid=${(T(java.lang.Math).random() * 10000).intValue()}">
+          th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
           <div th:if="${item.phase.stateMachine.canFire(stateForm.viewableTriggerStock.get)}"
             th:id="${'embedded' + rid}" class="pt-2">
             <a hx:target="${'#embedded' + rid}"
