@@ -37,6 +37,8 @@
 
   <script th:inline="javascript">
     function copyActionCodeUrl(actionCodeInputId, actionPath) {
+      const unsecuredCopyToClipboard = (text) => { const textArea = document.createElement("textarea"); textArea.value = text; document.body.appendChild(textArea); textArea.focus(); textArea.select(); try { document.execCommand('copy') } catch (err) { console.error('Unable to copy to clipboard', err) } document.body.removeChild(textArea) };
+
       var pageOrigin = document.location.origin;
       var actionFullPath = pageOrigin + actionPath;
 
@@ -47,7 +49,11 @@
       if (!copyText.value) {
         alert(/*[[${#messages.msgOrNull('sbu.actioncode.no_code') ?: 'No action code !'}]]*/ null);
       } else {
-        navigator.clipboard.writeText(actionFullPath + '/' + copyText.value);
+        if (window.isSecureContext && navigator.clipboard) {
+          navigator.clipboard.writeText(actionFullPath + '/' + copyText.value);
+        } else {
+          unsecuredCopyToClipboard(actionFullPath + '/' + copyText.value);
+        }
       }
     }
   </script>
