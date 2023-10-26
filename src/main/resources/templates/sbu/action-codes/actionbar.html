@@ -1,0 +1,22 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5(actionCodeEnum)">
+  <div class="d-flex justify-content-end btn-group" role="group">
+    <button th:each="action : ${actionCodeEnum}" class="btn btn-sm btn-outline-secondary rounded-0"
+      type="button" data-bs-toggle="collapse" th:attr="data-bs-target=${'#collapse' + action}"
+      data-bs-target="#collapseExample">
+      [[${@sbuHtml.enumDisplay(action)}]]
+    </button>
+  </div>
+  <div class="mt-3">
+    <div th:each="action : ${actionCodeEnum}" class="collapse" th:id="${'collapse' + action}">
+      <div th:id="${'actionCode' + action}">
+        <a hx:get="@{${item.joinPath('action-codes', action)}(ajaxTargetId=${'actionCode' + action})}"
+          hx:target="${'#actionCode' + action}" hx-ext="json-enc" hx-trigger="load"
+          class="d-none"></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</html>
