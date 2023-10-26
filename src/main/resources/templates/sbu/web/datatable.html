@@ -85,56 +85,59 @@
   </div>
   <!-- Filter Options End-->
 
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">
-          <div class="btn-group">
-            <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
-              class="btn btn-outline-success" hx:get="${route.newPath}"
-              hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
-              <i class="fas fa-file-circle-plus"></i>
-            </button>
-            <button class="btn btn-info" data-bs-toggle="offcanvas" data-bs-target="#filterOption">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </th>
-        <th:block th:replace="${th}"></th:block>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="item : ${page}">
-        <th>
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-gear"></i>
-            </button>
-            <ul class="dropdown-menu">
-              <li>
-                <a th:classappend="${user == null || user.canUpdate(item)} ? 'text-primary' : 'disabled'"
-                  hx:get="${queryConfig == null ? item.editPath : item.getEditPath(queryConfig)}"
-                  hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
-                  [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
-              </li>
-              <li>
-                <a th:classappend="${user == null || user.canDelete(item)} ? 'text-danger' : 'disabled'"
-                  hx:delete="${queryConfig == null ? item.deletePath : item.getDeletePath(queryConfig)}"
-                  hx:confirm="${#messages.msgOrNull('sbu.ui.confirmation.delete') ?: 'Are you sure?'}"
-                  hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
-                  [[${#messages.msgOrNull('sbu.ui.delete') ?: 'Delete'}]]</a>
-              </li>
-              <th:block th:if="${li}">
-                <th:block th:replace="${li}"></th:block>
-              </th:block>
-            </ul>
-          </div>
-        </th>
-        <th:block th:replace="${td}"></th:block>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">
+            <div class="btn-group">
+              <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
+                class="btn btn-outline-success" hx:get="${route.newPath}"
+                hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
+                <i class="fas fa-file-circle-plus"></i>
+              </button>
+              <button class="btn btn-info" data-bs-toggle="offcanvas"
+                data-bs-target="#filterOption">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </th>
+          <th:block th:replace="${th}"></th:block>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="item : ${page}">
+          <th>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-gear"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a th:classappend="${user == null || user.canUpdate(item)} ? 'text-primary' : 'disabled'"
+                    hx:get="${queryConfig == null ? item.editPath : item.getEditPath(queryConfig)}"
+                    hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
+                    [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
+                </li>
+                <li>
+                  <a th:classappend="${user == null || user.canDelete(item)} ? 'text-danger' : 'disabled'"
+                    hx:delete="${queryConfig == null ? item.deletePath : item.getDeletePath(queryConfig)}"
+                    hx:confirm="${#messages.msgOrNull('sbu.ui.confirmation.delete') ?: 'Are you sure?'}"
+                    hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
+                    [[${#messages.msgOrNull('sbu.ui.delete') ?: 'Delete'}]]</a>
+                </li>
+                <th:block th:if="${li}">
+                  <th:block th:replace="${li}"></th:block>
+                </th:block>
+              </ul>
+            </div>
+          </th>
+          <th:block th:replace="${td}"></th:block>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <nav class="d-flex justify-content-center">
     <ul class="pagination" sd:pagination-split="7" sd:pagination="full"
