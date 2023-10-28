@@ -1,106 +1,107 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import org.apache.commons.lang3.function.TriConsumer;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.ModelAndView;
 
 public interface BaseWebAction<D> {
 
-  default void indexPreAction(ModelAndView mav) {}
+  default void indexPreAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  void indexAction(ModelAndView mav);
+  void indexAction(ModelAndView mav, MultiValueMap<String, String> params);
 
-  default void indexPostAction(ModelAndView mav) {}
+  default void indexPostAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  default Consumer<ModelAndView> indexProcedure() {
-    return mav -> {
-      indexPreAction(mav);
-      indexAction(mav);
-      indexPostAction(mav);
+  default BiConsumer<ModelAndView, MultiValueMap<String, String>> indexProcedure() {
+    return (mav, params) -> {
+      indexPreAction(mav, params);
+      indexAction(mav, params);
+      indexPostAction(mav, params);
     };
   }
 
-  default void showPreAction(ModelAndView mav) {}
+  default void showPreAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  void showAction(ModelAndView mav);
+  void showAction(ModelAndView mav, MultiValueMap<String, String> params);
 
-  default void showPostAction(ModelAndView mav) {}
+  default void showPostAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  default Consumer<ModelAndView> showProcedure() {
-    return mav -> {
-      showPreAction(mav);
-      showAction(mav);
-      showPostAction(mav);
+  default BiConsumer<ModelAndView, MultiValueMap<String, String>> showProcedure() {
+    return (mav, params) -> {
+      showPreAction(mav, params);
+      showAction(mav, params);
+      showPostAction(mav, params);
     };
   }
 
-  default void newPreAction(ModelAndView mav) {}
+  default void newPreAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  void newAction(ModelAndView mav);
+  void newAction(ModelAndView mav, MultiValueMap<String, String> params);
 
-  default void newPostAction(ModelAndView mav) {}
+  default void newPostAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  default Consumer<ModelAndView> newProcedure() {
-    return mav -> {
-      newPreAction(mav);
-      newAction(mav);
-      newPostAction(mav);
+  default BiConsumer<ModelAndView, MultiValueMap<String, String>> newProcedure() {
+    return (mav, params) -> {
+      newPreAction(mav, params);
+      newAction(mav, params);
+      newPostAction(mav, params);
     };
   }
 
-  default void createPreAction(ModelAndView mav, D data) {}
+  default void createPreAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {}
 
-  void createAction(ModelAndView mav, D data);
+  void createAction(ModelAndView mav, MultiValueMap<String, String> params, D data);
 
-  default void createPostAction(ModelAndView mav, D data) {}
+  default void createPostAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {}
 
-  default BiConsumer<ModelAndView, D> createProcedure() {
-    return (mav, data) -> {
-      createPreAction(mav, data);
-      createAction(mav, data);
-      createPostAction(mav, data);
+  default TriConsumer<ModelAndView, MultiValueMap<String, String>, D> createProcedure() {
+    return (mav, params, data) -> {
+      createPreAction(mav, params, data);
+      createAction(mav, params, data);
+      createPostAction(mav, params, data);
     };
   }
 
-  default void editPreAction(ModelAndView mav) {}
+  default void editPreAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  void editAction(ModelAndView mav);
+  void editAction(ModelAndView mav, MultiValueMap<String, String> params);
 
-  default void editPostAction(ModelAndView mav) {}
+  default void editPostAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  default Consumer<ModelAndView> editProcedure() {
-    return mav -> {
-      editPreAction(mav);
-      editAction(mav);
-      editPostAction(mav);
+  default BiConsumer<ModelAndView, MultiValueMap<String, String>> editProcedure() {
+    return (mav, params) -> {
+      editPreAction(mav, params);
+      editAction(mav, params);
+      editPostAction(mav, params);
     };
   }
 
-  default void updatePreAction(ModelAndView mav, D data) {}
+  default void updatePreAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {}
 
-  void updateAction(ModelAndView mav, D data);
+  void updateAction(ModelAndView mav, MultiValueMap<String, String> params, D data);
 
-  default void updatePostAction(ModelAndView mav, D data) {}
+  default void updatePostAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {}
 
-  default BiConsumer<ModelAndView, D> updateProcedure() {
-    return (mav, data) -> {
-      updatePreAction(mav, data);
-      updateAction(mav, data);
-      updatePostAction(mav, data);
+  default TriConsumer<ModelAndView, MultiValueMap<String, String>, D> updateProcedure() {
+    return (mav, params, data) -> {
+      updatePreAction(mav, params, data);
+      updateAction(mav, params, data);
+      updatePostAction(mav, params, data);
     };
   }
 
-  default void deletePreAction(ModelAndView mav) {}
+  default void deletePreAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  void deleteAction(ModelAndView mav);
+  void deleteAction(ModelAndView mav, MultiValueMap<String, String> params);
 
-  default void deletePostAction(ModelAndView mav) {}
+  default void deletePostAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  default Consumer<ModelAndView> deleteProcedure() {
-    return mav -> {
-      deletePreAction(mav);
-      deleteAction(mav);
-      deletePostAction(mav);
+  default BiConsumer<ModelAndView, MultiValueMap<String, String> > deleteProcedure() {
+    return (mav,params) -> {
+      deletePreAction(mav,params);
+      deleteAction(mav,params);
+      deletePostAction(mav,params);
     };
   }
 

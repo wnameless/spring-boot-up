@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.jsf;
 
 import java.util.Map;
 import java.util.function.Function;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.ModelAndView;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfPatchService;
@@ -14,7 +15,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void indexPostAction(ModelAndView mav) {
+  default void indexPostAction(ModelAndView mav, MultiValueMap<String, String> params) {
     if (indexActionSchemsPatch() != null) {
       getJsfPatchService().schemaPatch(indexActionSchemsPatch());
     }
@@ -39,7 +40,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void showPostAction(ModelAndView mav) {
+  default void showPostAction(ModelAndView mav, MultiValueMap<String, String> params) {
     if (showActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(showActionSchemaPatch());
     }
@@ -64,7 +65,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void newPostAction(ModelAndView mav) {
+  default void newPostAction(ModelAndView mav, MultiValueMap<String, String> params) {
     if (newActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(newActionSchemaPatch());
     }
@@ -89,7 +90,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void createPostAction(ModelAndView mav, D data) {
+  default void createPostAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {
     if (createActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(createActionSchemaPatch());
     }
@@ -114,7 +115,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void editPostAction(ModelAndView mav) {
+  default void editPostAction(ModelAndView mav, MultiValueMap<String, String> params) {
     if (editActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(editActionSchemaPatch());
     }
@@ -139,7 +140,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void updatePostAction(ModelAndView mav, D data) {
+  default void updatePostAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {
     if (updateActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(updateActionSchemaPatch());
     }
@@ -164,7 +165,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void deletePostAction(ModelAndView mav) {
+  default void deletePostAction(ModelAndView mav, MultiValueMap<String, String> params) {
     if (deleteActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(deleteActionSchemaPatch());
     }

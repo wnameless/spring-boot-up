@@ -12,8 +12,11 @@ public class WebModelAttributes {
 
   public static String ROUTE_NAME;
   public static String TEMPLATE_NAME;
+  public static final String AJAX_TARGET_ID_NAME = "ajaxTargetId";
   public static String AJAX_TARGET_ID_VALUE;
+  public static final String EMBEDDED_TARGET_ID_NAME = "embeddedTargetId";
   public static String EMBEDDED_TARGET_ID_VALUE;
+  public static final String BACK_TARGET_ID_NAME = "backTargetId";
   public static String BACK_TARGET_ID_VALUE;
   public static String PAGE_NAME;
   public static String ITEM_NAME;

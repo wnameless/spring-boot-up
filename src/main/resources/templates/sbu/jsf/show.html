@@ -4,9 +4,8 @@
   th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: ajaxTargetId}, backable=${backable ?: true}"
   class="card">
   <div class="card-header" th:if="${backable}">
-    <button hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
-      hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
-      aria-label="Close"></button>
+    <button hx:get="${item.getBackPath(queryConfig)}" hx:target="${'#' + backTargetId}"
+      hx-ext="json-enc" type="button" class="me-auto btn-close" aria-label="Close"></button>
   </div>
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
     <react-form th:id="${'showForm' + rid}" th:action="${item.backPath}" method="GET"
@@ -14,8 +13,7 @@
       <div></div>
     </react-form>
     <th:block th:unless="${item.hasBackPathname}">
-      <a class="btn btn-light"
-        hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
+      <a class="btn btn-light" hx:get="${item.getBackPath(queryConfig)}"
         hx:target="${'#' + backTargetId}" hx-ext="json-enc">
         [[${#messages.msgOrNull('sbu.ui.return') ?: 'Return'}]]</a>
     </th:block>
