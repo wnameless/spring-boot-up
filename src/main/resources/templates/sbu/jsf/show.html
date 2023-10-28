@@ -11,14 +11,14 @@
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
     <react-form th:id="${'showForm' + rid}" th:action="${item.backPath}" method="GET"
       ajax:target="${ajaxTargetId}" disabled="true">
-      <th:block th:if="${item.hasBackPathname}">
-        <div></div>
-      </th:block>
-      <th:block th:unless="${item.hasBackPathname}">
-        <button class="btn btn-light" type="submit">[[${#messages.msgOrNull('sbu.ui.return') ?:
-          'Return'}]]</button>
-      </th:block>
+      <div></div>
     </react-form>
+    <th:block th:unless="${item.hasBackPathname}">
+      <a class="btn btn-light"
+        hx:get="${queryConfig == null ? item.backPath : item.getBackPath(queryConfig)}"
+        hx:target="${'#' + backTargetId}" hx-ext="json-enc">
+        [[${#messages.msgOrNull('sbu.ui.return') ?: 'Return'}]]</a>
+    </th:block>
 
     <div
       th:if="${T(com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotAware).isAssignableFrom(item.class)}"

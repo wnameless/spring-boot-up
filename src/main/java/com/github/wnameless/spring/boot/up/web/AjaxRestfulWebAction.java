@@ -34,7 +34,7 @@ public interface AjaxRestfulWebAction<D, ID> extends BaseWebAction<D>, RestfulRo
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView createAjax(ModelAndView mav, @RequestBody D data) {
-    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("index :: partial"));
+    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
     createProcedure().accept(mav, data);
     return mav;
   }
@@ -49,7 +49,7 @@ public interface AjaxRestfulWebAction<D, ID> extends BaseWebAction<D>, RestfulRo
   @RequestMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE,
       method = {RequestMethod.PUT, RequestMethod.PATCH})
   default ModelAndView updateAjax(ModelAndView mav, @RequestBody D data) {
-    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("index :: partial"));
+    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
     updateProcedure().accept(mav, data);
     return mav;
   }

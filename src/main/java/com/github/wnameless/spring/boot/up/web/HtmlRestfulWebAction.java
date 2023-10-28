@@ -33,7 +33,7 @@ public interface HtmlRestfulWebAction<D, ID> extends BaseWebAction<D>, RestfulRo
 
   @PostMapping
   default ModelAndView createHtml(ModelAndView mav, @RequestBody D data) {
-    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("index :: complete"));
+    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
     createProcedure().accept(mav, data);
     return mav;
   }
@@ -47,7 +47,7 @@ public interface HtmlRestfulWebAction<D, ID> extends BaseWebAction<D>, RestfulRo
 
   @RequestMapping(path = "/{id}", method = {RequestMethod.PUT, RequestMethod.PATCH})
   default ModelAndView updateHtml(ModelAndView mav, @RequestBody D data) {
-    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("index :: complete"));
+    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
     updateProcedure().accept(mav, data);
     return mav;
   }
