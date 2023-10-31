@@ -16,8 +16,7 @@
       <react-form th:id="${'creationOptionForm' + rid}"
         th:action="@{${route.newPath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
         method="GET" ajax:target="${ajaxTargetId}">
-        <button class="btn btn-primary" type="submit"
-          onclick="bootstrap.Offcanvas.getInstance(document.getElementById('creationOption')).hide();">
+        <button class="btn btn-primary" type="submit">
           [[${#messages.msgOrNull('sbu.ui.submit') ?: 'Submit'}]]
         </button>
       </react-form>
@@ -26,6 +25,9 @@
         var creationOptionFormDataset = /*[[${creationOption.toDataset()}]]*/ null;
         var creationOptionFormDatasetId = /*[[${'creationOptionForm' + rid}]]*/ null;
         var creationOptionForm = document.getElementById(creationOptionFormDatasetId);
+        creationOptionFormDataset['onSubmit'] = () => {
+          bootstrap.Offcanvas.getInstance(document.getElementById('creationOption')).hide();
+        };
         creationOptionForm.setAttribute('props-var', 'creationOptionFormDataset');
       </script>
     </div>
