@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import com.github.wnameless.spring.boot.up.permission.role.Role;
 import com.github.wnameless.spring.boot.up.permission.role.Rolify;
@@ -54,8 +55,8 @@ public interface MembershipService<ID> {
     var roles = new LinkedHashSet<Role>();
 
     getMembershipRepositories().forEach(repo -> {
-      repo.findAllByUsername(username).forEach(oum -> {
-        roles.addAll(oum.getRoles().stream().map(Rolify::toRole).toList());
+      repo.findAllByUsername(username).forEach(membership -> {
+        roles.addAll(Optional.ofNullable(membership.getRoles()).orElse(Set.of()));
       });
     });
 
