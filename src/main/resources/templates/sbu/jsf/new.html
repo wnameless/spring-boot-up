@@ -23,6 +23,7 @@
     </script>
   </div>
   <script th:inline="javascript" defer>
+    document.getElementsByTagName('body')[0].removeAttribute('style');
     htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
   </script>
 </div>
