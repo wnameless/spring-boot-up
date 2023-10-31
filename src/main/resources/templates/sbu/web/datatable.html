@@ -2,7 +2,35 @@
 
 <!-- Start Table -->
 <div th:fragment="bs5(th, td)"
-  th:with="li=${li}, page=${__${@webModelAttributes.PAGE_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, itemClass=${__${@webModelAttributes.ITEM_CLASS_NAME}__}, route=${__${@webModelAttributes.ROUTE_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
+  th:with="li=${li}, page=${__${@webModelAttributes.PAGE_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, creationOption=${__${@webModelAttributes.CREATION_OPTION_NAME}__}, itemClass=${__${@webModelAttributes.ITEM_CLASS_NAME}__}, route=${__${@webModelAttributes.ROUTE_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
+
+  <!-- Creation Options Begin -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="creationOption">
+    <div class="offcanvas-header">
+      <h4>[[${#messages.msgOrNull('sbu.web.datatable.creation_option.title') ?: 'Creation Option'}]]
+      </h4>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div th:if="${creationOption}"
+      th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}" class="offcanvas-body">
+      <react-form th:id="${'creationOptionForm' + rid}"
+        th:action="@{${route.newPath}(ajaxTargetId=${ajaxTargetId}, backTargetId=${backTargetId})}"
+        method="GET" ajax:target="${ajaxTargetId}">
+        <button class="btn btn-primary" type="submit"
+          onclick="bootstrap.Offcanvas.getInstance(document.getElementById('creationOption')).hide();">
+          [[${#messages.msgOrNull('sbu.ui.submit') ?: 'Submit'}]]
+        </button>
+      </react-form>
+
+      <script th:inline="javascript">
+        var creationOptionFormDataset = /*[[${creationOption.toDataset()}]]*/ null;
+        var creationOptionFormDatasetId = /*[[${'creationOptionForm' + rid}]]*/ null;
+        var creationOptionForm = document.getElementById(creationOptionFormDatasetId);
+        creationOptionForm.setAttribute('props-var', 'creationOptionFormDataset');
+      </script>
+    </div>
+  </div>
+  <!-- Creation Options End -->
 
   <!-- Filter Options Begin -->
   <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
@@ -105,15 +133,29 @@
         <tr>
           <th scope="col">
             <div class="btn-group">
-              <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
-                class="btn btn-outline-success" hx:get="${route.newPath}"
-                hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
-                <i class="fas fa-file-circle-plus"></i>
-              </button>
+              <!-- Creation Button Begin -->
+              <th:block th:if="${creationOption == null}">
+                <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
+                  class="btn btn-outline-success" hx:get="${route.newPath}"
+                  hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
+                  <i class="fas fa-file-circle-plus"></i>
+                </button>
+              </th:block>
+              <th:block th:unless="${creationOption == null}">
+                <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
+                  class="btn btn-outline-success" data-bs-toggle="offcanvas"
+                  data-bs-target="#creationOption">
+                  <i class="fas fa-file-circle-plus"></i>
+                </button>
+              </th:block>
+              <!-- Creation Button End -->
+
+              <!-- Search Button Begin -->
               <button class="btn btn-info" data-bs-toggle="offcanvas"
                 data-bs-target="#filterOption">
                 <i class="fas fa-search"></i>
               </button>
+              <!-- Search Button End -->
             </div>
           </th>
           <th:block th:replace="${th}"></th:block>

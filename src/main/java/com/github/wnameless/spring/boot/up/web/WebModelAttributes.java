@@ -30,6 +30,7 @@ public class WebModelAttributes {
   public static String CHILD_CLASS_NAME;
   public static String CHILDREN_NAME;
   public static String ALERT_NAME;
+  public static String CREATION_OPTION_NAME;
 
   @Value("${spring.boot.up.web.model.attribute.route.name:route}")
   public void setRoute(String routeName) {
@@ -114,6 +115,11 @@ public class WebModelAttributes {
   @Value("${spring.boot.up.web.model.attribute.alert.name:alert}")
   public void setModelAttrAlert(String alertName) {
     WebModelAttributes.ALERT_NAME = alertName;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.creation-option.name:creationOption}")
+  public void setModelAttrCreationOption(String creationOptionName) {
+    WebModelAttributes.CREATION_OPTION_NAME = creationOptionName;
   }
 
 }

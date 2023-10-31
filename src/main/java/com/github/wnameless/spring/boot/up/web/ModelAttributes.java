@@ -277,4 +277,20 @@ public class ModelAttributes {
 
   }
 
+  public Class<CreationOption> getCreationOption() {
+    return CreationOption.class;
+  }
+
+  public static class CreationOption {
+
+    public static String name() {
+      return getName();
+    }
+
+    public static String getName() {
+      return WebModelAttributes.CREATION_OPTION_NAME;
+    }
+
+  }
+
 }
