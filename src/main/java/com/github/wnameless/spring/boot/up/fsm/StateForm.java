@@ -13,7 +13,7 @@ public class StateForm<T extends Trigger, ID> {
 
   private final Supplier<String> formTypeStock;
   private final boolean isJsfPojo;
-  private final Class<? extends JsfPOJO<?, ID>> jsfPojoType;
+  private final Class<? extends JsfPOJO<?>> jsfPojoType;
 
   private final Class<? extends CrudRepository<?, ID>> jsfRepositoryType;
 
@@ -32,7 +32,7 @@ public class StateForm<T extends Trigger, ID> {
     this.editableTriggerStock = editableTriggerStock;
   }
 
-  public StateForm(Class<? extends JsfPOJO<?, ID>> formType,
+  public StateForm(Class<? extends JsfPOJO<?>> formType,
       Class<? extends CrudRepository<?, ID>> jsfRepositoryType, Supplier<String> formBranchStock,
       Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock) {
     this.formTypeStock = () -> formType.getSimpleName();
@@ -54,7 +54,7 @@ public class StateForm<T extends Trigger, ID> {
     this.editableTriggerStock = () -> null;
   }
 
-  public StateForm(Class<? extends JsfPOJO<?, ID>> formType,
+  public StateForm(Class<? extends JsfPOJO<?>> formType,
       Class<? extends CrudRepository<?, ID>> jsfRepositoryType) {
     this.formTypeStock = () -> formType.getSimpleName();
     isJsfPojo = true;
@@ -75,7 +75,7 @@ public class StateForm<T extends Trigger, ID> {
     this.editableTriggerStock = () -> null;
   }
 
-  public StateForm(Class<? extends JsfPOJO<?, ID>> formType,
+  public StateForm(Class<? extends JsfPOJO<?>> formType,
       Class<? extends CrudRepository<?, ID>> jsfRepositoryType, T viewableTrigger) {
     this.formTypeStock = () -> formType.getSimpleName();
     isJsfPojo = true;
@@ -85,7 +85,6 @@ public class StateForm<T extends Trigger, ID> {
     this.viewableTriggerStock = () -> viewableTrigger;
     this.editableTriggerStock = () -> null;
   }
-
 
   public StateForm(String formType, T viewableTrigger, T editableTrigger) {
     this.formTypeStock = () -> formType;
@@ -97,7 +96,7 @@ public class StateForm<T extends Trigger, ID> {
     this.editableTriggerStock = () -> editableTrigger;
   }
 
-  public StateForm(Class<? extends JsfPOJO<?, ID>> formType,
+  public StateForm(Class<? extends JsfPOJO<?>> formType,
       Class<? extends CrudRepository<?, ID>> jsfRepositoryType, T viewableTrigger,
       T editableTrigger) {
     this.formTypeStock = () -> formType.getSimpleName();

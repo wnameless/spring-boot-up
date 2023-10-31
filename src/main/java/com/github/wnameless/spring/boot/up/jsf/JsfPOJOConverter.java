@@ -3,7 +3,7 @@ package com.github.wnameless.spring.boot.up.jsf;
 import org.modelmapper.ModelMapper;
 import com.github.wnameless.spring.boot.up.model.MapModelConverter;
 
-public interface JsfPOJOConverter<P, J extends JsfPOJO<P, ?>> extends MapModelConverter<P, J> {
+public interface JsfPOJOConverter<P, J extends JsfPOJO<P>> extends MapModelConverter<P, J> {
 
   @Override
   default void map(P source, J target) {
