@@ -50,7 +50,7 @@ public interface SingularAjaxRestfulWebAction<D, ID>
       consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView updateAjax(ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params, @RequestBody D data) {
-    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
+    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("edit :: partial"));
     updateProcedure().accept(mav, params, data);
     return mav;
   }

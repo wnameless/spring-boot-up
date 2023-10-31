@@ -48,7 +48,7 @@ public interface SingularHtmlRestfulWebAction<D, ID>
   @RequestMapping(method = {RequestMethod.PUT, RequestMethod.PATCH})
   default ModelAndView updateHtml(ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params, @RequestBody D data) {
-    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
+    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("edit :: complete"));
     updateProcedure().accept(mav, params, data);
     return mav;
   }

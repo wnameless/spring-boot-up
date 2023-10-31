@@ -57,7 +57,7 @@ public interface AjaxRestfulWebAction<D, ID> extends BaseWebAction<D>, RestfulRo
       method = {RequestMethod.PUT, RequestMethod.PATCH})
   default ModelAndView updateAjax(ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params, @RequestBody D data) {
-    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
+    mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("edit :: partial"));
     updateProcedure().accept(mav, params, data);
     return mav;
   }
