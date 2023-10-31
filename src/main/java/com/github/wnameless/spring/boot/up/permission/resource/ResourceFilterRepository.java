@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.http.HttpStatus;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoProjectionRepository;
 import com.github.wnameless.spring.boot.up.data.mongodb.querydsl.MongoQuerydslUtils;
@@ -256,7 +257,12 @@ public interface ResourceFilterRepository<T, ID>
     if (messages.size() > 0) {
       var alertMessages = new AlertMessages();
       alertMessages.setWarning(messages);
-      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
+      SpringBootUpWeb.findHttpServletRequest().ifPresent(req -> {
+        req.setAttribute(Alert.name(), alertMessages);
+      });
+      SpringBootUpWeb.findHttpServletResponse().ifPresent(rsp -> {
+        rsp.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      });
       return entity;
     }
 
@@ -265,7 +271,12 @@ public interface ResourceFilterRepository<T, ID>
       if (!user.canCreate(rar.getResourceType())) {
         var alertMessages = new AlertMessages();
         alertMessages.getWarning().add("No permission to CREATE");
-        SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
+        SpringBootUpWeb.findHttpServletRequest().ifPresent(req -> {
+          req.setAttribute(Alert.name(), alertMessages);
+        });
+        SpringBootUpWeb.findHttpServletResponse().ifPresent(rsp -> {
+          rsp.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        });
         return entity;
       }
 
@@ -281,7 +292,12 @@ public interface ResourceFilterRepository<T, ID>
     if (!target.isPresent()) {
       var alertMessages = new AlertMessages();
       alertMessages.getWarning().add("No permission to UPDATE");
-      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
+      SpringBootUpWeb.findHttpServletRequest().ifPresent(req -> {
+        req.setAttribute(Alert.name(), alertMessages);
+      });
+      SpringBootUpWeb.findHttpServletResponse().ifPresent(rsp -> {
+        rsp.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      });
       return entity;
     }
 
@@ -296,7 +312,12 @@ public interface ResourceFilterRepository<T, ID>
     if (messages.size() > 0) {
       var alertMessages = new AlertMessages();
       alertMessages.setWarning(messages);
-      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
+      SpringBootUpWeb.findHttpServletRequest().ifPresent(req -> {
+        req.setAttribute(Alert.name(), alertMessages);
+      });
+      SpringBootUpWeb.findHttpServletResponse().ifPresent(rsp -> {
+        rsp.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      });
       return entity;
     }
 
@@ -308,8 +329,13 @@ public interface ResourceFilterRepository<T, ID>
       return save(entity);
     } catch (Exception e) {
       var alertMessages = new AlertMessages();
-      alertMessages.getWarning().add(e.getMessage());
-      SpringBootUpWeb.findHttpServletRequest().get().setAttribute(Alert.name(), alertMessages);
+      alertMessages.getDanger().add(e.getMessage());
+      SpringBootUpWeb.findHttpServletRequest().ifPresent(req -> {
+        req.setAttribute(Alert.name(), alertMessages);
+      });
+      SpringBootUpWeb.findHttpServletResponse().ifPresent(rsp -> {
+        rsp.setStatus(HttpStatus.FORBIDDEN.value());
+      });
       return entity;
     }
   }
