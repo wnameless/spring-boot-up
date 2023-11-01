@@ -6,32 +6,36 @@ import com.github.wnameless.spring.boot.up.SpringBootUp;
 
 public interface JsfStratrgyAware {
 
+  @SuppressWarnings("rawtypes")
   default Optional<JsfStrategy> getJsonSchemaFormStrategy() {
     return SpringBootUp.getBeansOfType(JsfStrategy.class).values().stream()
         .filter(dc -> dc.getDocumentType().equals(this.getClass()))
         .filter(dc -> dc.activeStatus().getAsBoolean()).findFirst();
   }
 
+  @SuppressWarnings("unchecked")
   default Map<String, Object> applySchemaStrategy(JsonSchemaForm jsf) {
     var documentStrategy = getJsonSchemaFormStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().schemaStrategy() != null) {
-      return documentStrategy.get().schemaStrategy().apply(jsf);
+      return (Map<String, Object>) documentStrategy.get().schemaStrategy().apply(this, jsf);
     }
     return jsf.getSchema();
   }
 
+  @SuppressWarnings("unchecked")
   default Map<String, Object> applyUiSchemaStrategy(JsonSchemaForm jsf) {
     var documentStrategy = getJsonSchemaFormStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().uiSchemaStrategy() != null) {
-      return documentStrategy.get().uiSchemaStrategy().apply(jsf);
+      return (Map<String, Object>) documentStrategy.get().uiSchemaStrategy().apply(this, jsf);
     }
     return jsf.getUiSchema();
   }
 
+  @SuppressWarnings("unchecked")
   default Map<String, Object> applyFormDataStrategy(JsonSchemaForm jsf) {
     var documentStrategy = getJsonSchemaFormStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().formDataStrategy() != null) {
-      return documentStrategy.get().formDataStrategy().apply(jsf);
+      return (Map<String, Object>) documentStrategy.get().formDataStrategy().apply(this, jsf);
     }
     return jsf.getFormData();
   }
