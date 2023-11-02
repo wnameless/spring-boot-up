@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,8 +35,9 @@ public interface ResourceFilterRepository<T, ID>
     WebPermissionManager wpm = SpringBootUp.getBean(WebPermissionManager.class);
     ResourceAccessRule rar = wpm.findUserResourceAccessRuleByRepositoryType(this.getClass());
     if (rar == null) {
-      log.info("User {} with roles: {} don't have enough permission",
-          getCurrentUser().getUsername(), getCurrentUser().getAllRoles());
+      log.warn("User {} with roles: {} don't have enough permission on {}",
+          getCurrentUser().getUsername(), getCurrentUser().getAllRoles(),
+          AopProxyUtils.proxiedUserInterfaces(this)[0].getSimpleName());
     }
     return rar;
   }
