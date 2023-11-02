@@ -65,6 +65,8 @@ public interface SingularRestfulController<R extends CrudRepository<I, ID>, I, I
 
   @ModelAttribute
   default void setQueryConfig(Model model, @RequestParam MultiValueMap<String, String> params) {
+    ModelHelper.forwrdAttributes(model, params);
+
     if (getModelPolicy().isDisable()) return;
 
     if (getModelPolicy().onQueryConfig() != null) {

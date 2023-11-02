@@ -9,16 +9,8 @@ public interface RestfulItem<ID> extends JoinablePath {
     return false;
   }
 
-  default boolean hasBackPathname() {
-    return getBackPathname() != null && !getBackPathname().trim().isEmpty();
-  }
-
-  default String getBackPathname() {
-    return null;
-  }
-
   default String getBackPath() {
-    return hasBackPathname() ? getBackPathname() : getIndexPath();
+    return isSingular() ? getShowPath() : getIndexPath();
   }
 
   default String getBackPath(QueryConfig<?> queryConfig) {
@@ -26,9 +18,7 @@ public interface RestfulItem<ID> extends JoinablePath {
   }
 
   default String getBackPath(QueryConfig<?> queryConfig, boolean excludePage, boolean excludeSort) {
-    return hasBackPathname()
-        ? getBackPathname() + queryConfig.toQueryString(excludePage, excludeSort)
-        : getIndexPath(queryConfig, excludePage, excludeSort);
+    return getBackPath() + queryConfig.toQueryString(excludePage, excludeSort);
   }
 
   @Override

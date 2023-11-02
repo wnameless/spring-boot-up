@@ -211,6 +211,8 @@ public interface NestedRestfulController< //
 
   @ModelAttribute
   default void setQueryConfig(Model model, @RequestParam MultiValueMap<String, String> params) {
+    ModelHelper.forwrdAttributes(model, params);
+
     if (getChildrenModelPolicy().isDisable()) return;
 
     if (getChildrenModelPolicy().onQueryConfig() != null) {
