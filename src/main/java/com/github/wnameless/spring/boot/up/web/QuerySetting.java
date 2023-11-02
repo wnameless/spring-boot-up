@@ -46,6 +46,13 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     return this;
   }
 
+  public QuerySetting<E> defaultSort(Function<E, Path<?>> pathFinder) {
+    Path<?> p = pathFinder.apply(entity);
+    String path = p.toString();
+    params.add(pageableParams.getSortParameter(), path.substring(path.indexOf('.') + 1));
+    return this;
+  }
+
   public QuerySetting<E> defaultSort(Sort sort) {
     sort.forEach(o -> params.add(pageableParams.getSortParameter(),
         o.getProperty() + "," + o.getDirection()));
