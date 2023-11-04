@@ -112,87 +112,70 @@
   </div>
   <!-- Filter Options End-->
 
-  <style>
-    @media (max-width: 767px) {
-      .table-responsive .dropdown-menu {
-        position: static !important;
-      }
-    }
-
-    @media (min-width: 768px) {
-      .table-responsive {
-        overflow: inherit;
-      }
-    }
-  </style>
-
-  <div class="table-responsive">
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">
-            <div class="btn-group">
-              <!-- Creation Button Begin -->
-              <th:block th:if="${creationOption == null}">
-                <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
-                  class="btn btn-outline-success" hx:get="${route.newPath}"
-                  hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
-                  <i class="fas fa-file-circle-plus"></i>
-                </button>
-              </th:block>
-              <th:block th:unless="${creationOption == null}">
-                <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
-                  class="btn btn-outline-success" data-bs-toggle="offcanvas"
-                  data-bs-target="#creationOption">
-                  <i class="fas fa-file-circle-plus"></i>
-                </button>
-              </th:block>
-              <!-- Creation Button End -->
-
-              <!-- Search Button Begin -->
-              <button class="btn btn-info" data-bs-toggle="offcanvas"
-                data-bs-target="#filterOption">
-                <i class="fas fa-search"></i>
+  <table class="ui very basic table">
+    <thead>
+      <tr>
+        <th scope="col">
+          <div class="btn-group">
+            <!-- Creation Button Begin -->
+            <th:block th:if="${creationOption == null}">
+              <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
+                class="btn btn-outline-success" hx:get="${route.newPath}"
+                hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
+                <i class="fas fa-file-circle-plus"></i>
               </button>
-              <!-- Search Button End -->
-            </div>
-          </th>
-          <th:block th:replace="${th}"></th:block>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="item : ${page}">
-          <th>
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-gear"></i>
+            </th:block>
+            <th:block th:unless="${creationOption == null}">
+              <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
+                class="btn btn-outline-success" data-bs-toggle="offcanvas"
+                data-bs-target="#creationOption">
+                <i class="fas fa-file-circle-plus"></i>
               </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a th:classappend="${user == null || user.canUpdate(item)} ? 'text-primary' : 'disabled'"
-                    hx:get="${item.getEditPath(queryConfig)}" hx:target="${'#' + ajaxTargetId}"
-                    hx-ext="json-enc" class="dropdown-item">
-                    [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
-                </li>
-                <li>
-                  <a th:classappend="${user == null || user.canDelete(item)} ? 'text-danger' : 'disabled'"
-                    hx:delete="${item.getDeletePath(queryConfig)}"
-                    hx:confirm="${#messages.msgOrNull('sbu.ui.confirmation.delete') ?: 'Are you sure?'}"
-                    hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
-                    [[${#messages.msgOrNull('sbu.ui.delete') ?: 'Delete'}]]</a>
-                </li>
-                <th:block th:if="${li}">
-                  <th:block th:replace="${li}"></th:block>
-                </th:block>
-              </ul>
-            </div>
-          </th>
-          <th:block th:replace="${td}"></th:block>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+            </th:block>
+            <!-- Creation Button End -->
+
+            <!-- Search Button Begin -->
+            <button class="btn btn-info" data-bs-toggle="offcanvas" data-bs-target="#filterOption">
+              <i class="fas fa-search"></i>
+            </button>
+            <!-- Search Button End -->
+          </div>
+        </th>
+        <th:block th:replace="${th}"></th:block>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="item : ${page}">
+        <th>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-gear"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a th:classappend="${user == null || user.canUpdate(item)} ? 'text-primary' : 'disabled'"
+                  hx:get="${item.getEditPath(queryConfig)}" hx:target="${'#' + ajaxTargetId}"
+                  hx-ext="json-enc" class="dropdown-item">
+                  [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
+              </li>
+              <li>
+                <a th:classappend="${user == null || user.canDelete(item)} ? 'text-danger' : 'disabled'"
+                  hx:delete="${item.getDeletePath(queryConfig)}"
+                  hx:confirm="${#messages.msgOrNull('sbu.ui.confirmation.delete') ?: 'Are you sure?'}"
+                  hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
+                  [[${#messages.msgOrNull('sbu.ui.delete') ?: 'Delete'}]]</a>
+              </li>
+              <th:block th:if="${li}">
+                <th:block th:replace="${li}"></th:block>
+              </th:block>
+            </ul>
+          </div>
+        </th>
+        <th:block th:replace="${td}"></th:block>
+      </tr>
+    </tbody>
+  </table>
 
   <nav class="d-flex justify-content-center">
     <ul class="pagination" sd:pagination-split="7" sd:pagination="full"

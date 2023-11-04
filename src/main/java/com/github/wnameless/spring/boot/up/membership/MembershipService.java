@@ -14,6 +14,19 @@ public interface MembershipService<ID> {
 
   List<? extends MembershipRepository<?, ID>> getMembershipRepositories();
 
+  default List<? extends Membership<ID>> findAllByMembershipTypes(
+      Collection<Class<? extends Membership<ID>>> membershipTypes) {
+    var memberships = new ArrayList<Membership<ID>>();
+
+    getMembershipRepositories().forEach(repo -> {
+      if (membershipTypes.contains(repo.getMembershipType())) {
+        repo.findAll().forEach(membership -> memberships.add(membership));
+      }
+    });
+
+    return memberships;
+  }
+
   default List<? extends Membership<ID>> findAllByUsername(String username) {
     var memberships = new ArrayList<Membership<ID>>();
 

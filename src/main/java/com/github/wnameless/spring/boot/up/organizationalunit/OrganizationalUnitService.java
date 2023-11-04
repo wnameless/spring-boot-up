@@ -20,6 +20,19 @@ public interface OrganizationalUnitService<ID> {
 
   Set<OrganizationalChart<ID>> getOrganizationCharts();
 
+  default List<? extends OrganizationalUnit<ID>> findAllOrganizationalUnitsByResourceTypes(
+      Collection<Class<? extends OrganizationalUnit<ID>>> resourceTypes) {
+    List<OrganizationalUnit<ID>> result = new ArrayList<>();
+
+    getOrganizationalUnitRepositories().forEach(repo -> {
+      if (resourceTypes.contains(repo.getResourceType())) {
+        repo.findAll().forEach(ou -> result.add(ou));
+      }
+    });
+
+    return result;
+  }
+
   default List<Optional<? extends OrganizationalUnit<ID>>> findAllOrganizationalUnits(
       Collection<ID> organizationalUnitIds) {
     List<Optional<? extends OrganizationalUnit<ID>>> result = new ArrayList<>();
