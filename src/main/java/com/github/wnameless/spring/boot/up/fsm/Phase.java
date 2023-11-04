@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.fsm;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
@@ -10,6 +11,10 @@ public interface Phase<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>
     extends AccessControlAware, ForwardableAccessControlAware, StateMachineInitializable<S, T> {
 
   E getEntity();
+
+  List<S> getAllStates();
+
+  List<T> getAllTriggers();
 
   default List<T> getExternalTriggers() {
     return getStateMachine().getPermittedTriggers().stream()
@@ -26,7 +31,10 @@ public interface Phase<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>
         .filter(t -> t.getTriggerType() == TriggerType.ALWAYS).toList();
   }
 
-  T getTrigger(String triggerName);
+  default T getTrigger(String triggerName) {
+    return getAllTriggers().stream().filter(t -> Objects.equals(triggerName, t.getName()))
+        .findFirst().get();
+  }
 
   StateRecord<S, T, ID> getStateRecord();
 

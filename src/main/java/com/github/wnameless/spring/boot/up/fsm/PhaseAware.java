@@ -50,7 +50,8 @@ public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T
   @PostRemove // JPA
   @AfterDeleteFromMongo // MongoDB
   default void cleanUpByFormDataTable() {
-    List<StateForm<T, ID>> stateForms = getStateRecord().getState().getForms();
+    List<StateForm<T, ID>> stateForms =
+        getPhase().getAllStates().stream().flatMap(s -> s.getForms().stream()).toList();
     Map<String, Map<String, ID>> formDataTable = getStateRecord().getFormDataTable();
 
     for (String formType : formDataTable.keySet()) {
