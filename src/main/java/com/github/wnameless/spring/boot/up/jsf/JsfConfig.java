@@ -31,7 +31,9 @@ public final class JsfConfig {
     if (modelMapper != null) return modelMapper;
 
     modelMapper = new ModelMapper();
-    modelMapper.getConfiguration().setSkipNullEnabled(true)
+    modelMapper.getConfiguration() //
+        .setSkipNullEnabled(true) //
+        .setCollectionsMergeEnabled(false) //
         .setMatchingStrategy(MatchingStrategies.STANDARD);
     return modelMapper;
   }
