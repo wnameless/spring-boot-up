@@ -27,9 +27,6 @@ import com.github.wnameless.spring.boot.up.jsf.repository.JsfDataRepository;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.BaseWebAction;
-import com.github.wnameless.spring.boot.up.web.ModelAttributes.AjaxTargetId;
-import com.github.wnameless.spring.boot.up.web.ModelAttributes.BackTargetId;
-import com.github.wnameless.spring.boot.up.web.ModelAttributes.EmbeddedTargetId;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRepositoryProvider;
@@ -191,15 +188,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
 
   @GetMapping(path = "/{id}/forms/{formType}", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView showFormAjax(ModelAndView mav, @PathVariable ID id,
-      @PathVariable String formType, @RequestParam(required = true) String ajaxTargetId,
-      @RequestParam(required = false) String embeddedTargetId,
-      @RequestParam(required = false) String backTargetId) {
-    if (embeddedTargetId == null || embeddedTargetId.isBlank()) embeddedTargetId = ajaxTargetId;
-    if (backTargetId == null || backTargetId.isBlank()) backTargetId = ajaxTargetId;
+      @PathVariable String formType) {
     mav.setViewName("sbu/jsf/show-edit :: bs5");
-    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
-    mav.addObject(EmbeddedTargetId.name(), embeddedTargetId);
-    mav.addObject(BackTargetId.name(), backTargetId);
 
     showAndEditAction(mav, id, formType, true);
     return mav;
@@ -207,13 +197,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
 
   @GetMapping(path = "/{id}/forms/{formType}/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView editFormAjax(ModelAndView mav, @PathVariable ID id,
-      @PathVariable String formType, @RequestParam(required = true) String ajaxTargetId,
-      @RequestParam(required = false) String backTargetId) {
-    if (backTargetId == null || backTargetId.isBlank()) backTargetId = ajaxTargetId;
+      @PathVariable String formType) {
     mav.setViewName("sbu/jsf/edit :: bs5");
-    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
-    mav.addObject(EmbeddedTargetId.name(), backTargetId);
-    mav.addObject(BackTargetId.name(), backTargetId);
 
     showAndEditAction(mav, id, formType, false);
     return mav;
@@ -257,12 +242,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       method = {RequestMethod.PUT, RequestMethod.PATCH},
       consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView updateFormAjax(ModelAndView mav, @PathVariable ID id,
-      @PathVariable String formType, @RequestBody Map<String, Object> formData,
-      @RequestParam(required = true) String ajaxTargetId,
-      @RequestParam(required = true) String backTargetId) {
+      @PathVariable String formType, @RequestBody Map<String, Object> formData) {
     mav.setViewName("sbu/jsf/show-edit :: bs5");
-    mav.addObject(AjaxTargetId.name(), backTargetId);
-    mav.addObject(EmbeddedTargetId.name(), ajaxTargetId);
 
     PA phase = getRestfulRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phase.getStateRecord();

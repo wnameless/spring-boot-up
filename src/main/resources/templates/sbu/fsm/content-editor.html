@@ -27,7 +27,7 @@
           <div th:if="${item.phase.stateMachine.canFire(stateForm.viewableTriggerStock.get)}"
             th:id="${'embedded' + rid}" class="pt-2">
             <a hx:target="${'#embedded' + rid}"
-              hx:get="@{${item.joinPath('forms', stateForm.formTypeStock.get)}(ajaxTargetId=${'embedded' + rid}, backTargetId=${ajaxTargetId})}"
+              hx:get="@{${item.joinPath('forms', stateForm.formTypeStock.get)}(_ajaxTargetId=${'embedded' + rid}, _backTargetId=${ajaxTargetId})}"
               hx-ext="json-enc" hx-trigger="load"></a>
           </div>
         </th:block>

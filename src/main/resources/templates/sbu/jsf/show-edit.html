@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: _ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: _backTargetId ?: ajaxTargetId}, embeddedTargetId=${embeddedTargetId ?: _embeddedTargetId ?: ajaxTargetId}, backPath=${backPath ?: _backPath}"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: _ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${backTargetId ?: _backTargetId ?: ajaxTargetId}, backPath=${backPath ?: _backPath}"
   class="card">
   <div class="card-header">
     <div class="d-flex">
@@ -10,8 +10,8 @@
         hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
         aria-label="Close"></button>
       <a th:if="${user == null || user.canUpdate(item)}" class="pe-2 orange"
-        hx:get="@{${item.getEditPath(queryConfig)}(_ajaxTargetId=${embeddedTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
-        hx:target="${'#' + embeddedTargetId}" hx-ext="json-enc">
+        hx:get="@{${item.getEditPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
+        hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
         <i class="fas fa-edit"></i></a>
     </div>
   </div>
