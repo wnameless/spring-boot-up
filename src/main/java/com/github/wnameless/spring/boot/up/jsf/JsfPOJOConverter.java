@@ -10,9 +10,9 @@ public interface JsfPOJOConverter<P, J extends JsfPOJO<P>> extends MapModelConve
     if (beforeMapping() != null) beforeMapping().accept(target);
     J converted = convert(source);
     ModelMapper modelMapper = JsfConfig.getModelMapper();
-    P pojo = target.getPojo();
+    // P pojo = target.getPojo();
     modelMapper.map(converted, target);
-    target.setPojo(pojo);
+    target.setPojo(source);
     if (afterMapping() != null) afterMapping().accept(target);
   }
 
