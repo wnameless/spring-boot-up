@@ -18,7 +18,10 @@ public interface RestfulItem<ID> extends JoinablePath {
   }
 
   default String getBackPath(QueryConfig<?> queryConfig, boolean excludePage, boolean excludeSort) {
-    return getBackPath() + queryConfig.toQueryString(excludePage, excludeSort);
+    if (queryConfig != null) {
+      return getBackPath() + queryConfig.toQueryString(excludePage, excludeSort);
+    }
+    return getBackPath();
   }
 
   @Override
