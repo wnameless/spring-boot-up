@@ -14,7 +14,7 @@ public interface JsonableModelController {
 
   @ModelAttribute
   default void setModelFormat(Model model, @RequestParam MultiValueMap<String, List<String>> params,
-      @Value("${spring.web.common.model.format.key:format}") String formatKey) {
+      @Value("${sbu.web.common.model.format.key:format}") String formatKey) {
     if (params.get(formatKey) != null) {
       model.addAttribute(formatKey, params.get(formatKey).get(0));
     }
@@ -22,7 +22,7 @@ public interface JsonableModelController {
 
   default ModelAndView jsonableMAV(Model model, String viewName) {
     String format =
-        SpringBootUp.environment().getProperty("spring.web.common.model.format.key", "format");
+        SpringBootUp.environment().getProperty("sbu.web.common.model.format.key", "format");
 
     ModelAndView mav = new ModelAndView();
 
