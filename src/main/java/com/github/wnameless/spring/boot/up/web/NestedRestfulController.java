@@ -3,7 +3,6 @@ package com.github.wnameless.spring.boot.up.web;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -21,7 +20,7 @@ public interface NestedRestfulController< //
     PR extends CrudRepository<P, PID>, P, PID, //
     CR extends CrudRepository<C, CID>, C, CID> {
 
-  Function<P, ? extends RestfulRoute<CID>> getRoute();
+  RestfulRoute<CID> getRoute();
 
   PR getParentRepository();
 
@@ -59,8 +58,9 @@ public interface NestedRestfulController< //
   }
 
   @ModelAttribute
-  default void setParentAndChild(Model model, @PathVariable(required = false) PID parentId,
-      @PathVariable(required = false) CID id) {
+  default void setParentAndChildAndRouteAndChildren(Model model,
+      @PathVariable(required = false) PID parentId, @PathVariable(required = false) CID id) {
+    // Set Parent
     if (getParentModelPolicy().isDisable()) return;
 
     P parent = null;
@@ -75,6 +75,7 @@ public interface NestedRestfulController< //
     }
     model.addAttribute(getParentKey(), parent);
 
+    // Set Child
     if (getChildModelPolicy().isDisable()) return;
 
     C child = null;
@@ -90,20 +91,16 @@ public interface NestedRestfulController< //
       child = getChildModelPolicy().onItemInitialized().apply(child);
     }
     model.addAttribute(getChildKey(), child);
-  }
 
-  @ModelAttribute
-  default void setChildren(Model model, @PathVariable(required = false) PID parentId,
-      @PathVariable(required = false) CID id) {
-    if (getChildrenModelPolicy().isDisable()) return;
-
-    Iterable<C> children = null;
-    if (parentId != null && id == null) {
-      P parent = null;
-      parent = getParentRepository().findById(parentId)
-          .orElseGet(getParentModelPolicy().onDefaultItem());
-      children = getChildren(parent);
+    // Set Route
+    if (parent != null && child != null) {
+      model.addAttribute(getRouteKey(), getRoute());
     }
+
+    // Set Children
+    if (getChildrenModelPolicy().isDisable() || parent == null) return;
+
+    Iterable<C> children = getChildren(parent);
     if ((children == null || !children.iterator().hasNext())
         && getChildrenModelPolicy().onDefaultItem() != null) {
       children = getChildrenModelPolicy().onDefaultItem().get();
@@ -114,12 +111,34 @@ public interface NestedRestfulController< //
     model.addAttribute(getChildrenKey(), children);
   }
 
-  @ModelAttribute
-  default void setRoute(Model model, @PathVariable(required = false) PID parentId) {
-    if (parentId != null) {
-      model.addAttribute(getRouteKey(), getRoute().apply(getParent(parentId)));
-    }
-  }
+  // @ModelAttribute
+  // default void setChildren(Model model, @PathVariable(required = false) PID parentId,
+  // @PathVariable(required = false) CID id) {
+  // if (getChildrenModelPolicy().isDisable()) return;
+
+  // Iterable<C> children = null;
+  // if (parentId != null && id == null) {
+  // P parent = null;
+  // parent = getParentRepository().findById(parentId)
+  // .orElseGet(getParentModelPolicy().onDefaultItem());
+  // children = getChildren(parent);
+  // }
+  // if ((children == null || !children.iterator().hasNext())
+  // && getChildrenModelPolicy().onDefaultItem() != null) {
+  // children = getChildrenModelPolicy().onDefaultItem().get();
+  // }
+  // if (getChildrenModelPolicy().onItemInitialized() != null) {
+  // children = getChildrenModelPolicy().onItemInitialized().apply(children);
+  // }
+  // model.addAttribute(getChildrenKey(), children);
+  // }
+
+  // @ModelAttribute
+  // default void setRoute(Model model, @PathVariable(required = false) PID parentId) {
+  // if (parentId != null) {
+  // model.addAttribute(getRouteKey(), getRoute());
+  // }
+  // }
 
   default String getRouteKey() {
     return Route.name();

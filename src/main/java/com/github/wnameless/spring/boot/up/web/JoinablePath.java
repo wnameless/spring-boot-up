@@ -6,6 +6,17 @@ import java.util.List;
 
 public interface JoinablePath {
 
+  public static JoinablePath of(String rootPath) {
+    return new JoinablePath() {
+
+      @Override
+      public String getRootPath() {
+        return rootPath;
+      }
+
+    };
+  }
+
   String getRootPath();
 
   default String joinPath(String... paths) {
