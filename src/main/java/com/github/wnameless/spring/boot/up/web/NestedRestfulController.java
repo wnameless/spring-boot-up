@@ -111,35 +111,6 @@ public interface NestedRestfulController< //
     model.addAttribute(getChildrenKey(), children);
   }
 
-  // @ModelAttribute
-  // default void setChildren(Model model, @PathVariable(required = false) PID parentId,
-  // @PathVariable(required = false) CID id) {
-  // if (getChildrenModelPolicy().isDisable()) return;
-
-  // Iterable<C> children = null;
-  // if (parentId != null && id == null) {
-  // P parent = null;
-  // parent = getParentRepository().findById(parentId)
-  // .orElseGet(getParentModelPolicy().onDefaultItem());
-  // children = getChildren(parent);
-  // }
-  // if ((children == null || !children.iterator().hasNext())
-  // && getChildrenModelPolicy().onDefaultItem() != null) {
-  // children = getChildrenModelPolicy().onDefaultItem().get();
-  // }
-  // if (getChildrenModelPolicy().onItemInitialized() != null) {
-  // children = getChildrenModelPolicy().onItemInitialized().apply(children);
-  // }
-  // model.addAttribute(getChildrenKey(), children);
-  // }
-
-  // @ModelAttribute
-  // default void setRoute(Model model, @PathVariable(required = false) PID parentId) {
-  // if (parentId != null) {
-  // model.addAttribute(getRouteKey(), getRoute());
-  // }
-  // }
-
   default String getRouteKey() {
     return Route.name();
   }
