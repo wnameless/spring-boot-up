@@ -1,11 +1,12 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import java.util.function.BiConsumer;
-import org.apache.commons.lang3.function.TriConsumer;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.ModelAndView;
+import com.github.wnameless.spring.boot.up.web.function.QuadConsumer;
+import com.github.wnameless.spring.boot.up.web.function.TriConsumer;
 
-public interface BaseWebAction<D> {
+public interface BaseWebAction<D, ID> {
 
   default void indexPreAction(ModelAndView mav, MultiValueMap<String, String> params) {}
 
@@ -21,17 +22,17 @@ public interface BaseWebAction<D> {
     };
   }
 
-  default void showPreAction(ModelAndView mav, MultiValueMap<String, String> params) {}
+  default void showPreAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  void showAction(ModelAndView mav, MultiValueMap<String, String> params);
+  void showAction(ID id, ModelAndView mav, MultiValueMap<String, String> params);
 
-  default void showPostAction(ModelAndView mav, MultiValueMap<String, String> params) {}
+  default void showPostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  default BiConsumer<ModelAndView, MultiValueMap<String, String>> showProcedure() {
-    return (mav, params) -> {
-      showPreAction(mav, params);
-      showAction(mav, params);
-      showPostAction(mav, params);
+  default TriConsumer<ID, ModelAndView, MultiValueMap<String, String>> showProcedure() {
+    return (id, mav, params) -> {
+      showPreAction(id, mav, params);
+      showAction(id, mav, params);
+      showPostAction(id, mav, params);
     };
   }
 
@@ -63,45 +64,47 @@ public interface BaseWebAction<D> {
     };
   }
 
-  default void editPreAction(ModelAndView mav, MultiValueMap<String, String> params) {}
+  default void editPreAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  void editAction(ModelAndView mav, MultiValueMap<String, String> params);
+  void editAction(ID id, ModelAndView mav, MultiValueMap<String, String> params);
 
-  default void editPostAction(ModelAndView mav, MultiValueMap<String, String> params) {}
+  default void editPostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  default BiConsumer<ModelAndView, MultiValueMap<String, String>> editProcedure() {
-    return (mav, params) -> {
-      editPreAction(mav, params);
-      editAction(mav, params);
-      editPostAction(mav, params);
+  default TriConsumer<ID, ModelAndView, MultiValueMap<String, String>> editProcedure() {
+    return (id, mav, params) -> {
+      editPreAction(id, mav, params);
+      editAction(id, mav, params);
+      editPostAction(id, mav, params);
     };
   }
 
-  default void updatePreAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {}
+  default void updatePreAction(ID id, ModelAndView mav, MultiValueMap<String, String> params,
+      D data) {}
 
-  void updateAction(ModelAndView mav, MultiValueMap<String, String> params, D data);
+  void updateAction(ID id, ModelAndView mav, MultiValueMap<String, String> params, D data);
 
-  default void updatePostAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {}
+  default void updatePostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params,
+      D data) {}
 
-  default TriConsumer<ModelAndView, MultiValueMap<String, String>, D> updateProcedure() {
-    return (mav, params, data) -> {
-      updatePreAction(mav, params, data);
-      updateAction(mav, params, data);
-      updatePostAction(mav, params, data);
+  default QuadConsumer<ID, ModelAndView, MultiValueMap<String, String>, D> updateProcedure() {
+    return (id, mav, params, data) -> {
+      updatePreAction(id, mav, params, data);
+      updateAction(id, mav, params, data);
+      updatePostAction(id, mav, params, data);
     };
   }
 
-  default void deletePreAction(ModelAndView mav, MultiValueMap<String, String> params) {}
+  default void deletePreAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  void deleteAction(ModelAndView mav, MultiValueMap<String, String> params);
+  void deleteAction(ID id, ModelAndView mav, MultiValueMap<String, String> params);
 
-  default void deletePostAction(ModelAndView mav, MultiValueMap<String, String> params) {}
+  default void deletePostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {}
 
-  default BiConsumer<ModelAndView, MultiValueMap<String, String> > deleteProcedure() {
-    return (mav,params) -> {
-      deletePreAction(mav,params);
-      deleteAction(mav,params);
-      deletePostAction(mav,params);
+  default TriConsumer<ID, ModelAndView, MultiValueMap<String, String>> deleteProcedure() {
+    return (id, mav, params) -> {
+      deletePreAction(id, mav, params);
+      deleteAction(id, mav, params);
+      deletePostAction(id, mav, params);
     };
   }
 

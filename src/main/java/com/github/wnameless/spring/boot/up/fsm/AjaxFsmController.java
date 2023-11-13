@@ -36,7 +36,7 @@ import net.sf.rubycollect4j.Ruby;
 
 public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA extends PhaseAware<PA, S, T, ID>, S extends State<T, ID>, T extends Trigger, D, ID>
     extends RestfulRepositoryProvider<PA, ID>, RestfulItemProvider<PA>, RestfulRouteProvider<ID>,
-    BaseWebAction<D> {
+    BaseWebAction<D, ID> {
 
   @SneakyThrows
   @SuppressWarnings("unchecked")
@@ -99,7 +99,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
   }
 
   @Override
-  default void showPreAction(ModelAndView mav, @RequestParam MultiValueMap<String, String> params) {
+  default void showPreAction(ID id, ModelAndView mav,
+      @RequestParam MultiValueMap<String, String> params) {
     excuateAlwaysTriggers();
   }
 

@@ -3,6 +3,7 @@ package com.github.wnameless.spring.boot.up.web;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 public interface SingularHtmlRestfulWebAction<D, ID>
-    extends SingularBaseWebAction<D>, RestfulRouteProvider<Void> {
+    extends SingularBaseWebAction<D, ID>, RestfulRouteProvider<Void> {
 
   @GetMapping
-  default ModelAndView showHtml(ModelAndView mav,
+  default ModelAndView showHtml(@PathVariable(required = false) ID id, ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
-    showProcedure().accept(mav, params);
+    showProcedure().accept(id, mav, params);
     return mav;
   }
 
@@ -38,26 +39,26 @@ public interface SingularHtmlRestfulWebAction<D, ID>
   }
 
   @GetMapping("edit")
-  default ModelAndView editHtml(ModelAndView mav,
+  default ModelAndView editHtml(@PathVariable(required = false) ID id, ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("edit :: complete"));
-    editProcedure().accept(mav, params);
+    editProcedure().accept(id, mav, params);
     return mav;
   }
 
   @RequestMapping(method = {RequestMethod.PUT, RequestMethod.PATCH})
-  default ModelAndView updateHtml(ModelAndView mav,
+  default ModelAndView updateHtml(@PathVariable(required = false) ID id, ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params, @RequestBody D data) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
-    updateProcedure().accept(mav, params, data);
+    updateProcedure().accept(id, mav, params, data);
     return mav;
   }
 
   @DeleteMapping
-  default ModelAndView deleteHtml(ModelAndView mav,
+  default ModelAndView deleteHtml(@PathVariable(required = false) ID id, ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: complete"));
-    deleteProcedure().accept(mav, params);
+    deleteProcedure().accept(id, mav, params);
     return mav;
   }
 

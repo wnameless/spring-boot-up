@@ -8,7 +8,7 @@ import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfPatchService;
 import com.github.wnameless.spring.boot.up.web.BaseWebAction;
 
-public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
+public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
 
   default JsfPatchService getJsfPatchService() {
     return SpringBootUp.getBean(JsfPatchService.class);
@@ -40,7 +40,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void showPostAction(ModelAndView mav, MultiValueMap<String, String> params) {
+  default void showPostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {
     if (showActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(showActionSchemaPatch());
     }
@@ -115,7 +115,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void editPostAction(ModelAndView mav, MultiValueMap<String, String> params) {
+  default void editPostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {
     if (editActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(editActionSchemaPatch());
     }
@@ -140,7 +140,8 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void updatePostAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {
+  default void updatePostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params,
+      D data) {
     if (updateActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(updateActionSchemaPatch());
     }
@@ -165,7 +166,7 @@ public interface WebActionJsfPatch<D> extends BaseWebAction<D> {
   }
 
   @Override
-  default void deletePostAction(ModelAndView mav, MultiValueMap<String, String> params) {
+  default void deletePostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {
     if (deleteActionSchemaPatch() != null) {
       getJsfPatchService().schemaPatch(deleteActionSchemaPatch());
     }

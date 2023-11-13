@@ -4,6 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-public interface AjaxRestfulWebAction<D, ID> extends BaseWebAction<D>, RestfulRouteProvider<ID> {
+public interface AjaxRestfulWebAction<D, ID>
+    extends BaseWebAction<D, ID>, RestfulRouteProvider<ID> {
 
   @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView indexAjax(ModelAndView mav,
@@ -22,10 +24,10 @@ public interface AjaxRestfulWebAction<D, ID> extends BaseWebAction<D>, RestfulRo
   }
 
   @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  default ModelAndView showAjax(ModelAndView mav,
+  default ModelAndView showAjax(@PathVariable ID id, ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
-    showProcedure().accept(mav, params);
+    showProcedure().accept(id, mav, params);
     return mav;
   }
 
@@ -46,27 +48,27 @@ public interface AjaxRestfulWebAction<D, ID> extends BaseWebAction<D>, RestfulRo
   }
 
   @GetMapping(path = "/{id}/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
-  default ModelAndView editAjax(ModelAndView mav,
+  default ModelAndView editAjax(@PathVariable ID id, ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("edit :: partial"));
-    editProcedure().accept(mav, params);
+    editProcedure().accept(id, mav, params);
     return mav;
   }
 
   @RequestMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE,
       method = {RequestMethod.PUT, RequestMethod.PATCH})
-  default ModelAndView updateAjax(ModelAndView mav,
+  default ModelAndView updateAjax(@PathVariable ID id, ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params, @RequestBody D data) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
-    updateProcedure().accept(mav, params, data);
+    updateProcedure().accept(id, mav, params, data);
     return mav;
   }
 
   @DeleteMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  default ModelAndView deleteAjax(ModelAndView mav,
+  default ModelAndView deleteAjax(@PathVariable ID id, ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("index :: partial"));
-    deleteProcedure().accept(mav, params);
+    deleteProcedure().accept(id, mav, params);
     return mav;
   }
 
