@@ -11,6 +11,7 @@ import com.github.wnameless.apt.INamedResource;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.google.common.base.CaseFormat;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.PathBuilder;
 import lombok.SneakyThrows;
 
 public abstract class QuickRestfulController<R extends CrudRepository<I, ID>, I, ID>
@@ -26,12 +27,16 @@ public abstract class QuickRestfulController<R extends CrudRepository<I, ID>, I,
 
   abstract protected void quickConfigure(ModelPolicy<I> policy);
 
-  @SneakyThrows
   @SuppressWarnings("unchecked")
-  protected I newRestfulItem() {
+  protected Class<I> getRestfulItemType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(itemRepository.getClass(), CrudRepository.class);
-    return (I) genericTypeResolver[0].getDeclaredConstructor().newInstance();
+    return (Class<I>) genericTypeResolver[0];
+  }
+
+  @SneakyThrows
+  protected I newRestfulItem() {
+    return getRestfulItemType().getDeclaredConstructor().newInstance();
   }
 
   @Override
@@ -39,6 +44,11 @@ public abstract class QuickRestfulController<R extends CrudRepository<I, ID>, I,
     policy.forDefaultItem(() -> newRestfulItem());
     policy.forItemInitialized(item -> this.item = item);
 
+    policy.forQuerySetting(() -> {
+      PathBuilder<I> entityPath =
+          new PathBuilder<>(getRestfulItemType(), getRestfulItemType().getSimpleName());
+      return QuerySetting.of(entityPath);
+    });
     policy.forQueryConfig(c -> {
       this.pageable = c.getPageable();
       this.predicate = c.getPredicate();

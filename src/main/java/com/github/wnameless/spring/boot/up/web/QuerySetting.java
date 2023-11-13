@@ -19,17 +19,17 @@ import lombok.Data;
 @Data
 public final class QuerySetting<E extends EntityPathBase<?>> {
 
-  public static <E extends EntityPathBase<?>> QuerySetting<E> of(E entity) {
-    return new QuerySetting<E>(entity);
+  public static <E extends EntityPathBase<?>> QuerySetting<E> of(E entityPath) {
+    return new QuerySetting<E>(entityPath);
   }
 
-  private final E entity;
+  private final E entityPath;
   private final Map<String, FilterableField<E>> filterFields;
   private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
   private PageableParams pageableParams = PageableParams.ofSpring();
 
-  public QuerySetting(E entity) {
-    this.entity = entity;
+  public QuerySetting(E entityPath) {
+    this.entityPath = entityPath;
     this.filterFields = new LinkedHashMap<>();
   }
 
@@ -47,7 +47,7 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
   }
 
   public QuerySetting<E> defaultSort(Function<E, Path<?>> pathFinder) {
-    Path<?> p = pathFinder.apply(entity);
+    Path<?> p = pathFinder.apply(entityPath);
     String path = p.toString();
     params.add(pageableParams.getSortParameter(), path.substring(path.indexOf('.') + 1));
     return this;
@@ -67,7 +67,7 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
   }
 
   public QuerySetting<E> addFilterableField(FilterableField<E> ff) {
-    filterFields.put(ff.getFieldName(entity), ff);
+    filterFields.put(ff.getFieldName(entityPath), ff);
     return this;
   }
 

@@ -28,7 +28,7 @@ public final class QueryConfig<E extends EntityPathBase<?>> {
   private final MultiValueMap<String, String> requestParams;
 
   public QueryConfig(QuerySetting<E> querySetting, MultiValueMap<String, String> requestParams) {
-    this.entity = querySetting.getEntity();
+    this.entity = querySetting.getEntityPath();
     this.filterFields = querySetting.getFilterFields();
     this.pageableParams = querySetting.getPageableParams();
     this.requestParams = querySetting.defaultParams(requestParams);

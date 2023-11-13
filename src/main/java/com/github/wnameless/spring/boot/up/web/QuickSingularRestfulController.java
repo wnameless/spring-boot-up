@@ -20,12 +20,16 @@ public abstract class QuickSingularRestfulController<R extends CrudRepository<I,
 
   abstract protected void quickConfigure(ModelPolicy<I> policy);
 
-  @SneakyThrows
   @SuppressWarnings("unchecked")
-  protected I newRestfulItem() {
+  protected Class<I> getRestfulItemType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(itemRepository.getClass(), CrudRepository.class);
-    return (I) genericTypeResolver[0].getDeclaredConstructor().newInstance();
+    return (Class<I>) genericTypeResolver[0];
+  }
+
+  @SneakyThrows
+  protected I newRestfulItem() {
+    return getRestfulItemType().getDeclaredConstructor().newInstance();
   }
 
   @Override
