@@ -1,11 +1,6 @@
 package com.github.wnameless.spring.boot.up.permission;
 
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.CREATE;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.CRUD;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.DELETE;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.MANAGE;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.READ;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.UPDATE;
+import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.*;
 import java.util.Optional;
 import org.springframework.util.ClassUtils;
 import com.github.wnameless.spring.boot.up.permission.ability.Ability;

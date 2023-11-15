@@ -1,16 +1,28 @@
 package com.github.wnameless.spring.boot.up.web;
 
+import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.github.wnameless.spring.boot.up.permission.resource.ResourceFilterRepository;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.ItemClass;
 
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
+
+  default Optional<I> findRestfulItemById(ID id) {
+    Optional<I> item;
+    if (getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
+      item = rfr.filterFindById(id);
+    } else {
+      item = getRestfulRepository().findById(id);
+    }
+    return item;
+  }
 
   void configure(ModelPolicy<I> policy);
 
@@ -27,7 +39,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     I item = null;
 
     if (id != null) {
-      item = getRestfulRepository().findById(id).orElseGet(getModelPolicy().onDefaultItem());
+      item = findRestfulItemById(id).orElseGet(getModelPolicy().onDefaultItem());
     } else {
       item = getModelPolicy().onDefaultItem().get();
     }
@@ -53,7 +65,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
 
   default I getItem(ID id, I defaultItem) {
     if (id != null) {
-      return getRestfulRepository().findById(id).get();
+      return findRestfulItemById(id).get();
     }
     return defaultItem;
   }

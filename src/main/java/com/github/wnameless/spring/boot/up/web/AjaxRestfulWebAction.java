@@ -15,6 +15,11 @@ import org.springframework.web.servlet.ModelAndView;
 public interface AjaxRestfulWebAction<D, ID>
     extends BaseWebAction<D, ID>, RestfulRouteProvider<ID> {
 
+  // @SuppressWarnings("unchecked")
+  // default Class<? extends BaseWebAction<D, ID>> getWebActionControllerType() {
+  // return (Class<? extends BaseWebAction<D, ID>>) this.getClass();
+  // }
+
   @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView indexAjax(ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params) {
@@ -30,6 +35,16 @@ public interface AjaxRestfulWebAction<D, ID>
     showProcedure().accept(id, mav, params);
     return mav;
   }
+
+  // @Override
+  // default TriConsumer<ID, ModelAndView, MultiValueMap<String, String>> showProcedure() {
+  // return (id, mav, params) -> {
+  // var controller = SpringBootUp.getBean(getWebActionControllerType());
+  // controller.showPreAction(id, mav, params);
+  // controller.showAction(id, mav, params);
+  // controller.showPostAction(id, mav, params);
+  // };
+  // }
 
   @GetMapping(path = "/new", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView newAjax(ModelAndView mav,
