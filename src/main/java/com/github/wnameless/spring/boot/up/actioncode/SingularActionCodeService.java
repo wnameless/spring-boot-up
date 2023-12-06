@@ -31,7 +31,8 @@ public interface SingularActionCodeService<AC extends SingularActionCode<A>, A e
 
   default BiFunction<ModelAndView, A, ModelAndView> actionCodeRequest() {
     return (mav, action) -> {
-      var rgOpt = getActionCodeRepository().findByAction(action);
+      var rgOpt = getActionCodeRepository().findByActionAndExpiredAtGreaterThan(action,
+          LocalDateTime.now());
       if (rgOpt.isPresent()) {
         var rg = rgOpt.get();
         if (rg.isValid()) {
@@ -44,7 +45,8 @@ public interface SingularActionCodeService<AC extends SingularActionCode<A>, A e
 
   default BiFunction<ModelAndView, A, ModelAndView> actionCodeGeneration() {
     return (mav, action) -> {
-      var acOpt = getActionCodeRepository().findByAction(action);
+      var acOpt = getActionCodeRepository().findByActionAndExpiredAtGreaterThan(action,
+          LocalDateTime.now());
       if (acOpt.isPresent() && acOpt.get().isValid()) {
         var ac = acOpt.get();
         if (ac.isExpired()) {

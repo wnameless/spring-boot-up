@@ -31,7 +31,8 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
 
   default TriFunction<ModelAndView, A, T, ModelAndView> actionCodeRequest() {
     return (mav, action, item) -> {
-      var rgOpt = getActionCodeRepository().findByActionTargetAndAction(item, action);
+      var rgOpt = getActionCodeRepository().findByActionTargetAndActionAndExpiredAtGreaterThan(item,
+          action, LocalDateTime.now());
       if (rgOpt.isPresent()) {
         var rg = rgOpt.get();
         if (rg.isValid()) {
@@ -44,7 +45,8 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
 
   default TriFunction<ModelAndView, A, T, ModelAndView> actionCodeGeneration() {
     return (mav, action, item) -> {
-      var acOpt = getActionCodeRepository().findByActionTargetAndAction(item, action);
+      var acOpt = getActionCodeRepository().findByActionTargetAndActionAndExpiredAtGreaterThan(item,
+          action, LocalDateTime.now());
       if (acOpt.isPresent() && acOpt.get().isValid()) {
         var ac = acOpt.get();
         if (ac.isExpired()) {
