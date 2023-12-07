@@ -25,7 +25,9 @@ public interface NestedRestfulController< //
   default Optional<P> findParentItemById(PID id) {
     Optional<P> item;
     if ((CrudRepository<P, PID>) getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
-      item = rfr.filterFindById(id);
+      // TODO: Fix bug
+      // item = rfr.filterFindById(id);
+      item = getParentRepository().findById(id);
     } else {
       item = getParentRepository().findById(id);
     }
@@ -35,7 +37,9 @@ public interface NestedRestfulController< //
   default Optional<C> findChildItemById(CID id) {
     Optional<C> item;
     if ((CrudRepository<C, CID>) getChildRepository() instanceof ResourceFilterRepository<C, CID> rfr) {
-      item = rfr.filterFindById(id);
+      // TODO: Fix bug
+      // item = rfr.filterFindById(id);
+      item = getChildRepository().findById(id);
     } else {
       item = getChildRepository().findById(id);
     }
