@@ -1,23 +1,15 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
-public interface TagTemplate {
+public interface TagTemplate<UL extends UserLabelTemplate<ID>, L extends LabelTemplate<ID>, ID> {
 
-  String getGroupTitle();
+  ID getId();
 
-  String getTagName();
+  L getLabelTemplate();
 
-  String getEntityType();
+  UL getUserLabelTemplate();
 
-  void setEntityType(String entityType);
+  ID getEntityId();
 
   String getUsername();
-
-  default void setEntityTypeByClass(Class<?> type) {
-    setEntityType(type.getName());
-  }
-
-  default Class<?> getEntityTypeByClass() throws ClassNotFoundException {
-    return Class.forName(getEntityType());
-  }
 
 }

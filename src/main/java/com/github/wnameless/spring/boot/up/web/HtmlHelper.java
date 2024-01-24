@@ -3,6 +3,7 @@ package com.github.wnameless.spring.boot.up.web;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -12,9 +13,18 @@ import org.springframework.stereotype.Component;
 public class HtmlHelper {
 
   public static final String ITEM_FIELD_PREFIX = "sbu.web.item.field.";
+  public static final String RESOURCE_PREFIX = "sbu.web.item.resource.";
 
   @Autowired
   MessageSource messageSource;
+
+  public String resourceDisplay(String className) {
+    String[] nameParts = className.split(Pattern.quote("."));
+    String lastPart = nameParts[nameParts.length - 1];
+    return messageSource.getMessage( //
+        ITEM_FIELD_PREFIX + lastPart, //
+        null, lastPart, LocaleContextHolder.getLocale());
+  }
 
   public String enumDisplay(Enum<?> enumVal) {
     return messageSource.getMessage( //

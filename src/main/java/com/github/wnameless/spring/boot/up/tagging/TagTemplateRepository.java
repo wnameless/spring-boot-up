@@ -4,4 +4,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface TagTemplateRepository<TT extends TagTemplate, ID> extends CrudRepository<TT, ID> {}
+public interface TagTemplateRepository<T extends TagTemplate<UL, L, ID>, UL extends UserLabelTemplate<ID>, L extends LabelTemplate<ID>, ID>
+    extends CrudRepository<T, ID> {}
