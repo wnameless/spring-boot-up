@@ -9,6 +9,8 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
 
   LabelTemplateRepository<L, ID> getLabelTemplateRepository();
 
+  UserLabelTemplateRepository<UL, ID> getUserLabelTemplateRepository();
+
   TagTemplateRepository<T, UL, L, ID> getTagTemplateRepository();
 
   @SneakyThrows
