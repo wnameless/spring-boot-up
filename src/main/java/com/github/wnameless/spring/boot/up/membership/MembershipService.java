@@ -77,6 +77,22 @@ public interface MembershipService<ID> {
     return memberships;
   }
 
+  default List<? extends Membership<ID>> findAllByMembershipOrganizationIdAndUsernameAndRoles(
+      ID membershipOrganizationId, String username, Collection<? extends Rolify> rolifies) {
+    var memberships = new ArrayList<Membership<ID>>();
+
+    getMembershipRepositories().forEach(repo -> {
+      var targetMemberships = repo.findAllByRolesIn(rolifies.stream().map(Rolify::toRole).toList());
+      var filteredMemberships = targetMemberships.stream()
+          .filter(mem -> Objects.equals(membershipOrganizationId, mem.getMembershipOrganizationId())
+              && Objects.equals(username, mem.getUsername()))
+          .toList();
+      memberships.addAll(filteredMemberships);
+    });
+
+    return memberships;
+  }
+
   default Set<Role> findAllRolesByUsername(String username) {
     var roles = new LinkedHashSet<Role>();
 
