@@ -30,7 +30,7 @@ public class RelaxedBooleanTypeConverterDecorator implements TypeConverter {
         return ((Number) value).intValue() != 0;
       }
       if (sourceType.isCollection()) {
-        return !((Collection) value).isEmpty();
+        return !((Collection<?>) value).isEmpty();
       }
       if (sourceType.isArray()) {
         return ((Object[]) value).length != 0;

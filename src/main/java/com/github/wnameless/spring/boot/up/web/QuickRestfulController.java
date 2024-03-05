@@ -63,6 +63,7 @@ public abstract class QuickRestfulController<R extends CrudRepository<I, ID>, I,
     return itemRepository;
   }
 
+  @SuppressWarnings("null")
   @Override
   public RestfulRoute<ID> getRestfulRoute() {
     Optional<INamedResource> nr =

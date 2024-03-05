@@ -45,6 +45,7 @@ public abstract class QuickSingularRestfulController<R extends CrudRepository<I,
     return itemRepository;
   }
 
+  @SuppressWarnings("null")
   @Override
   public SingularRestfulRoute getRestfulRoute() {
     Optional<INamedResource> nr =

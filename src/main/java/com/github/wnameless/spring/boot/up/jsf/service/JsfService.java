@@ -71,6 +71,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
     try {
       URL schemaUrl = Resources
           .getResource(getTemplatePath() + "/" + formType + "/" + formType + ".schema.json");
+      @SuppressWarnings("null")
       String json = Resources.toString(schemaUrl, Charsets.UTF_8);
       return JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
     } catch (Exception e) {
@@ -83,6 +84,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
     try {
       URL schemaUrl = Resources
           .getResource(getTemplatePath() + "/" + formType + "/" + formType + ".uiSchema.json");
+      @SuppressWarnings("null")
       String json = Resources.toString(schemaUrl, Charsets.UTF_8);
       return JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
     } catch (Exception e) {
