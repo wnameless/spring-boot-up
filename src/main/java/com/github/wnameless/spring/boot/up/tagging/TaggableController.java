@@ -3,13 +3,14 @@ package com.github.wnameless.spring.boot.up.tagging;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
-import com.github.wnameless.spring.boot.up.web.ModelAttributes.AjaxTargetId;
+import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
@@ -43,10 +44,7 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
         {
           "title": "註記標籤",
           "type": "object",
-          "required": [
-            "labelList",
-            "userLabelList"
-          ],
+          "required": [],
           "properties": {
             "labelList": {
               "type": "array",
@@ -70,8 +68,12 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
     var schemaMap = mapper.readValue(schema, new TypeReference<Map<String, Object>>() {});
     DocumentContext docCtx = JsonPath.parse(schemaMap);
     docCtx.put("$.properties.labelList.items", "enum",
+        taggable.getLabelTemplates().stream().map(l -> l.getId()).toList());
+    docCtx.put("$.properties.labelList.items", "enumNames",
         taggable.getLabelTemplates().stream().map(l -> l.getLabelName()).toList());
     docCtx.put("$.properties.userLabelList.items", "enum",
+        taggable.getUserLabelTemplates().stream().map(l -> l.getId()).toList());
+    docCtx.put("$.properties.userLabelList.items", "enumNames",
         taggable.getUserLabelTemplates().stream().map(l -> l.getLabelName()).toList());
     schemaMap = docCtx.read("$", new TypeRef<Map<String, Object>>() {});
     editform.setSchema(schemaMap);
@@ -97,21 +99,50 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
             """;
     docCtx = JsonPath.parse(formDataSchema);
     docCtx.put("$", "labelList", tags.stream().filter(t -> t.getLabelTemplate() != null)
-        .map(l -> l.getLabelTemplate().getLabelName()).toList());
+        .map(l -> l.getLabelTemplate().getId()).toList());
     docCtx.put("$", "userLabelList", tags.stream().filter(t -> t.getUserLabelTemplate() != null)
-        .map(l -> l.getUserLabelTemplate().getLabelName()).toList());
+        .map(l -> l.getUserLabelTemplate().getId()).toList());
     editform.setFormData(docCtx.read("$", new TypeRef<Map<String, Object>>() {}));
 
     return editform;
   }
 
   @GetMapping("/{id}/taggings/edit")
-  default ModelAndView editTagggings(ModelAndView mav, @PathVariable ID id,
-      @RequestParam(required = true) String ajaxTargetId) {
+  default ModelAndView editTaggings(ModelAndView mav, @PathVariable ID id) {
     mav.setViewName("sbu/taggings/edit :: " + getFragmentName());
 
     mav.addObject(Item.name(), createEditForm(getRestfulItem(), id));
-    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    return mav;
+  }
+
+  @PutMapping("/{id}/taggings")
+  default ModelAndView updateTaggings(ModelAndView mav, @PathVariable ID id,
+      @RequestBody TaggableSchemaData<ID> data) {
+    mav.setViewName("sbu/taggings/show :: " + getFragmentName());
+
+    getTaggingService().getTagTemplateRepository().findAllByEntityId(id)
+        .forEach(tag -> getTaggingService().getTagTemplateRepository().delete(tag));
+
+    for (var labelId : data.getLabelList()) {
+      var tag = getTaggingService().newTagTemplate();
+      tag.setEntityId(id);
+      var label = getTaggingService().getLabelTemplateRepository().findById(labelId);
+      if (label.isEmpty()) continue;
+      tag.setLabelTemplate(label.get());
+      tag.setUsername(SpringBootUp.getBean(PermittedUser.class).getUsername());
+      getTaggingService().getTagTemplateRepository().save(tag);
+    }
+    for (var userLabelId : data.getUserLabelList()) {
+      var tag = getTaggingService().newTagTemplate();
+      tag.setEntityId(id);
+      var userLabel = getTaggingService().getUserLabelTemplateRepository().findById(userLabelId);
+      if (userLabel.isEmpty()) continue;
+      tag.setUserLabelTemplate(userLabel.get());
+      tag.setUsername(SpringBootUp.getBean(PermittedUser.class).getUsername());
+      getTaggingService().getTagTemplateRepository().save(tag);
+    }
+
+    mav.addObject(Item.name(), createEditForm(getRestfulItem(), id));
     return mav;
   }
 

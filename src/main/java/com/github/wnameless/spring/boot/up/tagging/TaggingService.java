@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
+import java.util.Collection;
 import java.util.List;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.repository.CrudRepository;
@@ -31,6 +32,15 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
 
   default List<L> findAllGlobalLabelsByType(Class<?> type) {
     return getLabelTemplateRepository().findAllByEntityType(type.getName());
+  }
+
+  default List<ID> findAllEntityIdsByLabelIdIn(String entityType, Collection<ID> labelIds) {
+    var labels = getLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
+    var userLabels =
+        getUserLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
+    return getTagTemplateRepository()
+        .findAllByLabelTemplateInOrUserLabelTemplateIn(labels, userLabels).stream()
+        .map(TagTemplate::getEntityId).toList();
   }
 
 }

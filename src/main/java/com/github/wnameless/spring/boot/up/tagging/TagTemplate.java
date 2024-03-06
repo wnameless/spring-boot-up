@@ -6,10 +6,18 @@ public interface TagTemplate<UL extends UserLabelTemplate<ID>, L extends LabelTe
 
   L getLabelTemplate();
 
+  void setLabelTemplate(L labelTemplate);
+
   UL getUserLabelTemplate();
+
+  void setUserLabelTemplate(UL userLabelTemplate);
 
   ID getEntityId();
 
+  void setEntityId(ID entityId);
+
   String getUsername();
+
+  void setUsername(String username);
 
 }
