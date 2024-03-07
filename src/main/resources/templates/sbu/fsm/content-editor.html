@@ -10,7 +10,13 @@
     <li th:if="${item.phase.stateRecord.hasViewableForm(item.phase.stateMachine)}" class="nav-item"
       role="presentation">
       <button class="nav-link" data-bs-toggle="tab" th:attr="data-bs-target=${'#stateForm' + fid}"
-        type="button" role="tab">State Forms</button>
+        type="button" role="tab">State Form(s)</button>
+    </li>
+    <li th:if="${item.phase.stateRecord.hasEntireViewableForms(item.phase.stateMachine)}"
+      class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab"
+        th:attr="data-bs-target=${'#entireStateForms' + fid}" type="button" role="tab">Entire State
+        Form(s)</button>
     </li>
   </ul>
   <div class="tab-content">
@@ -19,6 +25,7 @@
         th:replace="~{sbu/jsf/show-edit :: bs5(item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE})}">
       </div>
     </div>
+
     <div th:if="${item.phase.stateRecord.hasViewableForm(item.phase.stateMachine)}"
       class="tab-pane fade" th:id="${'stateForm' + fid}" role="tabpanel">
       <th:block th:if="${item.phase.stateRecord.hasForm}">
@@ -32,6 +39,43 @@
           </div>
         </th:block>
       </th:block>
+    </div>
+
+    <div th:if="${item.phase.stateRecord.hasEntireViewableForms(item.phase.stateMachine)}"
+      class="tab-pane fade" th:id="${'entireStateForms' + fid}" role="tabpanel">
+      <ul class="list-group pt-2"
+        th:with="formDataTable=${item.phase.stateRecord.getEntireViewableForms(item.phase.stateMachine)}">
+        <th:block th:each="formTypeData : ${formDataTable}">
+          <th:block th:each="formBranchData : ${formTypeData.value}">
+            <a class="list-group-item" data-bs-toggle="modal" data-bs-target="#exampleModal"
+              hx-target="#modelForm"
+              hx:get="@{${item.joinPath('forms', formTypeData.key, 'formId', formBranchData.value)}(_ajaxTargetId=${'embedded' + rid}, _backTargetId=${ajaxTargetId})}"
+              hx-ext="json-enc">
+              [[${formTypeData.key}]] [[${formBranchData.key}]]
+            </a>
+          </th:block>
+        </th:block>
+      </ul>
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">State Form</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="modelForm"></div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -192,8 +192,47 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @PathVariable String formType) {
     mav.setViewName("sbu/jsf/show-edit :: bs5");
 
-    showAndEditAction(mav, id, formType, true);
+    showAndEditAction(mav, id, formType);
     return mav;
+  }
+
+  @GetMapping(path = "/{id}/forms/{formType}/formId/{formId}",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  default ModelAndView showFormAjax(ModelAndView mav, @PathVariable ID id,
+      @PathVariable String formType, @PathVariable ID formId) {
+    mav.setViewName("sbu/jsf/show-only :: bs5");
+
+    showAction(mav, id, formType, formId);
+    return mav;
+  }
+
+  default void showAction(ModelAndView mav, ID id, String formType, ID formId) {
+    PA phase = getRestfulRepository().findById(id).get();
+    StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
+    S state = stateRecord.getState();
+
+    Optional<StateForm<T, ID>> sfOpt = state.getForms().stream()
+        .filter(item -> Objects.equals(item.formTypeStock().get(), formType)).findFirst();
+    if (stateRecord.hasForm() && sfOpt.isPresent()) {
+      StateForm<T, ID> sf = sfOpt.get();
+
+      SF data = this.getStateForm(sf, formId);
+
+      if (afterLoadStateForm() != null) {
+        data = afterLoadStateForm().apply(phase, data);
+      }
+
+      RestfulJsonSchemaForm<String> item = new RestfulJsonSchemaForm<>(
+          getRestfulRoute().joinPath(getRestfulRoute().idToParam(id), "forms"), formType);
+      item.setIndexPath(getRestfulRoute().getShowPath(id));
+      item.setSchema(data.getSchema());
+      item.setUiSchema(data.getUiSchema());
+      item.setFormData(data.getFormData());
+      item.setUpdatable(new AccessControlRule(true,
+          () -> phase.getPhase().getStateMachine().canFire(sf.editableTriggerStock().get())));
+      item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
+      mav.addObject(Item.name(), item);
+    }
   }
 
   @GetMapping(path = "/{id}/forms/{formType}/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -201,11 +240,11 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @PathVariable String formType) {
     mav.setViewName("sbu/jsf/edit :: bs5");
 
-    showAndEditAction(mav, id, formType, false);
+    showAndEditAction(mav, id, formType);
     return mav;
   }
 
-  default void showAndEditAction(ModelAndView mav, ID id, String formType, boolean editable) {
+  default void showAndEditAction(ModelAndView mav, ID id, String formType) {
     PA phase = getRestfulRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
     S state = stateRecord.getState();

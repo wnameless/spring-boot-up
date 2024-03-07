@@ -15,6 +15,7 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
 
   private S state;
 
+  // Map<FormType, Map<FormBranch, ID>>
   private Map<String, Map<String, ID>> formDataTable = new HashMap<>();
 
   public StateRecord() {}
@@ -29,6 +30,24 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
 
   public boolean hasViewableForm(StateMachine<S, T> sm) {
     return state.getForms().stream().anyMatch(f -> sm.canFire(f.viewableTriggerStock().get()));
+  }
+
+  public boolean hasEntireViewableForms(StateMachine<S, T> sm) {
+    return state.getForms().stream()
+        .anyMatch(f -> sm.canFire(f.entireViewableTriggerStock().get()));
+  }
+
+  public Map<String, Map<String, ID>> getEntireViewableForms(StateMachine<S, T> sm) {
+    var dataTableCopy = new LinkedHashMap<>(formDataTable);
+
+    var formTypes =
+        state.getForms().stream().filter(f -> sm.canFire(f.entireViewableTriggerStock().get()))
+            .map(sf -> sf.formTypeStock().get()).toList();
+    var removableKeys =
+        dataTableCopy.keySet().stream().filter(k -> !formTypes.contains(k)).toList();
+    removableKeys.forEach(rk -> dataTableCopy.remove(rk));
+
+    return dataTableCopy;
   }
 
   public ID putStateFormId(String formType, String formBranch, ID formId) {
