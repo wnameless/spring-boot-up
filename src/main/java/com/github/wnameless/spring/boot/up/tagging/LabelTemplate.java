@@ -20,8 +20,6 @@ public interface LabelTemplate<ID> {
 
   void setEntityType(String entityType);
 
-  String getUsername();
-
   default void setEntityTypeByClass(Class<?> type) {
     setEntityType(type.getName());
   }
@@ -29,5 +27,11 @@ public interface LabelTemplate<ID> {
   default Class<?> getEntityTypeByClass() throws ClassNotFoundException {
     return Class.forName(getEntityType());
   }
+
+  String getUsername();
+
+  boolean isUserEditable();
+
+  void setUserEditable(boolean userEditable);
 
 }

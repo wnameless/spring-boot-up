@@ -67,10 +67,10 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
             """;
     var schemaMap = mapper.readValue(schema, new TypeReference<Map<String, Object>>() {});
     DocumentContext docCtx = JsonPath.parse(schemaMap);
-    docCtx.put("$.properties.labelList.items", "enum",
-        taggable.getLabelTemplates().stream().map(l -> l.getId()).toList());
-    docCtx.put("$.properties.labelList.items", "enumNames",
-        taggable.getLabelTemplates().stream().map(l -> l.getLabelName()).toList());
+    docCtx.put("$.properties.labelList.items", "enum", taggable.getLabelTemplates().stream()
+        .filter(l -> l.isUserEditable()).map(l -> l.getId()).toList());
+    docCtx.put("$.properties.labelList.items", "enumNames", taggable.getLabelTemplates().stream()
+        .filter(l -> l.isUserEditable()).map(l -> l.getLabelName()).toList());
     docCtx.put("$.properties.userLabelList.items", "enum",
         taggable.getUserLabelTemplates().stream().map(l -> l.getId()).toList());
     docCtx.put("$.properties.userLabelList.items", "enumNames",
@@ -120,8 +120,10 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
       @RequestBody TaggableSchemaData<ID> data) {
     mav.setViewName("sbu/taggings/show :: " + getFragmentName());
 
-    getTaggingService().getTagTemplateRepository().findAllByEntityId(id)
-        .forEach(tag -> getTaggingService().getTagTemplateRepository().delete(tag));
+    getTaggingService().getTagTemplateRepository().findAllByEntityId(id).stream().filter(tag -> {
+      if (tag.getLabelTemplate() == null) return true;
+      return tag.getLabelTemplate().isUserEditable();
+    }).forEach(tag -> getTaggingService().getTagTemplateRepository().delete(tag));
 
     for (var labelId : data.getLabelList()) {
       var tag = getTaggingService().newTagTemplate();
