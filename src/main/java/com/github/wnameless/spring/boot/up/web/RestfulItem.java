@@ -35,6 +35,7 @@ public interface RestfulItem<ID> extends JoinablePath {
     @SuppressWarnings("null")
     String lowerHyphen =
         CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, this.getClass().getSimpleName());
+    if (isSingular()) return "/" + lowerHyphen;
     String plural = English.plural(lowerHyphen);
     return "/" + plural;
   }
