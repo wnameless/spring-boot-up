@@ -1348,33 +1348,33 @@
     uncontrollable "^8.0.1"
     warning "^4.0.3"
 
-"@rjsf/bootstrap-4@^5.13.2":
-  version "5.13.2"
-  resolved "https://registry.yarnpkg.com/@rjsf/bootstrap-4/-/bootstrap-4-5.13.2.tgz#906c47a6378b2298e272a24287b34d8b687f7118"
-  integrity sha512-NPoix1PhoB6M+MX1gQt4q/QCcYr+VXqEiIH9GOM6syyoRyurOqrdaVOGJ/ynuzWsTwlUrPPL/Lyq7WaZJLmEyQ==
+"@rjsf/bootstrap-4@^5.17.1":
+  version "5.17.1"
+  resolved "https://registry.yarnpkg.com/@rjsf/bootstrap-4/-/bootstrap-4-5.17.1.tgz#783a5fcd340e4c9f4dd6fe9be8470f0ca3649c89"
+  integrity sha512-23NZ5qB0eYmJRY1UgI66mTAp4lyGXSgduyr7UX35fsBFy91CzP/FozL1P/muRcEslRqBJhDgrWbMdw99eLSO1w==
   dependencies:
     "@react-icons/all-files" "^4.1.0"
 
-"@rjsf/core@^5.13.2":
-  version "5.13.2"
-  resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-5.13.2.tgz#31289b16eaf7108fc5af07a388bc10373a9ce25b"
-  integrity sha512-Zn6BCTk0v8iVV2rKOYa2F34Q2CMYFgindAnLFmZEGalwC35hP93L68q3cfhbHoHmtUdkjAyUaa2vua6LpgzfQw==
+"@rjsf/core@^5.17.1":
+  version "5.17.1"
+  resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-5.17.1.tgz#747e82bc68347fc8b786fd817d380c7d8c36f766"
+  integrity sha512-COZSuumwHskWN8Pz3RxdxvuQUP6M/qBMXAkIi+TSWLFLaF6SUugpLiceMT1jGemDCr7fOSTiPxjkToSsgpvueQ==
   dependencies:
     lodash "^4.17.21"
     lodash-es "^4.17.21"
-    markdown-to-jsx "^7.3.2"
-    nanoid "^3.3.6"
+    markdown-to-jsx "^7.4.1"
+    nanoid "^3.3.7"
     prop-types "^15.8.1"
 
-"@rjsf/mui@^5.13.2":
-  version "5.13.2"
-  resolved "https://registry.yarnpkg.com/@rjsf/mui/-/mui-5.13.2.tgz#b92cbbdf67812e05afe06d152a9b93bfa4149075"
-  integrity sha512-RmuHGhFa4L43WzfMQ38wGEApNQg7ZMU/sgpdHqH4JbZoiJdis2BAIKmfa59mJM33Q03sSBqeZPgTeCoH7IQiog==
+"@rjsf/mui@^5.17.1":
+  version "5.17.1"
+  resolved "https://registry.yarnpkg.com/@rjsf/mui/-/mui-5.17.1.tgz#e3aa1cd5b5217b37985958abcab8c11621af52b6"
+  integrity sha512-SToKW8i8dVbYEFo6BDG1oTolfw7ywbrYcvKoFPPIOvoOUv+VJi1cVaWGQ3q0gJQjyXdYYmt5YsLiC4L388LRiA==
 
-"@rjsf/utils@^5.13.2":
-  version "5.13.2"
-  resolved "https://registry.yarnpkg.com/@rjsf/utils/-/utils-5.13.2.tgz#22b9b123d9d6ebebba8c31bd577e8ea258b73bd5"
-  integrity sha512-iluvCOQDwZkp66RRZdIV3TgJnI+I2xv7Ks+UVqjO9lG8U9ygoWuH85zGPAojqapJUuC+frVRZsEBsTwGegDWIw==
+"@rjsf/utils@^5.17.1":
+  version "5.17.1"
+  resolved "https://registry.yarnpkg.com/@rjsf/utils/-/utils-5.17.1.tgz#ad85d503dd15cc9fc49b5d6870534fa2ed8103b0"
+  integrity sha512-q1Igz/cuM2hi+jiXFkoaXqdRTUFB+a0jfVKNmZlHmvPmfYeeJfcfyOTzO8dQ41fHNHUFb15ryxa/TblDQimwkA==
   dependencies:
     json-schema-merge-allof "^0.8.1"
     jsonpointer "^5.0.1"
@@ -1382,10 +1382,10 @@
     lodash-es "^4.17.21"
     react-is "^18.2.0"
 
-"@rjsf/validator-ajv8@^5.13.2":
-  version "5.13.2"
-  resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.13.2.tgz#cc231c5dcce2bf1ba1f79dd86074b0fad80a9654"
-  integrity sha512-QWLSBUoADss4u9WyFy9DLJMHJ5qhOA5vmuWjauQ0tzsV2bgdaMMfj+VKMUHJ3aQOX7jM8X7PoL1qghM7odf+FA==
+"@rjsf/validator-ajv8@^5.17.1":
+  version "5.17.1"
+  resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.17.1.tgz#9b5e4b22f3ab47316c7a19da22639812e4a91193"
+  integrity sha512-KdvHsjDQ60b04fqnoqhfkiCv7E4n4NIHli8QU8dtpuUAVS/TOqDuOtDJVz6bv/rd/QNROGpxlO/OCccE0rmxLQ==
   dependencies:
     ajv "^8.12.0"
     ajv-formats "^2.1.1"
@@ -3252,10 +3252,10 @@ make-dir@^3.0.2, make-dir@^3.1.0:
   dependencies:
     semver "^6.0.0"
 
-markdown-to-jsx@^7.3.2:
-  version "7.3.2"
-  resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-7.3.2.tgz#f286b4d112dad3028acc1e77dfe1f653b347e131"
-  integrity sha512-B+28F5ucp83aQm+OxNrPkS8z0tMKaeHiy0lHJs3LqCyDQFtWuenaIrkaVTgAm1pf1AU85LXltva86hlaT17i8Q==
+markdown-to-jsx@^7.4.1:
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-7.4.1.tgz#1ed6a60f8f9cd944bec39d9923fbbc8d3d60dcb9"
+  integrity sha512-GbrbkTnHp9u6+HqbPRFJbObi369AgJNXi/sGqq5HRsoZW063xR1XDCaConqq+whfEIAlzB1YPnOgsPc7B7bc/A==
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -3363,6 +3363,11 @@ nanoid@^3.3.6:
   version "3.3.6"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
   integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
+
+nanoid@^3.3.7:
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.7.tgz#d0c301a691bc8d54efa0a2226ccf3fe2fd656bd8"
+  integrity sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==
 
 negotiator@0.6.3:
   version "0.6.3"
