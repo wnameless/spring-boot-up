@@ -20,7 +20,8 @@
       method="GET" ajax:target="${ajaxTargetId}" disabled="true">
       <div></div>
     </react-form>
-    <a class="btn btn-light" hx:get="${backPath != null ? backPath : item.getBackPath(queryConfig)}"
+    <a class="btn btn-light"
+      hx:get="@{${backPath != null ? backPath : item.getBackPath(queryConfig)}}"
       hx:target="${'#' + backTargetId}" hx-ext="json-enc">
       [[${#messages.msgOrNull('sbu.ui.return') ?: 'Return'}]]</a>
 

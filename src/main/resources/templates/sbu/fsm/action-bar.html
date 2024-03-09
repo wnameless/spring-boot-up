@@ -15,7 +15,7 @@
         </button>
         <th:block th:each="trigger : ${item.phase.externalTriggers}">
           <button type="button" class="btn btn-outline-success"
-            hx:get="${item.joinPath('triggers', trigger.name)}" hx:target="${'#' + ajaxTargetId}"
+            hx:get="@{${item.joinPath('triggers', trigger.name)}}" hx:target="${'#' + ajaxTargetId}"
             hx-ext="json-enc">[[${trigger.displayName}]]</button>
         </th:block>
       </div>

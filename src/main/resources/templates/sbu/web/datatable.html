@@ -42,7 +42,7 @@
       <!-- This hx-on::before-request is important for removing offcanvas style attributes from html body -->
       <form
         hx-on::before-request="bootstrap.Offcanvas.getInstance(document.getElementById('filterOption')).hide();"
-        class="row g-3" hx:get="${route.indexPath}" hx:target="${'#' + ajaxTargetId}"
+        class="row g-3" hx:get="@{${route.indexPath}}" hx:target="${'#' + ajaxTargetId}"
         hx-ext="json-enc">
         <!--   <form class="row g-3" method="GET" th:action="${route.indexPath}"> -->
         <th:block th:each="field : ${queryConfig.fields}">
@@ -103,7 +103,7 @@
             'Filter'}]]</button>
         </div>
         <div class="col-6">
-          <button hx:get="${route.indexPath}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
+          <button hx:get="@{${route.indexPath}}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
             type="button" class="btn btn-warning">
             [[${#messages.msgOrNull('sbu.web.datatable.filter_option.reset') ?: 'Reset'}]]</button>
         </div>
@@ -120,7 +120,7 @@
             <!-- Creation Button Begin -->
             <th:block th:if="${creationOption == null}">
               <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
-                class="btn btn-outline-success" hx:get="${route.newPath}"
+                class="btn btn-outline-success" hx:get="@{${route.newPath}}"
                 hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
                 <i class="fas fa-file-circle-plus"></i>
               </button>
@@ -155,7 +155,7 @@
             <ul class="dropdown-menu">
               <li>
                 <a th:classappend="${user == null || user.canUpdate(item)} ? 'text-primary' : 'disabled'"
-                  hx:get="${item.getEditPath(queryConfig)}" hx:target="${'#' + ajaxTargetId}"
+                  hx:get="@{${item.getEditPath(queryConfig)}}" hx:target="${'#' + ajaxTargetId}"
                   hx-ext="json-enc" class="dropdown-item">
                   [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
               </li>
