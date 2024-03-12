@@ -16,6 +16,10 @@ public interface TagTemplate<UL extends UserLabelTemplate<ID>, L extends LabelTe
 
   void setSystemLabel(SystemLabel systemLabel);
 
+  default void setSystemLabel(SystemLabelTemplate systemLabelTemplate) {
+    setSystemLabel(systemLabelTemplate.toSystemLabel());
+  }
+
   ID getEntityId();
 
   void setEntityId(ID entityId);
