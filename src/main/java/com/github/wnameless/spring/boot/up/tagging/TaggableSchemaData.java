@@ -8,5 +8,6 @@ public class TaggableSchemaData<ID> {
 
   private List<ID> labelList;
   private List<ID> userLabelList;
+  private List<String> systemLabelList;
 
 }

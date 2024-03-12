@@ -19,7 +19,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.TypeRef;
 import lombok.SneakyThrows;
 
-public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS extends TaggingService<T, UL, L, ID>, T extends TagTemplate<UL, L, ID>, UL extends UserLabelTemplate<ID>, L extends LabelTemplate<ID>, ID>
+public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends TaggingService<T, UL, L, ID>, T extends TagTemplate<UL, L, ID>, UL extends UserLabelTemplate<ID>, L extends LabelTemplate<ID>, ID>
     extends RestfulRouteProvider<ID>, RestfulItemProvider<E> {
 
   default String getFragmentName() {
@@ -61,6 +61,14 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
                 "type": "string"
               },
               "uniqueItems": true
+            },
+            "systemLabelList": {
+              "type": "array",
+              "title": "系統標籤",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
             }
           }
         }
@@ -85,6 +93,9 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
           },
           "userLabelList": {
             "ui:widget": "checkboxes"
+          },
+          "systemLabelList": {
+            "ui:widget": "checkboxes"
           }
         }
              """;
@@ -94,7 +105,8 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
     String formDataSchema = """
         {
           "labelList": [],
-          "userLabelList": []
+          "userLabelList": [],
+          "systemLabelList": []
         }
             """;
     docCtx = JsonPath.parse(formDataSchema);
@@ -102,6 +114,8 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
         .map(l -> l.getLabelTemplate().getId()).toList());
     docCtx.put("$", "userLabelList", tags.stream().filter(t -> t.getUserLabelTemplate() != null)
         .map(l -> l.getUserLabelTemplate().getId()).toList());
+    docCtx.put("$", "systemLabelList", tags.stream().filter(t -> t.getSystemLabel() != null)
+        .map(l -> l.getSystemLabel().getId()).toList());
     editform.setFormData(docCtx.read("$", new TypeRef<Map<String, Object>>() {}));
 
     return editform;
@@ -140,6 +154,15 @@ public interface TaggableController<E extends Taggable<E, T, UL, L, ID>, TS exte
       var userLabel = getTaggingService().getUserLabelTemplateRepository().findById(userLabelId);
       if (userLabel.isEmpty()) continue;
       tag.setUserLabelTemplate(userLabel.get());
+      tag.setUsername(SpringBootUp.getBean(PermittedUser.class).getUsername());
+      getTaggingService().getTagTemplateRepository().save(tag);
+    }
+    for (var sysLabelId : data.getSystemLabelList()) {
+      var tag = getTaggingService().newTagTemplate();
+      tag.setEntityId(id);
+      var sysLabel = getTaggingService().findSystemLabelById(sysLabelId);
+      if (sysLabel.isEmpty()) continue;
+      tag.setSystemLabel(sysLabel.get());
       tag.setUsername(SpringBootUp.getBean(PermittedUser.class).getUsername());
       getTaggingService().getTagTemplateRepository().save(tag);
     }

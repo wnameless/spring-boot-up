@@ -12,6 +12,10 @@ public interface TagTemplate<UL extends UserLabelTemplate<ID>, L extends LabelTe
 
   void setUserLabelTemplate(UL userLabelTemplate);
 
+  SystemLabel getSystemLabel();
+
+  void setSystemLabel(SystemLabel systemLabel);
+
   ID getEntityId();
 
   void setEntityId(ID entityId);
