@@ -2,10 +2,9 @@ package com.github.wnameless.spring.boot.up.attachment;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-public interface Attachment<ID> {
-
-  ID getId();
+public interface Attachment<ID> extends IdProvider<ID> {
 
   void setId(ID id);
 

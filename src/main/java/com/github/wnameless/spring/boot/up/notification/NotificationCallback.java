@@ -3,11 +3,11 @@ package com.github.wnameless.spring.boot.up.notification;
 import java.util.Objects;
 import com.github.wnameless.spring.boot.up.fsm.State;
 import com.github.wnameless.spring.boot.up.fsm.Trigger;
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 import lombok.SneakyThrows;
 
-public interface NotificationCallback<NS extends NotificationSource<ID>, ID> {
-
-  ID getId();
+public interface NotificationCallback<NS extends NotificationSource<ID>, ID>
+    extends IdProvider<ID> {
 
   ID getStateMachineEntityId();
 

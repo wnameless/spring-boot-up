@@ -3,10 +3,10 @@ package com.github.wnameless.spring.boot.up.tagging;
 import java.util.List;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
-import com.github.wnameless.spring.boot.up.web.RestfulItem;
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
 public interface Taggable<T extends TagTemplate<UL, L, ID>, UL extends UserLabelTemplate<ID>, L extends LabelTemplate<ID>, ID>
-    extends RestfulItem<ID> {
+    extends IdProvider<ID> {
 
   @SuppressWarnings("unchecked")
   default List<L> getLabelTemplates() {
@@ -25,7 +25,7 @@ public interface Taggable<T extends TagTemplate<UL, L, ID>, UL extends UserLabel
   @SuppressWarnings("unchecked")
   default List<SystemLabel> getSystemLabels() {
     TaggingService<T, UL, L, ID> taggingService = SpringBootUp.getBean(TaggingService.class);
-    return taggingService.getAllSystemLabels();
+    return taggingService.getAllSystemLabelsByType(this.getClass());
   }
 
   @SuppressWarnings("unchecked")

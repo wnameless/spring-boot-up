@@ -75,14 +75,31 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
             """;
     var schemaMap = mapper.readValue(schema, new TypeReference<Map<String, Object>>() {});
     DocumentContext docCtx = JsonPath.parse(schemaMap);
-    docCtx.put("$.properties.labelList.items", "enum", taggable.getLabelTemplates().stream()
-        .filter(l -> l.isUserEditable()).map(l -> l.getId()).toList());
-    docCtx.put("$.properties.labelList.items", "enumNames", taggable.getLabelTemplates().stream()
-        .filter(l -> l.isUserEditable()).map(l -> l.getLabelName()).toList());
-    docCtx.put("$.properties.userLabelList.items", "enum",
-        taggable.getUserLabelTemplates().stream().map(l -> l.getId()).toList());
-    docCtx.put("$.properties.userLabelList.items", "enumNames",
-        taggable.getUserLabelTemplates().stream().map(l -> l.getLabelName()).toList());
+    var labelListEnum = taggable.getLabelTemplates().stream().filter(l -> l.isUserEditable())
+        .map(l -> l.getId()).toList();
+    if (!labelListEnum.isEmpty()) {
+      docCtx.put("$.properties.labelList.items", "enum", labelListEnum);
+      var labelListEnumNames = taggable.getLabelTemplates().stream().filter(l -> l.isUserEditable())
+          .map(l -> l.getLabelName()).toList();
+      docCtx.put("$.properties.labelList.items", "enumNames", labelListEnumNames);
+    }
+
+    var userLabelListEnum = taggable.getUserLabelTemplates().stream().map(l -> l.getId()).toList();
+    if (!userLabelListEnum.isEmpty()) {
+      docCtx.put("$.properties.userLabelList.items", "enum", userLabelListEnum);
+      var userLabelListEnumNames =
+          taggable.getUserLabelTemplates().stream().map(l -> l.getLabelName()).toList();
+      docCtx.put("$.properties.userLabelList.items", "enumNames", userLabelListEnumNames);
+    }
+
+    var systemLabelListEnum = taggable.getSystemLabels().stream().map(l -> l.getId()).toList();
+    if (!systemLabelListEnum.isEmpty()) {
+      docCtx.put("$.properties.systemLabelList.items", "enum", systemLabelListEnum);
+      var systemLabelListEnumNames =
+          taggable.getSystemLabels().stream().map(l -> l.getLabelName()).toList();
+      docCtx.put("$.properties.systemLabelList.items", "enumNames", systemLabelListEnumNames);
+    }
+
     schemaMap = docCtx.read("$", new TypeRef<Map<String, Object>>() {});
     editform.setSchema(schemaMap);
 

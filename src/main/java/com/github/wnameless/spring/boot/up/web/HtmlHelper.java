@@ -38,6 +38,12 @@ public class HtmlHelper {
         null, fieldName, LocaleContextHolder.getLocale());
   }
 
+  public String fieldDisplay(String typeSimpleName, String fieldName) {
+    return messageSource.getMessage( //
+        ITEM_FIELD_PREFIX + typeSimpleName + "." + fieldName, //
+        null, fieldName, LocaleContextHolder.getLocale());
+  }
+
   public int randomInt() {
     return Math.abs(new Random().nextInt());
   }

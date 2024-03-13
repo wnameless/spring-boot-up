@@ -1,8 +1,9 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
-public interface TagTemplate<UL extends UserLabelTemplate<ID>, L extends LabelTemplate<ID>, ID> {
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-  ID getId();
+public interface TagTemplate<UL extends UserLabelTemplate<ID>, L extends LabelTemplate<ID>, ID>
+    extends IdProvider<ID> {
 
   L getLabelTemplate();
 

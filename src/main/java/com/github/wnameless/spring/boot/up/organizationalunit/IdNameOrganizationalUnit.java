@@ -1,8 +1,8 @@
 package com.github.wnameless.spring.boot.up.organizationalunit;
 
-public interface IdNameOrganizationalUnit<ID> extends OrganizationalUnit<ID> {
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-  ID getId();
+public interface IdNameOrganizationalUnit<ID> extends OrganizationalUnit<ID>, IdProvider<ID> {
 
   default ID getOrganizationalUnitId() {
     return getId();

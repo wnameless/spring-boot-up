@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
 import com.github.wnameless.spring.boot.up.jsf.JsonSchemaForm;
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-public interface JsfData<JS extends JsfSchema<ID>, ID> extends JsonSchemaForm, JsfVersioning {
-
-  ID getId();
+public interface JsfData<JS extends JsfSchema<ID>, ID>
+    extends JsonSchemaForm, JsfVersioning, IdProvider<ID> {
 
   JS getJsfSchema();
 

@@ -1,10 +1,9 @@
 package com.github.wnameless.spring.boot.up.notification;
 
 import java.time.LocalDateTime;
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-public interface NotificationSource<ID> {
-
-  ID getId();
+public interface NotificationSource<ID> extends IdProvider<ID> {
 
   String getTitle();
 

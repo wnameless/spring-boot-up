@@ -1,0 +1,56 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5">
+  <div class="btn-group" role="group" aria-label="Basic example">
+    <button class="btn btn-danger" type="button" data-bs-toggle="offcanvas"
+      data-bs-target="#searchByTag">
+      <i class="fas fa-magnifying-glass-location fa-xl fa-fw"></i>
+      [[${#messages.msgOrNull('sbu.tagging.ui.button.quick_access') ?: 'Quick Access'}]]
+    </button>
+    <a th:href="@{${route.indexPath}}" class="btn btn-secondary">
+      <i class="fas fa-rotate-left fa-xl fa-fw"></i>
+      [[${#messages.msgOrNull('sbu.tagging.ui.button.reset') ?: 'Reset'}]]
+    </a>
+  </div>
+
+  <div class="offcanvas offcanvas-bottom" tabindex="-1" id="searchByTag"
+    aria-labelledby="searchByTagLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="searchByTagLabel">
+        [[${#messages.msgOrNull('sbu.tagging.ui.panel.title') ?: 'Tags'}]]
+      </h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+        aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <i class="fas fa-tag fa-xl fa-fw"></i>
+      <a th:each="label : ${item.labelTemplates}"
+        th:href="@{${route.indexPath}(taggings=${label.id})}" class="btn badge p-2 fs-5"
+        th:style="'line-height: 1;' + 'background-color:' + ${label.labelColor} + ';'">
+        [[${label.labelName}]]
+      </a>
+
+      <hr>
+
+      <i class="fa-solid fa-user-tag fa-xl"></i>
+      <a th:each="label : ${item.userLabelTemplates}"
+        th:href="@{${route.indexPath}(taggings=${label.id})}"
+        class="btn badge rounded-pill p-2 fs-5"
+        th:style="'line-height: 1;' + 'background-color:' + ${label.labelColor} + ';'">
+        [[${label.labelName}]]
+      </a>
+
+      <hr>
+
+      <i class="fa-solid fa-hashtag fa-xl"></i>
+      <a th:each="label : ${item.systemLabels}"
+        th:href="@{${route.indexPath}(taggings=${label.id})}"
+        class="btn badge rounded-pill p-2 fs-5"
+        th:style="'line-height: 1;' + 'background-color:' + ${label.labelColor} + ';'">
+        [[${label.labelName}]]
+      </a>
+    </div>
+  </div>
+</div>
+
+</html>

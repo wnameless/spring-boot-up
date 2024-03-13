@@ -11,12 +11,11 @@ import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAwareAdapter;
 import com.github.wnameless.spring.boot.up.permission.resource.ForwardableAccessControlAware;
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 import jakarta.persistence.PostRemove;
 
 public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
-    extends AccessControlAwareAdapter {
-
-  ID getId();
+    extends AccessControlAwareAdapter, IdProvider<ID> {
 
   Class<? extends AbstractPhase<E, S, T, ID>> getPhaseType();
 

@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-public interface AttachmentSnapshot<A extends Attachment<ID>, ID> {
-
-  ID getId();
+public interface AttachmentSnapshot<A extends Attachment<ID>, ID> extends IdProvider<ID> {
 
   void setId(ID id);
 

@@ -3,10 +3,9 @@ package com.github.wnameless.spring.boot.up.jsf.model;
 import java.time.LocalDateTime;
 import java.util.Map;
 import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-public interface JsfSchema<ID> extends JsfVersioning {
-
-  ID getId();
+public interface JsfSchema<ID> extends JsfVersioning, IdProvider<ID> {
 
   void setFormType(String formType);
 

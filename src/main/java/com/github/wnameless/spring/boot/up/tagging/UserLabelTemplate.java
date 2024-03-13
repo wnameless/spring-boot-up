@@ -1,8 +1,8 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
-public interface UserLabelTemplate<ID> {
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-  ID getId();
+public interface UserLabelTemplate<ID> extends IdProvider<ID> {
 
   String getGroupTitle();
 

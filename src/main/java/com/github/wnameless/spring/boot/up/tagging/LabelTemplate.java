@@ -1,8 +1,9 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
-public interface LabelTemplate<ID> {
+import java.util.Optional;
+import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-  ID getId();
+public interface LabelTemplate<ID> extends IdProvider<ID> {
 
   String getGroupTitle();
 
@@ -24,8 +25,13 @@ public interface LabelTemplate<ID> {
     setEntityType(type.getName());
   }
 
-  default Class<?> getEntityTypeByClass() throws ClassNotFoundException {
-    return Class.forName(getEntityType());
+  default Optional<Class<?>> getEntityTypeByClass() {
+    try {
+      var klass = Class.forName(getEntityType());
+      return Optional.of(klass);
+    } catch (ClassNotFoundException e) {
+      return Optional.empty();
+    }
   }
 
   String getUsername();

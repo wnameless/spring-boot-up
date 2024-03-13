@@ -3,7 +3,7 @@ package com.github.wnameless.spring.boot.up.web;
 import org.atteo.evo.inflector.English;
 import com.google.common.base.CaseFormat;
 
-public interface RestfulItem<ID> extends JoinablePath {
+public interface RestfulItem<ID> extends JoinablePath, IdProvider<ID> {
 
   default boolean isSingular() {
     return false;
@@ -28,8 +28,6 @@ public interface RestfulItem<ID> extends JoinablePath {
   default String getRootPath() {
     return getShowPath();
   }
-
-  ID getId();
 
   default String getBasePath() {
     @SuppressWarnings("null")
