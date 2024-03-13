@@ -53,7 +53,6 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
     var labels = getLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
     var userLabels =
         getUserLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
-    System.out.println(labelIds);
     return getTagTemplateRepository()
         .findAllByLabelTemplateInOrUserLabelTemplateInOrSystemLabelIn(labels, userLabels,
             findAllSystemLabelByIds(labelIds.stream().map(Object::toString).toList()))
@@ -77,6 +76,12 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
 
   default List<SystemLabel> findAllSystemLabelByIds(Collection<String> ids) {
     return getAllSystemLabels().stream().filter(sl -> ids.contains(sl.getId())).toList();
+  }
+
+  default void removeSystemLabelTag(Taggable<?, ?, ?, ID> taggedEntity, SystemLabel systemLabel) {
+    var tag =
+        getTagTemplateRepository().findByEntityIdAndSystemLabel(taggedEntity.getId(), systemLabel);
+    tag.ifPresent(t -> getTagTemplateRepository().delete(t));
   }
 
 }

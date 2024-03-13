@@ -1,9 +1,14 @@
 package com.github.wnameless.spring.boot.up.web;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Optional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -51,6 +56,24 @@ public final class SpringBootUpWeb {
    */
   public static Optional<String> findParam(String paramName) {
     return SpringBootUp.getBean(SpringBootUpControllerAdvice.class).findParam(paramName);
+  }
+
+  public static String getBaseUrl(HttpServletRequest request) {
+    String requestUrl = request.getRequestURL().toString();
+    URL url;
+    try {
+      url = new URI(requestUrl).toURL();
+    } catch (MalformedURLException | URISyntaxException e) {
+      return null;
+    }
+
+    String protocol = url.getProtocol();
+    String host = url.getHost();
+    int port = url.getPort();
+
+    String homeUrl = protocol + "://" + host + (port != -1 ? ":" + port : "");
+    var servletContext = SpringBootUp.getBean(ServletContext.class);
+    return homeUrl + servletContext.getContextPath();
   }
 
 }
