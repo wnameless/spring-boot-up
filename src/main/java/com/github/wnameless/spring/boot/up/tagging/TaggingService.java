@@ -1,6 +1,5 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -50,15 +49,11 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
     return getLabelTemplateRepository().findAllByEntityType(type.getName());
   }
 
-  default List<ID> findAllEntityIdsByLabelIdIn(String entityType,
-      @SuppressWarnings("unchecked") ID... labelIds) {
-    return findAllEntityIdsByLabelIdIn(entityType, Arrays.asList(labelIds));
-  }
-
   default List<ID> findAllEntityIdsByLabelIdIn(String entityType, Collection<ID> labelIds) {
     var labels = getLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
     var userLabels =
         getUserLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
+    System.out.println(labelIds);
     return getTagTemplateRepository()
         .findAllByLabelTemplateInOrUserLabelTemplateInOrSystemLabelIn(labels, userLabels,
             findAllSystemLabelByIds(labelIds.stream().map(Object::toString).toList()))

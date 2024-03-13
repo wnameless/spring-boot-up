@@ -16,7 +16,7 @@
     </div>
   </div>
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
-    <react-form th:id="${'showEditForm' + rid}" th:action="${item.getBackPath(queryConfig)}"
+    <react-form th:id="${'showEditForm' + rid}" th:action="@{${item.getBackPath(queryConfig)}}"
       method="GET" ajax:target="${ajaxTargetId}" disabled="true">
       <div></div>
     </react-form>

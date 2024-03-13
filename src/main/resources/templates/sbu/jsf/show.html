@@ -10,7 +10,7 @@
       aria-label="Close"></button>
   </div>
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
-    <react-form th:id="${'showForm' + rid}" th:action="${item.backPath}" method="GET"
+    <react-form th:id="${'showForm' + rid}" th:action="@{${item.backPath}}" method="GET"
       ajax:target="${ajaxTargetId}" disabled="true">
       <div></div>
     </react-form>

@@ -44,7 +44,7 @@
         hx-on::before-request="bootstrap.Offcanvas.getInstance(document.getElementById('filterOption')).hide();"
         class="row g-3" hx:get="@{${route.indexPath}}" hx:target="${'#' + ajaxTargetId}"
         hx-ext="json-enc">
-        <!--   <form class="row g-3" method="GET" th:action="${route.indexPath}"> -->
+        <!--   <form class="row g-3" method="GET" th:action="@{${route.indexPath}}"> -->
         <th:block th:each="field : ${queryConfig.fields}">
           <div class="col-8">
             <label class="form-label" th:if="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
