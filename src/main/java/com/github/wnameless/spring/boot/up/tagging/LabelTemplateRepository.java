@@ -14,4 +14,7 @@ public interface LabelTemplateRepository<L extends LabelTemplate<ID>, ID>
 
   List<L> findAllByEntityTypeAndIdIn(String entityType, Collection<ID> ids);
 
+  // List<L> findAllByEntityTypeAndUsernameAndIdIn(String entityType, String username,
+  // Collection<ID> ids);
+
 }

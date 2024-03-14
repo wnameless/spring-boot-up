@@ -17,4 +17,8 @@ public interface TagTemplateRepository<T extends TagTemplate<UL, L, ID>, UL exte
   List<T> findAllByLabelTemplateInOrUserLabelTemplateInOrSystemLabelIn(Collection<L> labelTemplates,
       Collection<UL> userLabelTemplates, Collection<SystemLabel> systemLabels);
 
+  List<T> findAllByUsernameAndLabelTemplateInOrUsernameAndUserLabelTemplateInOrUsernameAndSystemLabelIn(
+      String username1, Collection<L> labelTemplates, String username2,
+      Collection<UL> userLabelTemplates, String username3, Collection<SystemLabel> systemLabels);
+
 }

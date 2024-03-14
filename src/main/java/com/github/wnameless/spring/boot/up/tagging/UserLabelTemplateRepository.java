@@ -14,4 +14,7 @@ public interface UserLabelTemplateRepository<UL extends UserLabelTemplate<ID>, I
 
   List<UL> findAllByEntityTypeAndIdIn(String entityType, Collection<ID> ids);
 
+  // List<UL> findAllByEntityTypeAndUsernameAndIdIn(String entityType, String username,
+  // Collection<ID> ids);
+
 }

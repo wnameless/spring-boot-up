@@ -50,7 +50,32 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
     return getLabelTemplateRepository().findAllByEntityType(type.getName());
   }
 
-  default List<ID> findAllEntityIdsByLabelIdIn(String entityType, Collection<ID> labelIds) {
+  default List<ID> findAllEntityIdsByUsernameAndEntityTypeAndLabelIdIn(String username,
+      String entityType, Collection<ID> labelIds) {
+    var labels = getLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
+    var userLabels =
+        getUserLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
+    return getTagTemplateRepository()
+        .findAllByUsernameAndLabelTemplateInOrUsernameAndUserLabelTemplateInOrUsernameAndSystemLabelIn(
+            username, labels, username, userLabels, username,
+            findAllSystemLabelByIds(labelIds.stream().map(Object::toString).toList()))
+        .stream().map(TagTemplate::getEntityId).toList();
+  }
+
+  default List<ID> findAllEntityIdsByUsernameAndEntityTypeAndLabelIdIn(String username,
+      String entityType, Collection<ID> labelIds, Function<ID, String> systemLabelIdStretagy) {
+    var labels = getLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
+    var userLabels =
+        getUserLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
+    return getTagTemplateRepository()
+        .findAllByUsernameAndLabelTemplateInOrUsernameAndUserLabelTemplateInOrUsernameAndSystemLabelIn(
+            username, labels, username, userLabels, username,
+            findAllSystemLabelByIds(labelIds.stream().map(systemLabelIdStretagy).toList()))
+        .stream().map(TagTemplate::getEntityId).toList();
+  }
+
+  default List<ID> findAllEntityIdsByEntityTypeAndLabelIdIn(String entityType,
+      Collection<ID> labelIds) {
     var labels = getLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
     var userLabels =
         getUserLabelTemplateRepository().findAllByEntityTypeAndIdIn(entityType, labelIds);
