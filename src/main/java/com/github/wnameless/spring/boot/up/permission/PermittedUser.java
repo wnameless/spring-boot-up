@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.github.wnameless.spring.boot.up.permission.role.Role;
+import com.github.wnameless.spring.boot.up.permission.role.Rolify;
 
 public interface PermittedUser<ID>
     extends UserResourceAbility<ID>, UserEmbeddedResourceAbility<ID> {
@@ -19,6 +20,14 @@ public interface PermittedUser<ID>
 
   default boolean hasRole(String role) {
     return getAllRoles().contains(Role.of(role));
+  }
+
+  default boolean hasRole(Role role) {
+    return getAllRoles().contains(role);
+  }
+
+  default boolean hasRole(Rolify role) {
+    return getAllRoles().contains(role.toRole());
   }
 
   default boolean hasAllRoles(String... roles) {
@@ -39,6 +48,15 @@ public interface PermittedUser<ID>
     return hasAll;
   }
 
+  default boolean hasAllRoles(Rolify... roles) {
+    boolean hasAll = true;
+    Set<Role> allRoles = getAllRoles();
+    for (Rolify role : roles) {
+      if (!allRoles.contains(role.toRole())) return false;
+    }
+    return hasAll;
+  }
+
   default boolean hasAnyRole(String... roles) {
     boolean hasAny = false;
     Set<Role> allRoles = getAllRoles();
@@ -53,6 +71,15 @@ public interface PermittedUser<ID>
     Set<Role> allRoles = getAllRoles();
     for (Role role : roles) {
       if (allRoles.contains(role)) return true;
+    }
+    return hasAny;
+  }
+
+  default boolean hasAnyRole(Rolify... roles) {
+    boolean hasAny = false;
+    Set<Role> allRoles = getAllRoles();
+    for (Rolify role : roles) {
+      if (allRoles.contains(role.toRole())) return true;
     }
     return hasAny;
   }

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import com.github.wnameless.spring.boot.up.permission.ability.ResourceAbility;
 import com.github.wnameless.spring.boot.up.permission.role.Role;
-import com.github.wnameless.spring.boot.up.permission.role.Rolify;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 
@@ -22,26 +21,6 @@ public abstract class AbstractPermittedUser<ID> implements PermittedUser<ID> {
   protected void init() {
     allRoles.addAll(getUserRoles());
     allResourceAbilities.addAll(getUserResourceAbilities());
-  }
-
-  public boolean containsRole(Rolify role) {
-    return allRoles.contains(role.toRole());
-  }
-
-  public boolean containsAllRoles(Rolify... roles) {
-    boolean hasAll = true;
-    for (Rolify role : roles) {
-      if (!allRoles.contains(role.toRole())) return false;
-    }
-    return hasAll;
-  }
-
-  public boolean containsAnyRole(Rolify... roles) {
-    boolean hasAny = false;
-    for (Rolify role : roles) {
-      if (allRoles.contains(role.toRole())) return true;
-    }
-    return hasAny;
   }
 
 }
