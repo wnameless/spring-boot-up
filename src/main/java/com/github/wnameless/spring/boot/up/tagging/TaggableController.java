@@ -127,11 +127,11 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
         }
             """;
     docCtx = JsonPath.parse(formDataSchema);
-    docCtx.put("$", "labelList", tags.stream().filter(t -> t.getLabelTemplate() != null)
+    docCtx.put("$", "labelList", tags.stream().filter(tag -> tag.getLabelTemplate() != null)
         .map(l -> l.getLabelTemplate().getId()).toList());
-    docCtx.put("$", "userLabelList", tags.stream().filter(t -> t.getUserLabelTemplate() != null)
+    docCtx.put("$", "userLabelList", tags.stream().filter(tag -> tag.getUserLabelTemplate() != null)
         .map(l -> l.getUserLabelTemplate().getId()).toList());
-    docCtx.put("$", "systemLabelList", tags.stream().filter(t -> t.getSystemLabel() != null)
+    docCtx.put("$", "systemLabelList", tags.stream().filter(tag -> tag.getSystemLabel() != null)
         .map(l -> l.getSystemLabel().getId()).toList());
     editform.setFormData(docCtx.read("$", new TypeRef<Map<String, Object>>() {}));
 
@@ -151,7 +151,8 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
       @RequestBody TaggableSchemaData<ID> data) {
     mav.setViewName("sbu/taggings/show :: " + getFragmentName());
 
-    getTaggingService().getTagTemplateRepository().findAllByEntityId(id).stream().filter(tag -> {
+    var taggable = getRestfulItem();
+    taggable.getTagTemplates().stream().filter(tag -> {
       if (tag.getLabelTemplate() == null) return true;
       return tag.getLabelTemplate().isUserEditable();
     }).forEach(tag -> getTaggingService().getTagTemplateRepository().delete(tag));

@@ -30,11 +30,29 @@ public interface PermittedUser<ID>
     return hasAll;
   }
 
+  default boolean hasAllRoles(Role... roles) {
+    boolean hasAll = true;
+    Set<Role> allRoles = getAllRoles();
+    for (Role role : roles) {
+      if (!allRoles.contains(role)) return false;
+    }
+    return hasAll;
+  }
+
   default boolean hasAnyRole(String... roles) {
     boolean hasAny = false;
     Set<Role> allRoles = getAllRoles();
     for (String role : roles) {
       if (allRoles.contains(Role.of(role))) return true;
+    }
+    return hasAny;
+  }
+
+  default boolean hasAnyRole(Role... roles) {
+    boolean hasAny = false;
+    Set<Role> allRoles = getAllRoles();
+    for (Role role : roles) {
+      if (allRoles.contains(role)) return true;
     }
     return hasAny;
   }

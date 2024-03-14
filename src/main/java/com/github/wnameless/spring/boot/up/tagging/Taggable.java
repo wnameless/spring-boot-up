@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
 import java.util.List;
+import java.util.Objects;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.web.IdProvider;
@@ -31,7 +32,17 @@ public interface Taggable<T extends TagTemplate<UL, L, ID>, UL extends UserLabel
   @SuppressWarnings("unchecked")
   default List<T> getTagTemplates() {
     TaggingService<T, UL, L, ID> taggingService = SpringBootUp.getBean(TaggingService.class);
-    return taggingService.getTagTemplateRepository().findAllByEntityId(getId());
+
+    var ownershipRuleOpt = taggingService.findOwnershipRule();
+    if (ownershipRuleOpt.isPresent()) {
+      return taggingService.getTagTemplateRepository().findAllByEntityId(getId()).stream()
+          .filter(ownershipRuleOpt.get()).toList();
+    } else {
+      return taggingService
+          .getTagTemplateRepository().findAllByEntityId(getId()).stream().filter(tag -> Objects
+              .equals(tag.getUsername(), SpringBootUp.getBean(PermittedUser.class).getUsername()))
+          .toList();
+    }
   }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.repository.CrudRepository;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
@@ -82,6 +83,10 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
     var tag =
         getTagTemplateRepository().findByEntityIdAndSystemLabel(taggedEntity.getId(), systemLabel);
     tag.ifPresent(t -> getTagTemplateRepository().delete(t));
+  }
+
+  default Optional<Predicate<T>> findOwnershipRule() {
+    return Optional.empty();
   }
 
 }
