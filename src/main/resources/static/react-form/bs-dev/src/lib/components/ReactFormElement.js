@@ -123,6 +123,30 @@ class ReactFormElement extends HTMLElement {
   }
 
   mount() {
+    const DownloadWidget = (props) => {
+      let li = [];
+      (props.value instanceof Array ? props.value : [props.value]).forEach(function (base64) {
+        let base64Parts = base64.split(';');
+        let filename = decodeURI(base64Parts[1].split('=')[1]);
+
+        li.push(
+          <a className="list-group-item list-group-item-action" download={filename} href={props.value}>
+            {filename}
+          </a>
+        );
+      })
+
+      return (
+        <ul className="list-group">
+          {li}
+        </ul>
+      );
+    };
+
+    const widgets = {
+      downloadWidget: DownloadWidget
+    };
+
     this.retrieveJson().then((data) => {
       if (data.schema == null) return;
 
@@ -143,6 +167,7 @@ class ReactFormElement extends HTMLElement {
             uiSchema={data.uiSchema}
             formData={data.formData}
             validator={validator}
+            widgets={widgets}
           >
             {this.children.length > 0 && parse(this.innerHTML)}
           </FormWithPagination>
