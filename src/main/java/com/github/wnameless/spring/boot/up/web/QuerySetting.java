@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.web;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -56,6 +57,16 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
   public QuerySetting<E> defaultSort(Sort sort) {
     sort.forEach(o -> params.add(pageableParams.getSortParameter(),
         o.getProperty() + "," + o.getDirection()));
+    return this;
+  }
+
+  public QuerySetting<E> defaultParams(String key, String value) {
+    params.add(key, value);
+    return this;
+  }
+
+  public QuerySetting<E> defaultParams(String key, List<String> values) {
+    params.addAll(key, values);
     return this;
   }
 
