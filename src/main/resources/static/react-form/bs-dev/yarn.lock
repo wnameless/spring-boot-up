@@ -3751,6 +3751,11 @@ react-is@^18.2.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
+react-jsonschema-form-pagination@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/react-jsonschema-form-pagination/-/react-jsonschema-form-pagination-0.4.0.tgz#5b7eaf8db1d3fe98ec7764f257faa4088d39e4d0"
+  integrity sha512-Vuk/5CgxPV1sukCBAND+IVA6GbFjP/1dQhdyX97NYL2RGGwUh7epGq7TtrzSwq+U2N3o2QD9bAzi7BsSGcGdIw==
+
 react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"

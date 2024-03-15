@@ -6,6 +6,7 @@ import * as ReactDOM from 'react-dom/client';
 import Form from '@rjsf/bootstrap-4';
 // import { StyledEngineProvider } from '@mui/material/styles';
 // import Form from '@rjsf/mui';
+import applyNavs from "react-jsonschema-form-pagination";
 
 class ReactFormElement extends HTMLElement {
   constructor() {
@@ -128,11 +129,13 @@ class ReactFormElement extends HTMLElement {
       // <link rel="stylesheet" href={this.attrs.cssHref || 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css'}></link>
       // <link rel="stylesheet" href={this.attrs.cssHref || 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'}></link>
 
+      let FormWithPagination = applyNavs(Form);
       this.root.render(
         <React.Fragment>
           <link rel="stylesheet" href={this.attrs.cssHref || 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'}></link>
+          <link rel="stylesheet" href="/react-form/css/navbarStyles.css"></link>
 
-          <Form
+          <FormWithPagination
             {...this.attrs}
             onSubmit={this.state.onSubmit}
             {...this.props}
@@ -142,7 +145,8 @@ class ReactFormElement extends HTMLElement {
             validator={validator}
           >
             {this.children.length > 0 && parse(this.innerHTML)}
-          </Form>
+          </FormWithPagination>
+
         </React.Fragment>
       );
     });

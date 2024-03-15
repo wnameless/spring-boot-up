@@ -114,6 +114,50 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   }
 
   @SneakyThrows
+  default RestfulJsonSchemaForm<?> createUploadSelectiveForm(AttachmentChecklist checklist, ID id) {
+    var uploadform =
+        new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id) + "/attachments", "");
+    var mapper = SpringBootUp.getBean(ObjectMapper.class);
+
+    uploadform.getSchema().put("type", "object");
+
+    var anyOfAry = new ArrayList<>();
+    uploadform.getSchema().put("anyOf", anyOfAry);
+
+    String single = """
+        {
+          "title": " ",
+          "type": "string",
+          "format": "data-url"
+        }
+          """;
+    String mutiple = """
+        {
+          "type": "array",
+          "items": {
+            "title": " ",
+            "type": "string",
+            "format": "data-url"
+          }
+        }
+          """;
+    for (var ag : checklist.getAttachmentGroups()) {
+      var anyOf = new LinkedHashMap<>();
+      anyOf.put("title", ag.getGroup());
+      if (ag.isSingle()) {
+        var s = mapper.readValue(single, Map.class);
+        anyOf.put("properties", Map.of(ag.getGroup(), s));
+      } else {
+        var m = mapper.readValue(single, Map.class);
+        anyOf.put("properties", Map.of(ag.getGroup(), m));
+      }
+      anyOfAry.add(anyOf);
+    }
+
+    return uploadform;
+  }
+
+  @SneakyThrows
   default RestfulJsonSchemaForm<?> createUploadForm(AttachmentChecklist checklist, ID id) {
     var uploadform =
         new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id) + "/attachments", "");
@@ -186,7 +230,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
     var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
     var checklist = attachmentSnapshotAware.getAttachmentChecklist();
 
-    mav.addObject(Item.name(), createUploadForm(checklist, id));
+    mav.addObject(Item.name(), createUploadSelectiveForm(checklist, id));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }

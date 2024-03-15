@@ -20,6 +20,8 @@ public class AttachmentGroup {
 
   boolean single;
 
+  boolean required = false;
+
   public AttachmentGroup() {}
 
   public AttachmentGroup(String group, boolean single) {
@@ -29,6 +31,11 @@ public class AttachmentGroup {
 
   public boolean isMultiple() {
     return !isSingle();
+  }
+
+  public AttachmentGroup withRequired(boolean required) {
+    this.required = required;
+    return this;
   }
 
 }

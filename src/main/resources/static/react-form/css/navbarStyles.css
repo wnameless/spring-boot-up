@@ -1,0 +1,51 @@
+/* General Navbar Styles */
+.navbar {
+  background-color: #f8f9fa;
+  /* Bootstrap 4 navbar light background color */
+  border-bottom: 1px solid #e7e7e7;
+  font-size: 16px;
+  /* Adjust font size as needed */
+}
+
+/* Navbar Brand */
+.navbar-brand {
+  color: #000;
+  /* Adjust brand color as needed */
+}
+
+/* Navbar Links */
+.nav>li>a {
+  color: #000;
+  /* Adjust link color as needed */
+  padding: 0.5rem 1rem;
+  /* Adjust padding as needed */
+}
+
+.nav>li>a:hover,
+.nav>li>a:focus {
+  color: #0056b3;
+  /* Adjust hover/focus color as needed */
+  background-color: transparent;
+  /* Bootstrap 4 removes background color on hover/focus */
+}
+
+/* Active Link */
+.nav>li.active>a {
+  color: #0056b3;
+  /* Adjust active link color as needed */
+  background-color: transparent;
+  /* Bootstrap 4 removes background color on active link */
+}
+
+/* Navbar Toggle Button (for mobile) */
+.navbar-toggle {
+  border: 1px solid #ccc;
+  /* Adjust toggle button border color as needed */
+  background-color: #f8f9fa;
+  /* Adjust toggle button background color as needed */
+}
+
+.navbar-toggle .icon-bar {
+  background-color: #000;
+  /* Adjust toggle icon color as needed */
+}
