@@ -43,9 +43,9 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getFormData() {
-    Map<String, Object> formData =
-        applyFormDataStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
-            _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
+    var jsf = new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
+        _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData());
+    Map<String, Object> formData = applyFormDataStrategy(jsf);
 
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
@@ -68,9 +68,9 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getSchema() {
-    Map<String, Object> schema =
-        applySchemaStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
-            _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
+    var jsf = new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
+        _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData());
+    Map<String, Object> schema = applySchemaStrategy(jsf);
 
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
@@ -89,9 +89,9 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
   }
 
   default Map<String, Object> getUiSchema() {
-    Map<String, Object> uiSchema =
-        applyUiSchemaStrategy(new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
-            _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData()));
+    var jsf = new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
+        _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData());
+    Map<String, Object> uiSchema = applyUiSchemaStrategy(jsf);
 
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {

@@ -55,9 +55,9 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAw
 
   default Map<String, Object> getFormData() {
     JsfPOJOService jsfPojoService = SpringBootUp.getBean(JsfPOJOService.class);
-    Map<String, Object> formData = applyFormDataStrategy(
-        new SimpleJsonSchemaForm(jsfPojoService.getSchemaTemplate(getFormType()),
-            jsfPojoService.getUiSchemaTemplate(getFormType()), _getFormData()));
+    var jsf = new SimpleJsonSchemaForm(jsfPojoService.getSchemaTemplate(getFormType()),
+        jsfPojoService.getUiSchemaTemplate(getFormType()), _getFormData());
+    Map<String, Object> formData = applyFormDataStrategy(jsf);
 
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
@@ -83,9 +83,9 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAw
 
   default Map<String, Object> getSchema() {
     JsfPOJOService jsfPojoService = SpringBootUp.getBean(JsfPOJOService.class);
-    Map<String, Object> schema = applySchemaStrategy(
-        new SimpleJsonSchemaForm(jsfPojoService.getSchemaTemplate(getFormType()),
-            jsfPojoService.getUiSchemaTemplate(getFormType()), _getFormData()));
+    var jsf = new SimpleJsonSchemaForm(jsfPojoService.getSchemaTemplate(getFormType()),
+        jsfPojoService.getUiSchemaTemplate(getFormType()), _getFormData());
+    Map<String, Object> schema = applySchemaStrategy(jsf);
 
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
@@ -101,9 +101,9 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyAw
 
   default Map<String, Object> getUiSchema() {
     JsfPOJOService jsfPojoService = SpringBootUp.getBean(JsfPOJOService.class);
-    Map<String, Object> uiSchema = applyUiSchemaStrategy(
-        new SimpleJsonSchemaForm(jsfPojoService.getSchemaTemplate(getFormType()),
-            jsfPojoService.getUiSchemaTemplate(getFormType()), _getFormData()));
+    var jsf = new SimpleJsonSchemaForm(jsfPojoService.getSchemaTemplate(getFormType()),
+        jsfPojoService.getUiSchemaTemplate(getFormType()), _getFormData());
+    Map<String, Object> uiSchema = applyUiSchemaStrategy(jsf);
 
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {

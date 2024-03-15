@@ -6,10 +6,6 @@ import java.util.Map.Entry;
 
 public interface JsonSchemaForm {
 
-  default boolean isEditable() {
-    return true;
-  }
-
   Map<String, Object> getFormData();
 
   void setFormData(Map<String, Object> formData);
