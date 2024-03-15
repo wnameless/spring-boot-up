@@ -20,7 +20,7 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
       getJsfPatchService().schemaPatch(indexActionSchemsPatch());
     }
     if (indexActionUiSchemaPatch() != null) {
-      getJsfPatchService().uiSchemaPatch(null);
+      getJsfPatchService().uiSchemaPatch(indexActionUiSchemaPatch());
     }
     if (indexActionFormDataPatch() != null) {
       getJsfPatchService().formDataPatch(indexActionFormDataPatch());
