@@ -69,12 +69,21 @@ public class StateForm<T extends Trigger, ID> {
       Class<? extends CrudRepository<?, ID>> jsfRepositoryType, Supplier<String> formBranchStock,
       Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock) {
     return new StateForm<>(formType, jsfRepositoryType, formBranchStock, viewableTriggerStock,
-        editableTriggerStock);
+        editableTriggerStock, () -> null, () -> null);
+  }
+
+  public static <T extends Trigger, ID> StateForm<T, ID> of(Class<? extends JsfPOJO<?>> formType,
+      Class<? extends CrudRepository<?, ID>> jsfRepositoryType, Supplier<String> formBranchStock,
+      Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock,
+      Supplier<T> entireViewableTriggerStock, Supplier<T> entireEditableTriggerStock) {
+    return new StateForm<>(formType, jsfRepositoryType, formBranchStock, viewableTriggerStock,
+        editableTriggerStock, entireViewableTriggerStock, entireEditableTriggerStock);
   }
 
   public StateForm(Class<? extends JsfPOJO<?>> formType,
       Class<? extends CrudRepository<?, ID>> jsfRepositoryType, Supplier<String> formBranchStock,
-      Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock) {
+      Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock,
+      Supplier<T> entireViewableTriggerStock, Supplier<T> entireEditableTriggerStock) {
     this.formTypeStock = () -> formType.getSimpleName();
     isJsfPojo = true;
     jsfPojoType = formType;
@@ -82,8 +91,8 @@ public class StateForm<T extends Trigger, ID> {
     this.formBranchStock = formBranchStock;
     this.viewableTriggerStock = viewableTriggerStock;
     this.editableTriggerStock = editableTriggerStock;
-    this.entireViewableTriggerStock = () -> null;
-    this.entireEditableTriggerStock = () -> null;
+    this.entireViewableTriggerStock = entireViewableTriggerStock;
+    this.entireEditableTriggerStock = entireEditableTriggerStock;
   }
 
   public static <T extends Trigger, ID> StateForm<T, ID> of(String formType) {
