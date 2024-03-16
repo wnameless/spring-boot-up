@@ -46,12 +46,13 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
     var jsf = new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
         _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData());
     Map<String, Object> formData = applyFormDataStrategy(jsf);
+    jsf.setFormData(formData);
 
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
       JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
       if (jsfPatchService.formDataPatch() != null) {
-        formData = jsfPatchService.formDataPatch().apply(formData);
+        formData = jsfPatchService.formDataPatch().apply(jsf);
         return formData;
       }
     }
@@ -71,12 +72,13 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
     var jsf = new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
         _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData());
     Map<String, Object> schema = applySchemaStrategy(jsf);
+    jsf.setSchema(schema);
 
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
       JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
       if (jsfPatchService.schemaPatch() != null) {
-        schema = jsfPatchService.schemaPatch().apply(schema);
+        schema = jsfPatchService.schemaPatch().apply(jsf);
         return schema;
       }
     }
@@ -92,12 +94,13 @@ public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID
     var jsf = new SimpleJsonSchemaForm(_getJsfData().getJsfSchema().getSchema(),
         _getJsfData().getJsfSchema().getUiSchema(), _getJsfData().getFormData());
     Map<String, Object> uiSchema = applyUiSchemaStrategy(jsf);
+    jsf.setUiSchema(uiSchema);
 
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
       JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
       if (jsfPatchService.uiSchemaPatch() != null) {
-        uiSchema = jsfPatchService.uiSchemaPatch().apply(uiSchema);
+        uiSchema = jsfPatchService.uiSchemaPatch().apply(jsf);
         return uiSchema;
       }
     }

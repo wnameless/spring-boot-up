@@ -27,15 +27,15 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> indexActionSchemsPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> indexActionSchemsPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> indexActionUiSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> indexActionUiSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> indexActionFormDataPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> indexActionFormDataPatch() {
     return null;
   }
 
@@ -52,15 +52,15 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> showActionSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> showActionSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> showActionUiSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> showActionUiSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> showActionFormDataPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> showActionFormDataPatch() {
     return null;
   }
 
@@ -77,15 +77,15 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> newActionSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> newActionSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> newActionUiSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> newActionUiSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> newActionFormDataPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> newActionFormDataPatch() {
     return null;
   }
 
@@ -102,15 +102,15 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> createActionSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> createActionSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> createActionUiSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> createActionUiSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> createActionFormDataPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> createActionFormDataPatch() {
     return null;
   }
 
@@ -127,15 +127,15 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> editActionSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> editActionSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> editActionUiSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> editActionUiSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> editActionFormDataPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> editActionFormDataPatch() {
     return null;
   }
 
@@ -153,15 +153,15 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> updateActionSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> updateActionSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> updateActionUiSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> updateActionUiSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> updateActionFormDataPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> updateActionFormDataPatch() {
     return null;
   }
 
@@ -178,15 +178,15 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> deleteActionSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> deleteActionSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> deleteActionUiSchemaPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> deleteActionUiSchemaPatch() {
     return null;
   }
 
-  default Function<Map<String, Object>, Map<String, Object>> deleteActionFormDataPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> deleteActionFormDataPatch() {
     return null;
   }
 

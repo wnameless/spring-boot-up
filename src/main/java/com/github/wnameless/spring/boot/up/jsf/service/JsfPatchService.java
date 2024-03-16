@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.function.Function;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
+import com.github.wnameless.spring.boot.up.jsf.JsonSchemaForm;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,8 +14,8 @@ import lombok.experimental.Accessors;
 @Data
 public class JsfPatchService {
 
-  private Function<Map<String, Object>, Map<String, Object>> schemaPatch;
-  private Function<Map<String, Object>, Map<String, Object>> uiSchemaPatch;
-  private Function<Map<String, Object>, Map<String, Object>> formDataPatch;
+  private Function<? super JsonSchemaForm, Map<String, Object>> schemaPatch;
+  private Function<? super JsonSchemaForm, Map<String, Object>> uiSchemaPatch;
+  private Function<? super JsonSchemaForm, Map<String, Object>> formDataPatch;
 
 }
