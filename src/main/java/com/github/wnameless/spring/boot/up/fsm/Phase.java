@@ -5,10 +5,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
-import com.github.wnameless.spring.boot.up.permission.resource.ForwardableAccessControlAware;
 
 public interface Phase<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
-    extends AccessControlAware, ForwardableAccessControlAware, StateMachineInitializable<S, T> {
+    extends AccessControlAware, StateMachineInitializable<S, T> {
 
   E getEntity();
 
