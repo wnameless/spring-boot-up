@@ -96,6 +96,7 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     private final Function<E, Path<?>> pathFinder;
     private String alias;
     private boolean sortable = true;
+    private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();
 
     public PathFilterableField alias(String alias) {
       this.alias = alias;
@@ -107,10 +108,15 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
       return this;
     }
 
+    public PathFilterableField selectOption(Map<String, String> selectOption) {
+      this.selectOption.putAll(selectOption);
+      return this;
+    }
+
     public QuerySetting<E> filterLogic(BiFunction<E, String, Predicate> filterLogic) {
       QuerySetting.this.addFilterableField(
           new FilterableField<>(pathFinder, Optional.ofNullable(alias), filterLogic)
-              .sortable(sortable));
+              .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 
@@ -122,6 +128,7 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     private final Function<E, StringPath> pathFinder;
     private String alias;
     private boolean sortable = true;
+    private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();
 
     public StringPathFilterableField alias(String alias) {
       this.alias = alias;
@@ -133,24 +140,29 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
       return this;
     }
 
+    public StringPathFilterableField selectOption(Map<String, String> selectOption) {
+      this.selectOption.putAll(selectOption);
+      return this;
+    }
+
     public QuerySetting<E> filterLogic(BiFunction<E, String, Predicate> filterLogic) {
       QuerySetting.this.addFilterableField(
           new FilterableField<>(pathFinder, Optional.ofNullable(alias), filterLogic)
-              .sortable(sortable));
+              .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByContainsIgnoreCase() {
-      QuerySetting.this
-          .addFilterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-              (e, param) -> pathFinder.apply(e).containsIgnoreCase(param)).sortable(sortable));
+      QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
+          Optional.ofNullable(alias), (e, param) -> pathFinder.apply(e).containsIgnoreCase(param))
+              .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByContains() {
-      QuerySetting.this
-          .addFilterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-              (e, param) -> pathFinder.apply(e).contains(param)).sortable(sortable));
+      QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
+          Optional.ofNullable(alias), (e, param) -> pathFinder.apply(e).contains(param))
+              .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 
@@ -160,21 +172,21 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
             return param == null || param.trim().isEmpty()
                 ? pathFinder.apply(e).containsIgnoreCase(param)
                 : pathFinder.apply(e).eq(param);
-          }).sortable(sortable));
+          }).sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByStartsWith() {
-      QuerySetting.this
-          .addFilterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-              (e, param) -> pathFinder.apply(e).startsWith(param)).sortable(sortable));
+      QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
+          Optional.ofNullable(alias), (e, param) -> pathFinder.apply(e).startsWith(param))
+              .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByEndsWith() {
-      QuerySetting.this
-          .addFilterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias),
-              (e, param) -> pathFinder.apply(e).endsWith(param)).sortable(sortable));
+      QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
+          Optional.ofNullable(alias), (e, param) -> pathFinder.apply(e).endsWith(param))
+              .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 

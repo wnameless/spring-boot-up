@@ -1,5 +1,7 @@
 package com.github.wnameless.spring.boot.up.web;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -25,10 +27,20 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   private final Optional<String> fieldName;
   private final BiFunction<E, String, Predicate> filterLogic;
   private boolean sortable = true;
+  private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();
 
   public FilterableField<E> sortable(boolean sortable) {
     this.sortable = sortable;
     return this;
+  }
+
+  public FilterableField<E> selectOption(Map<String, String> selectOption) {
+    this.selectOption.putAll(selectOption);
+    return this;
+  }
+
+  public boolean hasSelectOption() {
+    return !selectOption.isEmpty();
   }
 
   public Function<String, Predicate> getFilterLogic(E qEntity) {
