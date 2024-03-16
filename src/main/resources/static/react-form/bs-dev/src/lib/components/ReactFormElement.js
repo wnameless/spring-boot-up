@@ -126,14 +126,22 @@ class ReactFormElement extends HTMLElement {
     const DownloadWidget = (props) => {
       let li = [];
       (props.value instanceof Array ? props.value : [props.value]).forEach(function (base64) {
-        let base64Parts = base64.split(';');
-        let filename = decodeURI(base64Parts[1].split('=')[1]);
+        if (base64 == null) {
+          li.push(
+            <li className="list-group-item list-group-item-action">
+              No file
+            </li>
+          );
+        } else {
+          let base64Parts = base64.split(';');
+          let filename = decodeURI(base64Parts[1].split('=')[1]);
 
-        li.push(
-          <a className="list-group-item list-group-item-action" download={filename} href={props.value}>
-            {filename}
-          </a>
-        );
+          li.push(
+            <a className="list-group-item list-group-item-action" download={filename} href={props.value}>
+              {filename}
+            </a>
+          );
+        }
       })
 
       return (
