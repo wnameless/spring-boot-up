@@ -148,7 +148,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
         var s = mapper.readValue(single, Map.class);
         anyOf.put("properties", Map.of(ag.getGroup(), s));
       } else {
-        var m = mapper.readValue(single, Map.class);
+        var m = mapper.readValue(mutiple, Map.class);
         anyOf.put("properties", Map.of(ag.getGroup(), m));
       }
       anyOfAry.add(anyOf);
