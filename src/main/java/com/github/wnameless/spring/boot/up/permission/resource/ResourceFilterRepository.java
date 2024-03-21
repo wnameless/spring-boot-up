@@ -2,6 +2,8 @@ package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +63,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     return findOne(ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate));
   }
 
+  default Stream<T> filterFindAllOnStream() {
+    return StreamSupport.stream(filterFindAll().spliterator(), false);
+  }
+
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll() {
     ResourceAccessRule rar = getResourceAccessRule();
@@ -73,6 +79,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
       return findAll(rar.getPredicateOfManageAbility());
     }
     return findAll(rar.getPredicateOfReadAbility());
+  }
+
+  default Stream<T> filterFindAllOnStream(Predicate predicate) {
+    return StreamSupport.stream(filterFindAll(predicate).spliterator(), false);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -89,6 +99,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     return findAll(ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate));
   }
 
+  default Stream<T> filterFindAllOnStream(Sort sort) {
+    return StreamSupport.stream(filterFindAll(sort).spliterator(), false);
+  }
+
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(Sort sort) {
     ResourceAccessRule rar = getResourceAccessRule();
@@ -101,6 +115,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
       return findAll(rar.getPredicateOfManageAbility(), sort);
     }
     return findAll(rar.getPredicateOfReadAbility(), sort);
+  }
+
+  default Stream<T> filterFindAllOnStream(Predicate predicate, Sort sort) {
+    return StreamSupport.stream(filterFindAll(predicate, sort).spliterator(), false);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -117,6 +135,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     return findAll(ExpressionUtils.allOf(rar.getPredicateOfReadAbility(), predicate), sort);
   }
 
+  default Stream<T> filterFindAllOnStream(OrderSpecifier<?>... orders) {
+    return StreamSupport.stream(filterFindAll(orders).spliterator(), false);
+  }
+
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(OrderSpecifier<?>... orders) {
     ResourceAccessRule rar = getResourceAccessRule();
@@ -129,6 +151,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
       return findAll(ExpressionUtils.allOf(rar.getPredicateOfManageAbility()), orders);
     }
     return findAll(ExpressionUtils.allOf(rar.getPredicateOfReadAbility()), orders);
+  }
+
+  default Stream<T> filterFindAllOnStream(Predicate predicate, OrderSpecifier<?>... orders) {
+    return StreamSupport.stream(filterFindAll(predicate, orders).spliterator(), false);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
