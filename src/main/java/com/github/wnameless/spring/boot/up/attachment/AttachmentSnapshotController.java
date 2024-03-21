@@ -116,10 +116,11 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   @SneakyThrows
   default RestfulJsonSchemaForm<?> createUploadSelectiveForm(AttachmentChecklist checklist, ID id) {
     var uploadform =
-        new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id) + "/attachments", "");
+        new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id), "attachments");
     var mapper = SpringBootUp.getBean(ObjectMapper.class);
 
     uploadform.getSchema().put("type", "object");
+    uploadform.getSchema().put("properties", Map.of());
 
     var anyOfAry = new ArrayList<>();
     uploadform.getSchema().put("anyOf", anyOfAry);
@@ -133,9 +134,9 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
           """;
     String mutiple = """
         {
+          "title": " ",
           "type": "array",
           "items": {
-            "title": " ",
             "type": "string",
             "format": "data-url"
           }
