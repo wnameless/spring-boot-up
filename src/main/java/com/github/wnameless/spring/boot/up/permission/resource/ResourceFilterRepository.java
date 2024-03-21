@@ -6,7 +6,6 @@ import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.http.HttpStatus;
@@ -25,8 +24,8 @@ import com.querydsl.core.types.Predicate;
 import jakarta.validation.Validator;
 
 @NoRepositoryBean
-public interface ResourceFilterRepository<T, ID>
-    extends CrudRepository<T, ID>, QuerydslPredicateExecutor<T>, MongoProjectionRepository<T> {
+public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
+    StreamQuerydslPredicateExecutor<T>, MongoProjectionRepository<T> {
 
   org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ResourceFilterRepository.class);
 
