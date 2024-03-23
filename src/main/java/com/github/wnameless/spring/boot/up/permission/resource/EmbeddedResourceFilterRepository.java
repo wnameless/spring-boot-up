@@ -233,7 +233,7 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
     PermittedUser user = getPermittedUser();
     Predicate idEq = erar.getPredicateOfEntityId(id);
     Optional<T> target = findOne(idEq);
-    if (!target.isPresent()) {
+    if (target.isEmpty()) {
       throw new IllegalArgumentException("Entity ID of the embedded resource NOT found");
     }
 
@@ -247,7 +247,7 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
         target = findOne(ExpressionUtils.allOf(erar.getPredicateOfCreateAbility(), idEq));
       }
 
-      if (!target.isPresent()) {
+      if (target.isEmpty()) {
         throw new UnsupportedOperationException("No permission to CREATE");
       }
 
@@ -261,7 +261,7 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
         target = findOne(ExpressionUtils.allOf(erar.getPredicateOfUpdateAbility(), idEq));
       }
 
-      if (!target.isPresent()) {
+      if (target.isEmpty()) {
         throw new UnsupportedOperationException("No permission to UPDATE");
       }
 

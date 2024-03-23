@@ -251,8 +251,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
       if (pair.getValue() instanceof Collection) {
         Collection<?> fs = (Collection<?>) pair.getValue();
         fs.stream().forEach(f -> {
-          if (f instanceof String) {
-            var data = new Base64EncodingAttachmentableData((String) f);
+          if (f instanceof String string) {
+            var data = new Base64EncodingAttachmentableData(string);
 
             A a = getAttachmentService().newAttachment();
             a.setGroup(group);

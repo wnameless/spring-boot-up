@@ -1,11 +1,6 @@
 package com.github.wnameless.spring.boot.up.permission;
 
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.CREATE;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.CRUD;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.DELETE;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.MANAGE;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.READ;
-import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.UPDATE;
+import static com.github.wnameless.spring.boot.up.permission.ability.RestAbility.*;
 import java.util.Optional;
 import org.springframework.util.ClassUtils;
 import com.github.wnameless.spring.boot.up.permission.ability.Ability;
@@ -19,7 +14,7 @@ public interface UserEmbeddedResourceAbility<ID> extends ResourceAbilityProvider
   default EmbeddedResourceFilterRepository findEmbeddedResourceFilterRepository(Class<?> type,
       String fieldName, Ability... abilities) {
     Optional<ResourceAbility> raOpt = findResourceAbility(type, fieldName, abilities);
-    if (!raOpt.isPresent()) return null;
+    if (raOpt.isEmpty()) return null;
 
     return raOpt.get().getEmbeddedResourceFilterRepository();
   }
@@ -263,7 +258,6 @@ public interface UserEmbeddedResourceAbility<ID> extends ResourceAbilityProvider
   default boolean canDeleteFieldOn(String resourceName, String fieldName, ID id) {
     return canDeleteFieldOn(getResourceType(resourceName), fieldName, id);
   }
-
 
   default boolean canDeleteFieldOn(Object obj, String fieldName, ID id) {
     return canDeleteFieldOn(obj.getClass(), fieldName, id);

@@ -249,7 +249,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     Optional<T> target = findOne(idEq);
 
     // new entity
-    if (!target.isPresent()) {
+    if (target.isEmpty()) {
       if (!user.canCreate(rar.getResourceType())) {
         throw new UnsupportedOperationException("No permission to CREATE");
       }
@@ -263,7 +263,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     } else {
       target = findOne(ExpressionUtils.allOf(rar.getPredicateOfUpdateAbility(), idEq));
     }
-    if (!target.isPresent()) {
+    if (target.isEmpty()) {
       throw new UnsupportedOperationException("No permission to UPDATE");
     }
 
@@ -294,7 +294,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     }
 
     // new entity
-    if (!target.isPresent()) {
+    if (target.isEmpty()) {
       if (!user.canCreate(rar.getResourceType())) {
         var alertMessages = new AlertMessages();
         alertMessages.getWarning().add("No permission to CREATE");
@@ -316,7 +316,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     } else {
       target = findOne(ExpressionUtils.allOf(rar.getPredicateOfUpdateAbility(), idEq));
     }
-    if (!target.isPresent()) {
+    if (target.isEmpty()) {
       var alertMessages = new AlertMessages();
       alertMessages.getWarning().add("No permission to UPDATE");
       SpringBootUpWeb.findHttpServletRequest().ifPresent(req -> {

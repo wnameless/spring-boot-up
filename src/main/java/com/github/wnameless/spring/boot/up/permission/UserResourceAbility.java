@@ -16,7 +16,7 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
   default ResourceFilterRepository findResourceFilterRepository(Class<?> type,
       Ability... abilities) {
     Optional<ResourceAbility> raOpt = findResourceAbility(type, abilities);
-    if (!raOpt.isPresent()) return null;
+    if (raOpt.isEmpty()) return null;
 
     return raOpt.get().getResourceFilterRepository();
   }

@@ -26,8 +26,8 @@ public class RelaxedBooleanTypeConverterDecorator implements TypeConverter {
 
   public Object convertValue(Object value, TypeDescriptor sourceType, TypeDescriptor targetType) {
     if (targetType.isAssignableTo(BOOLEAN_TYPE)) {
-      if (value instanceof Number) {
-        return ((Number) value).intValue() != 0;
+      if (value instanceof Number number) {
+        return number.intValue() != 0;
       }
       if (sourceType.isCollection()) {
         return !((Collection<?>) value).isEmpty();
