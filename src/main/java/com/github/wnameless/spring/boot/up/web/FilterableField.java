@@ -15,16 +15,22 @@ public final class FilterableField<E extends EntityPathBase<?>> {
 
   public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
       BiFunction<F, String, Predicate> filterLogic) {
-    return new FilterableField<F>(f -> f, Optional.of(fieldName), filterLogic);
+    return new FilterableField<F>(f -> f, Optional.of(fieldName), "text", filterLogic);
+  }
+
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
+      String inputType, BiFunction<F, String, Predicate> filterLogic) {
+    return new FilterableField<F>(f -> f, Optional.of(fieldName), inputType, filterLogic);
   }
 
   public static <F extends EntityPathBase<?>> FilterableField<F> of(
       Function<F, ? extends Path<?>> pathFinder, BiFunction<F, String, Predicate> filterLogic) {
-    return new FilterableField<F>(pathFinder, Optional.empty(), filterLogic);
+    return new FilterableField<F>(pathFinder, Optional.empty(), "text", filterLogic);
   }
 
   private final Function<E, ? extends Path<?>> pathFinder;
   private final Optional<String> fieldName;
+  private final String inputType;
   private final BiFunction<E, String, Predicate> filterLogic;
   private boolean sortable = true;
   private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();

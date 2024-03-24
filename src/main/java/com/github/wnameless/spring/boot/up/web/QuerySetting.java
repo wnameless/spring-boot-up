@@ -115,7 +115,7 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
 
     public QuerySetting<E> filterLogic(BiFunction<E, String, Predicate> filterLogic) {
       QuerySetting.this.addFilterableField(
-          new FilterableField<>(pathFinder, Optional.ofNullable(alias), filterLogic)
+          new FilterableField<>(pathFinder, Optional.ofNullable(alias), "text", filterLogic)
               .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
@@ -147,28 +147,29 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
 
     public QuerySetting<E> filterLogic(BiFunction<E, String, Predicate> filterLogic) {
       QuerySetting.this.addFilterableField(
-          new FilterableField<>(pathFinder, Optional.ofNullable(alias), filterLogic)
+          new FilterableField<>(pathFinder, Optional.ofNullable(alias), "text", filterLogic)
               .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByContainsIgnoreCase() {
-      QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
-          Optional.ofNullable(alias), (e, param) -> pathFinder.apply(e).containsIgnoreCase(param))
-              .sortable(sortable).selectOption(selectOption));
+      QuerySetting.this
+          .addFilterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias), "text",
+              (e, param) -> pathFinder.apply(e).containsIgnoreCase(param)).sortable(sortable)
+                  .selectOption(selectOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByContains() {
       QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
-          Optional.ofNullable(alias), (e, param) -> pathFinder.apply(e).contains(param))
+          Optional.ofNullable(alias), "text", (e, param) -> pathFinder.apply(e).contains(param))
               .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByEq() {
       QuerySetting.this.addFilterableField(
-          new FilterableField<>(pathFinder, Optional.ofNullable(alias), (e, param) -> {
+          new FilterableField<>(pathFinder, Optional.ofNullable(alias), "text", (e, param) -> {
             return param == null || param.trim().isEmpty()
                 ? pathFinder.apply(e).containsIgnoreCase(param)
                 : pathFinder.apply(e).eq(param);
@@ -178,14 +179,14 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
 
     public QuerySetting<E> filterByStartsWith() {
       QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
-          Optional.ofNullable(alias), (e, param) -> pathFinder.apply(e).startsWith(param))
+          Optional.ofNullable(alias), "text", (e, param) -> pathFinder.apply(e).startsWith(param))
               .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByEndsWith() {
       QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
-          Optional.ofNullable(alias), (e, param) -> pathFinder.apply(e).endsWith(param))
+          Optional.ofNullable(alias), "text", (e, param) -> pathFinder.apply(e).endsWith(param))
               .sortable(sortable).selectOption(selectOption));
       return QuerySetting.this;
     }

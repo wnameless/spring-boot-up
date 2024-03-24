@@ -57,8 +57,7 @@
             <label class="form-label" th:unless="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
             field) != null}">
               [[${#messages.msgOrNull('sbu.web.item.field.' + itemClass.simpleName + '.' +
-              field) ?:
-              field}]]
+              field) ?: field}]]
             </label>
             <!-- With select option -->
             <th:block th:if="${queryConfig.getFilterFields.get(field).hasSelectOption}">
@@ -73,8 +72,9 @@
             </th:block>
             <!-- Without select option -->
             <th:block th:unless="${queryConfig.getFilterFields.get(field).hasSelectOption}">
-              <input th:name="${field}" type="text" class="form-control"
-                th:value="${queryConfig.getFieldQueryString(field)}">
+              <input th:name="${field}"
+                th:attr="type=${queryConfig.getFilterFields.get(field).inputType}"
+                class="form-control" th:value="${queryConfig.getFieldQueryString(field)}">
             </th:block>
           </div>
           <div class="col-4">
