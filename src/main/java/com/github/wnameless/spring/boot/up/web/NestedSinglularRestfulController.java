@@ -1,7 +1,7 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import java.util.Optional;
-import java.util.function.BiPredicate;
+import java.util.function.BiFunction;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -14,36 +14,28 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.ItemClass;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Parent;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.ParentClass;
 
-public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, PID, R extends CrudRepository<I, ID>, I, ID>
+public interface NestedSinglularRestfulController<PR extends CrudRepository<P, PID>, P, PID, //
+    R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
 
+  @Override
+  SingularRestfulRoute<ID> getRestfulRoute();
+
+  BiFunction<R, P, Optional<I>> nestedItemStrategy();
+
   default Optional<P> findParentItemById(PID id) {
-    Optional<P> parent;
+    Optional<P> item;
     if ((CrudRepository<P, PID>) getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
       // TODO: Fix bug
       // item = rfr.filterFindById(id);
-      parent = getParentRepository().findById(id);
+      item = getParentRepository().findById(id);
     } else {
-      parent = getParentRepository().findById(id);
-    }
-    return parent;
-  }
-
-  default Optional<I> findRestfulItemById(ID id) {
-    Optional<I> item;
-    if ((CrudRepository<I, ID>) getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
-      // TODO: Fix bug
-      // item = rfr.filterFindById(id);
-      item = getRestfulRepository().findById(id);
-    } else {
-      item = getRestfulRepository().findById(id);
+      item = getParentRepository().findById(id);
     }
     return item;
   }
 
   PR getParentRepository();
-
-  BiPredicate<P, I> getPaternityTesting();
 
   void configure(ModelPolicy<I> policy);
 
@@ -52,6 +44,9 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
     configure(policy);
     return policy;
   }
+
+  @Override
+  R getRestfulRepository();
 
   @ModelAttribute
   default void setParentAndItem(Model model, @PathVariable(required = false) PID parentId,
@@ -66,18 +61,13 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
     // Set Item
     if (getModelPolicy().isDisable()) return;
 
-    I item = null;
-    if (parent != null) {
-      if (id != null) {
-        item = findRestfulItemById(id).orElseGet(getModelPolicy().onDefaultItem());
-      } else {
-        item = getModelPolicy().onDefaultItem().get();
-      }
-      item = getPaternityTesting().test(parent, item) ? item : null;
-    }
+    I item = nestedItemStrategy().apply(getRestfulRepository(), parent)
+        .orElseGet(getModelPolicy().onDefaultItem());
+
     if (getModelPolicy().onItemInitialized() != null) {
       item = getModelPolicy().onItemInitialized().apply(item);
     }
+
     updateItem(model, item);
   }
 
@@ -114,22 +104,6 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
 
   default String getItemKey() {
     return Item.name();
-  }
-
-  default I getItem(PID parentId, ID id) {
-    return getItem(parentId, id, null);
-  }
-
-  default I getItem(PID parentId, ID id, I defaultItem) {
-    if (parentId != null && id != null) {
-      P parent = findParentItemById(parentId).orElse(null);
-      I item = findRestfulItemById(id).orElseGet(getModelPolicy().onDefaultItem());
-      if (parent == null || getPaternityTesting().test(parent, item)) {
-        return item;
-      }
-    }
-
-    return defaultItem;
   }
 
   default I updateItem(Model model, I item) {

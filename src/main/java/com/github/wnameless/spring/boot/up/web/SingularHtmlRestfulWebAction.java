@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 public interface SingularHtmlRestfulWebAction<D, ID>
-    extends SingularBaseWebAction<D, ID>, RestfulRouteProvider<Void> {
+    extends SingularBaseWebAction<D, ID>, RestfulRouteProvider<ID> {
 
   @GetMapping
   default ModelAndView showHtml(@PathVariable(required = false) ID id, ModelAndView mav,

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 public interface SingularAjaxRestfulWebAction<D, ID>
-    extends SingularBaseWebAction<D, ID>, RestfulRouteProvider<Void> {
+    extends SingularBaseWebAction<D, ID>, RestfulRouteProvider<ID> {
 
   @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView showAjax(@PathVariable(required = false) ID id, ModelAndView mav,

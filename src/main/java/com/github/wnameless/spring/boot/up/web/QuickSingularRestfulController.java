@@ -47,7 +47,7 @@ public abstract class QuickSingularRestfulController<R extends CrudRepository<I,
 
   @SuppressWarnings("null")
   @Override
-  public SingularRestfulRoute getRestfulRoute() {
+  public SingularRestfulRoute<ID> getRestfulRoute() {
     Optional<INamedResource> nr =
         SpringBootUp.findAllGenericBeans(INamedResource.class).stream().filter(n -> {
           var itemClassName = item.getClass().getName();

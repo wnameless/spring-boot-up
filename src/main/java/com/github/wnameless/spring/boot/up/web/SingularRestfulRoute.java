@@ -1,13 +1,48 @@
 package com.github.wnameless.spring.boot.up.web;
 
-public interface SingularRestfulRoute extends RestfulRoute<Void> {
+import java.util.function.Supplier;
 
-  public static SingularRestfulRoute of(String indexPath) {
-    return new SingularRestfulRoute() {
+public interface SingularRestfulRoute<ID> extends RestfulRoute<ID> {
+
+  public static <I> SingularRestfulRoute<I> of(String indexPath) {
+    return new SingularRestfulRoute<>() {
 
       @Override
       public String getIndexPath() {
         return indexPath;
+      }
+
+    };
+  }
+
+  public static <I> SingularRestfulRoute<I> of(String indexPath, String templatePath) {
+    return new SingularRestfulRoute<>() {
+
+      @Override
+      public String getIndexPath() {
+        return indexPath;
+      }
+
+      @Override
+      public String getTemplatePath() {
+        return templatePath;
+      }
+
+    };
+  }
+
+  public static <I> SingularRestfulRoute<I> of(Supplier<String> indexPathStock,
+      Supplier<String> templatePathStock) {
+    return new SingularRestfulRoute<>() {
+
+      @Override
+      public String getIndexPath() {
+        return indexPathStock.get();
+      }
+
+      @Override
+      public String getTemplatePath() {
+        return templatePathStock.get();
       }
 
     };
@@ -24,7 +59,7 @@ public interface SingularRestfulRoute extends RestfulRoute<Void> {
   }
 
   @Override
-  default String idToParam(Void id) {
+  default String idToParam(ID id) {
     return "";
   }
 
@@ -42,42 +77,42 @@ public interface SingularRestfulRoute extends RestfulRoute<Void> {
   }
 
   @Override
-  default String getEditPath(Void id) {
+  default String getEditPath(ID id) {
     return getIndexPath() + "/edit";
   }
 
   @Override
-  default String editPath(Void id) {
+  default String editPath(ID id) {
     return getEditPath(id);
   }
 
   @Override
-  default String getShowPath(Void id) {
+  default String getShowPath(ID id) {
     return getIndexPath() + "/" + idToParam(id);
   }
 
   @Override
-  default String showPath(Void id) {
+  default String showPath(ID id) {
     return getShowPath(id);
   }
 
   @Override
-  default String getUpdatePath(Void id) {
+  default String getUpdatePath(ID id) {
     return getIndexPath();
   }
 
   @Override
-  default String updatePath(Void id) {
+  default String updatePath(ID id) {
     return getUpdatePath(id);
   }
 
   @Override
-  default String getDeletePath(Void id) {
+  default String getDeletePath(ID id) {
     return getIndexPath();
   }
 
   @Override
-  default String deletePath(Void id) {
+  default String deletePath(ID id) {
     return getDeletePath(id);
   }
 

@@ -11,10 +11,12 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.ItemClass;
 
 public interface SingularRestfulController<R extends CrudRepository<I, ID>, I, ID>
-    extends RestfulRouteController<Void>, RestfulRepositoryProvider<I, ID> {
+    extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
 
   @Override
-  SingularRestfulRoute getRestfulRoute();
+  SingularRestfulRoute<ID> getRestfulRoute();
+
+  Function<R, Optional<I>> itemStrategy();
 
   void configure(ModelPolicy<I> policy);
 
@@ -44,8 +46,6 @@ public interface SingularRestfulController<R extends CrudRepository<I, ID>, I, I
   default String getItemClassKey() {
     return ItemClass.name();
   }
-
-  Function<R, Optional<I>> itemStrategy();
 
   default String getItemKey() {
     return Item.name();
