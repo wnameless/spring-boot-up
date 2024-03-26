@@ -18,23 +18,32 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public final class JsfPOJOService {
 
+  private static final String DEFAULT_SCHEMA_BRANCH = "default";
+
   // Cache needs defensive copy
   private final Map<String, Map<String, Object>> schemaCache = new HashMap<>();
 
   public Map<String, Object> getSchemaTemplate(String formType, Locale locale) {
+    return getSchemaTemplate(formType, locale.toString());
+  }
+
+  public Map<String, Object> getSchemaTemplate(String formType, String branch) {
     String templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".schema."
-        + locale + ".json";
+        + branch + ".json";
     if (schemaCache.containsKey(templatePath)) {
       return new LinkedHashMap<>(schemaCache.get(templatePath));
     }
-
     try {
-      URL schemaUrl = Resources.getResource(templatePath);
-      @SuppressWarnings("null")
-      String json = Resources.toString(schemaUrl, Charsets.UTF_8);
-      Map<String, Object> template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
-      schemaCache.put(templatePath, template);
-      return new LinkedHashMap<>(template);
+      return readTemplate(templatePath);
+    } catch (Exception e) {}
+
+    templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".schema."
+        + DEFAULT_SCHEMA_BRANCH + ".json";
+    if (schemaCache.containsKey(templatePath)) {
+      return new LinkedHashMap<>(schemaCache.get(templatePath));
+    }
+    try {
+      return readTemplate(templatePath);
     } catch (Exception e) {
       return null;
     }
@@ -54,12 +63,7 @@ public final class JsfPOJOService {
     }
 
     try {
-      URL schemaUrl = Resources.getResource(templatePath);
-      @SuppressWarnings("null")
-      String json = Resources.toString(schemaUrl, Charsets.UTF_8);
-      template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
-      schemaCache.put(templatePath, template);
-      return new LinkedHashMap<>(template);
+      return readTemplate(templatePath);
     } catch (Exception e) {
       log.info("Schema template not found", e);
       return JsonSchemaFormUtils.defaultSchema();
@@ -67,19 +71,26 @@ public final class JsfPOJOService {
   }
 
   public Map<String, Object> getUiSchemaTemplate(String formType, Locale locale) {
+    return getUiSchemaTemplate(formType, locale.toString());
+  }
+
+  public Map<String, Object> getUiSchemaTemplate(String formType, String branch) {
     String templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType
-        + ".uiSchema." + locale + ".json";
+        + ".uiSchema." + branch + ".json";
     if (schemaCache.containsKey(templatePath)) {
       return new LinkedHashMap<>(schemaCache.get(templatePath));
     }
-
     try {
-      URL schemaUrl = Resources.getResource(templatePath);
-      @SuppressWarnings("null")
-      String json = Resources.toString(schemaUrl, Charsets.UTF_8);
-      Map<String, Object> template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
-      schemaCache.put(templatePath, template);
-      return new LinkedHashMap<>(template);
+      return readTemplate(templatePath);
+    } catch (Exception e) {}
+
+    templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".uiSchema."
+        + DEFAULT_SCHEMA_BRANCH + ".json";
+    if (schemaCache.containsKey(templatePath)) {
+      return new LinkedHashMap<>(schemaCache.get(templatePath));
+    }
+    try {
+      return readTemplate(templatePath);
     } catch (Exception e) {
       return null;
     }
@@ -99,16 +110,21 @@ public final class JsfPOJOService {
     }
 
     try {
-      URL schemaUrl = Resources.getResource(templatePath);
-      @SuppressWarnings("null")
-      String json = Resources.toString(schemaUrl, Charsets.UTF_8);
-      template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
-      schemaCache.put(templatePath, template);
-      return new LinkedHashMap<>(template);
+      return readTemplate(templatePath);
     } catch (Exception e) {
       log.info("UiSchema template not found", e);
       return JsonSchemaFormUtils.defaultUiSchema();
     }
+  }
+
+  private LinkedHashMap<String, Object> readTemplate(String templatePath) throws Exception {
+    @SuppressWarnings("null")
+    URL schemaUrl = Resources.getResource(templatePath);
+    @SuppressWarnings("null")
+    String json = Resources.toString(schemaUrl, Charsets.UTF_8);
+    Map<String, Object> template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
+    schemaCache.put(templatePath, template);
+    return new LinkedHashMap<>(template);
   }
 
 }
