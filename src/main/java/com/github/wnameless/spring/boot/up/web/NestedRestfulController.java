@@ -15,33 +15,29 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.Parent;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.ParentClass;
 
 public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, PID, R extends CrudRepository<I, ID>, I, ID>
-    extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
-
-  default Optional<P> findParentItemById(PID id) {
-    Optional<P> parent;
-    if ((CrudRepository<P, PID>) getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
-      // TODO: Fix bug
-      // item = rfr.filterFindById(id);
-      parent = getParentRepository().findById(id);
-    } else {
-      parent = getParentRepository().findById(id);
-    }
-    return parent;
-  }
+    extends RestfulRepositoryProvider<I, ID>, RestfulRouteController<ID> {
 
   default Optional<I> findRestfulItemById(ID id) {
     Optional<I> item;
-    if ((CrudRepository<I, ID>) getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
-      // TODO: Fix bug
-      // item = rfr.filterFindById(id);
-      item = getRestfulRepository().findById(id);
+    if (getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
+      item = rfr.filterFindById(id);
     } else {
       item = getRestfulRepository().findById(id);
     }
     return item;
   }
 
-  PR getParentRepository();
+  CrudRepository<P, PID> getParentRepository();
+
+  default Optional<P> findParentItemById(PID id) {
+    Optional<P> parent;
+    if (getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
+      parent = rfr.filterFindById(id);
+    } else {
+      parent = getParentRepository().findById(id);
+    }
+    return parent;
+  }
 
   BiPredicate<P, I> getPaternityTesting();
 

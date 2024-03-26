@@ -16,26 +16,24 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.ParentClass;
 
 public interface NestedSinglularRestfulController<PR extends CrudRepository<P, PID>, P, PID, //
     R extends CrudRepository<I, ID>, I, ID>
-    extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
+    extends RestfulRepositoryProvider<I, ID>, RestfulRouteController<ID> {
 
   @Override
   SingularRestfulRoute<ID> getRestfulRoute();
 
-  BiFunction<R, P, Optional<I>> nestedItemStrategy();
+  CrudRepository<P, PID> getParentRepository();
 
   default Optional<P> findParentItemById(PID id) {
-    Optional<P> item;
-    if ((CrudRepository<P, PID>) getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
-      // TODO: Fix bug
-      // item = rfr.filterFindById(id);
-      item = getParentRepository().findById(id);
+    Optional<P> parent;
+    if (getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
+      parent = rfr.filterFindById(id);
     } else {
-      item = getParentRepository().findById(id);
+      parent = getParentRepository().findById(id);
     }
-    return item;
+    return parent;
   }
 
-  PR getParentRepository();
+  BiFunction<R, P, Optional<I>> nestedItemStrategy();
 
   void configure(ModelPolicy<I> policy);
 

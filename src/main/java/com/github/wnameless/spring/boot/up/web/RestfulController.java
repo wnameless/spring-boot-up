@@ -17,9 +17,7 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
   default Optional<I> findRestfulItemById(ID id) {
     Optional<I> item;
     if (getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
-      // TODO: Fix bug
-      // item = rfr.filterFindById(id);
-      item = getRestfulRepository().findById(id);
+      item = rfr.filterFindById(id);
     } else {
       item = getRestfulRepository().findById(id);
     }
