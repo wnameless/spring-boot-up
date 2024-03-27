@@ -1,0 +1,17 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5" class="container-fluid">
+  <div class="btn-group" role="group"
+    th:with="ajaxTargetId=${ajaxTargetId ?: _ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
+    <button type="button" class="btn btn-secondary" hx:get="@{${item.indexPath}}" hx-ext="json-enc"
+      hx:target="${'#' + ajaxTargetId}">All</button>
+    <button th:block th:each="s : ${item.phase.allStates}" type="button"
+      class="btn btn-outline-secondary"
+      th:classappend="${(param['stateRecord.state'] != null) and (param['stateRecord.state'][0] eq s.displayName)} ? 'active'"
+      hx:get="@{${item.indexPath}(stateRecord.state=${s.displayName})}" hx-ext="json-enc"
+      hx:target="${'#' + ajaxTargetId}">[[${s.displayName}]]</button>
+  </div>
+  <hr>
+</div>
+
+</html>
