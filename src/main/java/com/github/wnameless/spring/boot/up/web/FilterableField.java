@@ -64,7 +64,7 @@ public final class FilterableField<E extends EntityPathBase<?>> {
 
   private String getEntryFieldName(Path<?> path) {
     String entryFieldName = path.toString();
-    return entryFieldName.substring(entryFieldName.indexOf('.') + 1);
+    return entryFieldName.replace(path.getRoot().toString() + ".", "");
   }
 
 }

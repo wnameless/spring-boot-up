@@ -18,6 +18,10 @@ public class WebModelAttributes {
   public static String EMBEDDED_TARGET_ID_VALUE;
   public static final String BACK_TARGET_ID_NAME = "backTargetId";
   public static String BACK_TARGET_ID_VALUE;
+  public static final String MODEL_TARGET_ID_NAME = "modelTargetId";
+  public static String MODEL_TARGET_ID_VALUE;
+  public static final String MODEL_CONTENT_TARGET_ID_NAME = "modelContentTargetId";
+  public static String MODEL_CONTENT_TARGET_ID_VALUE;
   public static String PAGE_NAME;
   public static String ITEM_NAME;
   public static String ITEM_CLASS_NAME;
@@ -55,6 +59,16 @@ public class WebModelAttributes {
   @Value("${spring.boot.up.web.model.attribute.back-target-id.value:backTarget}")
   public void setBackTarget(String backTargetIdValue) {
     WebModelAttributes.BACK_TARGET_ID_VALUE = backTargetIdValue;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.model-target-id.value:modelTarget}")
+  public void setModelTarget(String modelTargetIdValue) {
+    WebModelAttributes.MODEL_TARGET_ID_VALUE = modelTargetIdValue;
+  }
+
+  @Value("${spring.boot.up.web.model.attribute.model-content-target-id.value:modelContentTarget}")
+  public void setModelContentTarget(String modelContentTargetIdValue) {
+    WebModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE = modelContentTargetIdValue;
   }
 
   @Value("${spring.boot.up.web.model.attribute.page.name:page}")
