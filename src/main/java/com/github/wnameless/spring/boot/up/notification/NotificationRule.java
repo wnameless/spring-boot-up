@@ -35,4 +35,9 @@ public class NotificationRule<S, T> implements NotificationPlan<S, T> {
         + state + "." + advice + "." + suffix);
   }
 
+  public String getI18nMessage(Class<?> notificationStrategyType, String suffix, Object... args) {
+    return SpringBootUp.getMessage(notificationStrategyType.getSimpleName() + "." + trigger + "."
+        + state + "." + advice + "." + suffix, args);
+  }
+
 }
