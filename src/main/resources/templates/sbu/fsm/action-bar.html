@@ -1,9 +1,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5"
-  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
-  class="card mb-2">
-  <div class="card-body">
+<div th:fragment="bs5" class="card mb-2" th:id="${'fsmActionBar' + item.id}">
+  <div
+    th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
+    class="card-body">
     <div class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
       <button type="button" class="btn btn-outline-primary">
         <i class="fas fa-route fa-fw"></i>
@@ -18,6 +18,12 @@
             hx:get="@{${item.joinPath('triggers', trigger.name)}}" hx:target="${'#' + ajaxTargetId}"
             hx-ext="json-enc">[[${trigger.displayName}]]</button>
         </th:block>
+        <button
+          hx:get="@{${item.joinPath('triggers')}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
+          hx:target="${'#' + 'fsmActionBar' + item.id}" hx-ext="json-enc" type="button"
+          class="btn btn-outline-danger hint--right" aria-label="Refresh">
+          <i class="fas fa-arrows-rotate fa-fw"></i>
+        </button>
       </div>
     </div>
   </div>

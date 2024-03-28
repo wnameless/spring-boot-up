@@ -156,6 +156,16 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
     };
   }
 
+  @GetMapping(path = "/{id}/triggers", consumes = MediaType.APPLICATION_JSON_VALUE)
+  default ModelAndView refreshTriggersAjax(ModelAndView mav, @PathVariable ID id) {
+    mav.setViewName("sbu/fsm/action-bar :: bs5/div.card-body");
+
+    PA phaseAware = getRestfulRepository().findById(id).get();
+    mav.addObject(Item.name(), phaseAware);
+
+    return mav;
+  }
+
   @SuppressWarnings({"unchecked", "rawtypes"})
   @GetMapping(path = "/{id}/triggers/{triggerName}", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView triggerAjax(ModelAndView mav, @PathVariable ID id,
