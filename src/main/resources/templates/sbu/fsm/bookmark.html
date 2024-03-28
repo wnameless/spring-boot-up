@@ -2,7 +2,7 @@
 
 <div th:fragment="bs5" class="container-fluid">
   <div class="btn-group" role="group"
-    th:with="ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX + @webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
+    th:with="ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
     <button type="button" class="btn btn-outline-secondary" hx:get="@{${item.indexPath}}"
       hx-ext="json-enc" hx:target="${'#' + ajaxTargetId}">
       <i class="fas fa-reply-all fa-fw"></i>

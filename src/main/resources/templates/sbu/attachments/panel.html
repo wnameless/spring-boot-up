@@ -57,7 +57,7 @@
     <div th:if="${user == null ||  user.canDelete(item)}" class="tab-pane fade" id="pills-file-edit"
       role="tabpanel">
       <div id="attachmentEdit">
-        <a hx:get="@{${item.joinPath('attachments', 'edit')}(ajaxTargetId=${ajaxTargetId})}"
+        <a hx:get="@{${item.joinPath('attachments', 'edit')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
           hx-target="#attachmentEdit" hx-ext="json-enc" hx-trigger="revealed" class="d-none"></a>
 
         <script th:inline="javascript" defer>
@@ -69,7 +69,7 @@
     <div th:if="${user == null || user.canUpdate(item)}" class="tab-pane fade"
       id="pills-file-upload" role="tabpanel">
       <div id="attachmentUpload">
-        <a hx:get="@{${item.joinPath('attachments','upload')}(ajaxTargetId=${ajaxTargetId})}"
+        <a hx:get="@{${item.joinPath('attachments','upload')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
           hx-target="#attachmentUpload" hx-ext="json-enc" hx-trigger="revealed" class="d-none"></a>
 
         <script th:inline="javascript" defer>

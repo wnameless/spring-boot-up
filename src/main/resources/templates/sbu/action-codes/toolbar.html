@@ -19,14 +19,14 @@
           'Copy'}]]</a>
       </li>
       <li>
-        <a hx:post="@{${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}(ajaxTargetId=${ajaxTargetId})}"
+        <a hx:post="@{${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
           hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-link"></span>
           [[${#messages.msgOrNull('sbu.actioncode.generate') ?:
           'Generate'}]]</a>
       </li>
       <li th:unless="${#strings.isEmpty(code)}">
-        <a hx:delete="@{${singular ? route.joinPath('action-codes', action, code) : item.joinPath('action-codes', action, code)}(ajaxTargetId=${ajaxTargetId})}"
+        <a hx:delete="@{${singular ? route.joinPath('action-codes', action, code) : item.joinPath('action-codes', action, code)}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
           hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
           <span class="fas fa-fw fa-trash"></span>
           [[${#messages.msgOrNull('sbu.actioncode.clear') ?:

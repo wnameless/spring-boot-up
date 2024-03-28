@@ -1,17 +1,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX + @webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
   class="card mb-2">
   <div class="card-body">
     <div class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
       <button type="button" class="btn btn-outline-primary">
-        <i class="fas fa-route"></i>
+        <i class="fas fa-route fa-fw"></i>
         [[${item.phase.stateMachine.state.displayName}]]
       </button>
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-outline-success">
-          <i class="fas fa-location-arrow"></i>
+          <i class="fas fa-location-arrow fa-fw"></i>
         </button>
         <th:block th:each="trigger : ${item.phase.externalTriggers}">
           <button type="button" class="btn btn-outline-success"

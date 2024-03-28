@@ -15,16 +15,25 @@ public class WebModelAttributes {
   public static String ROUTE_NAME;
   public static String TEMPLATE_NAME;
   public static final String AJAX_TARGET_ID_NAME = "ajaxTargetId";
+  public static final String FORWARDING_AJAX_TARGET_ID_NAME =
+      FORWARDABLE_ATTRIBUTE_PREFIX + AJAX_TARGET_ID_NAME;
   public static String AJAX_TARGET_ID_VALUE;
   public static final String EMBEDDED_TARGET_ID_NAME = "embeddedTargetId";
+  public static final String FORWARDING_EMBEDDED_TARGET_ID_NAME =
+      FORWARDABLE_ATTRIBUTE_PREFIX + EMBEDDED_TARGET_ID_NAME;
   public static String EMBEDDED_TARGET_ID_VALUE;
   public static final String BACK_TARGET_ID_NAME = "backTargetId";
+  public static final String FORWARDING_BACK_TARGET_ID_NAME =
+      FORWARDABLE_ATTRIBUTE_PREFIX + BACK_TARGET_ID_NAME;
   public static String BACK_TARGET_ID_VALUE;
+  public static final String BACK_PATH_NAME = "backPath";
+  public static final String FORWARDING_BACK_PATH_NAME =
+      FORWARDABLE_ATTRIBUTE_PREFIX + BACK_PATH_NAME;
+
   public static final String MODEL_TARGET_ID_NAME = "modelTargetId";
   public static String MODEL_TARGET_ID_VALUE;
   public static final String MODEL_CONTENT_TARGET_ID_NAME = "modelContentTargetId";
   public static String MODEL_CONTENT_TARGET_ID_VALUE;
-  public static final String BACK_PATH_NAME = "backPath";
   public static String PAGE_NAME;
   public static String ITEM_NAME;
   public static String ITEM_CLASS_NAME;

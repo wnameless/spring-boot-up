@@ -11,7 +11,7 @@
   <div class="mt-3">
     <div th:each="action : ${actionCodeEnum}" class="collapse" th:id="${'collapse' + action}">
       <div th:id="${'actionCode' + action}">
-        <a hx:get="@{${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}(ajaxTargetId=${'actionCode' + action})}"
+        <a hx:get="@{${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${'actionCode' + action})}"
           hx:target="${'#actionCode' + action}" hx-ext="json-enc" hx-trigger="load"
           class="d-none"></a>
       </div>
