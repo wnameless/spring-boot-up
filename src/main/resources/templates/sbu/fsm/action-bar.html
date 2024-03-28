@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX + @webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
   class="card mb-2">
   <div class="card-body">
     <div class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">

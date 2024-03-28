@@ -2,7 +2,7 @@
 
 <!-- Start Table -->
 <div th:fragment="bs5(th, td)"
-  th:with="li=${li}, page=${__${@webModelAttributes.PAGE_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, creationOption=${__${@webModelAttributes.CREATION_OPTION_NAME}__}, itemClass=${__${@webModelAttributes.ITEM_CLASS_NAME}__}, route=${__${@webModelAttributes.ROUTE_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${ajaxTargetId ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
+  th:with="li=${li}, page=${__${@webModelAttributes.PAGE_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, creationOption=${__${@webModelAttributes.CREATION_OPTION_NAME}__}, itemClass=${__${@webModelAttributes.ITEM_CLASS_NAME}__}, route=${__${@webModelAttributes.ROUTE_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX + @webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
 
   <!-- Creation Options Begin -->
   <div class="offcanvas offcanvas-start" tabindex="-1" id="creationOption">

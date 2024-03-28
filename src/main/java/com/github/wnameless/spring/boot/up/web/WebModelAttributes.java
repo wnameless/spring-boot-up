@@ -10,6 +10,8 @@ public class WebModelAttributes {
 
   public static final String BEAN_NAME = "webModelAttributes";
 
+  public static final String FORWARDABLE_ATTRIBUTE_PREFIX = "_";
+
   public static String ROUTE_NAME;
   public static String TEMPLATE_NAME;
   public static final String AJAX_TARGET_ID_NAME = "ajaxTargetId";
@@ -22,6 +24,7 @@ public class WebModelAttributes {
   public static String MODEL_TARGET_ID_VALUE;
   public static final String MODEL_CONTENT_TARGET_ID_NAME = "modelContentTargetId";
   public static String MODEL_CONTENT_TARGET_ID_VALUE;
+  public static final String BACK_PATH_NAME = "backPath";
   public static String PAGE_NAME;
   public static String ITEM_NAME;
   public static String ITEM_CLASS_NAME;
