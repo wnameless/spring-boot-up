@@ -21,7 +21,10 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, N
     for (NotificationPlan<S, T> rule : getNotificationPlans(stateMachine)) {
       StateRepresentation<S, T> representation =
           stateMachineConfig.getRepresentation(rule.getState());
-      if (representation == null) continue;
+      if (representation == null) {
+        stateMachineConfig.configure(rule.getState());
+        representation = stateMachineConfig.getRepresentation(rule.getState());
+      }
 
       switch (rule.getAdvice()) {
         case ENTRY:
