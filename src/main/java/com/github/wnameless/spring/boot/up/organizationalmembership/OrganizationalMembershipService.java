@@ -40,8 +40,8 @@ public interface OrganizationalMembershipService<ID> {
   }
 
   default List<ID> findAllChildOrganizationalUnitIds(String username, Rolify[] rolifies,
-      @SuppressWarnings("unchecked") Class<? extends OrganizationalUnit<ID>>... resourceTypes) {
-    return findAllChildOrganizationalUnitIds(username, List.of(rolifies), List.of(resourceTypes));
+      Collection<Class<? extends OrganizationalUnit<ID>>> resourceTypes) {
+    return findAllChildOrganizationalUnitIds(username, List.of(rolifies), resourceTypes);
   }
 
   default List<ID> findAllChildOrganizationalUnitIds(String username,
