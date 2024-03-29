@@ -33,6 +33,16 @@ public interface OrganizationalUnitService<ID> {
     return result;
   }
 
+  default List<? extends OrganizationalUnit<ID>> findAllOrganizationalUnits() {
+    List<OrganizationalUnit<ID>> result = new ArrayList<>();
+
+    getOrganizationalUnitRepositories().forEach(repo -> {
+      repo.findAll().forEach(ou -> result.add(ou));
+    });
+
+    return result;
+  }
+
   default List<Optional<? extends OrganizationalUnit<ID>>> findAllOrganizationalUnits(
       Collection<ID> organizationalUnitIds) {
     List<Optional<? extends OrganizationalUnit<ID>>> result = new ArrayList<>();
