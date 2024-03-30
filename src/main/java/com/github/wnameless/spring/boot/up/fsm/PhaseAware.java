@@ -19,7 +19,8 @@ public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T
   Class<? extends AbstractPhase<E, S, T, ID>> getPhaseType();
 
   default Phase<E, S, T, ID> getPhase() {
-    Supplier<E> arg0 = () -> getPhaseAwareEntity();
+    @SuppressWarnings("unchecked")
+    Supplier<E> arg0 = () -> (E) this;
     Supplier<StateRecord<S, T, ID>> arg1 = () -> getStateRecord();
     Consumer<StateRecord<S, T, ID>> arg2 = sr -> setStateRecord(sr);
     try {
@@ -29,15 +30,6 @@ public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T
         | InvocationTargetException | NoSuchMethodException | SecurityException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  @SuppressWarnings("unchecked")
-  default E getPhaseAwareEntity() {
-    return (E) this;
-  }
-
-  default AccessControlAware getEntityAccessControlAware() {
-    return new AccessControlAware() {};
   }
 
   StateRecord<S, T, ID> getStateRecord();
