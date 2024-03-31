@@ -17,7 +17,7 @@ public interface OrganizationalMembershipService<ID> {
   MembershipService<ID> getMembershipService();
 
   default List<ID> findAllOrganizationalUnitIds(String username, Rolify... rolifies) {
-    return findAllOrganizationalUnitIds(username, rolifies);
+    return findAllOrganizationalUnitIds(username, List.of(rolifies));
   }
 
   default List<ID> findAllOrganizationalUnitIds(String username,
