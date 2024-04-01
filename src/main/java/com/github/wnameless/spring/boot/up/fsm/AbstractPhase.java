@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.fsm;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -25,7 +26,7 @@ public abstract class AbstractPhase<E extends PhaseAware<E, S, T, ID>, S extends
 
   @Override
   public StateRecord<S, T, ID> getStateRecord() {
-    return stateRecordSupplier.get();
+    return Optional.ofNullable(stateRecordSupplier.get()).orElse(new StateRecord<>(initialState()));
   }
 
   @Override
