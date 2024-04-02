@@ -13,7 +13,7 @@
     <ul class="dropdown-menu dropdown-menu-end">
       <li th:unless="${#strings.isEmpty(code)}">
         <a class="dropdown-item" href="#"
-          th:onclick="copyActionCodeUrl([[${'actionCodeInput' + rid}]], [[${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}]])">
+          th:onclick="copyActionCodeUrl([[${'actionCodeInput' + rid}]], [[@{${singular ? route.joinPath('action-codes', action) : item.joinPath('action-codes', action)}}]])">
           <span class="fas fa-fw fa-copy"></span>
           [[${#messages.msgOrNull('sbu.actioncode.copy') ?:
           'Copy'}]]</a>
