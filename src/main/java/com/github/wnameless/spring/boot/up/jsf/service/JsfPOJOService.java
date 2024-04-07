@@ -118,9 +118,7 @@ public final class JsfPOJOService {
   }
 
   private LinkedHashMap<String, Object> readTemplate(String templatePath) throws Exception {
-    @SuppressWarnings("null")
     URL schemaUrl = Resources.getResource(templatePath);
-    @SuppressWarnings("null")
     String json = Resources.toString(schemaUrl, Charsets.UTF_8);
     Map<String, Object> template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
     schemaCache.put(templatePath, template);

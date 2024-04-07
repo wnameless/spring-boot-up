@@ -32,7 +32,6 @@ public interface QuickResourceAccessRule<EP extends EntityPathBase<T>, RF extend
     return (Class<T>) resolvableType.getGeneric(0).getRawClass();
   }
 
-  @SuppressWarnings("null")
   @Override
   default String getResourceName() {
     return CaseFormat.UPPER_CAMEL.converterTo(CaseFormat.LOWER_HYPHEN)

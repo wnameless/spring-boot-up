@@ -30,7 +30,6 @@ public interface RestfulItem<ID> extends JoinablePath, IdProvider<ID> {
   }
 
   default String getBasePath() {
-    @SuppressWarnings("null")
     String lowerHyphen =
         CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, this.getClass().getSimpleName());
     if (isSingular()) return "/" + lowerHyphen;
