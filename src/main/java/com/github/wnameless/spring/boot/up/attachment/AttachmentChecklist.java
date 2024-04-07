@@ -6,7 +6,6 @@ import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 import lombok.experimental.FieldDefaults;
 
 @Builder
@@ -14,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AttachmentChecklist {
 
-  @Singular
+  // @Singular
   List<AttachmentGroup> attachmentGroups;
 
   public Set<String> getGroupNames() {
