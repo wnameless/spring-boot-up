@@ -6,7 +6,7 @@ import org.springframework.util.ClassUtils;
 import com.github.wnameless.spring.boot.up.permission.ability.Ability;
 import com.github.wnameless.spring.boot.up.permission.ability.ResourceAbility;
 import com.github.wnameless.spring.boot.up.permission.ability.RestAbility;
-import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControllable;
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceAccessRule;
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceFilterRepository;
 
@@ -367,7 +367,7 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
   // AccessControlAware
   default boolean processEntityAccessControl(Object entity, RestAbility action,
       boolean filterResult) {
-    if (entity instanceof AccessControlAware aca) {
+    if (entity instanceof AccessControllable aca) {
       switch (action) {
         case MANAGE:
           if (aca.getManageable().isOverridable()) {

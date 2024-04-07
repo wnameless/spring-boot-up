@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import com.github.wnameless.spring.boot.up.model.DataModelCRUDTrigger;
 
-public interface AttachmentSnapshotAware<T, A extends Attachment<ID>, ID>
+public interface AttachmentSnapshotProvider<T, A extends Attachment<ID>, ID>
     extends DataModelCRUDTrigger<T> {
 
   AttachmentSnapshot<A, ID> getAttachmentSnapshot();

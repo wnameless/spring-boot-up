@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class AbstractPhase<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
+public abstract class AbstractPhase<E extends PhaseProvider<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
     implements Phase<E, S, T, ID> {
 
   protected final Supplier<E> entitySupplier;

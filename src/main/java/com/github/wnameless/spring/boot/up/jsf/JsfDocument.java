@@ -10,7 +10,7 @@ import com.github.wnameless.spring.boot.up.jsf.service.JsfPatchService;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 
 public interface JsfDocument<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>, ID>
-    extends JsonSchemaForm, JsfVersioning, JsfStratrgyAware {
+    extends JsonSchemaForm, JsfVersioning, JsfStratrgyProvider {
 
   JD getJsfData();
 

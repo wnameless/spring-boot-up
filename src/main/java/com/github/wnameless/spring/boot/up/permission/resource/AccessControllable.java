@@ -1,6 +1,6 @@
 package com.github.wnameless.spring.boot.up.permission.resource;
 
-public interface AccessControlAware {
+public interface AccessControllable {
 
   default AccessControlRule getManageable() {
     return new AccessControlRule(false, () -> true);

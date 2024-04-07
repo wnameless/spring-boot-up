@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-public class AbstractAccessControlAware implements AccessControlAware {
+public class AbstractAccessControllable implements AccessControllable {
 
   AccessControlRule manageable = new AccessControlRule(false, () -> true);
   AccessControlRule crudable = new AccessControlRule(false, () -> true);

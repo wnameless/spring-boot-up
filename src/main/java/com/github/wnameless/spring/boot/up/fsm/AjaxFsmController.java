@@ -34,7 +34,7 @@ import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
-public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA extends PhaseAware<PA, S, T, ID>, S extends State<T, ID>, T extends Trigger, D, ID>
+public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA extends PhaseProvider<PA, S, T, ID>, S extends State<T, ID>, T extends Trigger, D, ID>
     extends RestfulRepositoryProvider<PA, ID>, RestfulItemProvider<PA>, RestfulRouteProvider<ID>,
     BaseWebAction<D, ID> {
 
@@ -160,8 +160,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
   default ModelAndView refreshTriggersAjax(ModelAndView mav, @PathVariable ID id) {
     mav.setViewName("sbu/fsm/action-bar :: bs5/div.card-body");
 
-    PA phaseAware = getRestfulRepository().findById(id).get();
-    mav.addObject(Item.name(), phaseAware);
+    PA phaseProvider = getRestfulRepository().findById(id).get();
+    mav.addObject(Item.name(), phaseProvider);
 
     return mav;
   }
@@ -172,13 +172,13 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @PathVariable String triggerName) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
 
-    PA phaseAware = getRestfulRepository().findById(id).get();
-    StateMachine<S, T> stateMachine = phaseAware.getPhase().getStateMachine();
+    PA phaseProvider = getRestfulRepository().findById(id).get();
+    StateMachine<S, T> stateMachine = phaseProvider.getPhase().getStateMachine();
 
-    T trigger = phaseAware.getPhase().getTrigger(triggerName);
+    T trigger = phaseProvider.getPhase().getTrigger(triggerName);
     Object triggerParameter = null;
     if (getTriggerParameterStrategy() != null) {
-      triggerParameter = getTriggerParameterStrategy().apply(phaseAware, trigger);
+      triggerParameter = getTriggerParameterStrategy().apply(phaseProvider, trigger);
     }
     if (stateMachine.canFire(trigger)) {
       if (triggerParameter != null) {
@@ -187,11 +187,11 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       } else {
         stateMachine.fire(trigger);
       }
-      StateRecord<S, T, ID> stateRecord = phaseAware.getStateRecord();
+      StateRecord<S, T, ID> stateRecord = phaseProvider.getStateRecord();
       stateRecord.setState(stateMachine.getState());
-      phaseAware.setStateRecord(stateRecord);
-      getRestfulRepository().save(phaseAware);
-      mav.addObject(Item.name(), phaseAware);
+      phaseProvider.setStateRecord(stateRecord);
+      getRestfulRepository().save(phaseProvider);
+      mav.addObject(Item.name(), phaseProvider);
     }
 
     return mav;

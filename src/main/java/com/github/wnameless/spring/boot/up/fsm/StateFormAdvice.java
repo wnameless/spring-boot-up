@@ -5,7 +5,7 @@ import java.util.function.BooleanSupplier;
 import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
 import com.github.wnameless.spring.boot.up.jsf.JsonSchemaForm;
 
-public interface StateFormAdvice<SF extends JsonSchemaForm & JsfVersioning, PA extends PhaseAware<?, ?, ?, ?>> {
+public interface StateFormAdvice<SF extends JsonSchemaForm & JsfVersioning, PA extends PhaseProvider<?, ?, ?, ?>> {
 
   Class<SF> getStateFormType();
 

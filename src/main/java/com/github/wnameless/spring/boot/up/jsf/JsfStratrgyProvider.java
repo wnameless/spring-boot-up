@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 
-public interface JsfStratrgyAware {
+public interface JsfStratrgyProvider {
 
   @SuppressWarnings("rawtypes")
   default Optional<JsfStrategy> getJsonSchemaFormStrategy() {

@@ -8,13 +8,13 @@ import java.util.function.Supplier;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
-import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
-import com.github.wnameless.spring.boot.up.permission.resource.ForwardingAccessControlAware;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControllable;
+import com.github.wnameless.spring.boot.up.permission.resource.ForwardingAccessControllable;
 import com.github.wnameless.spring.boot.up.web.IdProvider;
 import jakarta.persistence.PostRemove;
 
-public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
-    extends ForwardingAccessControlAware, IdProvider<ID> {
+public interface PhaseProvider<E extends PhaseProvider<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
+    extends ForwardingAccessControllable, IdProvider<ID> {
 
   Class<? extends AbstractPhase<E, S, T, ID>> getPhaseType();
 
@@ -61,7 +61,7 @@ public interface PhaseAware<E extends PhaseAware<E, S, T, ID>, S extends State<T
   }
 
   @Override
-  default AccessControlAware delegate() {
+  default AccessControllable accessControllable() {
     return getPhase();
   }
 

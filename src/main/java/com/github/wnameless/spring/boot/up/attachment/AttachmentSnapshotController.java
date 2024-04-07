@@ -28,14 +28,14 @@ import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 
-public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware<AA, A, ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
+public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvider<AA, A, ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
     extends RestfulRouteProvider<ID>, RestfulItemProvider<AA> {
 
   default String getFragmentName() {
     return "bs5";
   }
 
-  default AA getAttachmentSnapshotAware(ID id) {
+  default AA getAttachmentSnapshotProvider(ID id) {
     return getRestfulItem();
   }
 
@@ -199,9 +199,9 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
       @RequestParam(required = true) String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
-    var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
-    var snapshot = attachmentSnapshotAware.getAttachmentSnapshot();
-    var checklist = attachmentSnapshotAware.getAttachmentChecklist();
+    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
+    var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
+    var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
 
     mav.addObject("attachmentChecklist", checklist);
     mav.addObject("attachmentGroups", snapshot.getAttachmentsByGroup());
@@ -214,9 +214,9 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
       @RequestParam(required = true) String ajaxTargetId) {
     mav.setViewName("sbu/attachments/edit :: " + getFragmentName());
 
-    var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
-    var checklist = attachmentSnapshotAware.getAttachmentChecklist();
-    var snapshot = attachmentSnapshotAware.getAttachmentSnapshot();
+    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
+    var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
+    var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
 
     mav.addObject(Item.name(), createEditForm(checklist, snapshot, id));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
@@ -228,8 +228,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
       @RequestParam(required = true) String ajaxTargetId) {
     mav.setViewName("sbu/attachments/upload :: " + getFragmentName());
 
-    var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
-    var checklist = attachmentSnapshotAware.getAttachmentChecklist();
+    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
+    var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
 
     mav.addObject(Item.name(), createUploadSelectiveForm(checklist, id));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
@@ -242,7 +242,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
       @RequestParam(required = true) String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
-    var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
+    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
     var service = getAttachmentService();
 
     List<A> attachments = new ArrayList<>();
@@ -278,11 +278,11 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
         attachments.add(a);
       }
     });
-    updateSnapshot(attachmentSnapshotAware, attachments);
+    updateSnapshot(attachmentSnapshotProvider, attachments);
 
-    mav.addObject("attachmentChecklist", attachmentSnapshotAware.getAttachmentChecklist());
+    mav.addObject("attachmentChecklist", attachmentSnapshotProvider.getAttachmentChecklist());
     mav.addObject("attachmentGroups",
-        attachmentSnapshotAware.getAttachmentSnapshot().getAttachmentsByGroup());
+        attachmentSnapshotProvider.getAttachmentSnapshot().getAttachmentsByGroup());
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
@@ -290,7 +290,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
   @GetMapping(path = "/{id}/attachments/{attachmentId}")
   default void downloadAttachment(HttpServletResponse response, @PathVariable ID id,
       @PathVariable ID attachmentId) {
-    var attachmentSnapshot = getAttachmentSnapshotAware(id).getAttachmentSnapshot();
+    var attachmentSnapshot = getAttachmentSnapshotProvider(id).getAttachmentSnapshot();
     Optional<A> attachmentOpt = attachmentSnapshot.findAttachment(attachmentId);
 
     if (attachmentOpt.isEmpty()) return;
@@ -313,8 +313,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
       @RequestParam(required = true) String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
-    var attachmentSnapshotAware = getAttachmentSnapshotAware(id);
-    var original = attachmentSnapshotAware.getAttachmentSnapshot().getAttachments();
+    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
+    var original = attachmentSnapshotProvider.getAttachmentSnapshot().getAttachments();
     var filtered = new ArrayList<A>();
 
     jsfFiles.entrySet().forEach(pair -> {
@@ -336,17 +336,17 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotAware
             .toList());
       }
     });
-    var oldAttachments = attachmentSnapshotAware.getAttachmentSnapshot().getAttachments();
-    attachmentSnapshotAware.getAttachmentSnapshot().setAttachments(filtered);
-    attachmentSnapshotAware.saveAttachmentSnapshotAware();
+    var oldAttachments = attachmentSnapshotProvider.getAttachmentSnapshot().getAttachments();
+    attachmentSnapshotProvider.getAttachmentSnapshot().setAttachments(filtered);
+    attachmentSnapshotProvider.saveAttachmentSnapshotAware();
     if (getAttachmentService().outdatedAttachmentProcedure().isPresent()) {
       oldAttachments.removeAll(filtered);
       getAttachmentService().outdatedAttachmentProcedure().get().accept(oldAttachments);
     }
 
-    mav.addObject("attachmentChecklist", attachmentSnapshotAware.getAttachmentChecklist());
+    mav.addObject("attachmentChecklist", attachmentSnapshotProvider.getAttachmentChecklist());
     mav.addObject("attachmentGroups",
-        attachmentSnapshotAware.getAttachmentSnapshot().getAttachmentsByGroup());
+        attachmentSnapshotProvider.getAttachmentSnapshot().getAttachmentsByGroup());
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }

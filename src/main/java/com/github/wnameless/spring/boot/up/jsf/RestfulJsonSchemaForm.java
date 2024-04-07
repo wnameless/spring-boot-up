@@ -2,14 +2,14 @@ package com.github.wnameless.spring.boot.up.jsf;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import com.github.wnameless.spring.boot.up.permission.resource.AccessControlAware;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
+import com.github.wnameless.spring.boot.up.permission.resource.AccessControllable;
 import com.github.wnameless.spring.boot.up.web.RestfulItem;
 import lombok.Data;
 
 @Data
 public class RestfulJsonSchemaForm<ID>
-    implements JsonSchemaForm, RestfulItem<ID>, AccessControlAware {
+    implements JsonSchemaForm, RestfulItem<ID>, AccessControllable {
 
   private ID id;
 
