@@ -20,7 +20,7 @@
       [[${#messages.msgOrNull('sbu.ui.return') ?: 'Return'}]]</a>
 
     <div
-      th:if="${T(com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotAware).isAssignableFrom(item.class)}"
+      th:if="${T(com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotProvider).isAssignableFrom(item.class)}"
       th:id="${'attachments' + rid}">
       <a hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${'attachments' + rid})}"
         hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load" class="d-none"></a>

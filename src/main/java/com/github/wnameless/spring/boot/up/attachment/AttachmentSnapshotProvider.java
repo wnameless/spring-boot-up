@@ -11,7 +11,7 @@ public interface AttachmentSnapshotProvider<T, A extends Attachment<ID>, ID>
 
   AttachmentChecklist getAttachmentChecklist();
 
-  default void saveAttachmentSnapshotAware() {
+  default void saveAttachmentSnapshotProvider() {
     updateThisDataModel();
   }
 

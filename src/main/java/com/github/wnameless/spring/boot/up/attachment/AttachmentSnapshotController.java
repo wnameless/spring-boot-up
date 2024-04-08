@@ -64,7 +64,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
     }
 
     attachmentSnapshotAware.getAttachmentSnapshot().setAttachments(original);
-    attachmentSnapshotAware.saveAttachmentSnapshotAware();
+    attachmentSnapshotAware.saveAttachmentSnapshotProvider();;
   }
 
   @SneakyThrows
@@ -338,7 +338,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
     });
     var oldAttachments = attachmentSnapshotProvider.getAttachmentSnapshot().getAttachments();
     attachmentSnapshotProvider.getAttachmentSnapshot().setAttachments(filtered);
-    attachmentSnapshotProvider.saveAttachmentSnapshotAware();
+    attachmentSnapshotProvider.saveAttachmentSnapshotProvider();
     if (getAttachmentService().outdatedAttachmentProcedure().isPresent()) {
       oldAttachments.removeAll(filtered);
       getAttachmentService().outdatedAttachmentProcedure().get().accept(oldAttachments);
