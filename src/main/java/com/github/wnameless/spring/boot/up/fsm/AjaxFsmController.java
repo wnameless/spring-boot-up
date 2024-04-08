@@ -34,8 +34,8 @@ import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
-public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA extends PhaseProvider<PA, S, T, ID>, S extends State<T, ID>, T extends Trigger, D, ID>
-    extends RestfulRepositoryProvider<PA, ID>, RestfulItemProvider<PA>, RestfulRouteProvider<ID>,
+public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP extends PhaseProvider<PP, S, T, ID>, S extends State<T, ID>, T extends Trigger, D, ID>
+    extends RestfulRepositoryProvider<PP, ID>, RestfulItemProvider<PP>, RestfulRouteProvider<ID>,
     BaseWebAction<D, ID> {
 
   @SneakyThrows
@@ -86,7 +86,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
     throw new RuntimeException("Field annotated with @Id not found!");
   }
 
-  default PA getPhaseAware() {
+  default PP getPhaseAware() {
     return getRestfulItem();
   }
 
@@ -104,12 +104,12 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
     excuateAlwaysTriggers();
   }
 
-  default BiFunction<PA, T, ?> getTriggerParameterStrategy() {
+  default BiFunction<PP, T, ?> getTriggerParameterStrategy() {
     return null;
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  default BiFunction<PA, SF, SF> afterLoadStateForm() {
+  default BiFunction<PP, SF, SF> afterLoadStateForm() {
     return (phaseAware, stateForm) -> {
       List<StateFormAdvice> stateFormAdvices = SpringBootUp
           .findAllGenericBeans(StateFormAdvice.class, stateForm.getClass(), phaseAware.getClass())
@@ -125,7 +125,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  default BiFunction<PA, SF, SF> beforeSaveStateForm() {
+  default BiFunction<PP, SF, SF> beforeSaveStateForm() {
     return (phaseAware, stateForm) -> {
       List<StateFormAdvice> stateFormAdvices = SpringBootUp
           .findAllGenericBeans(StateFormAdvice.class, stateForm.getClass(), phaseAware.getClass())
@@ -141,7 +141,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  default BiFunction<PA, SF, SF> afterSaveStateForm() {
+  default BiFunction<PP, SF, SF> afterSaveStateForm() {
     return (phaseAware, stateForm) -> {
       List<StateFormAdvice> stateFormAdvices = SpringBootUp
           .findAllGenericBeans(StateFormAdvice.class, stateForm.getClass(), phaseAware.getClass())
@@ -160,7 +160,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
   default ModelAndView refreshTriggersAjax(ModelAndView mav, @PathVariable ID id) {
     mav.setViewName("sbu/fsm/action-bar :: bs5/div.card-body");
 
-    PA phaseProvider = getRestfulRepository().findById(id).get();
+    PP phaseProvider = getRestfulRepository().findById(id).get();
     mav.addObject(Item.name(), phaseProvider);
 
     return mav;
@@ -172,7 +172,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @PathVariable String triggerName) {
     mav.setViewName(getRestfulRoute().toTemplateRoute().joinPath("show :: partial"));
 
-    PA phaseProvider = getRestfulRepository().findById(id).get();
+    PP phaseProvider = getRestfulRepository().findById(id).get();
     StateMachine<S, T> stateMachine = phaseProvider.getPhase().getStateMachine();
 
     T trigger = phaseProvider.getPhase().getTrigger(triggerName);
@@ -187,7 +187,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       } else {
         stateMachine.fire(trigger);
       }
-      StateRecord<S, T, ID> stateRecord = phaseProvider.getStateRecord();
+      StateRecord<S, T, ID> stateRecord = phaseProvider.getPhase().getStateRecord();
       stateRecord.setState(stateMachine.getState());
       phaseProvider.setStateRecord(stateRecord);
       getRestfulRepository().save(phaseProvider);
@@ -217,8 +217,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
   }
 
   default void showAction(ModelAndView mav, ID id, String formType, ID formId) {
-    PA phase = getRestfulRepository().findById(id).get();
-    StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
+    PP phaseProvider = getRestfulRepository().findById(id).get();
+    StateRecord<S, T, ID> stateRecord = phaseProvider.getPhase().getStateRecord();
     S state = stateRecord.getState();
 
     Optional<StateForm<T, ID>> sfOpt = state.getForms().stream()
@@ -229,7 +229,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       SF data = this.getStateForm(sf, formId);
 
       if (afterLoadStateForm() != null) {
-        data = afterLoadStateForm().apply(phase, data);
+        data = afterLoadStateForm().apply(phaseProvider, data);
       }
 
       RestfulJsonSchemaForm<String> item = new RestfulJsonSchemaForm<>(
@@ -238,8 +238,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       item.setSchema(data.getSchema());
       item.setUiSchema(data.getUiSchema());
       item.setFormData(data.getFormData());
-      item.setUpdatable(new AccessControlRule(true,
-          () -> phase.getPhase().getStateMachine().canFire(sf.editableTriggerStock().get())));
+      item.setUpdatable(new AccessControlRule(true, () -> phaseProvider.getPhase().getStateMachine()
+          .canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
       mav.addObject(Item.name(), item);
     }
@@ -255,8 +255,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
   }
 
   default void showAndEditAction(ModelAndView mav, ID id, String formType) {
-    PA phase = getRestfulRepository().findById(id).get();
-    StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
+    PP phaseProvider = getRestfulRepository().findById(id).get();
+    StateRecord<S, T, ID> stateRecord = phaseProvider.getPhase().getStateRecord();
     S state = stateRecord.getState();
 
     Optional<StateForm<T, ID>> sfOpt = state.getForms().stream()
@@ -272,7 +272,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
         data = this.getStateForm(sf, dataIdOpt.get());
       }
       if (afterLoadStateForm() != null) {
-        data = afterLoadStateForm().apply(phase, data);
+        data = afterLoadStateForm().apply(phaseProvider, data);
       }
 
       RestfulJsonSchemaForm<String> item = new RestfulJsonSchemaForm<>(
@@ -281,8 +281,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       item.setSchema(data.getSchema());
       item.setUiSchema(data.getUiSchema());
       item.setFormData(data.getFormData());
-      item.setUpdatable(new AccessControlRule(true,
-          () -> phase.getPhase().getStateMachine().canFire(sf.editableTriggerStock().get())));
+      item.setUpdatable(new AccessControlRule(true, () -> phaseProvider.getPhase().getStateMachine()
+          .canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
       mav.addObject(Item.name(), item);
     }
@@ -295,8 +295,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       @PathVariable String formType, @RequestBody Map<String, Object> formData) {
     mav.setViewName("sbu/jsf/show-edit :: bs5");
 
-    PA phase = getRestfulRepository().findById(id).get();
-    StateRecord<S, T, ID> stateRecord = phase.getStateRecord();
+    PP phaseProvider = getRestfulRepository().findById(id).get();
+    StateRecord<S, T, ID> stateRecord = phaseProvider.getPhase().getStateRecord();
     S state = stateRecord.getState();
 
     Optional<StateForm<T, ID>> sfOpt = state.getForms().stream()
@@ -314,13 +314,13 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
 
       data.setFormData(formData);
       if (beforeSaveStateForm() != null) {
-        data = beforeSaveStateForm().apply(phase, data);
+        data = beforeSaveStateForm().apply(phaseProvider, data);
       }
       data = saveStateForm(sf, data);
       stateRecord.putStateFormId(formType, sf.formBranchStock().get(), getStateFormId(data));
-      getRestfulRepository().save(phase);
+      getRestfulRepository().save(phaseProvider);
       if (afterSaveStateForm() != null) {
-        data = afterSaveStateForm().apply(phase, data);
+        data = afterSaveStateForm().apply(phaseProvider, data);
       }
 
       RestfulJsonSchemaForm<String> item = new RestfulJsonSchemaForm<>(
@@ -329,8 +329,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PA
       item.setSchema(data.getSchema());
       item.setUiSchema(data.getUiSchema());
       item.setFormData(data.getFormData());
-      item.setUpdatable(new AccessControlRule(true,
-          () -> phase.getPhase().getStateMachine().canFire(sf.editableTriggerStock().get())));
+      item.setUpdatable(new AccessControlRule(true, () -> phaseProvider.getPhase().getStateMachine()
+          .canFire(sf.editableTriggerStock().get())));
       item.setBackPathname(getRestfulRoute().joinPath(getRestfulRoute().idToParam(id)));
       mav.addObject(Item.name(), item);
     }

@@ -42,7 +42,7 @@ public interface PhaseProvider<E extends PhaseProvider<E, S, T, ID>, S extends S
   default void cleanUpByFormDataTable() {
     List<StateForm<T, ID>> stateForms =
         getPhase().getAllStates().stream().flatMap(s -> s.getForms().stream()).toList();
-    Map<String, Map<String, ID>> formDataTable = getStateRecord().getFormDataTable();
+    Map<String, Map<String, ID>> formDataTable = getPhase().getStateRecord().getFormDataTable();
 
     for (String formType : formDataTable.keySet()) {
       var sfOpt =
