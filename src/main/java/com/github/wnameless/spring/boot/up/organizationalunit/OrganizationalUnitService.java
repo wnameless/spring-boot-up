@@ -66,6 +66,8 @@ public interface OrganizationalUnitService<ID> {
 
   default Optional<? extends OrganizationalUnit<ID>> findOrganizationalUnit(
       ID organizationalUnitId) {
+    if (organizationalUnitId == null) return Optional.empty();
+
     var rootOpt = getOrganizationCharts().stream().filter(
         ot -> Objects.equals(ot.getDefaultRoot().getOrganizationalUnitId(), organizationalUnitId))
         .findFirst();
@@ -75,11 +77,14 @@ public interface OrganizationalUnitService<ID> {
       var ouOpt = repo.findByOrganizationalUnitId(organizationalUnitId);
       if (ouOpt.isPresent()) return ouOpt;
     }
+
     return Optional.empty();
   }
 
   default Optional<? extends OrganizationalUnit<ID>> findOrganizationalUnit(ID organizationalUnitId,
       Class<?> organizationalUnitType) {
+    if (organizationalUnitId == null) return Optional.empty();
+
     if (SimpleOrganizationalUnit.class.isAssignableFrom(organizationalUnitType)) {
       var rootOpt = getOrganizationCharts().stream().filter(
           ot -> Objects.equals(ot.getDefaultRoot().getOrganizationalUnitId(), organizationalUnitId))
@@ -95,6 +100,7 @@ public interface OrganizationalUnitService<ID> {
         }
       }
     }
+
     return Optional.empty();
   }
 
@@ -170,6 +176,8 @@ public interface OrganizationalUnitService<ID> {
 
   default Optional<OrganizationalChart<ID>> findOrganizationalTree(
       OrganizationalUnit<ID> organizationalUnit) {
+    if (organizationalUnit == null) return Optional.empty();
+
     return getOrganizationCharts().stream().filter(ot -> ot.isTreeNode(organizationalUnit))
         .findFirst();
   }
