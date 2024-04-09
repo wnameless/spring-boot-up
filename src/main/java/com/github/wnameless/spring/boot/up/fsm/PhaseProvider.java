@@ -7,11 +7,13 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
+import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.BeforeConvertToMongo;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControllable;
 import com.github.wnameless.spring.boot.up.permission.resource.ForwardingAccessControllable;
 import com.github.wnameless.spring.boot.up.web.IdProvider;
 import jakarta.persistence.PostRemove;
+import jakarta.persistence.PrePersist;
 
 public interface PhaseProvider<E extends PhaseProvider<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
     extends ForwardingAccessControllable, IdProvider<ID> {
@@ -35,6 +37,14 @@ public interface PhaseProvider<E extends PhaseProvider<E, S, T, ID>, S extends S
   StateRecord<S, T, ID> getStateRecord();
 
   void setStateRecord(StateRecord<S, T, ID> stateRecord);
+
+  @PrePersist // JPA
+  @BeforeConvertToMongo // MongoDB
+  default void initStateRecord() {
+    if (getStateRecord() == null) {
+      setStateRecord(new StateRecord<>(getPhase().initialState()));
+    }
+  }
 
   @SuppressWarnings("unchecked")
   @PostRemove // JPA
