@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.web;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import org.springframework.data.repository.CrudRepository;
@@ -23,10 +24,22 @@ public interface NestedSinglularRestfulController<PR extends CrudRepository<P, P
 
   CrudRepository<P, PID> getParentRepository();
 
+  @SuppressWarnings("unchecked")
   default Optional<P> findParentItemById(PID id) {
     Optional<P> parent;
     if (getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
-      parent = rfr.filterFindById(id);
+      try {
+        parent = rfr.filterFindById(id);
+      } catch (UnsupportedOperationException e) {
+        parent = getParentRepository().findById(id);
+        try {
+          // Mock an empty item for user without permission
+          parent = parent.getClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+          throw new RuntimeException(e1);
+        }
+      }
     } else {
       parent = getParentRepository().findById(id);
     }

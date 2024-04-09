@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.web;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import org.springframework.data.repository.CrudRepository;
@@ -17,10 +18,22 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.ParentClass;
 public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, PID, R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRepositoryProvider<I, ID>, RestfulRouteController<ID> {
 
+  @SuppressWarnings("unchecked")
   default Optional<I> findRestfulItemById(ID id) {
     Optional<I> item;
     if (getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
-      item = rfr.filterFindById(id);
+      try {
+        item = rfr.filterFindById(id);
+      } catch (UnsupportedOperationException e) {
+        item = getRestfulRepository().findById(id);
+        try {
+          // Mock an empty item for user without permission
+          item = item.getClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+          throw new RuntimeException(e1);
+        }
+      }
     } else {
       item = getRestfulRepository().findById(id);
     }
@@ -29,10 +42,22 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
 
   CrudRepository<P, PID> getParentRepository();
 
+  @SuppressWarnings("unchecked")
   default Optional<P> findParentItemById(PID id) {
     Optional<P> parent;
     if (getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
-      parent = rfr.filterFindById(id);
+      try {
+        parent = rfr.filterFindById(id);
+      } catch (UnsupportedOperationException e) {
+        parent = getParentRepository().findById(id);
+        try {
+          // Mock an empty item for user without permission
+          parent = parent.getClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+          throw new RuntimeException(e1);
+        }
+      }
     } else {
       parent = getParentRepository().findById(id);
     }

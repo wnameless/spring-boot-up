@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.web;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
@@ -14,10 +15,22 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.ItemClass;
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
 
+  @SuppressWarnings("unchecked")
   default Optional<I> findRestfulItemById(ID id) {
     Optional<I> item;
     if (getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
-      item = rfr.filterFindById(id);
+      try {
+        item = rfr.filterFindById(id);
+      } catch (UnsupportedOperationException e) {
+        item = getRestfulRepository().findById(id);
+        try {
+          // Mock an empty item for user without permission
+          item = item.getClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+          throw new RuntimeException(e1);
+        }
+      }
     } else {
       item = getRestfulRepository().findById(id);
     }
