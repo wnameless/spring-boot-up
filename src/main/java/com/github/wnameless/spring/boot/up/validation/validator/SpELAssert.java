@@ -29,7 +29,7 @@ public @interface SpELAssert {
   String value();
 
   /**
-   * Perform validation only if this SpEL expression evaluates to <tt>true</tt>.
+   * Perform validation only if this SpEL expression evaluates to true.
    *
    * @see <a href="http://static.springsource.org/spring/docs/3.0.x/reference/expressions.html">
    *      documentation of Spring Expression Language</a>
@@ -38,8 +38,8 @@ public @interface SpELAssert {
 
   /**
    * Classes with static methods to register as helper functions which you can call from expression
-   * as <tt>#methodName(arg1, arg2, ...)</tt>. This does not support overloading, only last
-   * registered method of each name will be used!
+   * as #methodName(arg1, arg2, ...). This does not support overloading, only last registered method
+   * of each name will be used!
    */
   Class<?>[] helpers() default {};
 

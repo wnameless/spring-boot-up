@@ -27,8 +27,13 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
       } catch (UnsupportedOperationException e) {
         item = getRestfulRepository().findById(id);
         try {
-          // Mock an empty item for user without permission
-          item = item.getClass().getDeclaredConstructor().newInstance();
+          var policy = getModelPolicy();
+          if (policy.isEnable() && policy.onDefaultItem() != null) {
+            item = Optional.ofNullable(policy.onDefaultItem().get());
+          } else {
+            // Mock an empty item for user without permission
+            item = item.getClass().getDeclaredConstructor().newInstance();
+          }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
             | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
           throw new RuntimeException(e1);
