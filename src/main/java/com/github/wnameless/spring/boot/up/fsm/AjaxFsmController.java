@@ -25,6 +25,7 @@ import com.github.wnameless.spring.boot.up.jsf.JsonSchemaForm;
 import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
 import com.github.wnameless.spring.boot.up.jsf.repository.JsfDataRepository;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
+import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.BaseWebAction;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
@@ -189,6 +190,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
       }
       StateRecord<S, T, ID> stateRecord = phaseProvider.getPhase().getStateRecord();
       stateRecord.setState(stateMachine.getState());
+      stateRecord.getAuditTrails().add(new StateAuditTrail<>(trigger, stateMachine.getState(),
+          SpringBootUp.findBean(PermittedUser.class).map(PermittedUser::getUsername).orElse(null)));
       phaseProvider.setStateRecord(stateRecord);
       getRestfulRepository().save(phaseProvider);
       mav.addObject(Item.name(), phaseProvider);

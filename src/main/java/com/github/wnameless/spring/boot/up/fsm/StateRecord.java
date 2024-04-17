@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.fsm;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,6 +18,8 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
 
   // Map<FormType, Map<FormBranch, ID>>
   private Map<String, Map<String, ID>> formDataTable = new HashMap<>();
+
+  private List<StateAuditTrail<S, T, ID>> auditTrails = new ArrayList<>();
 
   public StateRecord() {}
 
