@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import com.github.oxo42.stateless4j.StateMachine;
+import com.github.wnameless.spring.boot.up.SpringBootUp;
+import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import lombok.Data;
 
 @Data
@@ -24,6 +26,16 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
   public StateRecord() {}
 
   public StateRecord(S state) {
+    this.state = state;
+  }
+
+  public void setStateWithAuditTrail(S state) {
+    var username =
+        SpringBootUp.findBean(PermittedUser.class).map(PermittedUser::getUsername).orElse(null);
+    if (auditTrails == null) auditTrails = new ArrayList<>();
+    var auditTrail = new StateAuditTrail<>(this.state, null, state, username);
+    auditTrails.add(auditTrail);
+
     this.state = state;
   }
 
