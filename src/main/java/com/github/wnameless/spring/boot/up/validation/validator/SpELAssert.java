@@ -3,6 +3,7 @@ package com.github.wnameless.spring.boot.up.validation.validator;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Documented;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
@@ -12,6 +13,7 @@ import jakarta.validation.Payload;
 @Retention(RUNTIME)
 @Target({METHOD, FIELD, TYPE})
 @Constraint(validatedBy = SpELAssertValidator.class)
+@Repeatable(SpELAsserts.class)
 public @interface SpELAssert {
 
   String message() default "{cz.jirutka.validator.spring.SpELAssert.message}";
