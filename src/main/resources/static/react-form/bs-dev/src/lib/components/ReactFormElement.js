@@ -1,4 +1,4 @@
-import validator from '@rjsf/validator-ajv8';
+import validator from '@rjsf/validator-ajv6';
 import parse from 'html-react-parser';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
