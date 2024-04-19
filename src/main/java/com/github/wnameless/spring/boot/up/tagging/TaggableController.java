@@ -75,28 +75,36 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
             """;
     var schemaMap = mapper.readValue(schema, new TypeReference<Map<String, Object>>() {});
     DocumentContext docCtx = JsonPath.parse(schemaMap);
-    var labelListEnum = taggable.getLabelTemplates().stream().filter(l -> l.isUserEditable())
-        .map(l -> l.getId()).toList();
-    if (!labelListEnum.isEmpty()) {
+
+    var labelList = taggable.getLabelTemplates().stream() //
+        .filter(LabelTemplate::isUserEditable)
+        .filter(l -> l.userPermissionStock() == null || l.userPermissionStock().getAsBoolean())
+        .toList();
+    if (!labelList.isEmpty()) {
+      var labelListEnum = labelList.stream().map(LabelTemplate::getId).toList();
       docCtx.put("$.properties.labelList.items", "enum", labelListEnum);
-      var labelListEnumNames = taggable.getLabelTemplates().stream().filter(l -> l.isUserEditable())
-          .map(l -> l.getLabelName()).toList();
+      var labelListEnumNames = labelList.stream().map(LabelTemplate::getLabelName).toList();
       docCtx.put("$.properties.labelList.items", "enumNames", labelListEnumNames);
     }
 
-    var userLabelListEnum = taggable.getUserLabelTemplates().stream().map(l -> l.getId()).toList();
-    if (!userLabelListEnum.isEmpty()) {
+    var userLabelList = taggable.getUserLabelTemplates();
+    if (!userLabelList.isEmpty()) {
+      var userLabelListEnum = userLabelList.stream().map(UserLabelTemplate::getId).toList();
       docCtx.put("$.properties.userLabelList.items", "enum", userLabelListEnum);
       var userLabelListEnumNames =
-          taggable.getUserLabelTemplates().stream().map(l -> l.getLabelName()).toList();
+          userLabelList.stream().map(UserLabelTemplate::getLabelName).toList();
       docCtx.put("$.properties.userLabelList.items", "enumNames", userLabelListEnumNames);
     }
 
-    var systemLabelListEnum = taggable.getSystemLabels().stream().map(l -> l.getId()).toList();
-    if (!systemLabelListEnum.isEmpty()) {
+    var systemLabelList = taggable.getSystemLabels().stream() //
+        .filter(LabelTemplate::isUserEditable) //
+        .filter(l -> l.userPermissionStock() == null || l.userPermissionStock().getAsBoolean())
+        .toList();
+    if (!systemLabelList.isEmpty()) {
+      var systemLabelListEnum = systemLabelList.stream().map(SystemLabel::getId).toList();
       docCtx.put("$.properties.systemLabelList.items", "enum", systemLabelListEnum);
       var systemLabelListEnumNames =
-          taggable.getSystemLabels().stream().map(l -> l.getLabelName()).toList();
+          systemLabelList.stream().map(SystemLabel::getLabelName).toList();
       docCtx.put("$.properties.systemLabelList.items", "enumNames", systemLabelListEnumNames);
     }
 

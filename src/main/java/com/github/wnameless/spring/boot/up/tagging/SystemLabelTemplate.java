@@ -12,6 +12,7 @@ public interface SystemLabelTemplate extends LabelTemplate<String> {
     systemLabel.setEntityType(getEntityType());
     systemLabel.setUsername(getUsername());
     systemLabel.setUserEditable(isUserEditable());
+    systemLabel.userPermissionStock(userPermissionStock());
 
     return systemLabel;
   }
