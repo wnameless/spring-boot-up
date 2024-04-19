@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
 import java.util.function.BooleanSupplier;
+import org.springframework.data.annotation.Transient;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,6 +27,7 @@ public class SystemLabel implements LabelTemplate<String> {
 
   boolean userEditable;
 
+  @Transient
   @Accessors(fluent = true, chain = false)
   BooleanSupplier userPermissionStock;
 

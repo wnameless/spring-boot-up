@@ -1,5 +1,7 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
+import java.util.function.BooleanSupplier;
+
 public interface SystemLabelTemplate extends LabelTemplate<String> {
 
   default SystemLabel toSystemLabel() {
@@ -16,5 +18,11 @@ public interface SystemLabelTemplate extends LabelTemplate<String> {
 
     return systemLabel;
   }
+
+  default BooleanSupplier userPermissionStock() {
+    return null;
+  }
+
+  default void userPermissionStock(BooleanSupplier permissionStock) {}
 
 }

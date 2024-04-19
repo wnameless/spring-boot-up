@@ -77,9 +77,7 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
     DocumentContext docCtx = JsonPath.parse(schemaMap);
 
     var labelList = taggable.getLabelTemplates().stream() //
-        .filter(LabelTemplate::isUserEditable)
-        .filter(l -> l.userPermissionStock() == null || l.userPermissionStock().getAsBoolean())
-        .toList();
+        .filter(LabelTemplate::isUserEditable).toList();
     if (!labelList.isEmpty()) {
       var labelListEnum = labelList.stream().map(LabelTemplate::getId).toList();
       docCtx.put("$.properties.labelList.items", "enum", labelListEnum);

@@ -1,7 +1,6 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 import com.github.wnameless.spring.boot.up.web.IdProvider;
 
 public interface LabelTemplate<ID> extends IdProvider<ID> {
@@ -40,11 +39,5 @@ public interface LabelTemplate<ID> extends IdProvider<ID> {
   boolean isUserEditable();
 
   void setUserEditable(boolean userEditable);
-
-  default BooleanSupplier userPermissionStock() {
-    return null;
-  }
-
-  default void userPermissionStock(BooleanSupplier permissionStock) {}
 
 }
