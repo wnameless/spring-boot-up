@@ -34,7 +34,6 @@ public class PagingUtils {
     thisSort = Sort.by(thisSort.and(thisGroupOn).stream().toArray(Order[]::new));
 
     var items = Ruby.LazyEnumerator.of(itemStrategy.apply(predicate, thisSort));
-    int groupingCount = 0;
     // StreamSupport.stream(items.spliterator(), false).map(groupingKeyStrategy)
     // .collect(Collectors.toSet()).size();
 
@@ -46,7 +45,6 @@ public class PagingUtils {
       }
       if (items.hasNext() && groupNames.size() <= skip) {
         items.next();
-        groupingCount++;
       }
     } while (items.hasNext() && groupNames.size() <= skip);
 
@@ -55,17 +53,16 @@ public class PagingUtils {
         + (content.keySet().contains(groupingKeyStrategy.apply(items.peek())) ? 0
             : 1) <= pageSize) {
       var item = items.next();
-      groupingCount++;
       content.put(groupingKeyStrategy.apply(item), item);
+      groupNames.add(groupingKeyStrategy.apply(item));
     }
 
     while (items.hasNext()) {
-      items.next();
-      groupingCount++;
+      groupNames.add(groupingKeyStrategy.apply(items.next()));
     }
 
     return new PageImpl<>(content.asMap().entrySet().stream().toList(),
-        PageRequest.of(pageNumber, pageSize, thisSort), groupingCount);
+        PageRequest.of(pageNumber, pageSize, thisSort), groupNames.size());
   }
 
 }
