@@ -4,7 +4,7 @@ import React from 'react';
 import * as ReactDOM from 'react-dom/client';
 // import Form from '@rjsf/core';
 import Form from '@rjsf/bootstrap-4';
-import applyNavs from "react-jsonschema-form-pagination-bs4";
+import applyNavs from "react-jsonschema-form-pagination";
 
 class ReactFormElement extends HTMLElement {
   constructor() {
@@ -153,7 +153,7 @@ class ReactFormElement extends HTMLElement {
       downloadWidget: DownloadWidget
     };
 
-    /*    const cssContent = `
+    const cssContent = `
          .nav-pills {
            margin-bottom: 20px;
          }
@@ -181,11 +181,11 @@ class ReactFormElement extends HTMLElement {
          .nav-pills > li > a:hover {
              background-color: #0056b3;
          }
-       `; */
+       `;
 
-    /*     const StyleTag = React.createElement('style', {
-          type: 'text/css'
-        }, cssContent); */
+    const StyleTag = React.createElement('style', {
+      type: 'text/css'
+    }, cssContent);
 
     this.retrieveJson().then((data) => {
       if (data.schema == null) return;
@@ -198,7 +198,7 @@ class ReactFormElement extends HTMLElement {
             'https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/litera/bootstrap.min.css'
           }></link>
 
-          {/* {StyleTag} */}
+          {StyleTag}
 
           <FormWithPagination
             {...this.attrs}

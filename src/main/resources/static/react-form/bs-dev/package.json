@@ -20,7 +20,7 @@
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
     "react-dom": "^18.2.0",
-    "react-jsonschema-form-pagination-bs4": "^0.4.2",
+    "react-jsonschema-form-pagination": "^0.4.0",
     "styled-components": "^6.1.8",
     "watch": "^1.0.2"
   },
