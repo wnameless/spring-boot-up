@@ -1,0 +1,212 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Start Table -->
+<div th:fragment="bs5(card)"
+  th:with="li=${li}, page=${__${@webModelAttributes.PAGE_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, creationOption=${__${@webModelAttributes.CREATION_OPTION_NAME}__}, itemClass=${__${@webModelAttributes.ITEM_CLASS_NAME}__}, route=${__${@webModelAttributes.ROUTE_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
+
+  <!-- Creation Options Begin -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="creationOption">
+    <div class="offcanvas-header">
+      <h4>[[${#messages.msgOrNull('sbu.web.datatable.creation_option.title') ?: 'Creation Option'}]]
+      </h4>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div th:if="${creationOption}"
+      th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}" class="offcanvas-body">
+      <react-form th:id="${'creationOptionForm' + rid}"
+        th:action="@{${route.newPath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
+        method="GET" ajax:target="${ajaxTargetId}">
+        <button class="btn btn-primary" type="submit">
+          [[${#messages.msgOrNull('sbu.ui.submit') ?: 'Submit'}]]
+        </button>
+      </react-form>
+
+      <script th:inline="javascript">
+        var creationOptionFormDataset = /*[[${creationOption.toDataset()}]]*/ null;
+        var creationOptionFormDatasetId = /*[[${'creationOptionForm' + rid}]]*/ null;
+        var creationOptionForm = document.getElementById(creationOptionFormDatasetId);
+        creationOptionForm.setAttribute('props-var', 'creationOptionFormDataset');
+      </script>
+    </div>
+  </div>
+  <!-- Creation Options End -->
+
+  <!-- Filter Options Begin -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
+    <div class="offcanvas-header">
+      <h4>[[${#messages.msgOrNull('sbu.web.datatable.filter_option.title') ?: 'Filter Option'}]]
+      </h4>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div th:if="${queryConfig}" class="offcanvas-body">
+      <!-- This hx-on::before-request is important for removing offcanvas style attributes from html body -->
+      <form
+        hx-on::before-request="bootstrap.Offcanvas.getInstance(document.getElementById('filterOption')).hide();"
+        class="row g-3" hx:get="@{${route.indexPath}}" hx:target="${'#' + ajaxTargetId}"
+        hx-ext="json-enc">
+        <!--   <form class="row g-3" method="GET" th:action="@{${route.indexPath}}"> -->
+
+        <!-- Start: Fields for querying -->
+        <th:block th:each="field : ${queryConfig.fields}">
+          <div class="col-8">
+            <label class="form-label" th:if="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
+            field) != null}">
+              [[${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
+              field)}]]
+            </label>
+            <label class="form-label" th:unless="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
+            field) != null}">
+              [[${#messages.msgOrNull('sbu.web.item.field.' + itemClass.simpleName + '.' +
+              field) ?: field}]]
+            </label>
+            <!-- With select option -->
+            <th:block th:if="${queryConfig.getFilterFields.get(field).hasSelectOption}">
+              <select th:name="${field}" class="form-select">
+                <option></option>
+                <option th:each="opt : ${queryConfig.getFilterFields.get(field).selectOption}"
+                  th:value="${opt.value}"
+                  th:selected="${queryConfig.getFieldQueryString(field) eq opt.value}">
+                  [[${opt.key}]]
+                </option>
+              </select>
+            </th:block>
+            <!-- Without select option -->
+            <th:block th:unless="${queryConfig.getFilterFields.get(field).hasSelectOption}">
+              <input th:name="${field}"
+                th:attr="type=${queryConfig.getFilterFields.get(field).inputType}"
+                class="form-control" th:value="${queryConfig.getFieldQueryString(field)}">
+            </th:block>
+          </div>
+          <div class="col-4">
+            <th:block th:if="${queryConfig.getFieldSortName(field)}">
+              <label
+                class="form-label">[[${#messages.msgOrNull('sbu.web.datatable.filter_option.sort')
+                ?: 'Sort'}]]</label>
+              <select name="sort" class="form-select">
+                <option value="">[[${#messages.msgOrNull('sbu.web.datatable.filter_option.NONE')
+                  ?: 'None'}]]</option>
+                <option th:value="|${queryConfig.getFieldSortName(field)},ASC|"
+                  th:selected="${queryConfig.getFieldOrder(field)?.direction?.name == 'ASC'}">
+                  [[${#messages.msgOrNull('sbu.web.datatable.filter_option.ASC')
+                  ?: 'ASC'}]]
+                </option>
+                <option th:value="|${queryConfig.getFieldSortName(field)},DESC|"
+                  th:selected="${queryConfig.getFieldOrder(field)?.direction?.name == 'DESC'}">
+                  [[${#messages.msgOrNull('sbu.web.datatable.filter_option.DESC')
+                  ?: 'DESC'}]]
+                </option>
+              </select>
+            </th:block>
+          </div>
+        </th:block>
+        <!-- End: Fields for querying -->
+
+        <div class="col-12 input-group mb-3">
+          <button class="btn btn-outline-secondary"
+            type="button">[[${#messages.msgOrNull('sbu.web.datatable.filter_option.size')
+            ?: 'Size'}]]</button>
+          <select name="size" class="form-select">
+            <option th:value="${queryConfig.pageable.pageSize}">
+              [[${queryConfig.pageable.pageSize}]]</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </select>
+        </div>
+
+        <div class="col-6">
+          <button type="submit" class="btn btn-primary">
+            [[${#messages.msgOrNull('sbu.web.datatable.filter_option.filter') ?:
+            'Filter'}]]</button>
+        </div>
+        <div class="col-6">
+          <button hx:get="@{${route.indexPath}}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
+            type="button" class="btn btn-warning">
+            [[${#messages.msgOrNull('sbu.web.datatable.filter_option.reset') ?: 'Reset'}]]</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Filter Options End-->
+
+  <div class="btn-group pb-2">
+    <!-- Creation Button Begin -->
+    <th:block th:if="${creationOption == null}">
+      <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
+        class="btn btn-outline-success" hx:get="@{${route.newPath}}"
+        hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
+        <i class="fas fa-file-circle-plus"></i>
+      </button>
+    </th:block>
+    <th:block th:unless="${creationOption == null}">
+      <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
+        class="btn btn-outline-success" data-bs-toggle="offcanvas" data-bs-target="#creationOption">
+        <i class="fas fa-file-circle-plus"></i>
+      </button>
+    </th:block>
+    <!-- Creation Button End -->
+
+    <!-- Search Button Begin -->
+    <button class="btn btn-info" data-bs-toggle="offcanvas" data-bs-target="#filterOption">
+      <i class="fas fa-search"></i>
+    </button>
+    <!-- Search Button End -->
+  </div>
+
+  <div class="container">
+    <div class="row row-cols-auto">
+      <th:block th:each="item : ${page}">
+        <div class="col">
+          <th:block th:replace="${card}"></th:block>
+        </div>
+      </th:block>
+    </div>
+  </div>
+
+  <nav class="d-flex justify-content-center pt-2">
+    <ul class="pagination" sd:pagination-split="7" sd:pagination="full"
+      sd:pagination-url="@{${route.paginationPath(queryConfig)}}">
+      <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+      <li class="disabled"><a href="#" aria-label="Previous"><span
+            aria-hidden="true">&laquo;</span></a></li>
+      <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </nav>
+
+  <script th:inline="javascript" defer>
+    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+</div>
+<!-- End Table -->
+
+<!-- Start Options -->
+<div th:fragment="options">
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+      aria-expanded="false">
+      <i class="fas fa-gear"></i>
+    </button>
+    <ul class="dropdown-menu">
+      <li>
+        <a th:classappend="${user == null || user.canUpdate(item)} ? 'text-primary' : 'disabled'"
+          hx:get="@{${item.getEditPath(queryConfig)}}" hx:target="${'#' + ajaxTargetId}"
+          hx-ext="json-enc" class="dropdown-item">
+          [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
+      </li>
+      <li>
+        <a th:classappend="${user == null || user.canDelete(item)} ? 'text-danger' : 'disabled'"
+          hx:delete="@{${item.getDeletePath(queryConfig)}}"
+          hx:confirm="${#messages.msgOrNull('sbu.ui.confirmation.delete') ?: 'Are you sure?'}"
+          hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
+          [[${#messages.msgOrNull('sbu.ui.delete') ?: 'Delete'}]]</a>
+      </li>
+      <th:block th:if="${li}">
+        <th:block th:replace="${li}"></th:block>
+      </th:block>
+    </ul>
+  </div>
+</div>
+<!-- End Options -->
+
+</html>
