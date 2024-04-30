@@ -6,7 +6,7 @@
   <div class="card-header">
     <div class="d-flex">
       <button
-        hx:get="@{${backPath != null ? backPath : item.getBackPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
+        hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
         hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
         aria-label="Close"></button>
       <a th:if="${user == null || user.canUpdate(item)}" class="pe-2 orange"
@@ -21,7 +21,7 @@
       <div></div>
     </react-form>
     <a class="btn btn-light"
-      hx:get="@{${backPath != null ? backPath : item.getBackPath(queryConfig)}}"
+      hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}}"
       hx:target="${'#' + backTargetId}" hx-ext="json-enc">
       [[${#messages.msgOrNull('sbu.ui.return') ?: 'Return'}]]</a>
 

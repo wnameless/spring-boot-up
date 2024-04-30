@@ -5,7 +5,7 @@
   class="card">
   <div class="card-header">
     <button
-      hx:get="@{${backPath != null ? backPath : item.getBackPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
+      hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
       hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
       aria-label="Close"></button>
   </div>
@@ -15,7 +15,7 @@
       <div></div>
     </react-form>
     <a class="btn btn-light"
-      hx:get="@{${backPath != null ? backPath : item.getBackPath(queryConfig)}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
+      hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
       hx:target="${'#' + backTargetId}" hx-ext="json-enc">
       [[${#messages.msgOrNull('sbu.ui.return') ?: 'Return'}]]</a>
 
