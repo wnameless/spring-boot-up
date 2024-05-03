@@ -180,7 +180,7 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
     if (rules != null && !rules.isEmpty()) {
       Set<AccessAbility> abilities =
           findUserAccessAbilities(rules.iterator().next().getResourceType(), false);
-      return Optional.of(getHighestOrderResourceAccessRule(rules, abilities));
+      return Optional.ofNullable(getHighestOrderResourceAccessRule(rules, abilities));
     }
 
     return Optional.empty();
@@ -204,7 +204,7 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
     if (rules != null && !rules.isEmpty()) {
       Set<AccessAbility> abilities =
           findUserAccessAbilities(rules.iterator().next().getResourceType(), true);
-      return Optional.of(getHighestOrderEmbeddedResourceAccessRule(rules, abilities));
+      return Optional.ofNullable(getHighestOrderEmbeddedResourceAccessRule(rules, abilities));
     }
 
     return Optional.empty();
