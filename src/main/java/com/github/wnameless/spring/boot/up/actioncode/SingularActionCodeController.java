@@ -24,7 +24,7 @@ public interface SingularActionCodeController<AC extends SingularActionCode<A>, 
   @GetMapping(path = "/action-codes/{actionName}/{code}")
   default ModelAndView executeAction(ModelAndView mav, @PathVariable String actionName,
       @PathVariable String code) {
-    mav.setView(new RedirectView(getRestfulRoute().getIndexPath()));
+    mav.setView(new RedirectView(getRestfulRoute().getIndexPath(), true));
     A actionEnum = getActionCodeService().getActionEnum(actionName);
     Optional<AC> actionCodeOpt =
         getActionCodeService().getActionCodeRepository().findByActionAndCode(actionEnum, code);

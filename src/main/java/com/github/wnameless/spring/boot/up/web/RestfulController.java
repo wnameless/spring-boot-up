@@ -1,6 +1,5 @@
 package com.github.wnameless.spring.boot.up.web;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.ui.Model;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.github.wnameless.spring.boot.up.permission.resource.ResourceFilterRepository;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.ItemClass;
+import com.github.wnameless.spring.boot.up.web.utils.EntityUtils;
 
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
@@ -19,9 +19,9 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     return false;
   }
 
-  @SuppressWarnings("unchecked")
   default Optional<I> findRestfulItemById(ID id) {
-    Optional<I> item;
+    Optional<I> item = Optional.empty();
+
     if (getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
       try {
         item = rfr.filterFindById(id);
@@ -29,22 +29,14 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
         if (isStrictPermissionEnabled()) throw e;
 
         item = getRestfulRepository().findById(id);
-        try {
-          var policy = getModelPolicy();
-          if (policy.isEnable() && policy.onDefaultItem() != null) {
-            item = Optional.ofNullable(policy.onDefaultItem().get());
-          } else {
-            // Mock an empty item for user without permission
-            item = item.getClass().getDeclaredConstructor().newInstance();
-          }
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-            | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
-          throw new RuntimeException(e1);
+        if (item.isPresent() && item.get() instanceof I src) {
+          item = EntityUtils.tryDuplicateIdOnlyEntity(src);
         }
       }
     } else {
       item = getRestfulRepository().findById(id);
     }
+
     return item;
   }
 

@@ -1,6 +1,5 @@
 package com.github.wnameless.spring.boot.up.web;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import org.springframework.data.repository.CrudRepository;
@@ -14,6 +13,7 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.ItemClass;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Parent;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.ParentClass;
+import com.github.wnameless.spring.boot.up.web.utils.EntityUtils;
 
 public interface NestedSinglularRestfulController<PR extends CrudRepository<P, PID>, P, PID, //
     R extends CrudRepository<I, ID>, I, ID>
@@ -28,9 +28,9 @@ public interface NestedSinglularRestfulController<PR extends CrudRepository<P, P
     return false;
   }
 
-  @SuppressWarnings("unchecked")
   default Optional<P> findParentItemById(PID id) {
-    Optional<P> parent;
+    Optional<P> parent = Optional.empty();
+
     if (getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
       try {
         parent = rfr.filterFindById(id);
@@ -38,17 +38,14 @@ public interface NestedSinglularRestfulController<PR extends CrudRepository<P, P
         if (isStrictPermissionEnabled()) throw e;
 
         parent = getParentRepository().findById(id);
-        try {
-          // Mock an empty item for user without permission
-          parent = parent.getClass().getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-            | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
-          throw new RuntimeException(e1);
+        if (parent.isPresent() && parent.get() instanceof P src) {
+          parent = EntityUtils.tryDuplicateIdOnlyEntity(src);
         }
       }
     } else {
       parent = getParentRepository().findById(id);
     }
+
     return parent;
   }
 
