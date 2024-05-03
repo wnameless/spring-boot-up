@@ -305,6 +305,7 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   }
 
   default Optional<ER> embeddedFilterFindById(ID id) {
+    @SuppressWarnings("rawtypes")
     Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
     if (erarOpt.isEmpty()) return Optional.empty();
     @SuppressWarnings("unchecked")
@@ -313,6 +314,7 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   }
 
   default boolean embeddedFilterExistsById(ID id) {
+    @SuppressWarnings("rawtypes")
     Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
     if (erarOpt.isEmpty()) return false;
     @SuppressWarnings("unchecked")
