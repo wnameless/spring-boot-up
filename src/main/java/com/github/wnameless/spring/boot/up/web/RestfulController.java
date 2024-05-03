@@ -15,6 +15,10 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.ItemClass;
 public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRouteController<ID>, RestfulRepositoryProvider<I, ID> {
 
+  default boolean isStrictPermissionEnabled() {
+    return false;
+  }
+
   @SuppressWarnings("unchecked")
   default Optional<I> findRestfulItemById(ID id) {
     Optional<I> item;
@@ -22,6 +26,8 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
       try {
         item = rfr.filterFindById(id);
       } catch (UnsupportedOperationException e) {
+        if (isStrictPermissionEnabled()) throw e;
+
         item = getRestfulRepository().findById(id);
         try {
           var policy = getModelPolicy();

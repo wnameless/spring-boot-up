@@ -24,6 +24,10 @@ public interface NestedSinglularRestfulController<PR extends CrudRepository<P, P
 
   CrudRepository<P, PID> getParentRepository();
 
+  default boolean isStrictPermissionEnabled() {
+    return false;
+  }
+
   @SuppressWarnings("unchecked")
   default Optional<P> findParentItemById(PID id) {
     Optional<P> parent;
@@ -31,6 +35,8 @@ public interface NestedSinglularRestfulController<PR extends CrudRepository<P, P
       try {
         parent = rfr.filterFindById(id);
       } catch (UnsupportedOperationException e) {
+        if (isStrictPermissionEnabled()) throw e;
+
         parent = getParentRepository().findById(id);
         try {
           // Mock an empty item for user without permission

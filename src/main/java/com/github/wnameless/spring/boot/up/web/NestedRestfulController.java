@@ -18,6 +18,10 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.ParentClass;
 public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, PID, R extends CrudRepository<I, ID>, I, ID>
     extends RestfulRepositoryProvider<I, ID>, RestfulRouteController<ID> {
 
+  default boolean isStrictPermissionEnabled() {
+    return false;
+  }
+
   @SuppressWarnings("unchecked")
   default Optional<I> findRestfulItemById(ID id) {
     Optional<I> item;
@@ -25,6 +29,8 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
       try {
         item = rfr.filterFindById(id);
       } catch (UnsupportedOperationException e) {
+        if (isStrictPermissionEnabled()) throw e;
+
         item = getRestfulRepository().findById(id);
         try {
           var policy = getModelPolicy();
