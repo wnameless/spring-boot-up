@@ -28,7 +28,7 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
     Optional<EmbeddedResourceAccessRule<?, ?, ?, ?, ?>> erarOpt =
         wpm.findUserEmbeddedResourceAccessRuleByRepositoryType(this.getClass());
     if (erarOpt.isEmpty()) {
-      log.warn("User {} with roles: {} don't have enough permission on {}",
+      log.warn("User {} with roles: {} don't have enough permission on {} for embedded field",
           getCurrentUser().getUsername(), getCurrentUser().getAllRoles(),
           AopProxyUtils.proxiedUserInterfaces(this)[0].getSimpleName());
     }
