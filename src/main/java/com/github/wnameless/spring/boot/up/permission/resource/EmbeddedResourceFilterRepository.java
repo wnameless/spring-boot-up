@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.util.Optional;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,15 +20,22 @@ import net.sf.rubycollect4j.Ruby;
 public interface EmbeddedResourceFilterRepository<ER, T, ID>
     extends CrudRepository<T, ID>, QuerydslPredicateExecutor<T> {
 
+  org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EmbeddedResourceFilterRepository.class);
+
   @SuppressWarnings("rawtypes")
-  default EmbeddedResourceAccessRule getEmbeddedResourceAccessRule() {
+  default Optional<EmbeddedResourceAccessRule> findEmbeddedResourceAccessRule() {
     WebPermissionManager wpm = SpringBootUp.getBean(WebPermissionManager.class);
-    EmbeddedResourceAccessRule erar =
+    Optional<EmbeddedResourceAccessRule<?, ?, ?, ?, ?>> erarOpt =
         wpm.findUserEmbeddedResourceAccessRuleByRepositoryType(this.getClass());
-    return erar;
+    if (erarOpt.isEmpty()) {
+      log.warn("User {} with roles: {} don't have enough permission on {}",
+          getCurrentUser().getUsername(), getCurrentUser().getAllRoles(),
+          AopProxyUtils.proxiedUserInterfaces(this)[0].getSimpleName());
+    }
+    return erarOpt.isEmpty() ? Optional.empty() : Optional.of(erarOpt.get());
   }
 
-  default PermittedUser<ID> getPermittedUser() {
+  default PermittedUser<ID> getCurrentUser() {
     @SuppressWarnings("unchecked")
     PermittedUser<ID> user = SpringBootUp.getBean(PermittedUser.class);
     return user;
@@ -35,9 +43,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Optional<ER> embeddedFilterFindOne(Predicate predicate) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -51,9 +61,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<ER> embeddedFilterFindAll() {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -67,9 +79,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<ER> embeddedFilterFindAll(Predicate predicate) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -85,9 +99,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<ER> embeddedFilterFindAll(Sort sort) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -101,9 +117,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<ER> embeddedFilterFindAll(Predicate predicate, Sort sort) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -119,9 +137,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<ER> embeddedFilterFindAll(OrderSpecifier<?>... orders) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -137,9 +157,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<ER> embeddedFilterFindAll(Predicate predicate, OrderSpecifier<?>... orders) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -155,9 +177,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<ER> embeddedFilterFindAll(Pageable pageable) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -171,9 +195,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<ER> embeddedFilterFindAll(Predicate predicate, Pageable pageable) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -187,9 +213,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default long embeddedFilterCount() {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -201,9 +229,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default long embeddedFilterCount(Predicate predicate) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -215,9 +245,11 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean embeddedFilterExists(Predicate predicate) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canReadField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -229,11 +261,12 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default ER embeddedFilterSaveById(ID id, ER embedded) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
     Predicate idEq = erar.getPredicateOfEntityId(id);
     Optional<T> target = findOne(idEq);
-    if (target.isEmpty()) {
+    if (erarOpt.isEmpty() || target.isEmpty()) {
       throw new IllegalArgumentException("Entity ID of the embedded resource NOT found");
     }
 
@@ -272,22 +305,28 @@ public interface EmbeddedResourceFilterRepository<ER, T, ID>
   }
 
   default Optional<ER> embeddedFilterFindById(ID id) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    if (erarOpt.isEmpty()) return Optional.empty();
     @SuppressWarnings("unchecked")
-    Predicate idEq = getEmbeddedResourceAccessRule().getPredicateOfEntityId(id);
+    Predicate idEq = erarOpt.get().getPredicateOfEntityId(id);
     return embeddedFilterFindOne(idEq);
   }
 
   default boolean embeddedFilterExistsById(ID id) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    if (erarOpt.isEmpty()) return false;
     @SuppressWarnings("unchecked")
-    Predicate idEq = getEmbeddedResourceAccessRule().getPredicateOfEntityId(id);
+    Predicate idEq = erarOpt.get().getPredicateOfEntityId(id);
     return embeddedFilterExists(idEq);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default void embeddedFilterDeleteById(ID id) {
-    EmbeddedResourceAccessRule erar = getEmbeddedResourceAccessRule();
-    PermittedUser user = getPermittedUser();
-    if (!user.canDeleteField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
+    Optional<EmbeddedResourceAccessRule> erarOpt = findEmbeddedResourceAccessRule();
+    EmbeddedResourceAccessRule erar = erarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (erarOpt.isEmpty()
+        || !user.canDeleteField(erar.getResourceType(), erar.getEmbeddedResourceFieldName())) {
       throw new UnsupportedOperationException("No permission to DELETE");
     }
 

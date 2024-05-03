@@ -31,8 +31,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ResourceFilterRepository.class);
 
-  @SuppressWarnings("rawtypes")
-  default Optional<ResourceAccessRule> findResourceAccessRule() {
+  default Optional<ResourceAccessRule<?, ?, ?>> findResourceAccessRule() {
     WebPermissionManager wpm = SpringBootUp.getBean(WebPermissionManager.class);
     Optional<ResourceAccessRule<?, ?, ?>> rarOpt =
         wpm.findUserResourceAccessRuleByRepositoryType(this.getClass());
@@ -41,7 +40,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
           getCurrentUser().getUsername(), getCurrentUser().getAllRoles(),
           AopProxyUtils.proxiedUserInterfaces(this)[0].getSimpleName());
     }
-    return rarOpt.isEmpty() ? Optional.empty() : Optional.of(rarOpt.get());
+    return rarOpt;
   }
 
   @SuppressWarnings("rawtypes")
@@ -52,7 +51,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Optional<T> filterFindOne(Predicate predicate) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -71,7 +70,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll() {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -90,7 +89,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(Predicate predicate) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -109,7 +108,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(Sort sort) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -128,7 +127,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(Predicate predicate, Sort sort) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -147,7 +146,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(OrderSpecifier<?>... orders) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -166,7 +165,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(Predicate predicate, OrderSpecifier<?>... orders) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -181,7 +180,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<T> filterFindAll(Pageable pageable) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -196,7 +195,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<T> filterFindAll(Predicate predicate, Pageable pageable) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -211,7 +210,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default long filterCount() {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -226,7 +225,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default long filterCount(Predicate predicate) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -241,7 +240,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean filterExists(Predicate predicate) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -256,7 +255,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default T filterSave(T entity) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     Predicate idEq = rar.getPredicateOfEntity(entity);
@@ -288,7 +287,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   default T filterSaveWithValidation(T entity) {
     Validator validator = SpringBootUp.getBean(Validator.class);
 
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     Predicate idEq = rar.getPredicateOfEntity(entity);
@@ -384,7 +383,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   default Optional<T> filterFindById(ID id) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -396,7 +395,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   default boolean filterExistsById(ID id) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -408,7 +407,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default void filterDeleteById(ID id) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canDelete(rar.getResourceType())) {
@@ -430,7 +429,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default void filterDelete(T entity) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canDelete(rar.getResourceType())) {
@@ -462,7 +461,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Optional<T> filterFindProjectedBy(Predicate predicate, String... dotPaths) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -487,7 +486,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default List<T> filterFindAllProjectedBy(String... dotPaths) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -510,7 +509,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default List<T> filterFindAllProjectedBy(Predicate predicate, String... dotPaths) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -535,7 +534,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default List<T> filterFindAllProjectedBy(Sort sort, String... dotPaths) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -558,7 +557,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort, String... dotPaths) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -583,7 +582,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<T> filterFindPagedProjectedBy(Pageable pageable, String... dotPaths) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
@@ -610,7 +609,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<T> filterFindPagedProjectedBy(Predicate predicate, Pageable pageable,
       String... dotPaths) {
-    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt = findResourceAccessRule();
     ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {

@@ -48,7 +48,9 @@ public interface UserEmbeddedResourceAbility<ID> extends ResourceAbilityProvider
         findEmbeddedResourceFilterRepository(type, fieldName, MANAGE);
     if (erfr == null) return false;
 
-    EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
+    Optional<EmbeddedResourceAccessRule> erarOpt = erfr.findEmbeddedResourceAccessRule();
+    if (erarOpt.isEmpty()) return false;
+    var erar = erarOpt.get();
     boolean ret = erfr.exists(erar.getPredicateOfManageById(id));
     return ret;
   }
@@ -94,7 +96,9 @@ public interface UserEmbeddedResourceAbility<ID> extends ResourceAbilityProvider
         findEmbeddedResourceFilterRepository(type, fieldName, CRUD, MANAGE);
     if (erfr == null) return false;
 
-    EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
+    Optional<EmbeddedResourceAccessRule> erarOpt = erfr.findEmbeddedResourceAccessRule();
+    if (erarOpt.isEmpty()) return false;
+    var erar = erarOpt.get();
     boolean ret = erfr.exists(erar.getPredicateOfCRUDById(id));
     return ret;
   }
@@ -175,7 +179,9 @@ public interface UserEmbeddedResourceAbility<ID> extends ResourceAbilityProvider
         findEmbeddedResourceFilterRepository(type, fieldName, READ, CRUD, MANAGE);
     if (erfr == null) return false;
 
-    EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
+    Optional<EmbeddedResourceAccessRule> erarOpt = erfr.findEmbeddedResourceAccessRule();
+    if (erarOpt.isEmpty()) return false;
+    var erar = erarOpt.get();
     boolean ret = erfr.exists(erar.getPredicateOfReadById(id));
     return ret;
   }
@@ -204,7 +210,9 @@ public interface UserEmbeddedResourceAbility<ID> extends ResourceAbilityProvider
         findEmbeddedResourceFilterRepository(type, fieldName, UPDATE, CRUD, MANAGE);
     if (erfr == null) return false;
 
-    EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
+    Optional<EmbeddedResourceAccessRule> erarOpt = erfr.findEmbeddedResourceAccessRule();
+    if (erarOpt.isEmpty()) return false;
+    var erar = erarOpt.get();
     boolean ret = erfr.exists(erar.getPredicateOfUpdateById(id));
     return ret;
   }
@@ -250,7 +258,9 @@ public interface UserEmbeddedResourceAbility<ID> extends ResourceAbilityProvider
         findEmbeddedResourceFilterRepository(type, fieldName, DELETE, CRUD, MANAGE);
     if (erfr == null) return false;
 
-    EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
+    Optional<EmbeddedResourceAccessRule> erarOpt = erfr.findEmbeddedResourceAccessRule();
+    if (erarOpt.isEmpty()) return false;
+    var erar = erarOpt.get();
     boolean ret = erfr.exists(erar.getPredicateOfDeleteById(id));
     return ret;
   }
@@ -298,7 +308,9 @@ public interface UserEmbeddedResourceAbility<ID> extends ResourceAbilityProvider
         findEmbeddedResourceFilterRepository(type, fieldName, Ability.of(performAction), MANAGE);
     if (erfr == null) return false;
 
-    EmbeddedResourceAccessRule erar = erfr.getEmbeddedResourceAccessRule();
+    Optional<EmbeddedResourceAccessRule> erarOpt = erfr.findEmbeddedResourceAccessRule();
+    if (erarOpt.isEmpty()) return false;
+    var erar = erarOpt.get();
     boolean ret = erfr.exists(erar.getPredicateOfAbilityById(Ability.of(performAction), id));
     return ret;
   }
