@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.permission;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import com.github.wnameless.spring.boot.up.permission.ability.ResourceAbility;
 import com.github.wnameless.spring.boot.up.permission.resource.EmbeddedResourceAccessRule;
@@ -11,14 +12,14 @@ import com.github.wnameless.spring.boot.up.permission.role.Role;
 
 public interface WebPermissionManager {
 
-  Class<?> findResourceTypeByName(String resourceName);
+  Optional<Class<?>> findResourceTypeByName(String resourceName);
 
   boolean existsResourceType(Class<?> resourceType);
 
-  ResourceAccessRule<?, ?, ?> findUserResourceAccessRuleByRepositoryType(
+  Optional<ResourceAccessRule<?, ?, ?>> findUserResourceAccessRuleByRepositoryType(
       @SuppressWarnings("rawtypes") Class<? extends ResourceFilterRepository> repo);
 
-  EmbeddedResourceAccessRule<?, ?, ?, ?, ?> findUserEmbeddedResourceAccessRuleByRepositoryType(
+  Optional<EmbeddedResourceAccessRule<?, ?, ?, ?, ?>> findUserEmbeddedResourceAccessRuleByRepositoryType(
       @SuppressWarnings("rawtypes") Class<? extends EmbeddedResourceFilterRepository> repo);
 
   Set<Role> getUserRoles();

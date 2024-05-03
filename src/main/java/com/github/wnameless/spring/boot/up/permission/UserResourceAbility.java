@@ -13,12 +13,10 @@ import com.github.wnameless.spring.boot.up.permission.resource.ResourceFilterRep
 public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
 
   @SuppressWarnings("rawtypes")
-  default ResourceFilterRepository findResourceFilterRepository(Class<?> type,
+  default Optional<ResourceFilterRepository> findResourceFilterRepository(Class<?> type,
       Ability... abilities) {
     Optional<ResourceAbility> raOpt = findResourceAbility(type, abilities);
-    if (raOpt.isEmpty()) return null;
-
-    return raOpt.get().getResourceFilterRepository();
+    return raOpt.map(ResourceAbility::getResourceFilterRepository);
   }
 
   // Exists
@@ -48,12 +46,11 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
-    if (rfr == null) return false;
-
-    ResourceAccessRule rar = rfr.getResourceAccessRule();
-    boolean ret = rfr.exists(rar.getPredicateOfManageById(id));
-    return ret;
+    return findResourceFilterRepository(type, MANAGE)
+        .filter(rfr -> rfr.findResourceAccessRule().isPresent())
+        .map(rfr -> rfr.exists(
+            ((ResourceAccessRule) rfr.findResourceAccessRule().get()).getPredicateOfManageById(id)))
+        .orElse(false);
   }
 
   default boolean canManageOn(String resourceName, ID id) {
@@ -95,21 +92,12 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
-    ResourceAccessRule rar;
-    boolean ret;
-
-    if (rfr != null) {
-      rar = rfr.getResourceAccessRule();
-      ret = rfr.exists(rar.getPredicateOfManageById(id));
-      if (ret) return ret;
-    }
-
-    rfr = findResourceFilterRepository(type, CRUD);
-    if (rfr == null) return false;
-    rar = rfr.getResourceAccessRule();
-    ret = rfr.exists(rar.getPredicateOfCRUDById(id));
-    return ret;
+    return canManageOn(type, id) ? true
+        : findResourceFilterRepository(type, CRUD)
+            .filter(rfr -> rfr.findResourceAccessRule().isPresent())
+            .map(rfr -> rfr.exists(((ResourceAccessRule) rfr.findResourceAccessRule().get())
+                .getPredicateOfCRUDById(id)))
+            .orElse(false);
   }
 
   default boolean canCRUDOn(String resourceName, ID id) {
@@ -151,21 +139,12 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
-    ResourceAccessRule rar;
-    boolean ret;
-
-    if (rfr != null) {
-      rar = rfr.getResourceAccessRule();
-      ret = rfr.exists(rar.getPredicateOfManageById(id));
-      if (ret) return ret;
-    }
-
-    rfr = findResourceFilterRepository(type, READ, CRUD);
-    if (rfr == null) return false;
-    rar = rfr.getResourceAccessRule();
-    ret = rfr.exists(rar.getPredicateOfReadById(id));
-    return ret;
+    return canManageOn(type, id) ? true
+        : findResourceFilterRepository(type, READ, CRUD)
+            .filter(rfr -> rfr.findResourceAccessRule().isPresent())
+            .map(rfr -> rfr.exists(((ResourceAccessRule) rfr.findResourceAccessRule().get())
+                .getPredicateOfReadById(id)))
+            .orElse(false);
   }
 
   default boolean canReadOn(String resourceName, ID id) {
@@ -220,21 +199,12 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
-    ResourceAccessRule rar;
-    boolean ret;
-
-    if (rfr != null) {
-      rar = rfr.getResourceAccessRule();
-      ret = rfr.exists(rar.getPredicateOfManageById(id));
-      if (ret) return ret;
-    }
-
-    rfr = findResourceFilterRepository(type, UPDATE, CRUD);
-    if (rfr == null) return false;
-    rar = rfr.getResourceAccessRule();
-    ret = rfr.exists(rar.getPredicateOfUpdateById(id));
-    return ret;
+    return canManageOn(type, id) ? true
+        : findResourceFilterRepository(type, UPDATE, CRUD)
+            .filter(rfr -> rfr.findResourceAccessRule().isPresent())
+            .map(rfr -> rfr.exists(((ResourceAccessRule) rfr.findResourceAccessRule().get())
+                .getPredicateOfUpdateById(id)))
+            .orElse(false);
   }
 
   default boolean canUpdate(String resourceName) {
@@ -280,21 +250,12 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr = findResourceFilterRepository(type, MANAGE);
-    ResourceAccessRule rar;
-    boolean ret;
-
-    if (rfr != null) {
-      rar = rfr.getResourceAccessRule();
-      ret = rfr.exists(rar.getPredicateOfManageById(id));
-      if (ret) return ret;
-    }
-
-    rfr = findResourceFilterRepository(type, DELETE, CRUD);
-    if (rfr == null) return false;
-    rar = rfr.getResourceAccessRule();
-    ret = rfr.exists(rar.getPredicateOfDeleteById(id));
-    return ret;
+    return canManageOn(type, id) ? true
+        : findResourceFilterRepository(type, DELETE, CRUD)
+            .filter(rfr -> rfr.findResourceAccessRule().isPresent())
+            .map(rfr -> rfr.exists(((ResourceAccessRule) rfr.findResourceAccessRule().get())
+                .getPredicateOfDeleteById(id)))
+            .orElse(false);
   }
 
   default boolean canDeleteOn(String resourceName, ID id) {
@@ -338,13 +299,12 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
     if (type == null) return false;
     type = ClassUtils.getUserClass(type);
 
-    ResourceFilterRepository rfr =
-        findResourceFilterRepository(type, Ability.of(performAction), MANAGE);
-    if (rfr == null) return false;
-
-    ResourceAccessRule rar = rfr.getResourceAccessRule();
-    boolean ret = rfr.exists(rar.getPredicateOfAbilityById(Ability.of(performAction), id));
-    return ret;
+    return canManageOn(type, id) ? true
+        : findResourceFilterRepository(type, Ability.of(performAction))
+            .filter(rfr -> rfr.findResourceAccessRule().isPresent())
+            .map(rfr -> rfr.exists(((ResourceAccessRule) rfr.findResourceAccessRule().get())
+                .getPredicateOfAbilityById(Ability.of(performAction), id)))
+            .orElse(false);
   }
 
   default boolean canDoOn(String performAction, String resourceName, ID id) {

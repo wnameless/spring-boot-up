@@ -44,7 +44,7 @@ public interface ResourceAbilityProvider<ID> {
   }
 
   default Class<?> getResourceType(String resourceName) {
-    return getWebPermissionManager().findResourceTypeByName(resourceName);
+    return getWebPermissionManager().findResourceTypeByName(resourceName).orElse(null);
   }
 
   default Optional<ResourceAbility> findResourceAbility(Class<?> type, String fieldName,

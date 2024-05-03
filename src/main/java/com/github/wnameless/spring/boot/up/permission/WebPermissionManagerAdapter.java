@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -144,9 +145,9 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
   }
 
   @Override
-  public Class<?> findResourceTypeByName(String resourceName) {
+  public Optional<Class<?>> findResourceTypeByName(String resourceName) {
     Class<?> type = resourceLookup.get(resourceName);
-    return type;
+    return Optional.ofNullable(type);
   }
 
   @Override
@@ -172,21 +173,21 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
   }
 
   @Override
-  public ResourceAccessRule<?, ?, ?> findUserResourceAccessRuleByRepositoryType(
+  public Optional<ResourceAccessRule<?, ?, ?>> findUserResourceAccessRuleByRepositoryType(
       @SuppressWarnings("rawtypes") Class<? extends ResourceFilterRepository> repo) {
     @SuppressWarnings("rawtypes")
     Set<ResourceAccessRule> rules = repo2Rules.get(repo);
     if (rules != null && !rules.isEmpty()) {
       Set<AccessAbility> abilities =
           findUserAccessAbilities(rules.iterator().next().getResourceType(), false);
-      return findHighestOrderResourceAccessRule(rules, abilities);
+      return Optional.of(getHighestOrderResourceAccessRule(rules, abilities));
     }
 
-    return null;
+    return Optional.empty();
   }
 
   @SuppressWarnings("rawtypes")
-  private ResourceAccessRule findHighestOrderResourceAccessRule(Set<ResourceAccessRule> rules,
+  private ResourceAccessRule getHighestOrderResourceAccessRule(Set<ResourceAccessRule> rules,
       Set<AccessAbility> abilities) {
     List<Class<? extends ResourceAccessRule>> rarTypes =
         Ruby.Array.copyOf(abilities).map(a -> a.getResourceAccessRuleType());
@@ -195,22 +196,22 @@ public abstract class WebPermissionManagerAdapter<ID> implements WebPermissionMa
         .sortBy(r -> r.getRuleOrder()).first();
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
+  @SuppressWarnings("rawtypes")
   @Override
-  public EmbeddedResourceAccessRule findUserEmbeddedResourceAccessRuleByRepositoryType(
+  public Optional<EmbeddedResourceAccessRule<?, ?, ?, ?, ?>> findUserEmbeddedResourceAccessRuleByRepositoryType(
       Class<? extends EmbeddedResourceFilterRepository> repo) {
     Set<EmbeddedResourceAccessRule> rules = repo2EmbeddedRules.get(repo);
     if (rules != null && !rules.isEmpty()) {
       Set<AccessAbility> abilities =
           findUserAccessAbilities(rules.iterator().next().getResourceType(), true);
-      return findHighestOrderEmbeddedResourceAccessRule(rules, abilities);
+      return Optional.of(getHighestOrderEmbeddedResourceAccessRule(rules, abilities));
     }
 
-    return null;
+    return Optional.empty();
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  private EmbeddedResourceAccessRule findHighestOrderEmbeddedResourceAccessRule(
+  private EmbeddedResourceAccessRule getHighestOrderEmbeddedResourceAccessRule(
       Set<EmbeddedResourceAccessRule> rules, Set<AccessAbility> abilities) {
     List<Class<? extends EmbeddedResourceAccessRule>> erarTypes = Ruby.Array.copyOf(abilities)
         .map(a -> (Class<? extends EmbeddedResourceAccessRule>) a.getResourceAccessRuleType());

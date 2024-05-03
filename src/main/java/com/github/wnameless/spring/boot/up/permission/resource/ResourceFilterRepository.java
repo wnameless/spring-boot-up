@@ -32,15 +32,16 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ResourceFilterRepository.class);
 
   @SuppressWarnings("rawtypes")
-  default ResourceAccessRule getResourceAccessRule() {
+  default Optional<ResourceAccessRule> findResourceAccessRule() {
     WebPermissionManager wpm = SpringBootUp.getBean(WebPermissionManager.class);
-    ResourceAccessRule rar = wpm.findUserResourceAccessRuleByRepositoryType(this.getClass());
-    if (rar == null) {
+    Optional<ResourceAccessRule<?, ?, ?>> rarOpt =
+        wpm.findUserResourceAccessRuleByRepositoryType(this.getClass());
+    if (rarOpt.isEmpty()) {
       log.warn("User {} with roles: {} don't have enough permission on {}",
           getCurrentUser().getUsername(), getCurrentUser().getAllRoles(),
           AopProxyUtils.proxiedUserInterfaces(this)[0].getSimpleName());
     }
-    return rar;
+    return rarOpt.isEmpty() ? Optional.empty() : Optional.of(rarOpt.get());
   }
 
   @SuppressWarnings("rawtypes")
@@ -51,9 +52,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Optional<T> filterFindOne(Predicate predicate) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -69,9 +71,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll() {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -87,9 +90,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(Predicate predicate) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -105,9 +109,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(Sort sort) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -123,9 +128,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(Predicate predicate, Sort sort) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -141,9 +147,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(OrderSpecifier<?>... orders) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -159,9 +166,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Iterable<T> filterFindAll(Predicate predicate, OrderSpecifier<?>... orders) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -173,9 +181,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<T> filterFindAll(Pageable pageable) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -187,9 +196,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<T> filterFindAll(Predicate predicate, Pageable pageable) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -201,9 +211,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default long filterCount() {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -215,9 +226,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default long filterCount(Predicate predicate) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -229,9 +241,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default boolean filterExists(Predicate predicate) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -243,14 +256,15 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default T filterSave(T entity) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     Predicate idEq = rar.getPredicateOfEntity(entity);
     Optional<T> target = findOne(idEq);
 
     // new entity
     if (target.isEmpty()) {
-      if (!user.canCreate(rar.getResourceType())) {
+      if (rarOpt.isEmpty() || !user.canCreate(rar.getResourceType())) {
         throw new UnsupportedOperationException("No permission to CREATE");
       }
 
@@ -274,7 +288,8 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   default T filterSaveWithValidation(T entity) {
     Validator validator = SpringBootUp.getBean(Validator.class);
 
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
     Predicate idEq = rar.getPredicateOfEntity(entity);
     Optional<T> target = findOne(idEq);
@@ -295,7 +310,7 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
     // new entity
     if (target.isEmpty()) {
-      if (!user.canCreate(rar.getResourceType())) {
+      if (rarOpt.isEmpty() || !user.canCreate(rar.getResourceType())) {
         var alertMessages = new AlertMessages();
         alertMessages.getWarning().add("No permission to CREATE");
         SpringBootUpWeb.findHttpServletRequest().ifPresent(req -> {
@@ -367,23 +382,36 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
     }
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   default Optional<T> filterFindById(ID id) {
-    @SuppressWarnings("unchecked")
-    Predicate idEq = getResourceAccessRule().getPredicateOfEntityId(id);
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+    Predicate idEq = rar.getPredicateOfEntityId(id);
     return filterFindOne(idEq);
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   default boolean filterExistsById(ID id) {
-    @SuppressWarnings("unchecked")
-    Predicate idEq = getResourceAccessRule().getPredicateOfEntityId(id);
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
+    PermittedUser user = getCurrentUser();
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
+      throw new UnsupportedOperationException("No permission to READ");
+    }
+    Predicate idEq = rar.getPredicateOfEntityId(id);
     return filterExists(idEq);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default void filterDeleteById(ID id) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canDelete(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canDelete(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to DESTROY");
     }
 
@@ -402,9 +430,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default void filterDelete(T entity) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canDelete(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canDelete(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to DELETE");
     }
 
@@ -433,9 +462,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Optional<T> filterFindProjectedBy(Predicate predicate, String... dotPaths) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -457,9 +487,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default List<T> filterFindAllProjectedBy(String... dotPaths) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -479,9 +510,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default List<T> filterFindAllProjectedBy(Predicate predicate, String... dotPaths) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -503,9 +535,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default List<T> filterFindAllProjectedBy(Sort sort, String... dotPaths) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -525,9 +558,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default List<T> filterFindAllProjectedBy(Predicate predicate, Sort sort, String... dotPaths) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -549,9 +583,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<T> filterFindPagedProjectedBy(Pageable pageable, String... dotPaths) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
@@ -575,9 +610,10 @@ public interface ResourceFilterRepository<T, ID> extends CrudRepository<T, ID>,
   @SuppressWarnings({"rawtypes", "unchecked"})
   default Page<T> filterFindPagedProjectedBy(Predicate predicate, Pageable pageable,
       String... dotPaths) {
-    ResourceAccessRule rar = getResourceAccessRule();
+    Optional<ResourceAccessRule> rarOpt = findResourceAccessRule();
+    ResourceAccessRule rar = rarOpt.orElse(null);
     PermittedUser user = getCurrentUser();
-    if (!user.canRead(rar.getResourceType())) {
+    if (rarOpt.isEmpty() || !user.canRead(rar.getResourceType())) {
       throw new UnsupportedOperationException("No permission to READ");
     }
 
