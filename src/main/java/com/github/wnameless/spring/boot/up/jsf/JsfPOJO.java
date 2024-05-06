@@ -39,7 +39,9 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyPr
       var converter = SpringBootUp.getBean(names[0], JsfPOJOConverter.class);
       converter.map(pojo, this);
     } else {
-      log.warn("POJO Converter for " + pojo.getClass().getSimpleName() + " not found");
+      log.warn("Default ModelMapper is used for mapping because the JsfPOJOConverter for "
+          + pojo.getClass().getSimpleName() + " not found");
+      JsfConfig.getModelMapper().map(pojo, this);
     }
   }
 
