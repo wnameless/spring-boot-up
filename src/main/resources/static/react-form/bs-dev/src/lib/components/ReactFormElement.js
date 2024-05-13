@@ -5,6 +5,9 @@ import * as ReactDOM from 'react-dom/client';
 // import Form from '@rjsf/core';
 import Form from '@rjsf/bootstrap-4';
 import applyNavs from "react-jsonschema-form-pagination";
+import { NavStyleTag } from './Bootstrap4RjsfStyle';
+import { DownloadWidget, ImageWidget } from './Bootstrap4RjsfWidget';
+import * as HtmlHelper from './HtmlHelper';
 
 class ReactFormElement extends HTMLElement {
   constructor() {
@@ -55,7 +58,7 @@ class ReactFormElement extends HTMLElement {
               })
             })
               .then(res => res.text())
-              .then(data => this.setInnerHTML(document.getElementById(tagId), data))
+              .then(data => HtmlHelper.setInnerHTML(document.getElementById(tagId), data))
               .catch(e => console.error(e));
           }
           break;
@@ -69,22 +72,11 @@ class ReactFormElement extends HTMLElement {
               })
             })
               .then(res => res.text())
-              .then(data => this.setInnerHTML(document.getElementById(tagId), data))
+              .then(data => HtmlHelper.setInnerHTML(document.getElementById(tagId), data))
               .catch(e => console.error(e));
           }
       }
     }
-  }
-
-  setInnerHTML(elm, html) {
-    elm.innerHTML = html;
-    Array.from(elm.querySelectorAll('script')).forEach(oldScript => {
-      const newScript = document.createElement('script');
-      Array.from(oldScript.attributes)
-        .forEach(attr => newScript.setAttribute(attr.name, attr.value));
-      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-      oldScript.parentNode.replaceChild(newScript, oldScript);
-    });
   }
 
   async retrieveJson() {
@@ -110,7 +102,7 @@ class ReactFormElement extends HTMLElement {
         const uiSchemaReq = await axios.get(url);
         uiSchemaJson = uiSchemaReq.data;
       }
-      url = this.attrs['form-schema-url'];
+      url = this.attrs['form-data-url'];
       if (url) {
         const formDataReq = await axios.get(url);
         formDataJson = formDataReq.data;
@@ -121,102 +113,10 @@ class ReactFormElement extends HTMLElement {
   }
 
   mount() {
-    const DownloadWidget = (props) => {
-      let li = [];
-      (props.value instanceof Array ? props.value : [props.value]).forEach(function (base64) {
-        if (base64 == null) {
-          li.push(
-            <li className="list-group-item list-group-item-action">
-              No file
-            </li>
-          );
-        } else {
-          let base64Parts = base64.split(';');
-          let filename = decodeURI(base64Parts[1].split('=')[1]);
-
-          li.push(
-            <a className="list-group-item list-group-item-action" download={filename} href={props.value}>
-              {filename}
-            </a>
-          );
-        }
-      })
-
-      return (
-        <ul className="list-group">
-          {li}
-        </ul>
-      );
-    };
-
-    const ImageWidget = (props) => {
-      let li = [];
-      (props.value instanceof Array ? props.value : [props.value]).forEach(function (base64) {
-        if (base64 == null) {
-          li.push(
-            <li className="list-group-item list-group-item-action">
-              No Image
-            </li>
-          );
-        } else {
-          let base64Parts = base64.split(';');
-          let dataType = base64Parts[0];
-          let filename = decodeURI(base64Parts[1].split('=')[1]);
-
-          li.push(
-            <a href="#" class="list-group-item list-group-item-action">
-              <h5 class="mb-1">{filename}</h5>
-              <img src={base64} class="img-fluid"></img>
-            </a>
-          );
-        }
-      })
-
-      return (
-        <ul className="list-group">
-          {li}
-        </ul>
-      );
-    }
-
     const widgets = {
       downloadWidget: DownloadWidget,
       imageWidget: ImageWidget
     };
-
-    const cssContent = `
-         .nav-pills {
-           margin-bottom: 20px;
-         }
-         
-         .nav-pills > li {
-             display: inline-block;
-             margin-right: 10px;
-         }
-         
-         .nav-pills > li > a {
-             border-radius: 0.25rem;
-             padding: 10px 15px;
-             text-decoration: none;
-         }
-         
-         .nav-pills > .active > a {
-             background-color: #007bff;
-         }
-         
-         .nav-pills > li > a {
-             color: #007bff;
-             border: 1px solid #007bff;
-         }
-         
-         .nav-pills > li > a:hover {
-             background-color: #0056b3;
-         }
-       `;
-
-    const StyleTag = React.createElement('style', {
-      type: 'text/css'
-    }, cssContent);
 
     this.retrieveJson().then((data) => {
       if (data.schema == null) return;
@@ -226,10 +126,10 @@ class ReactFormElement extends HTMLElement {
         <React.Fragment>
           <link rel="stylesheet" href={this.attrs.cssHref ||
             // 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'
-            'https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/litera/bootstrap.min.css'
+            'https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/litera/bootstrap.min.css'
           }></link>
 
-          {StyleTag}
+          {NavStyleTag}
 
           <FormWithPagination
             {...this.attrs}
