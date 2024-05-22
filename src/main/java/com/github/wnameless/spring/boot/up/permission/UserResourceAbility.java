@@ -25,7 +25,7 @@ public interface UserResourceAbility<ID> extends ResourceAbilityProvider<ID> {
   }
 
   default boolean existsPermission(String resourceName) {
-    return getWebPermissionManager().findResourceTypeByName(resourceName) != null;
+    return getWebPermissionManager().findResourceTypeByName(resourceName).isPresent();
   }
 
   // MANAGE
