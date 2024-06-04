@@ -107,7 +107,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
     return getJsfSchemaRepository().save(js);
   }
 
-  default JS findBreachingJsfSchema(String formType, String formBranch) {
+  default JS findBranchingJsfSchema(String formType, String formBranch) {
     if (StringUtils.isBlank(formBranch)) {
       return getJsfSchemaRepository().findFirstByFormTypeAndFormBranchOrderByVersionDesc(formType,
           JsfConfig.getDefaultBranchName());
@@ -117,7 +117,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
   }
 
   default JS findOrCreateBranchingJsfSchema(String formType, String formBranch) {
-    JS js = findBreachingJsfSchema(formType, formBranch);
+    JS js = findBranchingJsfSchema(formType, formBranch);
     if (js != null) return js;
 
     return createBranchingJsfSchema(formType, formBranch);

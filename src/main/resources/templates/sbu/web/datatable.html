@@ -136,14 +136,16 @@
           <div class="btn-group">
             <!-- Creation Button Begin -->
             <th:block th:if="${creationOption == null}">
-              <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
+              <button
+                th:if="${user != null && itemClass != null && user.canCreate(itemClass)} or ${user != null && itemClass != null && !user.existsPermission(itemClass)}"
                 class="btn btn-outline-success" hx:get="@{${route.newPath}}"
                 hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
                 <i class="fas fa-file-circle-plus"></i>
               </button>
             </th:block>
             <th:block th:unless="${creationOption == null}">
-              <button th:if="${user != null && itemClass != null && user.canCreate(itemClass)}"
+              <button
+                th:if="${user != null && itemClass != null && user.canCreate(itemClass)} or ${user != null && itemClass != null && !user.existsPermission(itemClass)}"
                 class="btn btn-outline-success" data-bs-toggle="offcanvas"
                 data-bs-target="#creationOption">
                 <i class="fas fa-file-circle-plus"></i>
