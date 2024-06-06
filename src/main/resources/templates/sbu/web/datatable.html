@@ -173,13 +173,13 @@
             </button>
             <ul class="dropdown-menu">
               <li>
-                <a th:classappend="${user == null || user.canUpdate(item)} ? 'text-primary' : 'disabled'"
+                <a th:classappend="${user == null || user.canUpdate(item) || !user.existsPermission(itemClass)} ? 'text-primary' : 'disabled'"
                   hx:get="@{${item.getEditPath(queryConfig)}}" hx:target="${'#' + ajaxTargetId}"
                   hx-ext="json-enc" class="dropdown-item">
                   [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
               </li>
               <li>
-                <a th:classappend="${user == null || user.canDelete(item)} ? 'text-danger' : 'disabled'"
+                <a th:classappend="${user == null || user.canDelete(item) || !user.existsPermission(itemClass)} ? 'text-danger' : 'disabled'"
                   hx:delete="@{${item.getDeletePath(queryConfig)}}"
                   hx:confirm="${#messages.msgOrNull('sbu.ui.confirmation.delete') ?: 'Are you sure?'}"
                   hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
