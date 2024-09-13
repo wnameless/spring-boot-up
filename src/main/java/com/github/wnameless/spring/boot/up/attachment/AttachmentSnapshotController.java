@@ -116,7 +116,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
   @SneakyThrows
   default RestfulJsonSchemaForm<?> createUploadSelectiveForm(AttachmentChecklist checklist, ID id) {
     var uploadform =
-        new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id), "attachments");
+        new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id) + "/attachments", "");
     var mapper = SpringBootUp.getBean(ObjectMapper.class);
 
     uploadform.getSchema().put("type", "object");

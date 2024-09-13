@@ -44,7 +44,7 @@
               <ul class="list-group">
                 <li class="list-group-item"
                   th:each="attachment : ${attachmentGroups.get(fileGroup)}">
-                  <a th:href="@{${item.joinPath('attachments', attachment.id)}"
+                  <a th:href="@{${item.joinPath('attachments', attachment.id)}}"
                     th:text="${attachment.name}"></a>
                 </li>
               </ul>
