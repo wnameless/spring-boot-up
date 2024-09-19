@@ -37,7 +37,7 @@
               [[${#messages.msgOrNull('sbu.attachment.group.' + fileGroup) ?: fileGroup}]]
             </button>
           </h2>
-          <div th:id="'collapse_' + ${groupIndex.index}" class="accordion-collapse collapse"
+          <div th:id="'collapse_' + ${groupIndex.index}" class="accordion-collapse collapse show"
             th:attr="aria-labelledby='heading_' + ${groupIndex.index}"
             data-bs-parent="#accordionFileList">
             <div class="accordion-body">
