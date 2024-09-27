@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import org.springframework.data.repository.CrudRepository;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
+import com.github.wnameless.spring.boot.up.jsf.JsfConfig;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import lombok.Data;
 
@@ -75,9 +77,64 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
         .ofNullable(formDataTable.getOrDefault(formType, new LinkedHashMap<>()).get(formBranch));
   }
 
+  public Optional<ID> findStateFormId(Class<?> formType, String formBranch) {
+    return Optional.ofNullable(formDataTable
+        .getOrDefault(formType.getSimpleName(), new LinkedHashMap<>()).get(formBranch));
+  }
+
+  public Optional<ID> findStateFormIdOnDefaultBranch(String formType) {
+    return Optional.ofNullable(formDataTable.getOrDefault(formType, new LinkedHashMap<>())
+        .get(JsfConfig.getDefaultBranchName()));
+  }
+
+  public Optional<ID> findStateFormIdOnDefaultBranch(Class<?> formType) {
+    return Optional
+        .ofNullable(formDataTable.getOrDefault(formType.getSimpleName(), new LinkedHashMap<>())
+            .get(JsfConfig.getDefaultBranchName()));
+  }
+
   public List<ID> findAllStateFormIds(String formType, Collection<String> formBranches) {
     return getFormDataTable().getOrDefault(formType, new LinkedHashMap<>()).entrySet().stream()
         .filter(e -> formBranches.contains(e.getKey())).map(Entry::getValue).toList();
+  }
+
+  public List<ID> findAllStateFormIdsOnDefaultBranch(String formType) {
+    return getFormDataTable().getOrDefault(formType, new LinkedHashMap<>()).entrySet().stream()
+        .filter(e -> List.of(JsfConfig.getDefaultBranchName()).contains(e.getKey()))
+        .map(Entry::getValue).toList();
+  }
+
+  public List<ID> findAllStateFormIdsOnDefaultBranch(Class<?> formType) {
+    return getFormDataTable().getOrDefault(formType.getSimpleName(), new LinkedHashMap<>())
+        .entrySet().stream()
+        .filter(e -> List.of(JsfConfig.getDefaultBranchName()).contains(e.getKey()))
+        .map(Entry::getValue).toList();
+  }
+
+  @SuppressWarnings("unchecked")
+  public <F> Optional<F> findStateForm(Class<F> formType, String formBranch) {
+    var idOpt = findStateFormId(formType, formBranch);
+    if (idOpt.isEmpty()) return Optional.empty();
+
+    var formRepoOpt = SpringBootUp.findGenericBean(CrudRepository.class, formType, Object.class);
+    if (formRepoOpt.isEmpty()) return Optional.empty();
+
+    var formRepo = formRepoOpt.get();
+    var formOpt = formRepo.findById(idOpt.get());
+    return formOpt;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <F> Optional<F> findStateFormOnDefaultBranch(Class<F> formType) {
+    var idOpt = findStateFormIdOnDefaultBranch(formType);
+    if (idOpt.isEmpty()) return Optional.empty();
+
+    var formRepoOpt = SpringBootUp.findGenericBean(CrudRepository.class, formType, Object.class);
+    if (formRepoOpt.isEmpty()) return Optional.empty();
+
+    var formRepo = formRepoOpt.get();
+    var formOpt = formRepo.findById(idOpt.get());
+    return formOpt;
   }
 
 }
