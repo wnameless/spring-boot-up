@@ -47,7 +47,7 @@
         <!--   <form class="row g-3" method="GET" th:action="@{${route.indexPath}}"> -->
 
         <!-- Start: Fields for querying -->
-        <th:block th:each="field : ${queryConfig.fields}">
+        <th:block th:each="field : ${queryConfig.queryableFields}">
           <div class="col-8">
             <label class="form-label" th:if="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
             field) != null}">
