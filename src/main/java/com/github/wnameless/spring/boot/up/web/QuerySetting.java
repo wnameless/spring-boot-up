@@ -82,6 +82,13 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     return this;
   }
 
+  public QuerySetting<E> addFilterableField(FilterableField<E> ff,
+      Map<String, String> selectOption) {
+    ff.selectOption(selectOption);
+    filterFields.put(ff.getFieldName(entityPath), ff);
+    return this;
+  }
+
   public PathFilterableField onField(Function<E, Path<?>> pathFinder) {
     return new PathFilterableField(pathFinder);
   }
