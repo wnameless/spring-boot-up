@@ -48,14 +48,15 @@
 
         <!-- Start: Fields for querying -->
         <th:block th:each="field : ${queryConfig.queryableFields}">
-          <div class="col-8">
+          <div class="col-8"
+            th:if="${queryConfig.getFilterFields.get(field).inputType} ne 'hidden'">
             <label class="form-label" th:if="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
-            field) != null}">
+              field) != null}">
               [[${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
               field)}]]
             </label>
             <label class="form-label" th:unless="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
-            field) != null}">
+              field) != null}">
               [[${#messages.msgOrNull('sbu.web.item.field.' + itemClass.simpleName + '.' +
               field) ?: field}]]
             </label>
@@ -77,7 +78,12 @@
                 class="form-control" th:value="${queryConfig.getFieldQueryString(field)}">
             </th:block>
           </div>
-          <div class="col-4">
+          <th:block th:if="${queryConfig.getFilterFields.get(field).inputType} eq 'hidden'">
+            <input th:name="${field}" type="hidden" class="form-control"
+              th:value="${queryConfig.getFieldQueryString(field)}">
+          </th:block>
+          <div class="col-4"
+            th:if="${queryConfig.getFilterFields.get(field).inputType} ne 'hidden'">
             <th:block th:if="${queryConfig.getFieldSortName(field)}">
               <label
                 class="form-label">[[${#messages.msgOrNull('sbu.web.datatable.filter_option.sort')
