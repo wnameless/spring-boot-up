@@ -29,4 +29,25 @@ public interface TagTemplate<UL extends UserLabelTemplate<ID>, L extends LabelTe
 
   void setUsername(String username);
 
+  default String getGroupTitle() {
+    if (getLabelTemplate() != null) return getLabelTemplate().getGroupTitle();
+    if (getUserLabelTemplate() != null) return getUserLabelTemplate().getGroupTitle();
+    if (getSystemLabel() != null) return getSystemLabel().getGroupTitle();
+    return null;
+  }
+
+  default String getLabelName() {
+    if (getLabelTemplate() != null) return getLabelTemplate().getLabelName();
+    if (getUserLabelTemplate() != null) return getUserLabelTemplate().getLabelName();
+    if (getSystemLabel() != null) return getSystemLabel().getLabelName();
+    return null;
+  }
+
+  default String getLabelColor() {
+    if (getLabelTemplate() != null) return getLabelTemplate().getLabelColor();
+    if (getUserLabelTemplate() != null) return getUserLabelTemplate().getLabelColor();
+    if (getSystemLabel() != null) return getSystemLabel().getLabelColor();
+    return null;
+  }
+
 }
