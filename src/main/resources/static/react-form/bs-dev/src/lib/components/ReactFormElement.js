@@ -1,9 +1,9 @@
+import Form from '@rjsf/bootstrap-4';
+import bs3Form from '@rjsf/core';
 import validator from '@rjsf/validator-ajv6';
 import parse from 'html-react-parser';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-// import Form from '@rjsf/core';
-import Form from '@rjsf/bootstrap-4';
 import applyNavs from "react-jsonschema-form-pagination";
 import { NavStyleTag } from './Bootstrap4RjsfStyle';
 import { DownloadWidget, ImageWidget } from './Bootstrap4RjsfWidget';
@@ -121,12 +121,15 @@ class ReactFormElement extends HTMLElement {
     this.retrieveJson().then((data) => {
       if (data.schema == null) return;
 
-      let FormWithPagination = applyNavs(Form);
+      let FormWithPagination = this.attrs.theme == 'bs3' ? applyNavs(bs3Form) : applyNavs(Form);
+
       this.root.render(
         <React.Fragment>
-          <link rel="stylesheet" href={this.attrs.cssHref ||
+          <link rel="stylesheet" href={this.attrs.cssHref || (
             // 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'
-            'https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/litera/bootstrap.min.css'
+            this.attrs.theme == 'bs3' ?
+              'https://cdn.jsdelivr.net/npm/bootswatch@3.4.1/cosmo/bootstrap.min.css'
+              : 'https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/litera/bootstrap.min.css')
           }></link>
 
           {NavStyleTag}
