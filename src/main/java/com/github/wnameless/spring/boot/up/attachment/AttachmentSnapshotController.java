@@ -27,6 +27,7 @@ import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import net.sf.rubycollect4j.Ruby;
 
 public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvider<AA, A, ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
     extends RestfulRouteProvider<ID>, RestfulItemProvider<AA> {
@@ -82,7 +83,21 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
         {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "object",
+            "title": "附件",
+            "required": [
+              "fileName"
+            ],
+            "properties": {
+              "fileName": {
+                "title": "檔名",
+                "type": "string"
+              },
+              "note": {
+                "title": "附註",
+                "type": "string"
+              }
+            }
           }
         }
           """;
@@ -106,8 +121,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
     }
 
     for (String group : attachmentsGroups.keySet()) {
-      editform.getFormData().put(group,
-          attachmentsGroups.get(group).stream().map(a -> a.getName()).toList());
+      editform.getFormData().put(group, attachmentsGroups.get(group).stream()
+          .map(a -> Ruby.Hash.of("fileName", a.getName(), "note", a.getNote())).toList());
     }
 
     return editform;
@@ -308,9 +323,9 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
   }
 
   @PutMapping(path = "/{id}/attachments")
-  default ModelAndView deleteAttachments(ModelAndView mav, @PathVariable ID id,
+  default ModelAndView modifyAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestBody Map<String, Object> jsfFiles,
-      @RequestParam(required = true) String ajaxTargetId) {
+      @RequestParam(name = "_ajaxTargetId", required = true) String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
@@ -320,20 +335,24 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
     jsfFiles.entrySet().forEach(pair -> {
       String group = pair.getKey();
       if (pair.getValue() instanceof Collection) {
-        Collection<?> names = (Collection<?>) pair.getValue();
-        names.stream().forEach(name -> {
-          if (name instanceof String) {
-            filtered.addAll(original.stream()
-                .filter(
-                    a -> Objects.equals(a.getGroup(), group) && Objects.equals(a.getName(), name))
-                .toList());
+        Collection<?> nameAndNotes = (Collection<?>) pair.getValue();
+        nameAndNotes.stream().forEach(nameAndNote -> {
+          if (nameAndNote instanceof Map nan) {
+            filtered.addAll(original.stream().filter(a -> Objects.equals(a.getGroup(), group)
+                && Objects.equals(a.getName(), nan.get("fileName"))).map(a -> {
+                  a.setNote((String) nan.get("note"));
+                  return a;
+                }).toList());
           }
         });
-      } else if (pair.getValue() instanceof String) {
-        var name = pair.getValue();
+      } else if (pair.getValue() instanceof Map nan) {
+        var name = nan.get("fileName");
         filtered.addAll(original.stream()
             .filter(a -> Objects.equals(a.getGroup(), group) && Objects.equals(a.getName(), name))
-            .toList());
+            .map(a -> {
+              a.setNote((String) nan.get("note"));
+              return a;
+            }).toList());
       }
     });
     var oldAttachments = attachmentSnapshotProvider.getAttachmentSnapshot().getAttachments();

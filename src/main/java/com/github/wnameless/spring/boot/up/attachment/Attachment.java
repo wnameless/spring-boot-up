@@ -20,6 +20,10 @@ public interface Attachment<ID> extends IdProvider<ID> {
 
   void setUri(URI uri);
 
+  String getNote();
+
+  void setNote(String note);
+
   LocalDateTime getCreatedAt();
 
   void setCreatedAt(LocalDateTime createdAt);
