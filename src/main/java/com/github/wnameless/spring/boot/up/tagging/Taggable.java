@@ -45,4 +45,8 @@ public interface Taggable<T extends TagTemplate<UL, L, ID>, UL extends UserLabel
     }
   }
 
+  default boolean isTagEditable() {
+    return true;
+  }
+
 }

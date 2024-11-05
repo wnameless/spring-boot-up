@@ -11,9 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Alert;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
+import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper.AlertMessages;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.TypeRef;
@@ -156,8 +158,15 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
   default ModelAndView updateTaggings(ModelAndView mav, @PathVariable ID id,
       @RequestBody TaggableSchemaData<ID> data) {
     mav.setViewName("sbu/taggings/show :: " + getFragmentName());
-
     var taggable = getRestfulItem();
+    if (!taggable.isTagEditable()) {
+      var alertMessages = new AlertMessages();
+      alertMessages.getWarning().add("Tags can NOT be modified");
+      mav.addObject(Alert.name(), alertMessages);
+      mav.addObject(Item.name(), createEditForm(getRestfulItem(), id));
+      return mav;
+    }
+
     taggable.getTagTemplates().stream().filter(tag -> {
       if (tag.getLabelTemplate() == null) return true;
       return tag.getLabelTemplate().isUserEditable();
