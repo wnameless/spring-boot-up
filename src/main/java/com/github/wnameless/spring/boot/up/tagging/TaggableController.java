@@ -83,7 +83,8 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
     if (!labelList.isEmpty()) {
       var labelListEnum = labelList.stream().map(LabelTemplate::getId).toList();
       docCtx.put("$.properties.labelList.items", "enum", labelListEnum);
-      var labelListEnumNames = labelList.stream().map(LabelTemplate::getLabelName).toList();
+      var labelListEnumNames = labelList.stream()
+          .map(lt -> "[" + lt.getGroupTitle() + "] " + lt.getLabelName()).toList();
       docCtx.put("$.properties.labelList.items", "enumNames", labelListEnumNames);
     }
 
@@ -91,8 +92,8 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
     if (!userLabelList.isEmpty()) {
       var userLabelListEnum = userLabelList.stream().map(UserLabelTemplate::getId).toList();
       docCtx.put("$.properties.userLabelList.items", "enum", userLabelListEnum);
-      var userLabelListEnumNames =
-          userLabelList.stream().map(UserLabelTemplate::getLabelName).toList();
+      var userLabelListEnumNames = userLabelList.stream()
+          .map(ult -> "[" + ult.getGroupTitle() + "] " + ult.getLabelName()).toList();
       docCtx.put("$.properties.userLabelList.items", "enumNames", userLabelListEnumNames);
     }
 
@@ -103,8 +104,8 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
     if (!systemLabelList.isEmpty()) {
       var systemLabelListEnum = systemLabelList.stream().map(SystemLabel::getId).toList();
       docCtx.put("$.properties.systemLabelList.items", "enum", systemLabelListEnum);
-      var systemLabelListEnumNames =
-          systemLabelList.stream().map(SystemLabel::getLabelName).toList();
+      var systemLabelListEnumNames = systemLabelList.stream()
+          .map(sl -> "[" + sl.getGroupTitle() + "] " + sl.getLabelName()).toList();
       docCtx.put("$.properties.systemLabelList.items", "enumNames", systemLabelListEnumNames);
     }
 
