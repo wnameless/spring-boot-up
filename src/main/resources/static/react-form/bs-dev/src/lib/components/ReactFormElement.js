@@ -123,6 +123,58 @@ class ReactFormElement extends HTMLElement {
 
       let FormWithPagination = this.attrs.theme == 'bs3' ? applyNavs(bs3Form) : applyNavs(Form);
 
+      let isSaveOnly = this.attrs.saveonly;
+      let formData = {};
+      let attrs = this.attrs;
+
+      let handleChange = function (e) {
+        if (isSaveOnly) {
+          formData = e.formData;
+        }
+      };
+
+      let handleSave = function () {
+        if (isSaveOnly && attrs['ajax-target']) {
+          const tagId = attrs['ajax-target'];
+          const method = (attrs.method || 'get').toLowerCase();
+
+          if (method == 'get') {
+            let url = attrs.action;
+            url += url.includes('?') ? '&' : '?';
+
+            fetch(url + new URLSearchParams(formData), {
+              method: method,
+              headers: new Headers({
+                'Content-Type': 'application/json'
+              })
+            })
+              .then(res => res.text())
+              .then(data => HtmlHelper.setInnerHTML(document.getElementById(tagId), data))
+              .catch(e => console.error(e));
+          } else {
+            fetch(attrs.action, {
+              method: method,
+              body: JSON.stringify(formData),
+              headers: new Headers({
+                'Content-Type': 'application/json'
+              })
+            })
+              .then(res => res.text())
+              .then(data => HtmlHelper.setInnerHTML(document.getElementById(tagId), data))
+              .catch(e => console.error(e));
+          }
+        }
+      };
+
+      let saveButton;
+      if (isSaveOnly) {
+        if (this.attrs.saveonlybtntxt) {
+          saveButton = <button class="btn btn-warning" type="button" onClick={() => { handleSave() }}>{this.attrs.saveonlybtntxt}</button>
+        } else {
+          saveButton = <button class="btn btn-warning" type="button" onClick={() => { handleSave() }}>Save</button>
+        }
+      }
+
       this.root.render(
         <React.Fragment>
           <link rel="stylesheet" href={this.attrs.cssHref || (
@@ -136,6 +188,7 @@ class ReactFormElement extends HTMLElement {
 
           <FormWithPagination
             {...this.attrs}
+            onChange={handleChange}
             onSubmit={this.state.onSubmit}
             {...this.props}
             schema={data.schema}
@@ -144,7 +197,11 @@ class ReactFormElement extends HTMLElement {
             validator={validator}
             widgets={widgets}
           >
+
             {this.children.length > 0 && parse(this.innerHTML)}
+
+            {saveButton}
+
           </FormWithPagination>
 
         </React.Fragment>
