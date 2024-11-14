@@ -184,7 +184,7 @@ class ReactFormElement extends HTMLElement {
               : 'https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/litera/bootstrap.min.css')
           }></link>
 
-          {NavStyleTag}
+          {this.attrs.theme != 'bs3' ? NavStyleTag : null}
 
           <FormWithPagination
             {...this.attrs}
