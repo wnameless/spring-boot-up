@@ -1,28 +1,34 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, fid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
+  th:with="fid=${(T(java.lang.Math).random() * 2147483647).intValue()}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}">
   <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item" role="presentation">
       <button class="nav-link active" data-bs-toggle="tab"
-        th:attr="data-bs-target=${'#mainForm' + fid}" type="button" role="tab">Main</button>
+        th:attr="data-bs-target=${'#mainForm' + fid}" type="button" role="tab">
+        [[${#messages.msgOrNull('sbu.fsm.content-editor.tabs.main') ?: 'Main'}]]
+      </button>
     </li>
     <li th:if="${item.phase.stateRecord.hasViewableForm(item.phase.stateMachine)}" class="nav-item"
       role="presentation">
       <button class="nav-link" data-bs-toggle="tab" th:attr="data-bs-target=${'#stateForm' + fid}"
-        type="button" role="tab">State Form(s)</button>
+        type="button" role="tab">
+        [[${#messages.msgOrNull('sbu.fsm.content-editor.tabs.stateForms') ?: 'State Form(s)'}]]
+      </button>
     </li>
     <li th:if="${item.phase.stateRecord.hasEntireViewableForms(item.phase.stateMachine)}"
       class="nav-item" role="presentation">
       <button class="nav-link" data-bs-toggle="tab"
-        th:attr="data-bs-target=${'#entireStateForms' + fid}" type="button" role="tab">Entire State
-        Form(s)</button>
+        th:attr="data-bs-target=${'#entireStateForms' + fid}" type="button" role="tab">
+        [[${#messages.msgOrNull('sbu.fsm.content-editor.tabs.entireStateForms') ?: 'Entire State
+        Form(s)'}]]
+      </button>
     </li>
   </ul>
   <div class="tab-content">
     <div class="tab-pane fade show active" th:id="${'mainForm' + fid}" role="tabpanel">
       <div
-        th:replace="~{sbu/jsf/show-edit :: bs5(saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, __${@webModelAttributes.ITEM_NAME}__=${item}, __${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}">
+        th:replace="~{sbu/jsf/show-edit :: bs5(saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, __${@webModelAttributes.ITEM_NAME}__=${item}, __${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.BACK_PATH_NAME}__=${backPath})}">
       </div>
     </div>
 
