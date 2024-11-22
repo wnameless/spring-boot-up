@@ -95,7 +95,8 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
               },
               "note": {
                 "title": "附註",
-                "type": "string"
+                "type": "string",
+                "default": ""
               }
             }
           }

@@ -38,8 +38,8 @@ public interface Taggable<T extends TagTemplate<UL, L, ID>, UL extends UserLabel
       return taggingService.getTagTemplateRepository().findAllByEntityId(getId()).stream()
           .filter(ownershipRuleOpt.get()).toList();
     } else {
-      return taggingService
-          .getTagTemplateRepository().findAllByEntityId(getId()).stream().filter(tag -> Objects
+      return taggingService.getTagTemplateRepository().findAllByEntityId(getId()).stream()
+          .filter(tag -> tag.getLabelTemplate() != null || tag.getSystemLabel() != null || Objects
               .equals(tag.getUsername(), SpringBootUp.getBean(PermittedUser.class).getUsername()))
           .toList();
     }

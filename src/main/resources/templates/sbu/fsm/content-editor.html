@@ -6,21 +6,27 @@
     <li class="nav-item" role="presentation">
       <button class="nav-link active" data-bs-toggle="tab"
         th:attr="data-bs-target=${'#mainForm' + fid}" type="button" role="tab">
-        [[${#messages.msgOrNull('sbu.fsm.content-editor.tabs.main') ?: 'Main'}]]
+        [[${#messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.' +
+        item.phase.stateRecord.state.name + '.tabs.main') ?:
+        #messages.msgOrNull('sbu.fsm.content-editor.tabs.main') ?: 'Main'}]]
       </button>
     </li>
     <li th:if="${item.phase.stateRecord.hasViewableForm(item.phase.stateMachine)}" class="nav-item"
       role="presentation">
       <button class="nav-link" data-bs-toggle="tab" th:attr="data-bs-target=${'#stateForm' + fid}"
         type="button" role="tab">
-        [[${#messages.msgOrNull('sbu.fsm.content-editor.tabs.stateForms') ?: 'State Form(s)'}]]
+        [[${#messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.' +
+        item.phase.stateRecord.state.name + '.tabs.stateForms') ?:
+        #messages.msgOrNull('sbu.fsm.content-editor.tabs.stateForms') ?: 'State Form(s)'}]]
       </button>
     </li>
     <li th:if="${item.phase.stateRecord.hasEntireViewableForms(item.phase.stateMachine)}"
       class="nav-item" role="presentation">
       <button class="nav-link" data-bs-toggle="tab"
         th:attr="data-bs-target=${'#entireStateForms' + fid}" type="button" role="tab">
-        [[${#messages.msgOrNull('sbu.fsm.content-editor.tabs.entireStateForms') ?: 'Entire State
+        [[${#messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.' +
+        item.phase.stateRecord.state.name + '.tabs.entireStateForms') ?:
+        #messages.msgOrNull('sbu.fsm.content-editor.tabs.entireStateForms') ?: 'Entire State
         Form(s)'}]]
       </button>
     </li>
