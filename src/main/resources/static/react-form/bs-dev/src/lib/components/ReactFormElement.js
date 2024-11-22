@@ -5,8 +5,9 @@ import parse from 'html-react-parser';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import applyNavs from "react-jsonschema-form-pagination";
-import { NavStyleTag } from './Bootstrap4RjsfStyle';
-import { DownloadWidget, ImageWidget } from './Bootstrap4RjsfWidget';
+import applyBs4Navs from "react-jsonschema-form-pagination-bs4";
+// import { NavStyleTag } from './Bootstrap4RjsfStyle';
+// import { DownloadWidget, ImageWidget } from './Bootstrap4RjsfWidget';
 import * as HtmlHelper from './HtmlHelper';
 
 class ReactFormElement extends HTMLElement {
@@ -113,15 +114,15 @@ class ReactFormElement extends HTMLElement {
   }
 
   mount() {
-    const widgets = {
-      downloadWidget: DownloadWidget,
-      imageWidget: ImageWidget
-    };
+    // const widgets = {
+    //   downloadWidget: DownloadWidget,
+    //   imageWidget: ImageWidget
+    // };
 
     this.retrieveJson().then((data) => {
       if (data.schema == null) return;
 
-      let FormWithPagination = this.attrs.theme == 'bs3' ? applyNavs(bs3Form) : applyNavs(Form);
+      let FormWithPagination = this.attrs.theme == 'bs3' ? applyNavs(bs3Form) : applyBs4Navs(Form);
 
       let isSaveOnly = this.attrs.saveonly;
       let formData = {};
@@ -177,6 +178,7 @@ class ReactFormElement extends HTMLElement {
 
       this.root.render(
         <React.Fragment>
+
           <link rel="stylesheet" href={this.attrs.cssHref || (
             // 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'
             this.attrs.theme == 'bs3' ?
@@ -184,7 +186,8 @@ class ReactFormElement extends HTMLElement {
               : 'https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/litera/bootstrap.min.css')
           }></link>
 
-          {this.attrs.theme != 'bs3' ? NavStyleTag : null}
+          { // this.attrs.theme != 'bs3' ? NavStyleTag : null
+          }
 
           <FormWithPagination
             {...this.attrs}
@@ -195,7 +198,7 @@ class ReactFormElement extends HTMLElement {
             uiSchema={data.uiSchema}
             formData={data.formData}
             validator={validator}
-            widgets={widgets}
+          // widgets={widgets}
           >
 
             {this.children.length > 0 && parse(this.innerHTML)}
