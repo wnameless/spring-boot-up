@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}"
+  th:with="jsfTheme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}"
   class="card">
   <div class="card-header">
     <button
@@ -13,7 +13,7 @@
     <react-form th:id="${'editForm' + rid}"
       th:action="@{${item.updatePath}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
       method="PUT" ajax:target="${ajaxTargetId}"
-      th:attr="saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}">
+      th:attr="theme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}">
       <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
         'Submit'}]]</button>
     </react-form>
