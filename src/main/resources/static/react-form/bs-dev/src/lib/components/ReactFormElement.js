@@ -6,8 +6,8 @@ import React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import applyNavs from "react-jsonschema-form-pagination";
 import applyBs4Navs from "react-jsonschema-form-pagination-bs4";
-import { Bs3StyleTag } from './Bootstrap3RjsfStyle';
-import { Bs4StyleTag } from './Bootstrap4RjsfStyle';
+// import { Bs3StyleTag } from './Bootstrap3RjsfStyle';
+// import { Bs4StyleTag } from './Bootstrap4RjsfStyle';
 // import { DownloadWidget, ImageWidget } from './Bootstrap4RjsfWidget';
 import * as HtmlHelper from './HtmlHelper';
 
@@ -180,7 +180,12 @@ class ReactFormElement extends HTMLElement {
       this.root.render(
         <React.Fragment>
 
-          {this.attrs.theme == 'bs3' ? Bs3StyleTag : Bs4StyleTag}
+          <link rel="stylesheet" href={this.attrs.cssHref || (
+            // 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'
+            this.attrs.theme == 'bs3' ?
+              'react-form/css/bootswatch-3.4.1-cosmo.css'
+              : 'react-form/css/bootswatch-4.6.2-litera.css')
+          }></link>
 
           <FormWithPagination
             {...this.attrs}
@@ -233,76 +238,3 @@ class ReactFormElement extends HTMLElement {
 }
 
 customElements.define('react-form', ReactFormElement);
-/* 
-class SemanticUIReactFormElement extends ReactFormElement {
-
-  mount() {
-    const DownloadWidget = (props) => {
-      let li = [];
-      (props.value instanceof Array ? props.value : [props.value]).forEach(function (base64) {
-        if (base64 == null) {
-          li.push(
-            <li class="item">
-              No file
-            </li>
-          );
-        } else {
-          let base64Parts = base64.split(';');
-          let filename = decodeURI(base64Parts[1].split('=')[1]);
-
-          li.push(
-            <div class="content">
-              <a download={filename} href={props.value}>
-                {filename}
-              </a>
-            </div>
-          );
-        }
-      })
-
-      return (
-        <ul class="ui list">
-          {li}
-        </ul>
-      );
-    };
-
-    const widgets = {
-      downloadWidget: DownloadWidget
-    };
-
-    this.retrieveJson().then((data) => {
-      if (data.schema == null) return;
-
-      let FormWithPagination = applyNavs(SemanticUIForm);
-      this.root.render(
-        <React.Fragment>
-          <link rel="stylesheet" href={this.attrs.cssHref ||
-            'https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.css'
-            // 'https://raw.githubusercontent.com/semantic-ui-forest/forest-themes/master/dist/bootswatch/v4/semantic.yeti.min.css'
-          }></link>
-
-          <FormWithPagination
-            {...this.attrs}
-            onSubmit={this.state.onSubmit}
-            {...this.props}
-            schema={data.schema}
-            uiSchema={data.uiSchema}
-            formData={data.formData}
-            validator={validator}
-            widgets={widgets}
-          >
-            {this.children.length > 0 && parse(this.innerHTML)}
-          </FormWithPagination>
-        </React.Fragment>
-      );
-    });
-  }
-
-}
-
-customElements.define(
-  // 'semantic-ui-react-form', 
-  'react-form',
-  SemanticUIReactFormElement);
- */
