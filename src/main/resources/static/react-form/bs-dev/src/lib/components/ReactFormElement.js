@@ -6,8 +6,6 @@ import React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import applyNavs from "react-jsonschema-form-pagination";
 import applyBs4Navs from "react-jsonschema-form-pagination-bs4";
-// import { Bs3StyleTag } from './Bootstrap3RjsfStyle';
-// import { Bs4StyleTag } from './Bootstrap4RjsfStyle';
 // import { DownloadWidget, ImageWidget } from './Bootstrap4RjsfWidget';
 import * as HtmlHelper from './HtmlHelper';
 
