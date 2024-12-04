@@ -6,7 +6,8 @@ import React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import applyNavs from "react-jsonschema-form-pagination";
 import applyBs4Navs from "react-jsonschema-form-pagination-bs4";
-// import { NavStyleTag } from './Bootstrap4RjsfStyle';
+import { Bs3StyleTag } from './Bootstrap3RjsfStyle';
+import { Bs4StyleTag } from './Bootstrap4RjsfStyle';
 // import { DownloadWidget, ImageWidget } from './Bootstrap4RjsfWidget';
 import * as HtmlHelper from './HtmlHelper';
 
@@ -179,15 +180,7 @@ class ReactFormElement extends HTMLElement {
       this.root.render(
         <React.Fragment>
 
-          <link rel="stylesheet" href={this.attrs.cssHref || (
-            // 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'
-            this.attrs.theme == 'bs3' ?
-              'https://cdn.jsdelivr.net/npm/bootswatch@3.4.1/cosmo/bootstrap.min.css'
-              : 'https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/litera/bootstrap.min.css')
-          }></link>
-
-          { // this.attrs.theme != 'bs3' ? NavStyleTag : null
-          }
+          {this.attrs.theme == 'bs3' ? Bs3StyleTag : Bs4StyleTag}
 
           <FormWithPagination
             {...this.attrs}

@@ -2,25 +2,15 @@
 
 <th:block th:fragment="all">
   <!-- Htmx -->
-  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-  <script src="https://unpkg.com/htmx.org@1.9.6/dist/ext/json-enc.js"></script>
-  <script src="https://unpkg.com/htmx.org@1.9.6/dist/ext/ajax-header.js"></script>
+  <script th:src="@{/htmx/2.0.3/htmx.min.js}"></script>
+  <script th:src="@{/htmx/2.0.3/ext/json-enc.js}"></script>
+  <script th:src="@{/htmx/2.0.3/ext/ajax-header.js}"></script>
 
   <!-- Glyphicon -->
   <link th:href="@{/react-form/css/glyphicon.min.css}" rel="stylesheet" />
 
   <!-- Webpack -->
   <script th:src="@{/react-form/bs/main.js}" defer></script>
-</th:block>
-
-<th:block th:fragment="all-mui">
-  <!-- Htmx -->
-  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-  <script src="https://unpkg.com/htmx.org@1.9.6/dist/ext/json-enc.js"></script>
-  <script src="https://unpkg.com/htmx.org@1.9.6/dist/ext/ajax-header.js"></script>
-
-  <!-- Webpack -->
-  <script th:src="@{/react-form/mui/main.js}" defer></script>
 </th:block>
 
 </html>
