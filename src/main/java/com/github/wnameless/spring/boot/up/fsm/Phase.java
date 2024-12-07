@@ -1,14 +1,20 @@
 package com.github.wnameless.spring.boot.up.fsm;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import com.github.oxo42.stateless4j.StateMachine;
+import com.github.oxo42.stateless4j.StateRepresentation;
 import com.github.oxo42.stateless4j.delegates.Trace;
+import com.github.oxo42.stateless4j.triggers.TriggerBehaviour;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControllable;
+import lombok.SneakyThrows;
+import net.sf.rubycollect4j.Ruby;
 
 public interface Phase<E extends PhaseProvider<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
     extends AccessControllable, StateMachineInitializable<S, T> {
@@ -18,6 +24,49 @@ public interface Phase<E extends PhaseProvider<E, S, T, ID>, S extends State<T, 
   List<S> getAllStates();
 
   List<T> getAllTriggers();
+
+  @SneakyThrows
+  default List<ActiveTrigger<T>> getActiveTriggers() {
+    List<ActiveTrigger<T>> activeTriggers = new ArrayList<>();
+
+    S state = getStateMachine().getState();
+    StateRepresentation<S, T> rep = getStateMachine().configuration().getRepresentation(state);
+    List<T> permittedTriggers = getStateMachine().getPermittedTriggers();
+    Method method = StateRepresentation.class.getDeclaredMethod("getTriggerBehaviours");
+    method.setAccessible(true);
+
+    @SuppressWarnings("unchecked")
+    Map<T, List<TriggerBehaviour<S, T>>> triggerBehaviours =
+        (Map<T, List<TriggerBehaviour<S, T>>>) method.invoke(rep);
+    for (T trigger : getAllTriggers()) {
+      if (Ruby.Object.isBlank(triggerBehaviours.get(trigger))) continue;
+      if (trigger.getTriggerType() != TriggerType.SIMPLE) continue;
+
+      boolean disable = !permittedTriggers.contains(trigger);
+      var phaseName = this.getClass().getSimpleName();
+      if (disable) {
+        var msgKey = Ruby.Array
+            .of("sbu.fsm.message.prohibited", phaseName, state.getName(), trigger.getName())
+            .join(".");
+        var message = SpringBootUp.getMessage(msgKey, new Object[] {}, null);
+        var at = new ActiveTrigger<>(trigger);
+        at.setDisable(disable);
+        at.setMessage(message);
+        activeTriggers.add(at);
+      } else {
+        var msgKey = Ruby.Array
+            .of("sbu.fsm.message.permitted", phaseName, state.getName(), trigger.getName())
+            .join(".");
+        var message = SpringBootUp.getMessage(msgKey, new Object[] {}, null);
+        var at = new ActiveTrigger<>(trigger);
+        at.setDisable(disable);
+        at.setMessage(message);
+        activeTriggers.add(at);
+      }
+    }
+
+    return activeTriggers;
+  }
 
   default List<T> getExternalTriggers() {
     return getStateMachine().getPermittedTriggers().stream()
