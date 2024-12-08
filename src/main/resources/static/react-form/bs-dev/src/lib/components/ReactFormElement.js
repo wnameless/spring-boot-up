@@ -175,14 +175,15 @@ class ReactFormElement extends HTMLElement {
         }
       }
 
+      const contextPath = window.contextPath || '/';
       this.root.render(
         <React.Fragment>
 
           <link rel="stylesheet" href={this.attrs.cssHref || (
             // 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css'
             this.attrs.theme == 'bs3' ?
-              'react-form/css/bootswatch-3.4.1-cosmo.css'
-              : 'react-form/css/bootswatch-4.6.2-litera.css')
+              `${contextPath}/react-form/css/bootswatch-3.4.1-cosmo.css`
+              : `${contextPath}/react-form/css/bootswatch-4.6.2-litera.css`)
           }></link>
 
           <FormWithPagination
