@@ -33,10 +33,10 @@
     </div>
 
     <script th:inline="javascript">
-      var showEditFormDataset = /*[[${item.toDataset()}]]*/ null;
+      window['showEditFormDataset' + /*[[${rid}]]*/ 0] = /*[[${item.toDataset()}]]*/ null;
       var showEditFormId = /*[[${'showEditForm' + rid}]]*/ null;
       var showEditForm = document.getElementById(showEditFormId);
-      showEditForm.setAttribute('props-var', 'showEditFormDataset');
+      showEditForm.setAttribute('props-var', 'showEditFormDataset' + /*[[${rid}]]*/ 0);
     </script>
   </div>
   <script th:inline="javascript" defer>

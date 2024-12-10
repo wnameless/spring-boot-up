@@ -16,10 +16,10 @@
     </div>
 
     <script th:inline="javascript">
-      var showFormDataset = /*[[${item.toDataset()}]]*/ null;
+      window['showFormDataset' + /*[[${rid}]]*/ 0] = /*[[${item.toDataset()}]]*/ null;
       var showFormId = /*[[${'showForm' + rid}]]*/ null;
       var showForm = document.getElementById(showFormId);
-      showForm.setAttribute('props-var', 'showFormDataset');
+      showForm.setAttribute('props-var', 'showFormDataset' + /*[[${rid}]]*/ 0);
     </script>
   </div>
   <script th:inline="javascript" defer>

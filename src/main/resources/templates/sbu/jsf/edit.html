@@ -19,10 +19,10 @@
     </react-form>
 
     <script th:inline="javascript">
-      var editFormDataset = /*[[${item.toDataset()}]]*/ null;
+      window['editFormDataset' + /*[[${rid}]]*/ 0] = /*[[${item.toDataset()}]]*/ null;
       var editFormId = /*[[${'editForm' + rid}]]*/ null;
       var editForm = document.getElementById(editFormId);
-      editForm.setAttribute('props-var', 'editFormDataset');
+      editForm.setAttribute('props-var', 'editFormDataset' + /*[[${rid}]]*/ 0);
     </script>
   </div>
   <script th:inline="javascript" defer>

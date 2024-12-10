@@ -18,10 +18,10 @@
     </react-form>
 
     <script th:inline="javascript">
-      var newFormDataset = /*[[${item.toDataset()}]]*/ null;
+      window['newFormDataset' + /*[[${rid}]]*/ 0] = /*[[${item.toDataset()}]]*/ null;
       var newFormId = /*[[${'newForm' + rid}]]*/ null;
       var newForm = document.getElementById(newFormId);
-      newForm.setAttribute('props-var', 'newFormDataset');
+      newForm.setAttribute('props-var', 'newFormDataset' + /*[[${rid}]]*/ 0);
     </script>
   </div>
   <script th:inline="javascript" defer>
