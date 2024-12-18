@@ -34,7 +34,7 @@ public final class JsfConfig {
     modelMapper.getConfiguration() //
         .setSkipNullEnabled(true) //
         .setCollectionsMergeEnabled(false) //
-        .setMatchingStrategy(MatchingStrategies.STANDARD);
+        .setMatchingStrategy(MatchingStrategies.STRICT);
     return modelMapper;
   }
 
