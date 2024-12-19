@@ -14,24 +14,13 @@ public interface MembershipService<ID> {
 
   List<? extends MembershipRepository<?, ID>> getMembershipRepositories();
 
-  default List<? extends Membership<ID>> findAllByMembershipTypes(
-      Collection<Class<? extends Membership<ID>>> membershipTypes) {
-    var memberships = new ArrayList<Membership<ID>>();
-
-    getMembershipRepositories().forEach(repo -> {
-      if (membershipTypes.contains(repo.getMembershipType())) {
-        repo.findAll().forEach(membership -> memberships.add(membership));
-      }
-    });
-
-    return memberships;
-  }
-
   default List<? extends Membership<ID>> findAllByUsername(String username) {
     var memberships = new ArrayList<Membership<ID>>();
 
     getMembershipRepositories().forEach(repo -> {
-      repo.findAllByUsername(username).forEach(membership -> memberships.add(membership));
+      repo.findAllByUsername(username).stream() //
+          .filter(Membership::isMembershipActive) //
+          .map(memberships::add);
     });
 
     return memberships;
@@ -43,7 +32,9 @@ public interface MembershipService<ID> {
 
     getMembershipRepositories().forEach(repo -> {
       if (Objects.equals(repo.getMembershipType(), membershipType)) {
-        repo.findAllByUsername(username).forEach(membership -> memberships.add(membership));
+        repo.findAllByUsername(username).stream() //
+            .filter(Membership::isMembershipActive) //
+            .map(memberships::add);
       }
     });
 
@@ -55,7 +46,9 @@ public interface MembershipService<ID> {
 
     getMembershipRepositories().forEach(repo -> {
       var targetMemberships = repo.findAllByRolesIn(rolifies.stream().map(Rolify::toRole).toList());
-      memberships.addAll(targetMemberships);
+      targetMemberships.stream() //
+          .filter(Membership::isMembershipActive) //
+          .map(memberships::add);
     });
 
     return memberships;
@@ -67,11 +60,11 @@ public interface MembershipService<ID> {
 
     getMembershipRepositories().forEach(repo -> {
       var targetMemberships = repo.findAllByRolesIn(rolifies.stream().map(Rolify::toRole).toList());
-      var filteredMemberships = targetMemberships.stream()
+      targetMemberships.stream() //
+          .filter(Membership::isMembershipActive) //
           .filter(
               mem -> Objects.equals(membershipOrganizationId, mem.getMembershipOrganizationId()))
-          .toList();
-      memberships.addAll(filteredMemberships);
+          .map(memberships::add);
     });
 
     return memberships;
@@ -83,11 +76,11 @@ public interface MembershipService<ID> {
 
     getMembershipRepositories().forEach(repo -> {
       var targetMemberships = repo.findAllByRolesIn(rolifies.stream().map(Rolify::toRole).toList());
-      var filteredMemberships = targetMemberships.stream()
+      targetMemberships.stream() //
+          .filter(Membership::isMembershipActive) //
           .filter(mem -> Objects.equals(membershipOrganizationId, mem.getMembershipOrganizationId())
               && Objects.equals(username, mem.getUsername()))
-          .toList();
-      memberships.addAll(filteredMemberships);
+          .map(memberships::add);
     });
 
     return memberships;
@@ -97,9 +90,10 @@ public interface MembershipService<ID> {
     var roles = new LinkedHashSet<Role>();
 
     getMembershipRepositories().forEach(repo -> {
-      repo.findAllByUsername(username).forEach(membership -> {
-        roles.addAll(Optional.ofNullable(membership.getRoles()).orElse(Set.of()));
-      });
+      repo.findAllByUsername(username).stream() //
+          .filter(Membership::isMembershipActive)
+          .map(membership -> Optional.ofNullable(membership.getRoles()).orElse(Set.of()))
+          .map(roles::addAll);
     });
 
     return roles;
@@ -112,7 +106,7 @@ public interface MembershipService<ID> {
     getMembershipRepositories().forEach(repo -> {
       var targetMemberships = repo.findAllByUsernameAndRolesIn(username,
           rolifies.stream().map(Rolify::toRole).toList());
-      memberships.addAll(targetMemberships);
+      targetMemberships.stream().filter(Membership::isMembershipActive).map(memberships::add);
     });
 
     return memberships;

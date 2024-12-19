@@ -19,4 +19,8 @@ public interface Membership<ID> {
     return Collections.emptyMap();
   }
 
+  default boolean isMembershipActive() {
+    return true;
+  }
+
 }
