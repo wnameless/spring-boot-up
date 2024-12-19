@@ -20,7 +20,7 @@ public interface MembershipService<ID> {
     getMembershipRepositories().forEach(repo -> {
       repo.findAllByUsername(username).stream() //
           .filter(Membership::isMembershipActive) //
-          .map(memberships::add);
+          .forEach(memberships::add);
     });
 
     return memberships;
@@ -34,7 +34,7 @@ public interface MembershipService<ID> {
       if (Objects.equals(repo.getMembershipType(), membershipType)) {
         repo.findAllByUsername(username).stream() //
             .filter(Membership::isMembershipActive) //
-            .map(memberships::add);
+            .forEach(memberships::add);
       }
     });
 
@@ -48,7 +48,7 @@ public interface MembershipService<ID> {
       var targetMemberships = repo.findAllByRolesIn(rolifies.stream().map(Rolify::toRole).toList());
       targetMemberships.stream() //
           .filter(Membership::isMembershipActive) //
-          .map(memberships::add);
+          .forEach(memberships::add);
     });
 
     return memberships;
@@ -64,7 +64,7 @@ public interface MembershipService<ID> {
           .filter(Membership::isMembershipActive) //
           .filter(
               mem -> Objects.equals(membershipOrganizationId, mem.getMembershipOrganizationId()))
-          .map(memberships::add);
+          .forEach(memberships::add);
     });
 
     return memberships;
@@ -80,7 +80,7 @@ public interface MembershipService<ID> {
           .filter(Membership::isMembershipActive) //
           .filter(mem -> Objects.equals(membershipOrganizationId, mem.getMembershipOrganizationId())
               && Objects.equals(username, mem.getUsername()))
-          .map(memberships::add);
+          .forEach(memberships::add);
     });
 
     return memberships;
@@ -93,7 +93,7 @@ public interface MembershipService<ID> {
       repo.findAllByUsername(username).stream() //
           .filter(Membership::isMembershipActive)
           .map(membership -> Optional.ofNullable(membership.getRoles()).orElse(Set.of()))
-          .map(roles::addAll);
+          .forEach(roles::addAll);
     });
 
     return roles;
@@ -106,7 +106,9 @@ public interface MembershipService<ID> {
     getMembershipRepositories().forEach(repo -> {
       var targetMemberships = repo.findAllByUsernameAndRolesIn(username,
           rolifies.stream().map(Rolify::toRole).toList());
-      targetMemberships.stream().filter(Membership::isMembershipActive).map(memberships::add);
+      targetMemberships.stream() //
+          .filter(Membership::isMembershipActive) //
+          .forEach(memberships::add);
     });
 
     return memberships;
