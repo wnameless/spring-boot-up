@@ -95,6 +95,12 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
         .filter(e -> formBranches.contains(e.getKey())).map(Entry::getValue).toList();
   }
 
+  public List<ID> findAllStateFormIds(Class<?> formType, Collection<String> formBranches) {
+    return getFormDataTable().getOrDefault(formType.getSimpleName(), new LinkedHashMap<>())
+        .entrySet().stream().filter(e -> formBranches.contains(e.getKey())).map(Entry::getValue)
+        .toList();
+  }
+
   public List<ID> findAllStateFormIdsOnDefaultBranch(String formType) {
     return findAllStateFormIds(formType, List.of(JsfConfig.getDefaultBranchName()));
   }

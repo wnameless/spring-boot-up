@@ -25,6 +25,7 @@ public interface Phase<E extends PhaseProvider<E, S, T, ID>, S extends State<T, 
 
   List<T> getAllTriggers();
 
+  @SuppressWarnings("unchecked")
   @SneakyThrows
   default List<ActiveTrigger<T>> getActiveTriggers() {
     List<ActiveTrigger<T>> activeTriggers = new ArrayList<>();
@@ -35,9 +36,12 @@ public interface Phase<E extends PhaseProvider<E, S, T, ID>, S extends State<T, 
     Method method = StateRepresentation.class.getDeclaredMethod("getTriggerBehaviours");
     method.setAccessible(true);
 
-    @SuppressWarnings("unchecked")
-    Map<T, List<TriggerBehaviour<S, T>>> triggerBehaviours =
-        (Map<T, List<TriggerBehaviour<S, T>>>) method.invoke(rep);
+    Map<T, List<TriggerBehaviour<S, T>>> triggerBehaviours;
+    if (rep == null) {
+      triggerBehaviours = Map.of();
+    } else {
+      triggerBehaviours = (Map<T, List<TriggerBehaviour<S, T>>>) method.invoke(rep);
+    }
     for (T trigger : getAllTriggers()) {
       if (Ruby.Object.isBlank(triggerBehaviours.get(trigger))) continue;
       if (trigger.getTriggerType() != TriggerType.SIMPLE) continue;
