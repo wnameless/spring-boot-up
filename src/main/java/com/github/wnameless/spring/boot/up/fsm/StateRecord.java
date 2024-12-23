@@ -50,6 +50,28 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
     return state.getForms().stream().anyMatch(f -> sm.canFire(f.viewableTriggerStock().get()));
   }
 
+  public List<String> getViewableForms(StateMachine<S, T> sm) {
+    var viewableFormTypes = new ArrayList<String>();
+
+    var stateForms =
+        state.getForms().stream().filter(f -> sm.canFire(f.viewableTriggerStock().get())).toList();
+    stateForms.forEach(sf -> {
+      var formType = sf.formTypeStock().get();
+      var formBranch = sf.formBranchStock().get();
+      if (formDataTable.keySet().contains(formType)) {
+        if (formDataTable.get(formType) instanceof Map<String, ID> formBranchIdMap) {
+          if (formBranchIdMap.get(formBranch) != null) {
+            viewableFormTypes.add(formType);
+          }
+        }
+      } else if (sm.canFire(sf.editableTriggerStock().get())) {
+        viewableFormTypes.add(formType);
+      }
+    });
+
+    return viewableFormTypes;
+  }
+
   public boolean hasEntireViewableForms(StateMachine<S, T> sm) {
     return state.getForms().stream()
         .anyMatch(f -> sm.canFire(f.entireViewableTriggerStock().get()));
