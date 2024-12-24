@@ -200,7 +200,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
   @GetMapping(path = "/{id}/forms/{formType}", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView showFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType) {
-    mav.setViewName("sbu/jsf/show-edit :: bs5");
+    mav.setViewName("sbu/jsf/show-edit-only :: bs5");
 
     showAndEditAction(mav, id, formType);
     return mav;
@@ -293,7 +293,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
       consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView updateFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType, @RequestBody Map<String, Object> formData) {
-    mav.setViewName("sbu/jsf/show-edit :: bs5");
+    mav.setViewName("sbu/jsf/show-edit-only :: bs5");
 
     PP phaseProvider = getRestfulRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phaseProvider.getPhase().getStateRecord();
