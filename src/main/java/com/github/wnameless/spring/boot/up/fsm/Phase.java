@@ -13,6 +13,7 @@ import com.github.oxo42.stateless4j.triggers.TriggerBehaviour;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControllable;
+import com.github.wnameless.spring.boot.up.permission.role.Role;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
@@ -53,6 +54,21 @@ public interface Phase<E extends PhaseProvider<E, S, T, ID>, S extends State<T, 
             .of("sbu.fsm.message.prohibited", phaseName, state.getName(), trigger.getName())
             .join(".");
         var message = SpringBootUp.getMessage(msgKey, new Object[] {}, null);
+
+        var rolesIncludeKey = Ruby.Array.of("sbu.fsm.message.prohibited", phaseName,
+            state.getName(), trigger.getName(), "roles_include").join(".");
+        var rolesInclude = SpringBootUp.getMessage(rolesIncludeKey, new Object[] {}, null);
+        if (rolesInclude instanceof String roles) {
+          var roleList = List.of(roles.split(",")).stream().map(String::strip).toList();
+          var phaseRoleAwareOpt = SpringBootUp.findBean(PhaseRoleAware.class);
+          if (phaseRoleAwareOpt.isPresent()) {
+            var phaseRoles = phaseRoleAwareOpt.get().getRoles();
+            if (Ruby.Array.of(phaseRoles).map(Role::getRoleName).intersection(roleList).isEmpty()) {
+              message = null;
+            }
+          }
+        }
+
         var at = new ActiveTrigger<>(trigger);
         at.setDisable(disable);
         at.setMessage(message);

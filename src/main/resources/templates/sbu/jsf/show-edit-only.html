@@ -5,6 +5,8 @@
   class="card">
   <div class="card-header">
     <div class="d-flex justify-content-end">
+      <!-- Keep the header height even if the edit icon is hidden  -->
+      <i class="fa fa-fw" style="visibility: hidden;"></i>
       <a th:if="${user == null || user.canUpdate(item)}" class="pe-2 orange"
         hx:get="@{${item.getEditPath(queryConfig)}(jsfTheme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
         hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">

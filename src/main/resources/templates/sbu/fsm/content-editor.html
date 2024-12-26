@@ -8,6 +8,7 @@
         th:attr="data-bs-target=${'#mainForm' + fid}" type="button" role="tab">
         [[${#messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.' +
         item.phase.stateRecord.state.name + '.tabs.main') ?:
+        #messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.stateForms.main') ?:
         #messages.msgOrNull('sbu.fsm.content-editor.tabs.main') ?: 'Main'}]]
       </button>
     </li>
