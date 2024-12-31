@@ -40,7 +40,7 @@ public interface JsonPathJsfStrategy<F extends JsonSchemaForm> extends JsfStrate
     if (jsonPathUiSchemaStrategy() == null) return null;
 
     return (entity, jsf) -> {
-      DocumentContext docCtx = JsonPath.parse(jsf.getSchema());
+      DocumentContext docCtx = JsonPath.parse(jsf.getUiSchema());
       return jsonPathUiSchemaStrategy().apply(entity, docCtx).read("$",
           new TypeRef<Map<String, Object>>() {});
     };
@@ -50,7 +50,7 @@ public interface JsonPathJsfStrategy<F extends JsonSchemaForm> extends JsfStrate
     if (jsonPathFormDataStrategy() == null) return null;
 
     return (entity, jsf) -> {
-      DocumentContext docCtx = JsonPath.parse(jsf.getSchema());
+      DocumentContext docCtx = JsonPath.parse(jsf.getFormData());
       return jsonPathFormDataStrategy().apply(entity, docCtx).read("$",
           new TypeRef<Map<String, Object>>() {});
     };

@@ -10,7 +10,15 @@ import com.github.wnameless.spring.boot.up.fsm.Phase;
 import com.github.wnameless.spring.boot.up.fsm.State;
 import com.github.wnameless.spring.boot.up.fsm.Trigger;
 
-public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, NT extends NotificationTarget<NS, NR, M, ID>, NS extends NotificationSource<ID>, SM extends NotifiableStateMachine<SM, S, T> & Phase<?, S, T, ID>, NR extends NotificationReceiver<M>, M, S extends State<T, ID>, T extends Trigger, ID> {
+public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, //
+    NT extends NotificationTarget<NS, NR, M, ID>, //
+    NS extends NotificationSource<ID>, //
+    NR extends NotificationReceiver<M>, //
+    M, //
+    SM extends NotifiableStateMachine<SM, S, T> & Phase<?, S, T, ID>, //
+    S extends State<T, ID>, //
+    T extends Trigger, //
+    ID> {
 
   Class<SM> getNotifiableStateMachineType();
 
