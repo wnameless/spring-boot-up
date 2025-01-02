@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.jsf.service;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.github.wnameless.spring.boot.up.jsf.JsfConfig;
 import com.github.wnameless.spring.boot.up.jsf.JsonCoreFactory;
 import com.github.wnameless.spring.boot.up.jsf.JsonSchemaFormUtils;
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import lombok.extern.slf4j.Slf4j;
 
@@ -119,7 +119,7 @@ public final class JsfPOJOService {
 
   private LinkedHashMap<String, Object> readTemplate(String templatePath) throws Exception {
     URL schemaUrl = Resources.getResource(templatePath);
-    String json = Resources.toString(schemaUrl, Charsets.UTF_8);
+    String json = Resources.toString(schemaUrl, StandardCharsets.UTF_8);
     Map<String, Object> template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
     schemaCache.put(templatePath, template);
     return new LinkedHashMap<>(template);

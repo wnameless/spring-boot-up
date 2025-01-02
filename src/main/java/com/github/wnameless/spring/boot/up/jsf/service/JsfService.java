@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.jsf.service;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +13,6 @@ import com.github.wnameless.spring.boot.up.jsf.model.JsfData;
 import com.github.wnameless.spring.boot.up.jsf.model.JsfSchema;
 import com.github.wnameless.spring.boot.up.jsf.repository.JsfDataRepository;
 import com.github.wnameless.spring.boot.up.jsf.repository.JsfSchemaRepository;
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import lombok.SneakyThrows;
 
@@ -71,7 +71,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
     try {
       URL schemaUrl = Resources
           .getResource(getTemplatePath() + "/" + formType + "/" + formType + ".schema.json");
-      String json = Resources.toString(schemaUrl, Charsets.UTF_8);
+      String json = Resources.toString(schemaUrl, StandardCharsets.UTF_8);
       return JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
     } catch (Exception e) {
       log.info("Schema template not found", e);
@@ -83,7 +83,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
     try {
       URL schemaUrl = Resources
           .getResource(getTemplatePath() + "/" + formType + "/" + formType + ".uiSchema.json");
-      String json = Resources.toString(schemaUrl, Charsets.UTF_8);
+      String json = Resources.toString(schemaUrl, StandardCharsets.UTF_8);
       return JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
     } catch (Exception e) {
       log.info("UiSchema template not found", e);
