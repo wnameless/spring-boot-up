@@ -2,28 +2,33 @@
   "name": "react-form",
   "version": "1.0.0",
   "license": "MIT",
+  "description": "A React-based custom element for rendering JSON schema forms.",
+  "main": "dist/index.js",
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "not dead",
+    "not ie <= 11"
+  ],
+  "scripts": {
+    "dev": "webpack serve --mode=development --port 8081",
+    "build": "webpack --mode=production",
+    "build-dev": "webpack --mode=development",
+    "watch": "watch 'npm run build' ./src",
+    "watch-dev": "watch 'npm run build-dev' ./src"
+  },
   "dependencies": {
-    "@emotion/react": "^11.13.5",
-    "@emotion/styled": "^11.13.5",
-    "@fontsource/roboto": "^5.1.0",
-    "@mui/icons-material": "^6.1.8",
-    "@mui/material": "^6.1.8",
-    "@mui/styled-engine-sc": "^6.1.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-bootstrap": "^1.6.8",
+    "html-react-parser": "^5.1.18",
     "@rjsf/bootstrap-4": "^5.22.4",
     "@rjsf/core": "^5.22.4",
-    "@rjsf/mui": "^5.22.4",
-    "@rjsf/semantic-ui": "^5.22.4",
     "@rjsf/utils": "^5.22.4",
     "@rjsf/validator-ajv6": "^5.22.4",
     "@rjsf/validator-ajv8": "^5.22.4",
-    "html-react-parser": "^5.1.18",
-    "react": "^18.3.1",
-    "react-bootstrap": "^1.6.8",
-    "react-dom": "^18.3.1",
     "react-jsonschema-form-pagination": "^0.4.0",
-    "react-jsonschema-form-pagination-bs4": "^0.4.0",
-    "styled-components": "^6.1.13",
-    "watch": "^1.0.2"
+    "react-jsonschema-form-pagination-bs4": "^0.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
@@ -32,17 +37,10 @@
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.3",
-    "raw-loader": "^4.0.2",
     "style-loader": "^4.0.0",
+    "watch": "^1.0.2",
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.1.0"
-  },
-  "scripts": {
-    "dev": "webpack serve --mode=development --port 8081",
-    "build": "webpack --mode=production",
-    "build-dev": "webpack --mode=development",
-    "watch": "watch 'npm run build' ./src",
-    "watch-dev": "watch 'npm run build-dev' ./src"
   }
 }

@@ -1,1 +1,1 @@
-import ReactFormElement from './lib/components/ReactFormElement';
+import ReactFormElement from './lib/components/ReactFormElementGPT';
