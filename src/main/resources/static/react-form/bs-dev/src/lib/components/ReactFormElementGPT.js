@@ -2,44 +2,40 @@ import Form from '@rjsf/bootstrap-4';
 import bs3Form from '@rjsf/core';
 import validator from '@rjsf/validator-ajv6';
 import parse from 'html-react-parser';
+import debounce from 'lodash.debounce';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import applyNavs from "react-jsonschema-form-pagination";
-import applyBs4Navs from "react-jsonschema-form-pagination-bs4";
+import applyNavs from 'react-jsonschema-form-pagination';
+import applyBs4Navs from 'react-jsonschema-form-pagination-bs4';
 import * as HtmlHelper from './HtmlHelperGPT';
-// Removed axios import
 
 class ReactFormElement extends HTMLElement {
   constructor() {
     super();
-
     // 1) Setup shadow DOM & React root
     this.mountPoint = document.createElement('div');
     this.root = ReactDOM.createRoot(this.mountPoint);
     this.attachShadow({ mode: 'open' }).appendChild(this.mountPoint);
 
-    // 2) Copy all tag attributes (except "id") to this.attrs
-    this.attrs = {};
-    for (const name of this.getAttributeNames()) {
-      const value = this.getAttribute(name);
-      this.attrs[name] = value;
-    }
-    delete this.attrs.id; // We don't want to conflict with others
+    // 2) Copy attributes (excluding "id") -> this.attrs
+    this.attrs = Object.fromEntries(
+      this.getAttributeNames()
+        .filter((n) => n !== 'id')
+        .map((n) => [n, this.getAttribute(n)])
+    );
 
-    // 3) Setup props (if there's a global variable name in props-var)
+    // 3) Merge in global props-var (if any)
     this.props ||= {};
     if (this.attrs['props-var']) {
-      this.props = {
-        ...this.props,
-        ...window[this.attrs['props-var']] // merges global variable
-      };
+      const globalProps = window[this.attrs['props-var']] || {};
+      this.props = { ...this.props, ...globalProps };
     }
 
-    // 4) Setup a default onSubmit in case none is provided
+    // 4) Prepare state with default onSubmit if none
     this.state = {};
     this.state.onSubmit ||= ({ formData }, e) => e.target?.submit?.();
 
-    // 5) Possibly override the onSubmit with AJAX logic
+    // 5) Possibly override with AJAX onSubmit
     this.configAjaxOnSubmit();
   }
 
@@ -60,12 +56,10 @@ class ReactFormElement extends HTMLElement {
         console.warn('No action URL set for AJAX submission.');
         return;
       }
-
       if (method === 'get') {
         // Build URL with query params
         const connector = actionUrl.includes('?') ? '&' : '?';
         const fullUrl = actionUrl + connector + new URLSearchParams(formData);
-
         this.doAjax(fullUrl, method, null, ajaxTarget);
       } else {
         // POST, PUT, DELETE, etc.
@@ -82,16 +76,17 @@ class ReactFormElement extends HTMLElement {
   doAjax(url, method, body, targetId) {
     fetch(url, {
       method,
-      headers: new Headers({ 'Content-Type': 'application/json' }),
-      body: body,
+      headers: { 'Content-Type': 'application/json' },
+      body,
     })
-      .then(res => res.text())
-      .then(html => {
+      .then((res) => res.text())
+      .then((html) => {
         const targetEl = document.getElementById(targetId);
         if (targetEl) HtmlHelper.setInnerHTML(targetEl, html);
       })
-      .catch(e => console.error('Error in doAjax:', e));
+      .catch((e) => console.error('Error in doAjax:', e));
   }
+
 
   /**
    * Retrieve JSON data from either:
@@ -103,9 +98,9 @@ class ReactFormElement extends HTMLElement {
     // Start with inline props
     let { schema, uiSchema, formData } = this.props;
 
+    // Check single form-dataset-url (schema+uiSchema+formData in one)
     const datasetUrl = this.attrs['form-dataset-url'];
     if (datasetUrl) {
-      // Single endpoint with {schema, uiSchema, formData}
       try {
         const response = await fetch(datasetUrl);
         if (!response.ok) {
@@ -119,15 +114,15 @@ class ReactFormElement extends HTMLElement {
         console.error('Error fetching form-dataset:', e);
       }
     } else {
-      // Possibly fetch separate schema, uiSchema, formData
+      // Possibly fetch each piece individually
       const schemaUrl = this.attrs['schema-url'];
       if (schemaUrl) {
         try {
-          const response = await fetch(schemaUrl);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          const resp = await fetch(schemaUrl);
+          if (!resp.ok) {
+            throw new Error(`HTTP error! status: ${resp.status}`);
           }
-          schema = await response.json();
+          schema = await resp.json();
         } catch (e) {
           console.error('Error fetching schema:', e);
         }
@@ -136,11 +131,11 @@ class ReactFormElement extends HTMLElement {
       const uiSchemaUrl = this.attrs['ui-schema-url'];
       if (uiSchemaUrl) {
         try {
-          const response = await fetch(uiSchemaUrl);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          const resp = await fetch(uiSchemaUrl);
+          if (!resp.ok) {
+            throw new Error(`HTTP error! status: ${resp.status}`);
           }
-          uiSchema = await response.json();
+          uiSchema = await resp.json();
         } catch (e) {
           console.error('Error fetching uiSchema:', e);
         }
@@ -149,11 +144,11 @@ class ReactFormElement extends HTMLElement {
       const formDataUrl = this.attrs['form-data-url'];
       if (formDataUrl) {
         try {
-          const response = await fetch(formDataUrl);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          const resp = await fetch(formDataUrl);
+          if (!resp.ok) {
+            throw new Error(`HTTP error! status: ${resp.status}`);
           }
-          formData = await response.json();
+          formData = await resp.json();
         } catch (e) {
           console.error('Error fetching formData:', e);
         }
@@ -172,23 +167,37 @@ class ReactFormElement extends HTMLElement {
       return;
     }
 
-    // Decide on bootstrap 3 vs 4 form
-    const FormWithPagination = this.attrs.theme === 'bs3'
-      ? applyNavs(bs3Form)
-      : applyBs4Navs(Form);
+    // Choose bootstrap 3 or 4
+    const FormWithPagination =
+      this.attrs.theme === 'bs3'
+        ? applyNavs(bs3Form)
+        : applyBs4Navs(Form);
 
-    const isSaveOnly = !!this.attrs.saveonly;
+    // For saveonly mode
+    const saveonlyEnabled = !!this.attrs.saveonly;
     let tempFormData = {};
 
-    // Track changes if saveonly is used
+    // Debounce storing updated formData
+    const delayedUpdate = debounce(
+      (newData) => {
+        tempFormData = newData;
+      },
+      300 // ms
+    );
+
+    // Watch changes (only if saveonly)
     const handleChange = (e) => {
-      if (isSaveOnly) {
-        tempFormData = e.formData;
+      if (saveonlyEnabled) {
+        delayedUpdate(e.formData);
       }
     };
 
+    // Actual "Save" action
     const handleSave = () => {
-      if (!isSaveOnly || !this.attrs['ajax-target']) return;
+      if (!saveonlyEnabled) return;
+      const ajaxTarget = this.attrs['ajax-target'];
+      if (!ajaxTarget) return;
+
       const method = (this.attrs.method || 'get').toLowerCase();
       const actionUrl = this.attrs.action;
 
@@ -200,16 +209,16 @@ class ReactFormElement extends HTMLElement {
       if (method === 'get') {
         const connector = actionUrl.includes('?') ? '&' : '?';
         const fullUrl = actionUrl + connector + new URLSearchParams(tempFormData);
-        this.doAjax(fullUrl, method, null, this.attrs['ajax-target']);
+        this.doAjax(fullUrl, method, null, ajaxTarget);
       } else {
         const jsonBody = JSON.stringify(tempFormData);
-        this.doAjax(actionUrl, method, jsonBody, this.attrs['ajax-target']);
+        this.doAjax(actionUrl, method, jsonBody, ajaxTarget);
       }
     };
 
-    // Build an optional Save button
-    let saveButton;
-    if (isSaveOnly) {
+    // Possibly render a "Save" button
+    let saveButton = null;
+    if (saveonlyEnabled) {
       const btnText = this.attrs.saveonlybtntxt || 'Save';
       saveButton = (
         <button className="btn btn-warning" type="button" onClick={handleSave}>
@@ -221,11 +230,10 @@ class ReactFormElement extends HTMLElement {
     // Decide on default CSS
     let contextPath = window.contextPath || '/';
     if (!contextPath.endsWith('/')) contextPath += '/';
-
     const defaultBs3Css = `${contextPath}react-form/css/bootswatch-3.4.1-cosmo.css`;
     const defaultBs4Css = `${contextPath}react-form/css/bootswatch-4.6.2-litera.css`;
 
-    // Render
+    // Render the React form
     this.root.render(
       <React.Fragment>
         {/* 
@@ -258,7 +266,6 @@ class ReactFormElement extends HTMLElement {
             parse them as HTML and insert them.
           */}
           {this.children?.length > 0 && parse(this.innerHTML)}
-
           {saveButton}
         </FormWithPagination>
       </React.Fragment>
@@ -271,7 +278,7 @@ class ReactFormElement extends HTMLElement {
   mount() {
     this.retrieveJson()
       .then((data) => this.createForm(data))
-      .catch(e => console.error('Failed to mount React form:', e));
+      .catch((e) => console.error('Failed to mount React form:', e));
   }
 
   unmount() {
@@ -292,7 +299,8 @@ class ReactFormElement extends HTMLElement {
   }
   attributeChangedCallback(attrName, oldVal, newVal) {
     if (attrName === 'props-var') {
-      this.props = { ...this.props, ...window[newVal] };
+      const globalProps = window[newVal] || {};
+      this.props = { ...this.props, ...globalProps };
       this.mount();
     }
   }
