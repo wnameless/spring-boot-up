@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,13 @@ public class HtmlHelper {
   public static final String RESOURCE_PREFIX = "sbu.web.item.resource.";
 
   @Autowired
+  ApplicationContext appCtx;
+  @Autowired
   MessageSource messageSource;
+
+  public boolean hasBeanByType(Class<?> clazz) {
+    return appCtx.getBeansOfType(clazz).size() > 0;
+  }
 
   public String resourceDisplay(String className) {
     String[] nameParts = className.split(Pattern.quote("."));

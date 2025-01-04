@@ -1,9 +1,71 @@
 package com.github.wnameless.spring.boot.up.web;
 
+import java.util.Objects;
+import java.util.Optional;
 import org.atteo.evo.inflector.English;
+import com.github.wnameless.apt.INamedResource;
+import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.google.common.base.CaseFormat;
 
 public interface RestfulItem<ID> extends JoinablePath, IdProvider<ID> {
+
+  default String getResourceName() {
+    if (SpringBootUp.applicationContext() != null) {
+      Optional<INamedResource> nr =
+          SpringBootUp.findAllGenericBeans(INamedResource.class).stream().filter(n -> {
+            var itemClassName = this.getClass().getName();
+            String nrClassName = null;
+            try {
+              nrClassName = n.getClass().getDeclaredField("CLASS_NAME").get(n).toString();
+            } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+                | SecurityException e) {}
+            return Objects.equals(itemClassName, nrClassName);
+          }).findAny();
+
+      if (nr.isPresent()) {
+        try {
+          String resourceName =
+              nr.get().getClass().getDeclaredField("RESOURCE").get(nr.get()).toString();
+          if (resourceName != null) {
+            return resourceName;
+          }
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+            | SecurityException e) {}
+      }
+    }
+
+    String lowerHyphen =
+        CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, this.getClass().getSimpleName());
+    return lowerHyphen;
+  }
+
+  default String getResourcesName() {
+    if (SpringBootUp.applicationContext() != null) {
+      Optional<INamedResource> nr =
+          SpringBootUp.findAllGenericBeans(INamedResource.class).stream().filter(n -> {
+            var itemClassName = this.getClass().getName();
+            String nrClassName = null;
+            try {
+              nrClassName = n.getClass().getDeclaredField("CLASS_NAME").get(n).toString();
+            } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+                | SecurityException e) {}
+            return Objects.equals(itemClassName, nrClassName);
+          }).findAny();
+
+      if (nr.isPresent()) {
+        try {
+          String resourcesName =
+              nr.get().getClass().getDeclaredField("RESOURCES").get(nr.get()).toString();
+          if (resourcesName != null) {
+            return resourcesName;
+          }
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+            | SecurityException e) {}
+      }
+    }
+
+    return English.plural(getResourceName());
+  }
 
   default boolean isSingular() {
     return false;
@@ -30,11 +92,7 @@ public interface RestfulItem<ID> extends JoinablePath, IdProvider<ID> {
   }
 
   default String getBasePath() {
-    String lowerHyphen =
-        CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, this.getClass().getSimpleName());
-    if (isSingular()) return "/" + lowerHyphen;
-    String plural = English.plural(lowerHyphen);
-    return "/" + plural;
+    return "/" + (isSingular() ? getResourceName() : getResourcesName());
   }
 
   default String getIndexPath() {
