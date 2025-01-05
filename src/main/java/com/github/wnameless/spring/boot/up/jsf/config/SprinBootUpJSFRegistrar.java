@@ -7,18 +7,12 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.thymeleaf.dialect.springdata.SpringDataDialect;
 import com.github.wnameless.spring.boot.up.thymeleaf.AjaxDialect;
-import com.github.wnameless.spring.boot.up.thymeleaf.HtmxDialect;
 
 public class SprinBootUpJSFRegistrar implements ImportBeanDefinitionRegistrar {
 
   @Override
   public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
       BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator) {
-    GenericBeanDefinition htmxDialectBean = new GenericBeanDefinition();
-    htmxDialectBean.setBeanClass(HtmxDialect.class);
-    registry.registerBeanDefinition(
-        importBeanNameGenerator.generateBeanName(htmxDialectBean, registry), htmxDialectBean);
-
     GenericBeanDefinition ajaxDialectBean = new GenericBeanDefinition();
     ajaxDialectBean.setBeanClass(AjaxDialect.class);
     registry.registerBeanDefinition(

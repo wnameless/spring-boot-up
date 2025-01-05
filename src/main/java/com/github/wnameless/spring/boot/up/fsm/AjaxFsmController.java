@@ -31,6 +31,7 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRepositoryProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxTrigger;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
@@ -288,6 +289,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
     }
   }
 
+  @HxTrigger("refresh-fsm-action-bar")
   @RequestMapping(path = "/{id}/forms/{formType}",
       method = {RequestMethod.PUT, RequestMethod.PATCH},
       consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.wnameless.spring</groupId>
   <artifactId>spring-boot-up</artifactId>
-  <version>0.11.2-SNAPSHOT</version>
+  <version>0.11.3-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -113,6 +113,16 @@
       <groupId>io.github.jpenren</groupId>
       <artifactId>thymeleaf-spring-data-dialect</artifactId>
       <version>3.6.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.wimdeblauwe</groupId>
+      <artifactId>htmx-spring-boot</artifactId>
+      <version>4.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.wimdeblauwe</groupId>
+      <artifactId>htmx-spring-boot-thymeleaf</artifactId>
+      <version>4.0.1</version>
     </dependency>
 
     <!-- Util -->

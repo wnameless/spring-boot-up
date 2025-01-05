@@ -79,7 +79,17 @@ class ReactFormElement extends HTMLElement {
       headers: { 'Content-Type': 'application/json' },
       body,
     })
-      .then((res) => res.text())
+      .then((response) => {
+        if (response.ok) {
+          // Handle HX-Trigger header
+          const htmxTriggerHeader = response.headers.get('HX-Trigger');
+          if (htmxTriggerHeader && typeof htmx !== 'undefined') {
+            this.processHtmxTrigger(htmxTriggerHeader);
+          }
+        }
+
+        return response.text();
+      })
       .then((html) => {
         const targetEl = document.getElementById(targetId);
         if (targetEl) HtmlHelper.setInnerHTML(targetEl, html);
@@ -87,6 +97,52 @@ class ReactFormElement extends HTMLElement {
       .catch((e) => console.error('Error in doAjax:', e));
   }
 
+  /**
+   * Function to process the HX-Trigger header and trigger corresponding HTMX actions
+   * @param {string} headerValue - The value of the HX-Trigger header
+   */
+  processHtmxTrigger(headerValue) {
+    let triggers;
+
+    try {
+      // Attempt to parse the header as JSON
+      triggers = JSON.parse(headerValue);
+    } catch (e) {
+      // If not JSON, assume it's a comma-separated list of event names
+      triggers = headerValue.split(',').map(event => event.trim());
+    }
+
+    // Normalize triggers to an array of [event, data] pairs
+    let triggerPairs = [];
+
+    if (typeof triggers === 'string') {
+      triggerPairs.push([triggers, {}]);
+    } else if (Array.isArray(triggers)) {
+      triggers.forEach(event => triggerPairs.push([event, {}]));
+    } else if (typeof triggers === 'object') {
+      for (const [event, data] of Object.entries(triggers)) {
+        triggerPairs.push([event, data]);
+      }
+    }
+
+    // Iterate over each trigger pair and activate HTMX actions
+    triggerPairs.forEach(([event, data]) => {
+      // Select elements with hx-trigger attribute containing the eventName
+      // Using ~= to match whole words in space-separated list
+      const selector = `[hx-trigger~="${event}"]`;
+      const elements = document.querySelectorAll(selector);
+
+      elements.forEach(element => {
+        // Make the element visible if it was hidden
+        if (element.style.display === 'none') {
+          element.style.display = 'inline-block';
+        }
+
+        // Trigger the HTMX event on the element with additional data
+        htmx.trigger(element, event, { detail: data });
+      });
+    });
+  }
 
   /**
    * Retrieve JSON data from either:

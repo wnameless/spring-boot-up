@@ -35,7 +35,8 @@
         </th:block>
         <button
           hx:get="@{${item.joinPath('triggers')}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
-          hx:target="${'#' + 'fsmActionBar' + item.id}" hx-ext="json-enc" type="button"
+          hx:target="${'#' + 'fsmActionBar' + item.id}" hx-ext="json-enc"
+          hx-trigger="click, refresh-fsm-action-bar from:body" type="button"
           class="btn btn-outline-danger hint--right" aria-label="Refresh">
           <i class="fas fa-arrows-rotate fa-fw"></i>
         </button>
