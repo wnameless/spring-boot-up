@@ -183,7 +183,7 @@
               th:with="hasUserPermissionController=${@sbuHtml.hasBeanByType(T(com.github.wnameless.spring.boot.up.permission.UserPermissionControllerTemplate))}, rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
               <li th:if="${hasUserPermissionController}" th:id="${'itemUpdate' + rid}"
                 hx:post="@{${'/user-permissions/can/UPDATE/to/' + item.resourceName + '/on/' + item.id}}"
-                hx:vals="${'js:{classesOnPermitted: ''text-primary'', htmlElement: document.getElementById('''+ 'itemUpdate' + rid  +''').innerHTML}'}"
+                hx:vals="${'js:{classesOnPermitted: ''text-primary'', classesOnForbidden: ''disabled'', htmlElement: document.getElementById('''+ 'itemUpdate' + rid  +''').innerHTML}'}"
                 hx-trigger="intersect" hx-target="this">
                 <a hx:get="@{${item.getEditPath(queryConfig)}}" hx:target="${'#' + ajaxTargetId}"
                   hx-ext="json-enc" class="dropdown-item disabled">
@@ -198,7 +198,7 @@
 
               <li th:if="${hasUserPermissionController}" th:id="${'itemDelete' + rid}"
                 hx:post="@{${'/user-permissions/can/DELETE/to/' + item.resourceName + '/on/' + item.id}}"
-                hx:vals="${'js:{classesOnPermitted: ''text-danger'', htmlElement: document.getElementById('''+ 'itemDelete' + rid  +''').innerHTML}'}"
+                hx:vals="${'js:{classesOnPermitted: ''text-danger'', classesOnForbidden: ''disabled'', htmlElement: document.getElementById('''+ 'itemDelete' + rid  +''').innerHTML}'}"
                 hx-trigger="intersect" hx-target="this">
                 <a hx:delete="@{${item.getDeletePath(queryConfig)}}"
                   hx:confirm="${#messages.msgOrNull('sbu.ui.confirmation.delete') ?: 'Are you sure?'}"
