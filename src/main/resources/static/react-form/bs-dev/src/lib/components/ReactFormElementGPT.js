@@ -231,7 +231,7 @@ class ReactFormElement extends HTMLElement {
 
     // For saveonly mode
     const saveonlyEnabled = !!this.attrs.saveonly;
-    let tempFormData = {};
+    let tempFormData = data.formData || {};
 
     // Debounce storing updated formData
     const delayedUpdate = debounce(

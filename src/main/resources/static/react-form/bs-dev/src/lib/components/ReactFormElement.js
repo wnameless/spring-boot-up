@@ -124,7 +124,7 @@ class ReactFormElement extends HTMLElement {
       let FormWithPagination = this.attrs.theme == 'bs3' ? applyNavs(bs3Form) : applyBs4Navs(Form);
 
       let isSaveOnly = this.attrs.saveonly;
-      let formData = {};
+      let formData = data.formData || {};
       let attrs = this.attrs;
 
       let handleChange = function (e) {
