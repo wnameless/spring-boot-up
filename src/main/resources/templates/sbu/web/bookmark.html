@@ -5,7 +5,7 @@
     th:with="bookmarkField=${bookmarkField}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
     <button type="button" class="btn btn-outline-secondary" hx:get="@{${item.indexPath}}"
       hx-ext="json-enc" hx:target="${'#' + ajaxTargetId}">
-      <i class="fas fa-reply-all fa-fw"></i>
+      <i class="fas fa-filter fa-fw"></i>
     </button>
     <button th:if="${queryConfig.getFilterFields.get(bookmarkField).hasSelectOption}" th:block
       th:each="opt : ${queryConfig.getFilterFields.get(bookmarkField).selectOption}" type="button"
