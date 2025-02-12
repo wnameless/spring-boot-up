@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5" class="container-fluid">
+<div th:fragment="bs5" class="container-fluid pb-1">
   <div class="btn-group" role="group"
     th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
     <button type="button" class="btn btn-outline-secondary" hx:get="@{${item.indexPath}}"
@@ -13,7 +13,6 @@
       hx:get="@{${item.indexPath}(stateRecord.state=${s.displayName})}" hx-ext="json-enc"
       hx:target="${'#' + ajaxTargetId}">[[${s.displayName}]]</button>
   </div>
-  <hr>
 </div>
 
 </html>
