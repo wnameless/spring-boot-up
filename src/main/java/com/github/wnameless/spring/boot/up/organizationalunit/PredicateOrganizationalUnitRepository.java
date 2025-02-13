@@ -21,7 +21,7 @@ public interface PredicateOrganizationalUnitRepository<OU extends Organizational
   }
 
   default List<OU> findAllByOrganizationalUnitIds(Collection<ID> organizationalUnitIds) {
-    return findAll(Expressions.allOf(
+    return findAll(Expressions.anyOf(
         organizationalUnitIds.stream().map(id -> getOrganizationalUnitIdPredicate().apply(id))
             .toArray(BooleanExpression[]::new)));
   }
