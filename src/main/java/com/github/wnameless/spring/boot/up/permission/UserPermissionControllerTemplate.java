@@ -4,6 +4,7 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,16 +28,32 @@ public interface UserPermissionControllerTemplate<ID> {
     if (userOpt.isEmpty()) return htmlElement;
     var user = userOpt.get();
 
+    var resourceType = user.getResourceType(resourceName);
+    ID id = resourceIdStrToId(resourceIdStr);
     boolean canDo;
-    switch (action) {
-      case "MANAGE" -> canDo = user.canManageOn(resourceName, resourceIdStrToId(resourceIdStr));
-      case "CRUD" -> canDo = user.canCRUDOn(resourceName, resourceIdStrToId(resourceIdStr));
-      case "CREATE" -> canDo = user.canCreate(resourceName);
-      case "READ" -> canDo = user.canReadOn(resourceName, resourceIdStrToId(resourceIdStr));
-      case "UPDATE" -> canDo = user.canUpdateOn(resourceName, resourceIdStrToId(resourceIdStr));
-      case "DELETE" -> canDo = user.canDeleteOn(resourceName, resourceIdStrToId(resourceIdStr));
-      default -> canDo = user.canDoOn(action, resourceName, resourceIdStrToId(resourceIdStr));
 
+    var repoOpt = SpringBootUp.findGenericBean(CrudRepository.class, resourceType, id.getClass());
+    if (repoOpt.isPresent()) {
+      var obj = repoOpt.get().findById(id);
+      switch (action) {
+        case "MANAGE" -> canDo = user.canManageOn(obj, id);
+        case "CRUD" -> canDo = user.canCRUDOn(obj, id);
+        case "CREATE" -> canDo = user.canCreate(obj);
+        case "READ" -> canDo = user.canReadOn(obj, id);
+        case "UPDATE" -> canDo = user.canUpdateOn(obj, id);
+        case "DELETE" -> canDo = user.canDeleteOn(obj, id);
+        default -> canDo = user.canDoOn(action, obj, id);
+      }
+    } else {
+      switch (action) {
+        case "MANAGE" -> canDo = user.canManageOn(resourceName, id);
+        case "CRUD" -> canDo = user.canCRUDOn(resourceName, id);
+        case "CREATE" -> canDo = user.canCreate(resourceName);
+        case "READ" -> canDo = user.canReadOn(resourceName, id);
+        case "UPDATE" -> canDo = user.canUpdateOn(resourceName, id);
+        case "DELETE" -> canDo = user.canDeleteOn(resourceName, id);
+        default -> canDo = user.canDoOn(action, resourceName, id);
+      }
     }
 
     Document document = Jsoup.parse(htmlElement);
