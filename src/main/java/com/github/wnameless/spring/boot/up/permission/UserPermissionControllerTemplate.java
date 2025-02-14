@@ -34,7 +34,7 @@ public interface UserPermissionControllerTemplate<ID> {
 
     var repoOpt = SpringBootUp.findGenericBean(CrudRepository.class, resourceType, id.getClass());
     if (repoOpt.isPresent()) {
-      var obj = repoOpt.get().findById(id);
+      var obj = repoOpt.get().findById(id).get();
       switch (action) {
         case "MANAGE" -> canDo = user.canManageOn(obj, id);
         case "CRUD" -> canDo = user.canCRUDOn(obj, id);
