@@ -7,6 +7,7 @@ import React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import applyNavs from 'react-jsonschema-form-pagination';
 import applyBs4Navs from 'react-jsonschema-form-pagination-bs4';
+import { DownloadWidget, FileListWidget, ImageWidget } from './Bootstrap4RjsfWidget';
 import * as HtmlHelper from './HtmlHelperGPT';
 
 class ReactFormElement extends HTMLElement {
@@ -223,6 +224,13 @@ class ReactFormElement extends HTMLElement {
       return;
     }
 
+    // Load widgets
+    const widgets = {
+      fileListWidget: FileListWidget,
+      downloadWidget: DownloadWidget,
+      imageWidget: ImageWidget
+    };
+
     // Choose bootstrap 3 or 4
     const FormWithPagination =
       this.attrs.theme === 'bs3'
@@ -316,6 +324,7 @@ class ReactFormElement extends HTMLElement {
           onChange={handleChange}
           onSubmit={this.state.onSubmit}
           validator={validator}
+          widgets={widgets}
         >
           {/* 
             If there are child elements (slot content in the HTML),
