@@ -23,6 +23,21 @@ public final class FilterableField<E extends EntityPathBase<?>> {
     return new FilterableField<F>(f -> f, Optional.of(fieldName), inputType, filterLogic);
   }
 
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
+      Map<String, String> selectOption, BiFunction<F, String, Predicate> filterLogic) {
+    var ff = new FilterableField<F>(f -> f, Optional.of(fieldName), "text", filterLogic);
+    ff.selectOption(selectOption);
+    return ff;
+  }
+
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
+      String inputType, Map<String, String> selectOption,
+      BiFunction<F, String, Predicate> filterLogic) {
+    var ff = new FilterableField<F>(f -> f, Optional.of(fieldName), inputType, filterLogic);
+    ff.selectOption(selectOption);
+    return ff;
+  }
+
   public static <F extends EntityPathBase<?>> FilterableField<F> of(
       Function<F, ? extends Path<?>> pathFinder, BiFunction<F, String, Predicate> filterLogic) {
     return new FilterableField<F>(pathFinder, Optional.empty(), "text", filterLogic);
