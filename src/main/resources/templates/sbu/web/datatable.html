@@ -42,8 +42,8 @@
       <!-- This hx-on::before-request is important for removing offcanvas style attributes from html body -->
       <form
         hx-on::before-request="bootstrap.Offcanvas.getInstance(document.getElementById('filterOption')).hide();"
-        class="row g-3" hx:get="@{${route.indexPath}}" hx:target="${'#' + ajaxTargetId}"
-        hx-ext="json-enc">
+        class="row g-3" hx:get="@{${route.indexPath}}" hx-push-url="true"
+        hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
         <!--   <form class="row g-3" method="GET" th:action="@{${route.indexPath}}"> -->
 
         <!-- Start: Fields for querying -->
@@ -128,8 +128,9 @@
             'Filter'}]]</button>
         </div>
         <div class="col-6">
-          <button hx:get="@{${route.indexPath}}" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
-            type="button" class="btn btn-warning">
+          <button hx:get="@{${route.indexPath}}" hx-push-url="true"
+            hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" type="button"
+            class="btn btn-warning">
             [[${#messages.msgOrNull('sbu.web.datatable.filter_option.reset') ?: 'Reset'}]]</button>
         </div>
       </form>
@@ -146,7 +147,7 @@
             <th:block th:if="${creationOption == null}">
               <button
                 th:if="${user != null && itemClass != null && user.canCreate(itemClass)} or ${user != null && itemClass != null && !user.existsPermission(itemClass)}"
-                class="btn btn-outline-success" hx:get="@{${route.newPath}}"
+                class="btn btn-outline-success" hx:get="@{${route.newPath}}" hx-push-url="true"
                 hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
                 <i class="fas fa-file-circle-plus"></i>
               </button>
@@ -185,14 +186,15 @@
                 hx:post="@{${'/user-permissions/can/UPDATE/to/' + item.resourceName + '/on/' + item.id}}"
                 hx:vals="${'js:{classesOnPermitted: ''text-primary'', classesOnForbidden: ''disabled'', htmlElement: document.getElementById('''+ 'itemUpdate' + rid  +''').innerHTML}'}"
                 hx-trigger="intersect" hx-target="this">
-                <a hx:get="@{${item.getEditPath(queryConfig)}}" hx:target="${'#' + ajaxTargetId}"
-                  hx-ext="json-enc" class="dropdown-item disabled">
+                <a hx:get="@{${item.getEditPath(queryConfig)}}" hx-push-url="true"
+                  hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc"
+                  class="dropdown-item disabled">
                   [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
               </li>
               <li th:unless="${hasUserPermissionController}">
                 <a th:classappend="${user == null || user.canUpdate(item) || !user.existsPermission(itemClass)} ? 'text-primary' : 'disabled'"
-                  hx:get="@{${item.getEditPath(queryConfig)}}" hx:target="${'#' + ajaxTargetId}"
-                  hx-ext="json-enc" class="dropdown-item">
+                  hx:get="@{${item.getEditPath(queryConfig)}}" hx-push-url="true"
+                  hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc" class="dropdown-item">
                   [[${#messages.msgOrNull('sbu.ui.edit') ?: 'Edit'}]]</a>
               </li>
 
