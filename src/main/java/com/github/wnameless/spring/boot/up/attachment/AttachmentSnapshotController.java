@@ -130,6 +130,72 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
   }
 
   @SneakyThrows
+  default RestfulJsonSchemaForm<?> createNoteForm(AttachmentChecklist checklist,
+      AttachmentSnapshot<A, ID> snapshot, ID id) {
+    var editform =
+        new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id), "attachments");
+    var mapper = SpringBootUp.getBean(ObjectMapper.class);
+    var attachmentsGroups = snapshot.getAttachmentsByGroup();
+
+    // editform.getSchema().put("title", "Files");
+    editform.getSchema().put("type", "object");
+    var aryProps = new LinkedHashMap<>();
+    String ary = """
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "附件",
+            "required": [
+              "fileName"
+            ],
+            "properties": {
+              "fileName": {
+                "title": "檔名",
+                "type": "string"
+              },
+              "note": {
+                "title": "附註",
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        }
+          """;
+    for (String group : checklist.getGroupNames().stream()
+        .filter(gn -> attachmentsGroups.keySet().contains(gn)).toList()) {
+      aryProps.put(group, mapper.readValue(ary, Map.class));
+    }
+    editform.getSchema().put("properties", aryProps);
+
+    String uiOpt = """
+        {
+          "items": {
+            "fileName": {
+              "ui:readonly": true
+            }
+          },
+          "ui:options": {
+            "addable": false,
+            "orderable": false,
+            "removable": false
+          }
+        }
+           """;
+    for (String group : attachmentsGroups.keySet()) {
+      editform.getUiSchema().put(group, mapper.readValue(uiOpt, Map.class));
+    }
+
+    for (String group : attachmentsGroups.keySet()) {
+      editform.getFormData().put(group, attachmentsGroups.get(group).stream()
+          .map(a -> Ruby.Hash.of("fileName", a.getName(), "note", a.getNote())).toList());
+    }
+
+    return editform;
+  }
+
+  @SneakyThrows
   default RestfulJsonSchemaForm<?> createUploadSelectiveForm(AttachmentChecklist checklist, ID id) {
     var uploadform =
         new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id) + "/attachments", "");
@@ -235,6 +301,20 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
     var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
 
     mav.addObject(Item.name(), createEditForm(checklist, snapshot, id));
+    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    return mav;
+  }
+
+  @GetMapping("/{id}/attachments/note")
+  default ModelAndView noteAttachments(ModelAndView mav, @PathVariable ID id,
+      @RequestParam(required = true) String ajaxTargetId) {
+    mav.setViewName("sbu/attachments/note :: " + getFragmentName());
+
+    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
+    var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
+    var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
+
+    mav.addObject(Item.name(), createNoteForm(checklist, snapshot, id));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
