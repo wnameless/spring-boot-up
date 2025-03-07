@@ -7,7 +7,7 @@
       hx-push-url="true" hx-ext="json-enc" hx:target="${'#' + ajaxTargetId}">
       <i class="fas fa-house fa-fw"></i>
     </button>
-    <button th:if="${queryConfig.getFilterFields.get(bookmarkField).hasSelectOption}" th:block
+    <button th:if="${queryConfig.getFilterFields.get(bookmarkField).hasSelectOption}"
       th:each="opt : ${queryConfig.getFilterFields.get(bookmarkField).selectOption}" type="button"
       class="btn btn-outline-secondary"
       th:classappend="${(param['' + bookmarkField] != null) and (param['' + bookmarkField][0] eq opt.value)} ? 'active'"
