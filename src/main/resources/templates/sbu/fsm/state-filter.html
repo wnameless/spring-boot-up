@@ -8,9 +8,12 @@
       <i class="fas fa-filter fa-fw"></i>
     </button>
     <button th:each="s : ${item.phase.allStates}" type="button" class="btn btn-outline-secondary"
-      th:classappend="${(param['stateRecord.state'] != null) and (param['stateRecord.state'][0] eq s.displayName)} ? 'active'"
-      hx:get="@{${item.indexPath}(stateRecord.state=${s.displayName})}" hx-push-url="true"
+      th:classappend="${(param['stateRecord.state'] != null) and (param['stateRecord.state'][0] eq s.name)} ? 'active'"
+      hx:get="@{${item.indexPath}(stateRecord.state=${s.name})}" hx-push-url="true"
       hx-ext="json-enc" hx:target="${'#' + ajaxTargetId}">[[${s.displayName}]]</button>
+    <button type="button" class="btn btn-outline-secondary" hx:get="@{${item.indexPath}}"
+      hx-push-url="true" hx-ext="json-enc" hx:target="${'#' + ajaxTargetId}">
+      <i class="fas fa-filter-circle-xmark fa-fw"></i>
   </div>
 </div>
 
