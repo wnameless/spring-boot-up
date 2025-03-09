@@ -6,9 +6,10 @@
     <li class="nav-item" role="presentation">
       <button class="nav-link active" data-bs-toggle="tab"
         th:attr="data-bs-target=${'#mainForm' + fid}" type="button" role="tab">
-        [[${#messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.' +
+        [[${#messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) + '.' +
         item.phase.stateRecord.state.name + '.tabs.main') ?:
-        #messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.stateForms.main') ?:
+        #messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) +
+        '.stateForms.main') ?:
         #messages.msgOrNull('sbu.fsm.content-editor.tabs.main') ?: 'Main'}]]
       </button>
     </li>
@@ -19,9 +20,10 @@
       <button class="nav-link" data-bs-toggle="tab"
         th:attr="data-bs-target=${'#viewableForm' + fid + '_' + iter.index}" type="button"
         role="tab">
-        [[${#messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.' +
+        [[${#messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) + '.' +
         item.phase.stateRecord.state.name + '.tabs.' + formType) ?:
-        #messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.stateForms.' +
+        #messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) +
+        '.stateForms.' +
         formType) ?: formType}]]
       </button>
     </li>
@@ -32,9 +34,10 @@
       <button class="nav-link" data-bs-toggle="tab"
         th:attr="data-bs-target=${'#entireStateForms' + fid + '_' + iter.index}" type="button"
         role="tab">
-        [[${#messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.' +
+        [[${#messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) + '.' +
         item.phase.stateRecord.state.name + '.tabs.entire.' + formType.key) ?:
-        #messages.msgOrNull(item.phase.stateRecord.state.class.simpleName + '.stateForms.entire.' +
+        #messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) +
+        '.stateForms.entire.' +
         formType.key) ?: 'Entire ' + formType.key}]]
       </button>
     </li>

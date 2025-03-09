@@ -50,14 +50,16 @@
         <th:block th:each="field : ${queryConfig.fields}">
           <div class="col-8"
             th:if="${queryConfig.getFilterFields.get(field).inputType} ne 'hidden'">
-            <label class="form-label" th:if="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
+            <label class="form-label" th:if="${#messages.msgOrNull('sbu.web.datatable.field.' + @sbuHtml.getSimpleName(itemClass) + '.' +
               field) != null}">
-              [[${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
+              [[${#messages.msgOrNull('sbu.web.datatable.field.' + @sbuHtml.getSimpleName(itemClass)
+              + '.' +
               field)}]]
             </label>
-            <label class="form-label" th:unless="${#messages.msgOrNull('sbu.web.datatable.field.' + itemClass.simpleName + '.' +
+            <label class="form-label" th:unless="${#messages.msgOrNull('sbu.web.datatable.field.' + @sbuHtml.getSimpleName(itemClass) + '.' +
               field) != null}">
-              [[${#messages.msgOrNull('sbu.web.item.field.' + itemClass.simpleName + '.' +
+              [[${#messages.msgOrNull('sbu.web.item.field.' + @sbuHtml.getSimpleName(itemClass) +
+              '.' +
               field) ?: field}]]
             </label>
             <!-- With select option -->
