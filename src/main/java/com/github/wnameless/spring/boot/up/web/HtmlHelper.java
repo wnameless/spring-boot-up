@@ -21,8 +21,8 @@ public class HtmlHelper {
   @Autowired
   MessageSource messageSource;
 
-  public String getSimpleName(Object obj) {
-    return (obj != null) ? obj.getClass().getSimpleName() : "";
+  public String getSimpleName(Class<?> klass) {
+    return (klass != null) ? klass.getSimpleName() : "";
   }
 
   public boolean hasBeanByType(Class<?> clazz) {

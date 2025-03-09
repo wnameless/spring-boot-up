@@ -53,14 +53,12 @@
             <label class="form-label" th:if="${#messages.msgOrNull('sbu.web.datatable.field.' + @sbuHtml.getSimpleName(itemClass) + '.' +
             field) != null}">
               [[${#messages.msgOrNull('sbu.web.datatable.field.' + @sbuHtml.getSimpleName(itemClass)
-              + '.' +
-              field)}]]
+              + '.' + field)}]]
             </label>
             <label class="form-label" th:unless="${#messages.msgOrNull('sbu.web.datatable.field.' + @sbuHtml.getSimpleName(itemClass) + '.' +
             field) != null}">
               [[${#messages.msgOrNull('sbu.web.item.field.' + @sbuHtml.getSimpleName(itemClass) +
-              '.' +
-              field) ?: field}]]
+              '.' + field) ?: field}]]
             </label>
             <!-- With select option -->
             <th:block th:if="${queryConfig.getFilterFields.get(field).hasSelectOption}">
