@@ -3153,10 +3153,10 @@ react-is@^18.2.0:
   resolved "https://registry.npmjs.org/react-is/-/react-is-18.3.1.tgz"
   integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
 
-react-jsonschema-form-pagination-bs4@^0.4.0:
-  version "0.4.2"
-  resolved "https://registry.npmjs.org/react-jsonschema-form-pagination-bs4/-/react-jsonschema-form-pagination-bs4-0.4.2.tgz"
-  integrity sha512-ezRHlltIMi6HTWjp6mhH8lUlkfXMds5u3ihNUbQfIcgsaXm1oRzc3egEUyeqNlbz38Qxf2QSGdE6gsBkRngzMA==
+react-jsonschema-form-pagination-bs4@0.4.1:
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/react-jsonschema-form-pagination-bs4/-/react-jsonschema-form-pagination-bs4-0.4.1.tgz"
+  integrity sha512-3sXYLuu29gcKHGV4hePNtXYJf0ohqWeFERPDTyhC4Vf6huqlo5LKocwljzVVpl04DV3Zsnmt1vQhnthZt/Dz+w==
 
 react-jsonschema-form-pagination@^0.4.0:
   version "0.4.0"
