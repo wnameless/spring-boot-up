@@ -13,8 +13,17 @@ public interface JsfStratrgyProvider {
         .filter(dc -> dc.activeStatus().getAsBoolean()).findFirst();
   }
 
+  default Optional<JsfDefaultEnumStrategy> getJsfDefaultEnumStategy() {
+    return SpringBootUp.getBeansOfType(JsfDefaultEnumStrategy.class).values().stream().findFirst();
+  }
+
   @SuppressWarnings("unchecked")
   default Map<String, Object> applySchemaStrategy(JsonSchemaForm jsf) {
+    var defaultEnumStategyOpt = getJsfDefaultEnumStategy();
+    if (defaultEnumStategyOpt.isPresent()) {
+      jsf = defaultEnumStategyOpt.get().applyDefaultEnumStategy(this, jsf);
+    }
+
     var documentStrategy = getJsonSchemaFormStrategy();
     if (documentStrategy.isPresent() && documentStrategy.get().schemaStrategy() != null) {
       return (Map<String, Object>) documentStrategy.get().schemaStrategy().apply(this, jsf);
