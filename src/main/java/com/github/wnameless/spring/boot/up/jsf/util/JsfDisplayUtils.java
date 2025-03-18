@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.jsf.util;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -35,14 +36,14 @@ public class JsfDisplayUtils {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public <E, ID> DisplayNameSetter addDisplayName(String dataKey, Class<E> klass,
+    public <E, ID> DisplayNameSetter addDisplayName(String fieldName, Class<E> fieldClass,
         Function<E, String> toEnumName) {
       var repo = (CrudRepository) SpringBootUp
-          .findGenericBean(QuerydslPredicateExecutor.class, klass).get();
-      if (entity.getFormData().get(dataKey) != null) {
-        JsfDisplayUtils.setEnum(docCtx, "$.properties." + dataKey,
-            entity.getFormData().get(dataKey),
-            toEnumName.apply((E) repo.findById((ID) entity.getFormData().get(dataKey)).get()));
+          .findGenericBean(QuerydslPredicateExecutor.class, fieldClass).get();
+      if (entity.getFormData().get(fieldName) != null) {
+        JsfDisplayUtils.setEnum(docCtx, "$.properties." + fieldName,
+            entity.getFormData().get(fieldName),
+            toEnumName.apply((E) repo.findById((ID) entity.getFormData().get(fieldName)).get()));
       }
       return this;
     }
@@ -55,40 +56,59 @@ public class JsfDisplayUtils {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  public <F extends JsonSchemaForm, E, ID> DocumentContext setDisplayName(DocumentContext docCtx,
-      F entity, String dataKey, Class<E> klass, Function<E, String> toEnumName) {
-    var repo =
-        (CrudRepository) SpringBootUp.findGenericBean(QuerydslPredicateExecutor.class, klass).get();
-    if (entity.getFormData().get(dataKey) != null) {
-      JsfDisplayUtils.setEnum(docCtx, "$.properties." + dataKey, entity.getFormData().get(dataKey),
-          toEnumName.apply((E) repo.findById((ID) entity.getFormData().get(dataKey)).get()));
+  public <F extends JsonSchemaForm, E, ID> boolean setDisplayName(DocumentContext docCtx, F entity,
+      String fieldName, Class<E> fieldClass, Function<E, String> toEnumName) {
+    var repoOpt = SpringBootUp.findGenericBean(QuerydslPredicateExecutor.class, fieldClass);
+    if (repoOpt.isPresent() && entity.getFormData().get(fieldName) != null) {
+      JsfDisplayUtils.setEnum(docCtx, "$.properties." + fieldName,
+          entity.getFormData().get(fieldName), toEnumName.apply((E) ((CrudRepository) repoOpt.get())
+              .findById((ID) entity.getFormData().get(fieldName)).get()));
+
+      return true;
     }
 
-    return docCtx;
+    return false;
   }
 
-  public <ID> DocumentContext setEnum(DocumentContext docCtx, String jsonPath, ID enumVal,
+  public <ID> boolean setEnum(DocumentContext docCtx, String jsonPath, ID enumVal,
       String enumName) {
+    if (enumVal == null || enumName == null) return false;
+
     docCtx.put(jsonPath, "enum", List.of(enumVal));
     docCtx.put(jsonPath, "enumNames", List.of(enumName));
-    return docCtx;
+
+    return true;
   }
 
-  public <T, ID> DocumentContext setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, T[] items,
       Function<T, ID> toEnum, Function<T, String> toEnumName) {
+    if (items == null || items.length == 0) return false;
+
+    return setEnum(docCtx, jsonPath, Arrays.asList(items), toEnum, toEnumName);
+  }
+
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
+      Function<T, ID> toEnum, Function<T, String> toEnumName) {
+    if (items == null || !items.iterator().hasNext()) return false;
+
     return setEnum(docCtx, jsonPath, items.toList(), toEnum, toEnumName);
   }
 
-  public <T, ID> DocumentContext setEnum(DocumentContext docCtx, String jsonPath, Iterable<T> items,
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Iterable<T> items,
       Function<T, ID> toEnum, Function<T, String> toEnumName) {
+    if (items == null || !items.iterator().hasNext()) return false;
+
     return setEnum(docCtx, jsonPath, Ruby.Array.copyOf(items), toEnum, toEnumName);
   }
 
-  public <T, ID> DocumentContext setEnum(DocumentContext docCtx, String jsonPath,
-      Collection<T> items, Function<T, ID> toEnum, Function<T, String> toEnumName) {
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Collection<T> items,
+      Function<T, ID> toEnum, Function<T, String> toEnumName) {
+    if (items == null || items.isEmpty()) return false;
+
     docCtx.put(jsonPath, "enum", items.stream().map(toEnum).toList());
     docCtx.put(jsonPath, "enumNames", items.stream().map(toEnumName).toList());
-    return docCtx;
+
+    return true;
   }
 
 }

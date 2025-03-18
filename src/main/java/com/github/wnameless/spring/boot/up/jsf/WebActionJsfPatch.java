@@ -16,8 +16,8 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
 
   @Override
   default void indexPostAction(ModelAndView mav, MultiValueMap<String, String> params) {
-    if (indexActionSchemsPatch() != null) {
-      getJsfPatchService().schemaPatch(indexActionSchemsPatch());
+    if (indexActionSchemaPatch() != null) {
+      getJsfPatchService().schemaPatch(indexActionSchemaPatch());
     }
     if (indexActionUiSchemaPatch() != null) {
       getJsfPatchService().uiSchemaPatch(indexActionUiSchemaPatch());
@@ -27,7 +27,7 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
   }
 
-  default Function<? super JsonSchemaForm, Map<String, Object>> indexActionSchemsPatch() {
+  default Function<? super JsonSchemaForm, Map<String, Object>> indexActionSchemaPatch() {
     return null;
   }
 
