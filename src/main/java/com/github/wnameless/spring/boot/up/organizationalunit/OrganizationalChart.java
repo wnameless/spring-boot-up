@@ -1,13 +1,13 @@
 package com.github.wnameless.spring.boot.up.organizationalunit;
 
+import static lombok.AccessLevel.PRIVATE;
 import java.util.Objects;
 import java.util.Set;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 public class OrganizationalChart<ID> {
 
   SimpleOrganizationalUnit<ID> defaultRoot;

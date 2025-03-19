@@ -1,16 +1,16 @@
 package com.github.wnameless.spring.boot.up.attachment;
 
+import static lombok.AccessLevel.PRIVATE;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Builder
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 public class AttachmentChecklist {
 
   // @Singular

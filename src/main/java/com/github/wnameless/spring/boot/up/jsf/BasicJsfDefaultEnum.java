@@ -1,13 +1,13 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
+import static lombok.AccessLevel.PRIVATE;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 public final class BasicJsfDefaultEnum implements JsfDefaultEnum {
 
   String documentTypeName;

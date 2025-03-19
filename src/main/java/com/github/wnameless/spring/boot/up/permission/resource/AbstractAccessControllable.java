@@ -1,10 +1,10 @@
 package com.github.wnameless.spring.boot.up.permission.resource;
 
-import lombok.AccessLevel;
+import static lombok.AccessLevel.PRIVATE;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 @Data
 public class AbstractAccessControllable implements AccessControllable {
 

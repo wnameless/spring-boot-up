@@ -1,13 +1,13 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
+import static lombok.AccessLevel.PRIVATE;
 import java.util.function.Supplier;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 public class CompositeFormPart {
 
   @Accessors(fluent = true)
@@ -22,7 +22,6 @@ public class CompositeFormPart {
     this.formTypeStock = formTypeStock;
     this.formBranchStock = () -> JsfConfig.getDefaultBranchName();
   }
-
 
   public CompositeFormPart(Supplier<String> formKeyStock, Supplier<String> formTypeStock) {
     this.formKeyStock = formKeyStock;

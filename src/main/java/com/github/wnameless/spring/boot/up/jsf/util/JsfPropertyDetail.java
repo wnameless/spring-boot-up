@@ -1,14 +1,14 @@
 package com.github.wnameless.spring.boot.up.jsf.util;
 
+import static lombok.AccessLevel.PRIVATE;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 public class JsfPropertyDetail {
 
   String key;

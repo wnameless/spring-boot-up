@@ -1,15 +1,15 @@
 package com.github.wnameless.spring.boot.up.notification;
 
+import static lombok.AccessLevel.PRIVATE;
 import com.github.oxo42.stateless4j.delegates.Action1;
 import com.github.oxo42.stateless4j.delegates.Action2;
 import com.github.oxo42.stateless4j.transitions.Transition;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 public class NotificationRule<S, T> implements NotificationPlan<S, T> {
 
   T trigger;

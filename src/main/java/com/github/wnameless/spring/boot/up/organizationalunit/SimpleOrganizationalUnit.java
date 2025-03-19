@@ -1,11 +1,11 @@
 package com.github.wnameless.spring.boot.up.organizationalunit;
 
-import lombok.AccessLevel;
+import static lombok.AccessLevel.PRIVATE;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 public class SimpleOrganizationalUnit<ID> implements OrganizationalUnit<ID> {
 
   ID organizationalUnitId;

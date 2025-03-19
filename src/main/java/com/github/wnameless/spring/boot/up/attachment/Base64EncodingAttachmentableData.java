@@ -1,17 +1,17 @@
 package com.github.wnameless.spring.boot.up.attachment;
 
+import static lombok.AccessLevel.PRIVATE;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 public class Base64EncodingAttachmentableData implements AttachmentableData {
 
   final String mimeType;

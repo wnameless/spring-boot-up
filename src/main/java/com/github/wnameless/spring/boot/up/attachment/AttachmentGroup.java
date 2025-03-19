@@ -1,11 +1,11 @@
 package com.github.wnameless.spring.boot.up.attachment;
 
-import lombok.AccessLevel;
+import static lombok.AccessLevel.PRIVATE;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = PRIVATE)
 public class AttachmentGroup {
 
   public static final AttachmentGroup single(String group) {
