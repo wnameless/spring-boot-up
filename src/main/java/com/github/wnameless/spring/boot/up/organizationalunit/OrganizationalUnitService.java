@@ -46,6 +46,7 @@ public interface OrganizationalUnitService<ID> {
   default List<Optional<? extends OrganizationalUnit<ID>>> findAllOrganizationalUnits(
       Collection<ID> organizationalUnitIds) {
     List<Optional<? extends OrganizationalUnit<ID>>> result = new ArrayList<>();
+    if (organizationalUnitIds.isEmpty()) return result;
     Map<ID, OrganizationalUnit<ID>> map = new LinkedHashMap<>();
 
     for (var repo : getOrganizationalUnitRepositories()) {
