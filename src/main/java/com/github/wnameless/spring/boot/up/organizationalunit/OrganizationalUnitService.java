@@ -105,15 +105,14 @@ public interface OrganizationalUnitService<ID> {
     return Optional.empty();
   }
 
-  default TreeNode<SimpleOrganizationalUnit<ID>> toTreeNode(ID organizationalUnitId) {
+  default TreeNode<OrganizationalUnit<ID>> toTreeNode(ID organizationalUnitId) {
     var ouOpt = findOrganizationalUnit(organizationalUnitId);
     if (ouOpt.isEmpty()) return null;
     if (!(isTreeNode(ouOpt.get()))) return null;
     return toTreeNode(ouOpt.get());
   }
 
-  default TreeNode<SimpleOrganizationalUnit<ID>> toTreeNode(
-      OrganizationalUnit<ID> organizationalUnit) {
+  default TreeNode<OrganizationalUnit<ID>> toTreeNode(OrganizationalUnit<ID> organizationalUnit) {
     if (organizationalUnit == null) return null;
 
     var oues = getAllTreeOrganizationalUnits(organizationalUnit);
@@ -122,11 +121,13 @@ public interface OrganizationalUnitService<ID> {
     if (rootOpt.isEmpty()) return null;
 
     var root = rootOpt.get();
-    oues.remove(root);
-    var rootNode = new ArrayMultiTreeNode<SimpleOrganizationalUnit<ID>>(
-        new SimpleOrganizationalUnit<ID>(root));
+    // oues.remove(root);
+    oues.removeIf(ou -> Objects.equals(root.getOrganizationalUnitId(), ou.getOrganizationalUnitId())
+        && Objects.equals(root.getParentOrganizationalUnitId(),
+            ou.getParentOrganizationalUnitId()));
+    var rootNode = new ArrayMultiTreeNode<OrganizationalUnit<ID>>(root);
 
-    List<TreeNode<SimpleOrganizationalUnit<ID>>> leaves = new ArrayList<>(Arrays.asList(rootNode));
+    List<TreeNode<OrganizationalUnit<ID>>> leaves = new ArrayList<>(Arrays.asList(rootNode));
     do {
       leaves = buildTree(leaves, oues);
     } while (!leaves.isEmpty());
@@ -134,16 +135,19 @@ public interface OrganizationalUnitService<ID> {
     return rootNode;
   }
 
-  private static <ID> List<TreeNode<SimpleOrganizationalUnit<ID>>> buildTree(
-      List<TreeNode<SimpleOrganizationalUnit<ID>>> leaves,
-      List<SimpleOrganizationalUnit<ID>> simpleOrganizationalUnits) {
-    var newLeaves = new ArrayList<TreeNode<SimpleOrganizationalUnit<ID>>>();
+  private static <ID> List<TreeNode<OrganizationalUnit<ID>>> buildTree(
+      List<TreeNode<OrganizationalUnit<ID>>> leaves,
+      List<? extends OrganizationalUnit<ID>> organizationalUnits) {
+    var newLeaves = new ArrayList<TreeNode<OrganizationalUnit<ID>>>();
 
     for (var leaf : leaves) {
-      var targets = simpleOrganizationalUnits.stream().filter(sou -> Objects
-          .equals(leaf.data().getOrganizationalUnitId(), sou.getParentOrganizationalUnitId()))
+      var targets = organizationalUnits.stream().filter(ou -> Objects
+          .equals(leaf.data().getOrganizationalUnitId(), ou.getParentOrganizationalUnitId()))
           .toList();
-      simpleOrganizationalUnits.removeAll(targets);
+      for (var target : targets) {
+        organizationalUnits.removeIf(target.equalityScrutiny());
+      }
+
       for (var target : targets) {
         var newLeaf = new ArrayMultiTreeNode<>(target);
         leaf.add(newLeaf);
@@ -154,7 +158,7 @@ public interface OrganizationalUnitService<ID> {
     return newLeaves;
   }
 
-  default List<Entry<String, String>> toNodeVectors(TreeNode<SimpleOrganizationalUnit<ID>> source) {
+  default List<Entry<String, String>> toNodeVectors(TreeNode<OrganizationalUnit<ID>> source) {
     List<Entry<String, String>> vectors = new ArrayList<>();
     vectors.add(new MutablePair<>(source.data().getOrganizationalUnitName(),
         source.data().getOrganizationalUnitName()));
@@ -165,7 +169,7 @@ public interface OrganizationalUnitService<ID> {
   }
 
   private static <ID> void traverseVectors(List<Entry<String, String>> vectors,
-      TreeNode<SimpleOrganizationalUnit<ID>> parent, TreeNode<SimpleOrganizationalUnit<ID>> child) {
+      TreeNode<OrganizationalUnit<ID>> parent, TreeNode<OrganizationalUnit<ID>> child) {
     vectors.add(new MutablePair<>(parent.data().getOrganizationalUnitName(),
         child.data().getOrganizationalUnitName()));
     if (!child.isLeaf()) {
@@ -187,16 +191,16 @@ public interface OrganizationalUnitService<ID> {
     return getOrganizationCharts().stream().anyMatch(ot -> ot.isTreeNode(organizationalUnit));
   }
 
-  default List<SimpleOrganizationalUnit<ID>> getAllTreeOrganizationalUnits(
+  default List<? extends OrganizationalUnit<ID>> getAllTreeOrganizationalUnits(
       OrganizationalUnit<ID> organizationalUnit) {
-    var organizationalUnits = new ArrayList<SimpleOrganizationalUnit<ID>>();
+    var organizationalUnits = new ArrayList<OrganizationalUnit<ID>>();
 
     findOrganizationalTree(organizationalUnit).ifPresent(ot -> {
       if (ot.hasDefaultRoot()) organizationalUnits.add(ot.getDefaultRoot());
       for (var treeRepo : getOrganizationalUnitRepositories()) {
         if (ot.getNodeTypes().contains(treeRepo.getResourceType())) {
           treeRepo.findAll().forEach(ou -> {
-            organizationalUnits.add(new SimpleOrganizationalUnit<ID>(ou));
+            organizationalUnits.add(ou);
           });
         }
       }
