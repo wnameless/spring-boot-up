@@ -1,12 +1,15 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
 import java.util.List;
+import com.github.wnameless.spring.boot.up.jsf.pojo.JsonPathConst;
 
 public interface JsfDefaultEnum {
 
   String getDocumentTypeName();
 
   String getEnumPath();
+
+  List<JsonPathConst> getIfConditions();
 
   JsfDefaultEnumType getEnumType();
 
