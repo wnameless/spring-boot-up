@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.TypeRef;
 import net.sf.rubycollect4j.Ruby;
 
@@ -66,7 +68,23 @@ public interface JsfDefaultEnumStrategy {
           allOf.add(mapper.valueToTree(Map.of("if", ifRoot, "then", thenRoot)));
         }
 
-        docCtx.put("$", "allOf", mapper.convertValue(allOf, new TypeReference<List<Object>>() {}));
+        boolean hasAllOf = false;
+        try {
+          docCtx.read("$.allOf", new TypeRef<List<Object>>() {});
+          hasAllOf = true;
+        } catch (PathNotFoundException e) {
+          hasAllOf = false;
+        }
+        var newAllOf = mapper.convertValue(allOf, new TypeReference<List<Object>>() {});
+        if (hasAllOf) {
+          var oldAllOf = docCtx.read("$.allOf", new TypeRef<List<Object>>() {});
+          var totalAllOf = new ArrayList<Object>();
+          totalAllOf.addAll(oldAllOf);
+          totalAllOf.addAll(newAllOf);
+          docCtx.put("$", "allOf", totalAllOf);
+        } else {
+          docCtx.put("$", "allOf", newAllOf);
+        }
       }
     }
 
