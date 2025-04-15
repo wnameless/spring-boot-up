@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="showPermittedMessage=${showPermittedMessage}, showProhibitedMessage=${showProhibitedMessage}, showProhibited=${showProhibited}"
+  th:with="showPermittedMessage=${showPermittedMessage != null ? showPermittedMessage : true}, showProhibitedMessage=${showProhibitedMessage != null ? showProhibitedMessage : true}, showProhibited=${showProhibited}"
   class="card mb-2" th:id="${'fsmActionBar' + item.id}">
   <div
     th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
