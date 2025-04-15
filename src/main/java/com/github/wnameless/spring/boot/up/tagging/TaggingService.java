@@ -105,9 +105,12 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
   }
 
   default void removeSystemLabelTag(Taggable<?, ?, ?, ID> taggedEntity, SystemLabel systemLabel) {
-    var tag =
-        getTagTemplateRepository().findByEntityIdAndSystemLabel(taggedEntity.getId(), systemLabel);
-    tag.ifPresent(t -> getTagTemplateRepository().delete(t));
+    getTagTemplateRepository().findAllByEntityId(taggedEntity.getId()).forEach(t -> {
+      if (systemLabel.equals(t.getSystemLabel())) getTagTemplateRepository().delete(t);
+    });
+    // var tag =
+    // getTagTemplateRepository().findByEntityIdAndSystemLabel(taggedEntity.getId(), systemLabel);
+    // tag.ifPresent(t -> getTagTemplateRepository().delete(t));
   }
 
   default Optional<Predicate<T>> findOwnershipRule() {
