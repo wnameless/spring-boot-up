@@ -1,10 +1,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5"
-  th:with="showPermittedMessage=${showPermittedMessage != null ? showPermittedMessage : true}, showProhibitedMessage=${showProhibitedMessage != null ? showProhibitedMessage : true}, showProhibited=${showProhibited}"
-  class="card mb-2" th:id="${'fsmActionBar' + item.id}">
+<div th:fragment="bs5" class="card mb-2" th:id="${'fsmActionBar' + item.id}">
   <div
-    th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
+    th:with="showPermittedMessage=${showPermittedMessage != null ? showPermittedMessage : true}, showProhibitedMessage=${showProhibitedMessage != null ? showProhibitedMessage : true}, showProhibited=${showProhibited}, item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
     class="card-body">
     <div class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
       <button type="button" class="btn btn-outline-primary">
