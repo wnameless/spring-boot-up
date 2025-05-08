@@ -74,7 +74,7 @@
             <!-- Without select option -->
             <th:block th:unless="${queryConfig.getFilterFields.get(field).hasSelectOption}">
               <input th:name="${field}"
-                th:attr="type=${queryConfig.getFilterFields.get(field).inputType}"
+                th:attr="__${queryConfig.getFilterFields.get(field).attrString}__"
                 class="form-control" th:value="${queryConfig.getFieldQueryString(field)}">
             </th:block>
           </div>

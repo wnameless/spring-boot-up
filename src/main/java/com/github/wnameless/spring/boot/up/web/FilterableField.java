@@ -9,6 +9,7 @@ import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import lombok.Data;
+import net.sf.rubycollect4j.Ruby;
 
 @Data
 public final class FilterableField<E extends EntityPathBase<?>> {
@@ -49,6 +50,24 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   private final BiFunction<E, String, Predicate> filterLogic;
   private boolean sortable = true;
   private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();
+  private final Map<String, String> attr = new LinkedHashMap<>();
+
+  public String getAttrString() {
+    return Ruby.Array.copyOf(getAttr().entrySet()).map(e -> e.getKey() + "=" + e.getValue())
+        .join(", ");
+  }
+
+  public Map<String, String> getAttr() {
+    var copy = new LinkedHashMap<String, String>();
+    copy.put("type", inputType);
+    copy.putAll(attr);
+    return copy;
+  }
+
+  public FilterableField<E> attr(Map<String, String> attr) {
+    this.attr.putAll(attr);
+    return this;
+  }
 
   public FilterableField<E> sortable(boolean sortable) {
     this.sortable = sortable;

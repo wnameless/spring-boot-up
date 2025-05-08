@@ -104,6 +104,12 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     private String alias;
     private boolean sortable = true;
     private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();
+    private final LinkedHashMap<String, String> attr = new LinkedHashMap<>();
+
+    public PathFilterableField attr(Map<String, String> attr) {
+      this.attr.putAll(attr);
+      return this;
+    }
 
     public PathFilterableField alias(String alias) {
       this.alias = alias;
@@ -123,7 +129,7 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     public QuerySetting<E> filterLogic(BiFunction<E, String, Predicate> filterLogic) {
       QuerySetting.this.addFilterableField(
           new FilterableField<>(pathFinder, Optional.ofNullable(alias), "text", filterLogic)
-              .sortable(sortable).selectOption(selectOption));
+              .sortable(sortable).selectOption(selectOption).attr(attr));
       return QuerySetting.this;
     }
 
