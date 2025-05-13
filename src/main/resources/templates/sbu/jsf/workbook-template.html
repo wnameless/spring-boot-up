@@ -1,0 +1,89 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5"
+  th:with="templateName=${templateName} ?: 'common',templateDisplay=${templateDisplay} ?: ${templateName}, templateValueMap=${templateValueMap}, route=${__${@webModelAttributes.ROUTE_NAME}__}">
+
+  <div class="btn-group btn-group-sm float-end" role="group"
+    aria-label="Basic radio toggle button group">
+    <button class="btn btn-outline-success" type="button" data-bs-toggle="offcanvas"
+      th:attr="data-bs-target=${'#jsfTemplateDownload_' + templateName}"
+      aria-controls="offcanvasBottom">
+      <i class="fas fa-file-excel fw"></i>
+      [[${#messages.msgOrNull('sbu.jsf.workbook_template.dataTemplate') ?: 'Data Template'}]]
+    </button>
+    <button class="btn btn-outline-warning" type="button" data-bs-toggle="offcanvas"
+      th:attr="data-bs-target=${'#jsfTemplateUpload_' + templateName}"
+      aria-controls="offcanvasBottom">
+      [[${#messages.msgOrNull('sbu.jsf.workbook_template.dataUpload') ?: 'Data Upload'}]]
+      <i class="fas fa-file-import fw"></i></button>
+  </div>
+
+  <div class="offcanvas offcanvas-bottom" tabindex="-1"
+    th:id="${'jsfTemplateDownload_' + templateName}">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">
+        [[${#messages.msgOrNull('sbu.jsf.workbook_template.dataTemplateDownload') ?: 'Data Template
+        Download'}]]
+      </h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+        aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body small">
+      <form th:action="@{${route.joinPath('jsf-workbook-template')}}" method="get">
+        <div class="input-group">
+          <select th:unless="${templateValueMap}" class="form-select" th:name="${templateName}">
+            <option th:value="${templateName}">
+              [[${templateDisplay}]]
+            </option>
+          </select>
+          <select th:if="${templateValueMap}" class="form-select" th:name="${templateName}">
+            <option th:each="templateValueKey : ${templateValueMap.keySet}"
+              th:value="${templateValueKey}">
+              [[${templateValueMap.get(templateValueKey)}]]
+            </option>
+          </select>
+          <button class="btn btn-success" type="submit">
+            [[${#messages.msgOrNull('ui.download') ?: 'Download'}]]
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="offcanvas offcanvas-bottom" tabindex="-1"
+    th:id="${'jsfTemplateUpload_' + templateName}">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">
+        [[${#messages.msgOrNull('sbu.jsf.workbook_template.dataTemplateUpload') ?: 'Data Template
+        Upload'}]]
+      </h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+        aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body small">
+      <form method="post" enctype="multipart/form-data"
+        th:action="@{${route.joinPath('jsf-workbook-template')}}">
+        <div class="input-group">
+          <select th:unless="${templateValueMap}" class="form-select" th:name="${templateName}">
+            <option th:value="${templateName}">
+              [[${templateDisplay}]]
+            </option>
+          </select>
+          <select th:if="${templateValueMap}" class="form-select" th:name="${templateName}">
+            <option th:each="templateValueKey : ${templateValueMap.keySet}"
+              th:value="${templateValueKey}">
+              [[${templateValueMap.get(templateValueKey)}]]
+            </option>
+          </select>
+          <input class="form-control" type="file" name="workbook" required />
+          <button class="btn btn-warning" type="submit">
+            [[${#messages.msgOrNull('ui.upload') ?: 'Upload'}]]
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+</html>

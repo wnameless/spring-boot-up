@@ -29,6 +29,14 @@ public interface WebActionAlertHelper {
     private List<String> info = new ArrayList<>();
     private List<String> success = new ArrayList<>();
 
+    public boolean isEmpty() {
+      return danger.isEmpty() && warning.isEmpty() && info.isEmpty() && success.isEmpty();
+    }
+
+    public boolean isPresent() {
+      return !isEmpty();
+    }
+
   }
 
   default void addAlertMessages(ModelAndView mav, String action, Object... args) {

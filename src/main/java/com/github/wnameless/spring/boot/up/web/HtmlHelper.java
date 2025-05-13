@@ -1,9 +1,14 @@
 package com.github.wnameless.spring.boot.up.web;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
@@ -79,6 +84,19 @@ public class HtmlHelper {
     diff = ChronoUnit.DAYS.between(dateTime, now);
     return messageSource.getMessage("sbu.web.time.ago.days", new Object[] {diff},
         diff == 1 ? "{0} day ago" : "{0} days ago", LocaleContextHolder.getLocale());
+  }
+
+  public String toQueryString(Map<String, ?> params) {
+    String queryString = params.entrySet().stream()
+        .map(e -> URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8) + "="
+            + URLEncoder.encode(String.valueOf(e.getValue()), StandardCharsets.UTF_8))
+        .collect(Collectors.joining("&"));
+    return queryString.isBlank() ? "&" : queryString;
+  }
+
+  public int toYearsOld(int year) {
+    int diff = LocalDate.now().getYear() - year;
+    return diff < 0 ? 0 : diff;
   }
 
 }

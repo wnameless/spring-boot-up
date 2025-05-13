@@ -32,7 +32,9 @@
   <!-- Creation Options End -->
 
   <!-- Filter Options Begin -->
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="filterOption">
+  <div class="offcanvas offcanvas-end"
+    th:attr="style=${queryConfig.fields.size > 6} ? 'width: 90%;' : null" tabindex="-1"
+    id="filterOption">
     <div class="offcanvas-header">
       <h4>[[${#messages.msgOrNull('sbu.web.datatable.filter_option.title') ?: 'Filter Option'}]]
       </h4>
@@ -48,7 +50,7 @@
 
         <!-- Start: Fields for querying -->
         <th:block th:each="field : ${queryConfig.fields}">
-          <div class="col-8"
+          <div class="col-8" th:classappend="${queryConfig.fields.size > 6} ? 'col-md-4' : ''"
             th:if="${queryConfig.getFilterFields.get(field).inputType} ne 'hidden'">
             <label class="form-label" th:if="${#messages.msgOrNull('sbu.web.datatable.field.' + @sbuHtml.getSimpleName(itemClass) + '.' +
             field) != null}">
@@ -82,7 +84,7 @@
             <input th:name="${field}" type="hidden" class="form-control"
               th:value="${queryConfig.getFieldQueryString(field)}">
           </th:block>
-          <div class="col-4"
+          <div class="col-4" th:classappend="${queryConfig.fields.size > 6} ? 'col-md-2' : ''"
             th:if="${queryConfig.getFilterFields.get(field).inputType} ne 'hidden'">
             <th:block th:if="${queryConfig.getFieldSortName(field)}">
               <label
