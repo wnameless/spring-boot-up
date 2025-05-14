@@ -18,18 +18,18 @@ public abstract class AuditableDocument {
 
   @EqualsAndHashCode.Include
   @Id
-  String id;
+  protected String id;
 
   @CreatedDate
-  LocalDateTime createdAt;
+  protected LocalDateTime createdAt;
 
   @LastModifiedDate
-  LocalDateTime updatedAt;
+  protected LocalDateTime updatedAt;
 
   @CreatedBy
-  String createdBy;
+  protected String createdBy;
 
   @LastModifiedBy
-  String updatedBy;
+  protected String updatedBy;
 
 }
