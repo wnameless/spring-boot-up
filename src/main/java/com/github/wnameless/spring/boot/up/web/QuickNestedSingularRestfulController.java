@@ -35,7 +35,7 @@ public abstract class QuickNestedSingularRestfulController<PR extends CrudReposi
     return itemRepository;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "null"})
   protected Class<I> getRestfulItemType() {
     var genericTypeResolver = GenericTypeResolver
         .resolveTypeArguments(getRestfulRepository().getClass(), CrudRepository.class);

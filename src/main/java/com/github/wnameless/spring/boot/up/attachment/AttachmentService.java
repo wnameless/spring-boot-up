@@ -11,7 +11,7 @@ import lombok.SneakyThrows;
 public interface AttachmentService<A extends Attachment<ID>, ID> {
 
   @SneakyThrows
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "null"})
   default A newAttachment() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), AttachmentService.class);

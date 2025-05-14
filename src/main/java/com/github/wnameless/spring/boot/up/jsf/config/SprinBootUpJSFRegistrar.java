@@ -10,6 +10,7 @@ import com.github.wnameless.spring.boot.up.thymeleaf.AjaxDialect;
 
 public class SprinBootUpJSFRegistrar implements ImportBeanDefinitionRegistrar {
 
+  @SuppressWarnings("null")
   @Override
   public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
       BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator) {

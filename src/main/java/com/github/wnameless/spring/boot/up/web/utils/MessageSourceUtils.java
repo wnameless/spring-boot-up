@@ -12,6 +12,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class MessageSourceUtils {
 
+  @SuppressWarnings("null")
   public MessageSource createByClasspathFolder(String classpathFolder, String... basenames)
       throws IOException {
     ReloadableResourceBundleMessageSource messageSource =

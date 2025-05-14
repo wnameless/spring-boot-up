@@ -14,7 +14,7 @@ public interface SingularActionCodeService<AC extends SingularActionCode<A>, A e
   SingularActionCodeRepository<AC, A, ID> getActionCodeRepository();
 
   @SneakyThrows
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "null"})
   default AC newActionCode() {
     var genericTypeResolver = GenericTypeResolver
         .resolveTypeArguments(getActionCodeRepository().getClass(), CrudRepository.class);

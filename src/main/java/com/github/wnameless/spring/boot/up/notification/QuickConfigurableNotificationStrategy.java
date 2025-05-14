@@ -117,7 +117,7 @@ public interface QuickConfigurableNotificationStrategy< //
     return rule;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "null"})
   @SneakyThrows
   default NC newNotificationCallback() {
     var genericTypeResolver = GenericTypeResolver.resolveTypeArguments(this.getClass(),
@@ -127,7 +127,7 @@ public interface QuickConfigurableNotificationStrategy< //
 
   String getFormattedMessage(String message, List<String> properties, SM stateMachine);
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "null"})
   default Class<SM> getNotifiableStateMachineType() {
     var genericTypeResolver = GenericTypeResolver.resolveTypeArguments(this.getClass(),
         QuickConfigurableNotificationStrategy.class);
@@ -140,7 +140,7 @@ public interface QuickConfigurableNotificationStrategy< //
         .getBean(NotificationService.class);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "null"})
   default List<T> getStateMachineTriggers() {
     var genericTypeResolver = GenericTypeResolver.resolveTypeArguments(this.getClass(),
         QuickConfigurableNotificationStrategy.class);
@@ -152,7 +152,7 @@ public interface QuickConfigurableNotificationStrategy< //
         .filter(t -> TriggerType.SIMPLE.equals(t.getTriggerType())).toList();
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "null"})
   default List<S> getStateMachineStates() {
     var genericTypeResolver = GenericTypeResolver.resolveTypeArguments(this.getClass(),
         QuickConfigurableNotificationStrategy.class);

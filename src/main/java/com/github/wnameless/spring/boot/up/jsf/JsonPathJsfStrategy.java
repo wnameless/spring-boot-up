@@ -9,7 +9,7 @@ import com.jayway.jsonpath.TypeRef;
 
 public interface JsonPathJsfStrategy<F extends JsonSchemaForm> extends JsfStrategy<F> {
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "null"})
   default public Class<F> getDocumentType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), JsfStrategy.class);
