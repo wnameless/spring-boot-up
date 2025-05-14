@@ -1,10 +1,10 @@
 package com.github.wnameless.spring.boot.up.permission;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.util.ClassUtils;
@@ -21,8 +21,10 @@ public interface ResourceAbilityProvider<ID> {
   default Optional<ID> findEntityId(Object entity) {
     Class<?> userClass = ClassUtils.getUserClass(entity.getClass());
 
-    Optional<Field> fieldOpt = Arrays.stream(userClass.getDeclaredFields())
-        .filter(field -> AnnotationUtils.getAnnotation(field, Id.class) != null).findAny();
+    Optional<Field> fieldOpt = FieldUtils.getAllFieldsList(userClass).stream()
+        .filter(field -> AnnotationUtils.getAnnotation(field, Id.class) != null
+            || AnnotationUtils.getAnnotation(field, jakarta.persistence.Id.class) != null)
+        .findAny();
     if (fieldOpt.isPresent()) {
       Field field = fieldOpt.get();
       field.setAccessible(true);

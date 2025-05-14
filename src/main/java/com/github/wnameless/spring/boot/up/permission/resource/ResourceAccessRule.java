@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.permission.resource;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.data.annotation.Id;
 import com.github.wnameless.spring.boot.up.permission.ability.Ability;
 import com.querydsl.core.types.ExpressionUtils;
@@ -16,9 +17,11 @@ public interface ResourceAccessRule<RF extends ResourceFilterRepository<T, ID>, 
   RF getResourceFilterRepository();
 
   default Predicate getPredicateOfEntity(T entity) {
-    for (Field field : entity.getClass().getDeclaredFields()) {
-      Annotation[] annotations = field.getDeclaredAnnotationsByType(Id.class);
-      if (annotations.length > 0) {
+    for (Field field : FieldUtils.getAllFieldsList(entity.getClass())) {
+      Annotation[] springIdAnnotation = field.getDeclaredAnnotationsByType(Id.class);
+      Annotation[] jpaIdAnnotation =
+          field.getDeclaredAnnotationsByType(jakarta.persistence.Id.class);
+      if (springIdAnnotation.length > 0 || jpaIdAnnotation.length > 0) {
         field.setAccessible(true);
         try {
           @SuppressWarnings("unchecked")

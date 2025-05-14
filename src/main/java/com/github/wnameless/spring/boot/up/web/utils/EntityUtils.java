@@ -4,7 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.data.annotation.Id;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +42,7 @@ public class EntityUtils {
   @SafeVarargs
   public Optional<String> findAnnotatedFieldName(Class<?> entityClass,
       Class<? extends Annotation>... annoTypes) {
-    Field[] fields = entityClass.getDeclaredFields();
+    List<Field> fields = FieldUtils.getAllFieldsList(entityClass);
     for (Field field : fields) {
       if (Arrays.asList(annoTypes).stream().anyMatch(field::isAnnotationPresent)) {
         return Optional.of(field.getName());

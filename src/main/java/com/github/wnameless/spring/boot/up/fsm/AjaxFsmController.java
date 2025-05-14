@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.MediaType;
@@ -76,14 +77,16 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
   @SuppressWarnings("unchecked")
   default ID getStateFormId(SF stateForm) {
     Class<?> entityClass = stateForm.getClass();
-    Field[] fields = entityClass.getDeclaredFields();
+    List<Field> fields = FieldUtils.getAllFieldsList(entityClass);
 
     for (Field field : fields) {
-      if (field.isAnnotationPresent(Id.class)) {
+      if (field.isAnnotationPresent(Id.class)
+          || field.isAnnotationPresent(jakarta.persistence.Id.class)) {
         field.setAccessible(true);
         return (ID) field.get(stateForm);
       }
     }
+
     throw new RuntimeException("Field annotated with @Id not found!");
   }
 
