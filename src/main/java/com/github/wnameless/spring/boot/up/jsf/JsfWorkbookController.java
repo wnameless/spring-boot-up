@@ -16,9 +16,10 @@ import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 public interface JsfWorkbookController<E extends JsfPOJO<SD>, SD, ID>
     extends RestfulRouteProvider<ID>, RestfulItemProvider<E> {
 
-  byte[] getWorkbookTemplateFile(E jsfPojo, MultiValueMap<String, String> params);
+  byte[] getWorkbookTemplateFile(E jsfPojo, MultiValueMap<String, String> params, boolean isBackup);
 
-  default String getWorkbookTemplateFileName(MultiValueMap<String, String> params) {
+  default String getWorkbookTemplateFileName(MultiValueMap<String, String> params,
+      boolean isBackup) {
     return "workbook-template.xlsx";
   }
 
@@ -29,8 +30,8 @@ public interface JsfWorkbookController<E extends JsfPOJO<SD>, SD, ID>
         .contentType(MediaType
             .parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
         .header(HttpHeaders.CONTENT_DISPOSITION,
-            "attachment; filename=\"" + getWorkbookTemplateFileName(params) + "\"")
-        .body(getWorkbookTemplateFile(getRestfulItem(), params));
+            "attachment; filename=\"" + getWorkbookTemplateFileName(params, false) + "\"")
+        .body(getWorkbookTemplateFile(getRestfulItem(), params, false));
   }
 
   void readWorkbookTemplateFile(MultipartFile workbookFile, MultiValueMap<String, String> params,
@@ -43,6 +44,17 @@ public interface JsfWorkbookController<E extends JsfPOJO<SD>, SD, ID>
     readWorkbookTemplateFile(workbookFile, params, redirectAttr);
     mav.setViewName("redirect:" + getRestfulRoute().getIndexPath());
     return mav;
+  }
+
+  @GetMapping("/jsf-workbook-template/backup")
+  default ResponseEntity<byte[]> downloadJsfWorkbookTemplateBackup(ModelAndView mav,
+      @RequestParam MultiValueMap<String, String> params) {
+    return ResponseEntity.ok()
+        .contentType(MediaType
+            .parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+        .header(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=\"" + getWorkbookTemplateFileName(params, false) + "\"")
+        .body(getWorkbookTemplateFile(getRestfulItem(), params, true));
   }
 
 }

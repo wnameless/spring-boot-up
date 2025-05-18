@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -35,6 +37,9 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.wnameless.spring.boot.up.jsf.JsfPOJO;
+import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper.AlertMessages;
+import jakarta.validation.Validator;
 
 public class JsfSimpleWorbookUtils {
 
@@ -274,7 +279,7 @@ public class JsfSimpleWorbookUtils {
     try (XSSFWorkbook workbook = new XSSFWorkbook();
         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-      XSSFSheet sheet = workbook.createSheet("Exported Data");
+      XSSFSheet sheet = workbook.createSheet("Data Entry");
       XSSFSheet enumSheet = workbook.createSheet("Enums");
       workbook.setSheetHidden(workbook.getSheetIndex(enumSheet), true);
 
@@ -419,6 +424,28 @@ public class JsfSimpleWorbookUtils {
       workbook.write(out);
       return out.toByteArray();
     }
+  }
+
+  public static <J extends JsfPOJO<P>, P> List<J> processJsonDataToEntities(
+      Map<Integer, Map<String, Object>> indexedJsonData, AlertMessages alertMessages,
+      Validator validator, Supplier<J> jsfPojoSupplier,
+      Function<Map<String, Object>, P> pojoMapper) {
+    var entites = new ArrayList<J>();
+
+    indexedJsonData.entrySet().forEach(e -> {
+      var item = jsfPojoSupplier.get();
+      var pojo = pojoMapper.apply(e.getValue());
+      item.setPojoWithPopulation(pojo);
+      entites.add(item);
+
+      var violations = validator.validate(item);
+      if (violations.size() > 0) {
+        alertMessages.getWarning()
+            .add("Row " + e.getKey() + " -> " + violations.iterator().next().getMessage());
+      }
+    });
+
+    return entites;
   }
 
 }
