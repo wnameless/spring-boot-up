@@ -1,12 +1,14 @@
 package com.github.wnameless.spring.boot.up.fsm;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.MediaType;
@@ -28,11 +30,14 @@ import com.github.wnameless.spring.boot.up.jsf.repository.JsfDataRepository;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfService;
 import com.github.wnameless.spring.boot.up.permission.resource.AccessControlRule;
 import com.github.wnameless.spring.boot.up.web.BaseWebAction;
+import com.github.wnameless.spring.boot.up.web.ModelAttributes.Alert;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRepositoryProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
+import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper.AlertMessages;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxTrigger;
+import jakarta.validation.Validator;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
@@ -298,7 +303,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
       consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView updateFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType, @RequestBody Map<String, Object> formData) {
-    mav.setViewName("sbu/jsf/show-edit-only :: bs5");
+    mav.setViewName("sbu/jsf/show-edit-only-with-alert :: bs5");
 
     PP phaseProvider = getRestfulRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phaseProvider.getPhase().getStateRecord();
@@ -321,11 +326,29 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
       if (beforeSaveStateForm() != null) {
         data = beforeSaveStateForm().apply(phaseProvider, data);
       }
-      data = saveStateForm(sf, data);
-      stateRecord.putStateFormId(formType, sf.formBranchStock().get(), getStateFormId(data));
-      getRestfulRepository().save(phaseProvider);
-      if (afterSaveStateForm() != null) {
-        data = afterSaveStateForm().apply(phaseProvider, data);
+
+      ValidStateForm validStateForm =
+          AnnotationUtils.findAnnotation(data.getClass(), ValidStateForm.class);
+      List<String> messages = new ArrayList<>();
+      if (validStateForm != null) {
+        var validator = SpringBootUp.getBean(Validator.class);
+        // validates bean
+        messages.addAll(validator.validate(data).stream().map(e -> e.getMessage()).toList());
+        if (messages.size() > 0) {
+          var alertMessages = new AlertMessages();
+          alertMessages.setWarning(messages);
+          alertMessages.getDanger().add("Data NOT saved.");
+          mav.addObject(Alert.name(), alertMessages);
+        }
+      }
+
+      if (messages.isEmpty()) {
+        data = saveStateForm(sf, data);
+        stateRecord.putStateFormId(formType, sf.formBranchStock().get(), getStateFormId(data));
+        getRestfulRepository().save(phaseProvider);
+        if (afterSaveStateForm() != null) {
+          data = afterSaveStateForm().apply(phaseProvider, data);
+        }
       }
 
       RestfulJsonSchemaForm<String> item = new RestfulJsonSchemaForm<>(

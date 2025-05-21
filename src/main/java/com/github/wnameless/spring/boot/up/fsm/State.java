@@ -8,7 +8,10 @@ public interface State<T extends Trigger, ID> {
 
   String getDisplayName();
 
-  StateType getStateType();
+  default StateType getStateType() {
+    var forms = getForms();
+    return forms == null || forms.isEmpty() ? StateType.SIMPLE : StateType.FORM;
+  }
 
   List<StateForm<T, ID>> getForms();
 
