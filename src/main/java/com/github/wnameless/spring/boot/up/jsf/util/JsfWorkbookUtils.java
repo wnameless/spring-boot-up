@@ -1,6 +1,8 @@
 package com.github.wnameless.spring.boot.up.jsf.util;
 
 import static com.github.wnameless.spring.boot.up.jsf.util.JsfFlattenedJsonUtils.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -42,6 +44,13 @@ public class JsfWorkbookUtils {
   public static final int DATA_POINT_IS_ENUM_COL = 8;
   public static final int DATA_POINT_VALUE_START = 9;
   public static final int DATA_POINT_ROW_START = 1;
+
+  public byte[] workbookToBytes(Workbook workbook) throws IOException {
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      workbook.write(out);
+      return out.toByteArray();
+    }
+  }
 
   private boolean containsErrorFormula(Cell cell) {
     return cell.getCellType() == CellType.FORMULA

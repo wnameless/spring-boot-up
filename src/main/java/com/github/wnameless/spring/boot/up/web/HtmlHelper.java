@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
+import com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotProvider;
 
 @Component("sbuHtml")
 public class HtmlHelper {
@@ -25,6 +26,10 @@ public class HtmlHelper {
   ApplicationContext appCtx;
   @Autowired
   MessageSource messageSource;
+
+  public boolean isAttachmentSnapshotProvider(Object obj) {
+    return obj instanceof AttachmentSnapshotProvider;
+  }
 
   public String getSimpleName(Class<?> klass) {
     return (klass != null) ? klass.getSimpleName() : "";

@@ -8,9 +8,7 @@
       <div></div>
     </react-form>
 
-    <div
-      th:if="${T(com.github.wnameless.spring.boot.up.attachment.AttachmentSnapshotProvider).isAssignableFrom(item.class)}"
-      th:id="${'attachments' + rid}">
+    <div th:if="${@sbuHtml.isAttachmentSnapshotProvider(item)}" th:id="${'attachments' + rid}">
       <a hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${'attachments' + rid})}"
         hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load" class="d-none"></a>
     </div>

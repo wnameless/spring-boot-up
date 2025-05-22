@@ -5,7 +5,7 @@
   class="card">
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
     <react-form th:id="${'newForm' + rid}"
-      th:action="@{${item.createPath}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
+      th:action="@{${item.createPath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
       method="POST" ajax:target="${ajaxTargetId}" th:attr="theme=${jsfTheme}">
       <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
         'Submit'}]]</button>
