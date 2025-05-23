@@ -1,0 +1,35 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5"
+  th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, usernameStrategy=${usernameStrategy}">
+
+  <style>
+    .breadcrumb-item+.breadcrumb-item::before {
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+      vertical-align: middle;
+    }
+  </style>
+  <nav style=" --bs-breadcrumb-divider: '>' ;" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <th:block th:each="at : ${item.stateRecord.auditTrails}">
+        <li th:if="${at != null}" class="breadcrumb-item mt-1">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary">
+              [[${usernameStrategy == null ? at.username : usernameStrategy.apply(at.username)}]]
+            </button>
+            <button type="button" class="btn btn-outline-info hint--right"
+              th:attr="aria-label=${at.timestamp}">
+              [[${at?.trigger?.displayName}]]<br>
+              [[${at?.timestamp?.toLocalDate}]]
+            </button>
+          </div>
+        </li>
+      </th:block>
+    </ol>
+  </nav>
+
+</div>
+
+</html>
