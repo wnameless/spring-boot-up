@@ -13,6 +13,7 @@ import lombok.experimental.FieldNameConstants;
 
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public abstract class AuditableDocument {
 
