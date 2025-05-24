@@ -1,29 +1,27 @@
 package com.github.wnameless.spring.boot.up.attachment;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import com.github.wnameless.spring.boot.up.web.IdProvider;
 
-public interface AttachmentSnapshot<A extends Attachment<ID>, ID> extends IdProvider<ID> {
+public interface AttachmentSnapshot<A extends Attachment<ID>, ID> {
 
-  void setId(ID id);
+  // void setId(ID id);
 
   List<A> getAttachments();
 
   void setAttachments(List<A> attachments);
 
-  LocalDateTime getCreatedAt();
+  // LocalDateTime getCreatedAt();
 
-  void setCreatedAt(LocalDateTime createdAt);
+  // void setCreatedAt(LocalDateTime createdAt);
 
-  LocalDateTime getUpdatedAt();
+  // LocalDateTime getUpdatedAt();
 
-  void setUpdatedAt(LocalDateTime updatedAt);
+  // void setUpdatedAt(LocalDateTime updatedAt);
 
   default Optional<A> findAttachment(ID id) {
     if (getAttachments() == null) return Optional.empty();
