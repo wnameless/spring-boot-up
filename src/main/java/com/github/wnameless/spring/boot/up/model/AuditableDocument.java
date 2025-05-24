@@ -16,7 +16,7 @@ import lombok.experimental.FieldNameConstants;
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldNameConstants
-public abstract class AuditableDocument {
+public abstract class AuditableDocument implements TimeAuditable, UserAuditable {
 
   @EqualsAndHashCode.Include
   @Id

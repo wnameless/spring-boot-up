@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.autocreation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -20,6 +21,7 @@ public interface AutoCreationService extends SchedulingConfigurer {
         for (var plan : autoCreator.getAutoCreationPlans()) {
           if (autoCreationPlanTypeStrategy().apply(plan.getAutoCreationPlanType())) {
             if (plan.isExecutable()) {
+              plan.saveLastAutoCreationTimepoint(LocalDateTime.now());
               plan.execuateCreation();
             }
           }
@@ -29,7 +31,7 @@ public interface AutoCreationService extends SchedulingConfigurer {
   }
 
   default String getCronExpression() {
-    return "0 */1 * * * *"; // Every 5 minutes
+    return "0 */1 * * * *"; // Every 1 minutes
   }
 
 }

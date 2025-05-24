@@ -14,6 +14,8 @@ public interface AutoCreationPlan<C> {
 
   void setLastAutoCreationTimepoint(LocalDateTime lastTime);
 
+  void saveLastAutoCreationTimepoint(LocalDateTime lastTime);
+
   void execuateCreation();
 
   default boolean isExecutable() {

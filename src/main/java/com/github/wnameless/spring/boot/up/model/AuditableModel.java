@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class AuditableModel {
+public abstract class AuditableModel implements TimeAuditable, UserAuditable {
 
   @CreatedDate
   protected LocalDateTime createdAt;
