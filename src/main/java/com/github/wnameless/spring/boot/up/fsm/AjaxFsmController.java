@@ -35,6 +35,7 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRepositoryProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
+import com.github.wnameless.spring.boot.up.web.TemplateFragmentAware;
 import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper.AlertMessages;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxTrigger;
 import jakarta.validation.Validator;
@@ -43,7 +44,11 @@ import net.sf.rubycollect4j.Ruby;
 
 public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP extends PhaseProvider<PP, S, T, ID>, S extends State<T, ID>, T extends Trigger, D, ID>
     extends RestfulRepositoryProvider<PP, ID>, RestfulItemProvider<PP>, RestfulRouteProvider<ID>,
-    BaseWebAction<D, ID> {
+    BaseWebAction<D, ID>, TemplateFragmentAware {
+
+  default String getFragmentName() {
+    return "bs5";
+  }
 
   @SneakyThrows
   @SuppressWarnings("unchecked")
@@ -167,7 +172,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
 
   @GetMapping(path = "/{id}/triggers", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView refreshTriggersAjax(ModelAndView mav, @PathVariable ID id) {
-    mav.setViewName("sbu/fsm/action-bar :: bs5/div.card-body");
+    mav.setViewName("sbu/fsm/action-bar :: " + getFragmentName() + "/div.card-body");
 
     PP phaseProvider = getRestfulRepository().findById(id).get();
     mav.addObject(Item.name(), phaseProvider);
@@ -209,7 +214,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
   @GetMapping(path = "/{id}/forms/{formType}", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView showFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType) {
-    mav.setViewName("sbu/jsf/show-edit-only :: bs5");
+    mav.setViewName("sbu/jsf/show-edit-only :: " + getFragmentName());
 
     showAndEditAction(mav, id, formType);
     return mav;
@@ -219,7 +224,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
       consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView showFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType, @PathVariable ID formId) {
-    mav.setViewName("sbu/jsf/show-only :: bs5");
+    mav.setViewName("sbu/jsf/show-only :: " + getFragmentName());
 
     showAction(mav, id, formType, formId);
     return mav;
@@ -257,7 +262,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
   @GetMapping(path = "/{id}/forms/{formType}/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView editFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType) {
-    mav.setViewName("sbu/jsf/edit :: bs5");
+    mav.setViewName("sbu/jsf/edit :: " + getFragmentName());
 
     showAndEditAction(mav, id, formType);
     return mav;
@@ -303,7 +308,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
       consumes = MediaType.APPLICATION_JSON_VALUE)
   default ModelAndView updateFormAjax(ModelAndView mav, @PathVariable ID id,
       @PathVariable String formType, @RequestBody Map<String, Object> formData) {
-    mav.setViewName("sbu/jsf/show-edit-only-with-alert :: bs5");
+    mav.setViewName("sbu/jsf/show-edit-only-with-alert :: " + getFragmentName());
 
     PP phaseProvider = getRestfulRepository().findById(id).get();
     StateRecord<S, T, ID> stateRecord = phaseProvider.getPhase().getStateRecord();

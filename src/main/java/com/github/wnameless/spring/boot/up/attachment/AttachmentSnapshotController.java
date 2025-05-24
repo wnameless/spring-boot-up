@@ -25,12 +25,13 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.AjaxTargetId;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
+import com.github.wnameless.spring.boot.up.web.TemplateFragmentAware;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
 public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvider<AA, A, ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
-    extends RestfulRouteProvider<ID>, RestfulItemProvider<AA> {
+    extends RestfulRouteProvider<ID>, RestfulItemProvider<AA>, TemplateFragmentAware {
 
   default String getFragmentName() {
     return "bs5";
