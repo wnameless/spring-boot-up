@@ -24,15 +24,13 @@ import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.AjaxTargetId;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItem;
+import com.github.wnameless.spring.boot.up.web.TemplateFragmentAware;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
-public interface SingularAttachmentSnapshotController<AA extends AttachmentSnapshotProvider<AA, A, ID> & RestfulItem<ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID> {
-
-  default String getFragmentName() {
-    return "bs5";
-  }
+public interface SingularAttachmentSnapshotController<AA extends AttachmentSnapshotProvider<AA, A, ID> & RestfulItem<ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
+    extends TemplateFragmentAware {
 
   AA getAttachmentSnapshotProvider();
 
@@ -80,24 +78,25 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
           "type": "array",
           "items": {
             "type": "object",
-            "title": "附件",
+            "title": "%s",
             "required": [
               "fileName"
             ],
             "properties": {
               "fileName": {
-                "title": "檔名",
+                "title": "%s",
                 "type": "string"
               },
               "note": {
-                "title": "附註",
+                "title": "%s",
                 "type": "string",
                 "default": ""
               }
             }
           }
         }
-          """;
+          """.formatted(AttachmentI18nHelper.getAttachmentTitle(),
+        AttachmentI18nHelper.getFileName(), AttachmentI18nHelper.getNote());;
     for (String group : checklist.getGroupNames().stream()
         .filter(gn -> attachmentsGroups.keySet().contains(gn)).toList()) {
       aryProps.put(group, mapper.readValue(ary, Map.class));
@@ -110,6 +109,73 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
             "addable": false,
             "orderable": false,
             "removable": true
+          }
+        }
+           """;
+    for (String group : attachmentsGroups.keySet()) {
+      editform.getUiSchema().put(group, mapper.readValue(uiOpt, Map.class));
+    }
+
+    for (String group : attachmentsGroups.keySet()) {
+      editform.getFormData().put(group, attachmentsGroups.get(group).stream()
+          .map(a -> Ruby.Hash.of("fileName", a.getName(), "note", a.getNote())).toList());
+    }
+
+    return editform;
+  }
+
+  @SneakyThrows
+  default RestfulJsonSchemaForm<?> createNoteForm(AttachmentChecklist checklist,
+      AttachmentSnapshot<A, ID> snapshot) {
+    var editform = new RestfulJsonSchemaForm<String>(getAttachmentSnapshotProvider().getShowPath(),
+        "attachments");
+    var mapper = SpringBootUp.getBean(ObjectMapper.class);
+    var attachmentsGroups = snapshot.getAttachmentsByGroup();
+
+    // editform.getSchema().put("title", "Files");
+    editform.getSchema().put("type", "object");
+    var aryProps = new LinkedHashMap<>();
+    String ary = """
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "%s",
+            "required": [
+              "fileName"
+            ],
+            "properties": {
+              "fileName": {
+                "title": "%s",
+                "type": "string"
+              },
+              "note": {
+                "title": "%s",
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        }
+          """.formatted(AttachmentI18nHelper.getAttachmentTitle(),
+        AttachmentI18nHelper.getFileName(), AttachmentI18nHelper.getNote());
+    for (String group : checklist.getGroupNames().stream()
+        .filter(gn -> attachmentsGroups.keySet().contains(gn)).toList()) {
+      aryProps.put(group, mapper.readValue(ary, Map.class));
+    }
+    editform.getSchema().put("properties", aryProps);
+
+    String uiOpt = """
+        {
+          "items": {
+            "fileName": {
+              "ui:readonly": true
+            }
+          },
+          "ui:options": {
+            "addable": false,
+            "orderable": false,
+            "removable": false
           }
         }
            """;
@@ -231,6 +297,20 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
     var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
 
     mav.addObject(Item.name(), createEditForm(checklist, snapshot));
+    mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    return mav;
+  }
+
+  @GetMapping("/attachments/note")
+  default ModelAndView noteAttachments(ModelAndView mav,
+      @RequestParam(required = true) String ajaxTargetId) {
+    mav.setViewName("sbu/attachments/note :: " + getFragmentName());
+
+    var attachmentSnapshotProvider = getAttachmentSnapshotProvider();
+    var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
+    var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
+
+    mav.addObject(Item.name(), createNoteForm(checklist, snapshot));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }

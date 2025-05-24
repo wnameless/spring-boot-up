@@ -10,7 +10,7 @@ import lombok.SneakyThrows;
 
 public abstract class QuickNestedSingularRestfulController<PR extends CrudRepository<P, PID> & QuerydslPredicateExecutor<P>, P extends RestfulItem<PID>, PID, //
     R extends CrudRepository<I, ID> & QuerydslPredicateExecutor<I>, I extends RestfulItem<ID>, ID>
-    implements NestedSinglularRestfulController<PR, P, PID, R, I, ID> {
+    implements NestedSinglularRestfulController<PR, P, PID, R, I, ID>, TemplateFragmentAware {
 
   @Autowired
   protected PR parentRepository;
@@ -60,6 +60,11 @@ public abstract class QuickNestedSingularRestfulController<PR extends CrudReposi
     });
 
     quickConfigure(policy);
+  }
+
+  @Override
+  public String getFragmentName() {
+    return "bs5";
   }
 
 }

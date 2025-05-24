@@ -15,6 +15,7 @@ import com.github.wnameless.spring.boot.up.web.ModelAttributes.Alert;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
 import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
+import com.github.wnameless.spring.boot.up.web.TemplateFragmentAware;
 import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper.AlertMessages;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -22,11 +23,7 @@ import com.jayway.jsonpath.TypeRef;
 import lombok.SneakyThrows;
 
 public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends TaggingService<T, UL, L, ID>, T extends TagTemplate<UL, L, ID>, UL extends UserLabelTemplate<ID>, L extends LabelTemplate<ID>, ID>
-    extends RestfulRouteProvider<ID>, RestfulItemProvider<E> {
-
-  default String getFragmentName() {
-    return "bs5";
-  }
+    extends RestfulRouteProvider<ID>, RestfulItemProvider<E>, TemplateFragmentAware {
 
   default E getTaggable(ID id) {
     return getRestfulItem();

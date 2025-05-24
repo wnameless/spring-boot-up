@@ -15,7 +15,7 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import lombok.SneakyThrows;
 
 public abstract class QuickRestfulController<R extends CrudRepository<I, ID>, I, ID>
-    implements RestfulController<R, I, ID>, RestfulItemProvider<I> {
+    implements RestfulController<R, I, ID>, RestfulItemProvider<I>, TemplateFragmentAware {
 
   @Autowired
   protected R itemRepository;
@@ -94,6 +94,11 @@ public abstract class QuickRestfulController<R extends CrudRepository<I, ID>, I,
   @Override
   public I getRestfulItem() {
     return item;
+  }
+
+  @Override
+  public String getFragmentName() {
+    return "bs5";
   }
 
 }

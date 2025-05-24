@@ -11,7 +11,7 @@ import com.google.common.base.CaseFormat;
 import lombok.SneakyThrows;
 
 public abstract class QuickSingularRestfulController<R extends CrudRepository<I, ID>, I, ID>
-    implements SingularRestfulController<R, I, ID>, RestfulItemProvider<I> {
+    implements SingularRestfulController<R, I, ID>, RestfulItemProvider<I>, TemplateFragmentAware {
 
   @Autowired
   protected R itemRepository;
@@ -76,6 +76,11 @@ public abstract class QuickSingularRestfulController<R extends CrudRepository<I,
   @Override
   public I getRestfulItem() {
     return item;
+  }
+
+  @Override
+  public String getFragmentName() {
+    return "bs5";
   }
 
 }

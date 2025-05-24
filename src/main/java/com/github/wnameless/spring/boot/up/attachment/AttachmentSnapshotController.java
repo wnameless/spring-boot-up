@@ -33,10 +33,6 @@ import net.sf.rubycollect4j.Ruby;
 public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvider<AA, A, ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
     extends RestfulRouteProvider<ID>, RestfulItemProvider<AA>, TemplateFragmentAware {
 
-  default String getFragmentName() {
-    return "bs5";
-  }
-
   default AA getAttachmentSnapshotProvider(ID id) {
     return getRestfulItem();
   }
@@ -85,24 +81,25 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
           "type": "array",
           "items": {
             "type": "object",
-            "title": "附件",
+            "title": "%s",
             "required": [
               "fileName"
             ],
             "properties": {
               "fileName": {
-                "title": "檔名",
+                "title": "%s",
                 "type": "string"
               },
               "note": {
-                "title": "附註",
+                "title": "%s",
                 "type": "string",
                 "default": ""
               }
             }
           }
         }
-          """;
+          """.formatted(AttachmentI18nHelper.getAttachmentTitle(),
+        AttachmentI18nHelper.getFileName(), AttachmentI18nHelper.getNote());
     for (String group : checklist.getGroupNames().stream()
         .filter(gn -> attachmentsGroups.keySet().contains(gn)).toList()) {
       aryProps.put(group, mapper.readValue(ary, Map.class));
@@ -146,24 +143,25 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
           "type": "array",
           "items": {
             "type": "object",
-            "title": "附件",
+            "title": "%s",
             "required": [
               "fileName"
             ],
             "properties": {
               "fileName": {
-                "title": "檔名",
+                "title": "%s",
                 "type": "string"
               },
               "note": {
-                "title": "附註",
+                "title": "%s",
                 "type": "string",
                 "default": ""
               }
             }
           }
         }
-          """;
+          """.formatted(AttachmentI18nHelper.getAttachmentTitle(),
+        AttachmentI18nHelper.getFileName(), AttachmentI18nHelper.getNote());
     for (String group : checklist.getGroupNames().stream()
         .filter(gn -> attachmentsGroups.keySet().contains(gn)).toList()) {
       aryProps.put(group, mapper.readValue(ary, Map.class));

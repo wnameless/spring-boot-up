@@ -46,10 +46,6 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
     extends RestfulRepositoryProvider<PP, ID>, RestfulItemProvider<PP>, RestfulRouteProvider<ID>,
     BaseWebAction<D, ID>, TemplateFragmentAware {
 
-  default String getFragmentName() {
-    return "bs5";
-  }
-
   @SneakyThrows
   @SuppressWarnings("unchecked")
   default SF newStateForm(StateForm<T, ID> sf, String formType) {
