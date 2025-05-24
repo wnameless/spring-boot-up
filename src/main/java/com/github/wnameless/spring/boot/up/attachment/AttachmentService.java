@@ -10,12 +10,16 @@ import lombok.SneakyThrows;
 
 public interface AttachmentService<A extends Attachment<ID>, ID> {
 
-  @SneakyThrows
   @SuppressWarnings({"unchecked", "null"})
-  default A newAttachment() {
+  default Class<A> getAttachmentType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), AttachmentService.class);
-    return (A) genericTypeResolver[0].getDeclaredConstructor().newInstance();
+    return (Class<A>) genericTypeResolver[0];
+  }
+
+  @SneakyThrows
+  default A newAttachment() {
+    return (A) getAttachmentType().getDeclaredConstructor().newInstance();
   }
 
   A saveAttachment(A attachment);

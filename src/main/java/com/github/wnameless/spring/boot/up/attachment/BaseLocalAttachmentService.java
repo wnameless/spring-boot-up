@@ -31,6 +31,7 @@ public abstract class BaseLocalAttachmentService<A extends Attachment<ID>, ID>
   @Override
   public void deleteAttachment(A attachment) {
     attachmentRepository().delete(attachment);
+    new File(attachment.getUri()).delete();
   }
 
   @Override
