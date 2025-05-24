@@ -12,7 +12,7 @@ import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfPOJOService;
 import com.github.wnameless.spring.boot.up.jsf.service.JsfPatchService;
 
-public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyProvider {
+public interface JsfPOJO<T> extends YamlableJSF, JsfVersioning, JsfStratrgyProvider {
 
   static final Logger log = LoggerFactory.getLogger(JsfPOJO.class);
 
