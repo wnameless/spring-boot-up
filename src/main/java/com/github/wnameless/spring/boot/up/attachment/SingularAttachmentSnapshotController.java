@@ -273,8 +273,7 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
   }
 
   @GetMapping("/attachments")
-  default ModelAndView retrieveAttachments(ModelAndView mav,
-      @RequestParam(required = true) String ajaxTargetId) {
+  default ModelAndView retrieveAttachments(ModelAndView mav, @RequestParam String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider();
@@ -288,8 +287,7 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
   }
 
   @GetMapping("/attachments/edit")
-  default ModelAndView editAttachments(ModelAndView mav,
-      @RequestParam(required = true) String ajaxTargetId) {
+  default ModelAndView editAttachments(ModelAndView mav, @RequestParam String ajaxTargetId) {
     mav.setViewName("sbu/attachments/edit :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider();
@@ -302,8 +300,7 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
   }
 
   @GetMapping("/attachments/note")
-  default ModelAndView noteAttachments(ModelAndView mav,
-      @RequestParam(required = true) String ajaxTargetId) {
+  default ModelAndView noteAttachments(ModelAndView mav, @RequestParam String ajaxTargetId) {
     mav.setViewName("sbu/attachments/note :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider();
@@ -316,8 +313,7 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
   }
 
   @GetMapping("/attachments/upload")
-  default ModelAndView uploadFragment(ModelAndView mav,
-      @RequestParam(required = true) String ajaxTargetId) {
+  default ModelAndView uploadFragment(ModelAndView mav, @RequestParam String ajaxTargetId) {
     mav.setViewName("sbu/attachments/upload :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider();
@@ -330,8 +326,7 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
 
   @PostMapping("/attachments")
   default ModelAndView uploadAttachments(ModelAndView mav,
-      @RequestBody Map<String, Object> jsfFiles,
-      @RequestParam(required = true) String ajaxTargetId) {
+      @RequestBody Map<String, Object> jsfFiles, @RequestParam String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider();
@@ -400,8 +395,7 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
 
   @PutMapping(path = "/attachments")
   default ModelAndView modifyAttachments(ModelAndView mav,
-      @RequestBody Map<String, Object> jsfFiles,
-      @RequestParam(name = "_ajaxTargetId", required = true) String ajaxTargetId) {
+      @RequestBody Map<String, Object> jsfFiles, @RequestParam String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider();

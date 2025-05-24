@@ -277,7 +277,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
 
   @GetMapping("/{id}/attachments")
   default ModelAndView retrieveAttachments(ModelAndView mav, @PathVariable ID id,
-      @RequestParam(required = true) String ajaxTargetId) {
+      String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
@@ -291,8 +291,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
   }
 
   @GetMapping("/{id}/attachments/edit")
-  default ModelAndView editAttachments(ModelAndView mav, @PathVariable ID id,
-      @RequestParam(required = true) String ajaxTargetId) {
+  default ModelAndView editAttachments(ModelAndView mav, @PathVariable ID id, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/edit :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
@@ -305,8 +304,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
   }
 
   @GetMapping("/{id}/attachments/note")
-  default ModelAndView noteAttachments(ModelAndView mav, @PathVariable ID id,
-      @RequestParam(required = true) String ajaxTargetId) {
+  default ModelAndView noteAttachments(ModelAndView mav, @PathVariable ID id, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/note :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
@@ -319,8 +317,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
   }
 
   @GetMapping("/{id}/attachments/upload")
-  default ModelAndView uploadFragment(ModelAndView mav, @PathVariable ID id,
-      @RequestParam(required = true) String ajaxTargetId) {
+  default ModelAndView uploadFragment(ModelAndView mav, @PathVariable ID id, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/upload :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
@@ -333,8 +330,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
 
   @PostMapping("/{id}/attachments")
   default ModelAndView uploadAttachments(ModelAndView mav, @PathVariable ID id,
-      @RequestBody Map<String, Object> jsfFiles,
-      @RequestParam(required = true) String ajaxTargetId) {
+      @RequestBody Map<String, Object> jsfFiles, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
@@ -404,8 +400,7 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
 
   @PutMapping(path = "/{id}/attachments")
   default ModelAndView modifyAttachments(ModelAndView mav, @PathVariable ID id,
-      @RequestBody Map<String, Object> jsfFiles,
-      @RequestParam(name = "_ajaxTargetId", required = true) String ajaxTargetId) {
+      @RequestBody Map<String, Object> jsfFiles, @RequestParam String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
