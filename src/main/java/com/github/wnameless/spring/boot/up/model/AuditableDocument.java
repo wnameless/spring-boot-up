@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,15 +22,19 @@ public abstract class AuditableDocument {
   @Id
   protected String id;
 
+  @Indexed
   @CreatedDate
   protected LocalDateTime createdAt;
 
+  @Indexed
   @LastModifiedDate
   protected LocalDateTime updatedAt;
 
+  @Indexed
   @CreatedBy
   protected String createdBy;
 
+  @Indexed
   @LastModifiedBy
   protected String updatedBy;
 
