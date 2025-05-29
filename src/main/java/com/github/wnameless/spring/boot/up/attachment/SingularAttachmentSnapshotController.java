@@ -2,6 +2,8 @@ package com.github.wnameless.spring.boot.up.attachment;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -384,7 +386,8 @@ public interface SingularAttachmentSnapshotController<AA extends AttachmentSnaps
     A attachment = attachmentOpt.get();
     try (InputStream inputStream = getAttachmentService().readData(attachment)) {
       response.setContentType("application/octet-stream");
-      response.setHeader("Content-Disposition", "attachment; filename=" + attachment.getName());
+      response.setHeader("Content-Disposition", "attachment; filename="
+          + URLEncoder.encode(attachment.getName(), StandardCharsets.UTF_8));
 
       int nRead;
       while ((nRead = inputStream.read()) != -1) {
