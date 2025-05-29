@@ -4,6 +4,7 @@ import static com.github.wnameless.spring.boot.up.jsf.util.JsfFlattenedJsonUtils
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,6 +51,11 @@ public class JsfWorkbookUtils {
       workbook.write(out);
       return out.toByteArray();
     }
+  }
+
+  public byte[] workbookToBase64Bytes(Workbook workbook) throws IOException {
+    byte[] bytes = workbookToBytes(workbook);
+    return Base64.getEncoder().encode(bytes);
   }
 
   private boolean containsErrorFormula(Cell cell) {
