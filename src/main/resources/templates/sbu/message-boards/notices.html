@@ -1,0 +1,37 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5" th:with="notices=${notices}">
+  <div class="accordion">
+    <div th:each="notice, idx : ${notices}" class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+          th:attr="data-bs-target=${'#collapse_' + idx.index}">
+          [[${notice.title + ' - ' + @sbuHtml.toTimeAgo(notice.createdAt)}]]
+          <span class="hint--right" th:attr="aria-label=#{'ui.pinned'}">
+            <i th:if="${notice.pinned}" class="fas fa-map-pin fa-fw text-danger"></i>
+          </span>
+        </button>
+      </h2>
+      <div th:id="${'collapse_' + idx.index}" class="accordion-collapse collapse"
+        th:classappend="${notice.timely} ? 'show' : ''">
+        <div class="accordion-body">
+          <textarea th:id="${'markdown_' + idx.index}"
+            style="display: none;">[[${notice.content}]]</textarea>
+          <div th:id="${'markdown_viewer_' + idx.index}"></div>
+
+          <script th:inline="javascript" defer>
+            document.getElementById(/*[[${'markdown_viewer_' + idx.index}]]*/null)._editorInstance = new toastui.Editor.factory({
+              el: document.getElementById(/*[[${'markdown_viewer_' + idx.index}]]*/null),
+              height: '400px',
+              viewer: true,
+              initialValue: document.getElementById(/*[[${'markdown_' + idx.index}]]*/null).value
+            });
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</html>
