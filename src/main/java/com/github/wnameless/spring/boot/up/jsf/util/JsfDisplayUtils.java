@@ -80,11 +80,26 @@ public class JsfDisplayUtils {
     return true;
   }
 
+  public <ID> boolean setEnum(DocumentContext docCtx, String jsonPath, ID enumVal) {
+    if (enumVal == null) return false;
+
+    docCtx.put(jsonPath, "enum", List.of(enumVal));
+
+    return true;
+  }
+
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, T[] items,
       Function<T, ID> toEnum, Function<T, String> toEnumName) {
     if (items == null || items.length == 0) return false;
 
     return setEnum(docCtx, jsonPath, Arrays.asList(items), toEnum, toEnumName);
+  }
+
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, T[] items,
+      Function<T, ID> toEnum) {
+    if (items == null || items.length == 0) return false;
+
+    return setEnum(docCtx, jsonPath, Arrays.asList(items), toEnum);
   }
 
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
@@ -94,11 +109,25 @@ public class JsfDisplayUtils {
     return setEnum(docCtx, jsonPath, items.toList(), toEnum, toEnumName);
   }
 
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
+      Function<T, ID> toEnum) {
+    if (items == null || !items.iterator().hasNext()) return false;
+
+    return setEnum(docCtx, jsonPath, items.toList(), toEnum);
+  }
+
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Iterable<T> items,
       Function<T, ID> toEnum, Function<T, String> toEnumName) {
     if (items == null || !items.iterator().hasNext()) return false;
 
     return setEnum(docCtx, jsonPath, Ruby.Array.copyOf(items), toEnum, toEnumName);
+  }
+
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Iterable<T> items,
+      Function<T, ID> toEnum) {
+    if (items == null || !items.iterator().hasNext()) return false;
+
+    return setEnum(docCtx, jsonPath, Ruby.Array.copyOf(items), toEnum);
   }
 
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Collection<T> items,
@@ -107,6 +136,15 @@ public class JsfDisplayUtils {
 
     docCtx.put(jsonPath, "enum", items.stream().map(toEnum).toList());
     docCtx.put(jsonPath, "enumNames", items.stream().map(toEnumName).toList());
+
+    return true;
+  }
+
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Collection<T> items,
+      Function<T, ID> toEnum) {
+    if (items == null || items.isEmpty()) return false;
+
+    docCtx.put(jsonPath, "enum", items.stream().map(toEnum).toList());
 
     return true;
   }
