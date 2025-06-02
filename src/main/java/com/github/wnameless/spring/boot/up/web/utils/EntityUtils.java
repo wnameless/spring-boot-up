@@ -35,7 +35,7 @@ public class EntityUtils {
     // Retain Id value
     var idFieldName =
         findAnnotatedFieldName(src.getClass(), Id.class, jakarta.persistence.Id.class);
-    if (idFieldName.isPresent()) EntityUtils.copyField(src, mock, idFieldName.get());
+    if (idFieldName.isPresent()) copyField(src, mock, idFieldName.get());
     return mock;
   }
 
@@ -53,13 +53,15 @@ public class EntityUtils {
 
   public void copyField(Object source, Object target, String fieldName) {
     try {
-      Field sourceField = source.getClass().getDeclaredField(fieldName);
-      Field targetField = target.getClass().getDeclaredField(fieldName);
+      Field sourceField = FieldUtils.getAllFieldsList(source.getClass()).stream()
+          .filter(f -> f.getName().equals(fieldName)).findFirst().get();
+      Field targetField = FieldUtils.getAllFieldsList(target.getClass()).stream()
+          .filter(f -> f.getName().equals(fieldName)).findFirst().get();
       sourceField.setAccessible(true);
       targetField.setAccessible(true);
       Object value = sourceField.get(source);
       targetField.set(target, value);
-    } catch (NoSuchFieldException | IllegalAccessException e) {
+    } catch (IllegalAccessException e) {
       log.error("Copy field[" + fieldName + "] value failed", e);
     }
   }

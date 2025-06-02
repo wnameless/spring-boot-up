@@ -104,16 +104,20 @@ public class JsfDisplayUtils {
 
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
       Function<T, ID> toEnum, Function<T, String> toEnumName) {
-    if (items == null || !items.iterator().hasNext()) return false;
+    if (items == null) return false;
+    var list = items.toList();
+    if (list.isEmpty()) return false;
 
-    return setEnum(docCtx, jsonPath, items.toList(), toEnum, toEnumName);
+    return setEnum(docCtx, jsonPath, list, toEnum, toEnumName);
   }
 
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
       Function<T, ID> toEnum) {
-    if (items == null || !items.iterator().hasNext()) return false;
+    if (items == null) return false;
+    var list = items.toList();
+    if (list.isEmpty()) return false;
 
-    return setEnum(docCtx, jsonPath, items.toList(), toEnum);
+    return setEnum(docCtx, jsonPath, list, toEnum);
   }
 
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Iterable<T> items,
