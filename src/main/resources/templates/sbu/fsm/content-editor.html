@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="user=${__${'@' + @webModelAttributes.USER_NAME}__}, fid=${(T(java.lang.Math).random() * 2147483647).intValue()}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}">
+  th:with="_historyBack=${_historyBack} ?: false, user=${__${'@' + @webModelAttributes.USER_NAME}__}, fid=${(T(java.lang.Math).random() * 2147483647).intValue()}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}">
   <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item" role="presentation">
       <button class="nav-link active" data-bs-toggle="tab"
@@ -45,7 +45,7 @@
   <div class="tab-content">
     <div class="tab-pane fade show active" th:id="${'mainForm' + fid}" role="tabpanel">
       <div th:if="user == null || user.canRead(item)"
-        th:replace="~{sbu/jsf/show-edit :: bs5(saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, __${@webModelAttributes.ITEM_NAME}__=${item}, __${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.BACK_PATH_NAME}__=${backPath})}">
+        th:replace="~{sbu/jsf/show-edit :: bs5(_historyBack=${_historyBack}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, __${@webModelAttributes.ITEM_NAME}__=${item}, __${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.BACK_PATH_NAME}__=${backPath})}">
       </div>
     </div>
 
@@ -55,7 +55,7 @@
       <th:block th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
         <div th:id="${'embedded' + rid}" class="pt-2">
           <a hx:target="${'#embedded' + rid}"
-            hx:get="@{${item.joinPath('forms', formType)}(_ajaxTargetId=${'embedded' + rid}, _backTargetId=${ajaxTargetId})}"
+            hx:get="@{${item.joinPath('forms', formType)}(_historyBack=${_historyBack}, _ajaxTargetId=${'embedded' + rid}, _backTargetId=${ajaxTargetId})}"
             hx-ext="json-enc" hx-trigger="load"></a>
         </div>
       </th:block>
@@ -69,7 +69,7 @@
         <th:block th:each="formBranchData : ${formTypeData.value}">
           <a class="list-group-item" data-bs-toggle="modal" data-bs-target="#stateFormModal"
             hx-target="#modelForm"
-            hx:get="@{${item.joinPath('forms', formTypeData.key, 'formId', formBranchData.value)}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${'embedded' + rid}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${ajaxTargetId})}"
+            hx:get="@{${item.joinPath('forms', formTypeData.key, 'formId', formBranchData.value)}(_historyBack=${_historyBack}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${'embedded' + rid}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${ajaxTargetId})}"
             hx-ext="json-enc">
             [[${formBranchData.key}]]
           </a>
