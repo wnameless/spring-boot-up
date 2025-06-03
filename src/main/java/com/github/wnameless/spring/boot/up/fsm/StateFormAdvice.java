@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import org.springframework.core.GenericTypeResolver;
 import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
 import com.github.wnameless.spring.boot.up.jsf.JsonSchemaForm;
+import com.github.wnameless.spring.boot.up.jsf.RestfulVersioningJsonSchemaForm;
 
 public interface StateFormAdvice<SF extends JsonSchemaForm & JsfVersioning, PA extends PhaseProvider<?, ?, ?, ?>> {
 
@@ -30,10 +31,14 @@ public interface StateFormAdvice<SF extends JsonSchemaForm & JsfVersioning, PA e
     return () -> true;
   }
 
-  BiFunction<PA, SF, SF> afterLoad();
+  BiFunction<PA, RestfulVersioningJsonSchemaForm<?>, RestfulVersioningJsonSchemaForm<?>> afterLoad();
 
-  BiFunction<PA, SF, SF> beforeSave();
+  default BiFunction<PA, RestfulVersioningJsonSchemaForm<?>, RestfulVersioningJsonSchemaForm<?>> beforeSave() {
+    return null;
+  }
 
-  BiFunction<PA, SF, SF> afterSave();
+  default BiFunction<PA, RestfulVersioningJsonSchemaForm<?>, RestfulVersioningJsonSchemaForm<?>> afterSave() {
+    return null;
+  }
 
 }
