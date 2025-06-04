@@ -13,4 +13,7 @@ public interface MessageBoardNoticeRepository<N extends MessageBoardNotice<MB>, 
 
   int countByMessageBoardAndCreatedAtAfter(MB messageBoard, LocalDateTime createdAfter);
 
+  int countByMessageBoardAndTimelyDurationIsNotNullAndCreatedAtBetween(MB messageBoard,
+      LocalDateTime createdAtStart, LocalDateTime createdAtEnd);
+
 }

@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.messageboard;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import com.github.wnameless.spring.boot.up.model.TimeAuditable;
 
@@ -11,17 +12,24 @@ public interface MessageBoardNotice<MB extends MessageBoard> extends TimeAuditab
 
   String getContent();
 
+  Duration getTimelyDuration();
+
   boolean isPinned();
 
   default boolean isTimely() {
-    var messageBoard = getMessageBoard();
-    if (messageBoard == null || messageBoard.getTimelyDuration() == null
-        || getCreatedAt() == null) {
-      return false;
+    if (getCreatedAt() == null) return false;
+
+    if (getTimelyDuration() != null) {
+      return LocalDateTime.now().minusDays(getTimelyDuration().toDays()).isBefore(getCreatedAt());
     }
 
-    return LocalDateTime.now().minusDays(messageBoard.getTimelyDuration().toDays())
-        .isBefore(getCreatedAt());
+    var messageBoard = getMessageBoard();
+    if (messageBoard != null && messageBoard.getTimelyDuration() != null) {
+      return LocalDateTime.now().minusDays(messageBoard.getTimelyDuration().toDays())
+          .isBefore(getCreatedAt());
+    }
+
+    return false;
   }
 
 }

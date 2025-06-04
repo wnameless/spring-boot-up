@@ -26,6 +26,8 @@ public interface MessageBoardService<N extends MessageBoardNotice<B>, B extends 
         generics[2]);
   }
 
+  List<B> getMessageBoards();
+
   default List<N> getNoticesByBoardId(String boardId) {
     var messageBoardOpt = getMessageBoardRepository().findByBoardId(boardId);
     if (messageBoardOpt.isEmpty()) return Collections.emptyList();
@@ -45,9 +47,13 @@ public interface MessageBoardService<N extends MessageBoardNotice<B>, B extends 
 
     var messageBoard = messageBoardOpt.get();
     var now = LocalDateTime.now();
+    var retentionDuration = messageBoard.getRetentionDuration();
     var timelyDuration = messageBoard.getTimelyDuration();
     return getMessageBoardNoticeRepository().countByMessageBoardAndCreatedAtAfter(messageBoard,
-        now.minusDays(timelyDuration.toDays()));
+        now.minusDays(timelyDuration.toDays()))
+        + getMessageBoardNoticeRepository()
+            .countByMessageBoardAndTimelyDurationIsNotNullAndCreatedAtBetween(messageBoard,
+                now.minusDays(retentionDuration.toDays()), now.minusDays(timelyDuration.toDays()));
   }
 
   String getDefaultBoardId();
