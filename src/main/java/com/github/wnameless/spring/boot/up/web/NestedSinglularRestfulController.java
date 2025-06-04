@@ -34,6 +34,13 @@ public interface NestedSinglularRestfulController<PR extends CrudRepository<P, P
     if (getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
       try {
         parent = rfr.filterFindById(id);
+
+        if (parent.isEmpty()) {
+          parent = getParentRepository().findById(id);
+          if (parent.isPresent() && parent.get() instanceof P src) {
+            parent = EntityUtils.tryDuplicateIdOnlyEntity(src);
+          }
+        }
       } catch (UnsupportedOperationException e) {
         if (isStrictPermissionEnabled()) throw e;
 

@@ -29,6 +29,13 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
     if (getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
       try {
         item = rfr.filterFindById(id);
+
+        if (item.isEmpty()) {
+          item = getRestfulRepository().findById(id);
+          if (item.isPresent() && item.get() instanceof I src) {
+            item = EntityUtils.tryDuplicateIdOnlyEntity(src);
+          }
+        }
       } catch (UnsupportedOperationException e) {
         if (isStrictPermissionEnabled()) throw e;
 
@@ -52,6 +59,13 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
     if (getParentRepository() instanceof ResourceFilterRepository<P, PID> rfr) {
       try {
         parent = rfr.filterFindById(id);
+
+        if (parent.isEmpty()) {
+          parent = getParentRepository().findById(id);
+          if (parent.isPresent() && parent.get() instanceof P src) {
+            parent = EntityUtils.tryDuplicateIdOnlyEntity(src);
+          }
+        }
       } catch (UnsupportedOperationException e) {
         parent = getParentRepository().findById(id);
         try {

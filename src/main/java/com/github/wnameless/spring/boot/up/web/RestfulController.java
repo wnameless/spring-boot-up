@@ -25,6 +25,13 @@ public interface RestfulController<R extends CrudRepository<I, ID>, I, ID>
     if (getRestfulRepository() instanceof ResourceFilterRepository<I, ID> rfr) {
       try {
         item = rfr.filterFindById(id);
+
+        if (item.isEmpty()) {
+          item = getRestfulRepository().findById(id);
+          if (item.isPresent() && item.get() instanceof I src) {
+            item = EntityUtils.tryDuplicateIdOnlyEntity(src);
+          }
+        }
       } catch (UnsupportedOperationException e) {
         if (isStrictPermissionEnabled()) throw e;
 
