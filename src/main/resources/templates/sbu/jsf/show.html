@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="_historyBack=${_historyBack} ?: false, jsfTheme=${jsfTheme}, item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}"
+  th:with="attachmentDialog=${attachmentDialog} ?: false, _historyBack=${_historyBack} ?: false, jsfTheme=${jsfTheme}, item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}"
   class="card">
   <div class="card-header">
     <button th:if="${_historyBack}" onclick="history.back()" type="button" class="me-auto btn-close"
@@ -10,6 +10,14 @@
       hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
       hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
       aria-label="Close"></button>
+    <a th:if="${attachmentDialog and @sbuHtml.isAttachmentSnapshotProvider(item)}"
+      hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${@webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE})}"
+      hx:target="${'#' + @webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE}" hx-ext="json-enc"
+      data-bs-toggle="modal"
+      th:attr="data-bs-target=${'#' + @webModelAttributes.MODEL_TARGET_ID_VALUE}, aria-label=${#messages.msgOrNull('sbu.attachment.title') ?: 'Attachments'}"
+      class="pe-2 text-success hint--left">
+      <i class="fas fa-paperclip"></i>
+    </a>
   </div>
   <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
     <react-form th:id="${'showForm' + rid}" th:action="@{${item.backPath}}" method="GET"
@@ -21,7 +29,8 @@
       hx:target="${'#' + backTargetId}" hx-ext="json-enc">
       [[${#messages.msgOrNull('sbu.ui.return') ?: 'Return'}]]</a>
 
-    <div th:if="${@sbuHtml.isAttachmentSnapshotProvider(item)}" th:id="${'attachments' + rid}">
+    <div th:if="${!attachmentDialog and @sbuHtml.isAttachmentSnapshotProvider(item)}"
+      th:id="${'attachments' + rid}">
       <a hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${'attachments' + rid})}"
         hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load" class="d-none"></a>
     </div>

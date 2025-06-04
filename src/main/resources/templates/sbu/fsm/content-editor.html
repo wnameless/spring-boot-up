@@ -45,7 +45,7 @@
   <div class="tab-content">
     <div class="tab-pane fade show active" th:id="${'mainForm' + fid}" role="tabpanel">
       <div th:if="user == null || user.canRead(item)"
-        th:replace="~{sbu/jsf/show-edit :: bs5(_historyBack=${_historyBack}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, __${@webModelAttributes.ITEM_NAME}__=${item}, __${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.BACK_PATH_NAME}__=${backPath})}">
+        th:replace="~{sbu/jsf/show-edit :: bs5(attachmentDialog=true, _historyBack=${_historyBack}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, __${@webModelAttributes.ITEM_NAME}__=${item}, __${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.BACK_PATH_NAME}__=${backPath})}">
       </div>
     </div>
 

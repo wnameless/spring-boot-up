@@ -1,37 +1,43 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5" th:with="user=${__${'@' + @webModelAttributes.USER_NAME}__}"
+<div th:fragment="bs5"
+  th:with="user=${__${'@' + @webModelAttributes.USER_NAME}__}, rid=${(T(java.lang.Math).random() * 2147483647).intValue()}"
   class="m-2 p-1 border rounded-1 border-primary">
-  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+
+  <ul class="nav nav-pills mb-3" role="tablist">
     <li class="nav-item">
-      <button class="nav-link disabled" href="#">[[${#messages.msgOrNull('sbu.attachment.title') ?:
-        'Attachments'}]]</button>
+      <button class="nav-link disabled" href="#">
+        [[${#messages.msgOrNull('sbu.attachment.title') ?: 'Attachments'}]]
+      </button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
-        data-bs-target="#pills-file-list" type="button"
-        role="tab">[[${#messages.msgOrNull('sbu.attachment.list') ?: 'List'}]]</button>
+      <button class="nav-link active" data-bs-toggle="pill"
+        th:attr="data-bs-target=${'#pills-file-list' + rid}" type="button" role="tab">
+        [[${#messages.msgOrNull('sbu.attachment.list') ?: 'List'}]]
+      </button>
     </li>
     <li th:if="${user == null || user.canDelete(item)}" class="nav-item" role="presentation">
-      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-        data-bs-target="#pills-file-edit" type="button"
-        role="tab">[[${#messages.msgOrNull('sbu.attachment.edit') ?: 'Edit'}]]</button>
+      <button class="nav-link" data-bs-toggle="pill"
+        th:attr="data-bs-target=${'#pills-file-edit' + rid}" type="button" role="tab">
+        [[${#messages.msgOrNull('sbu.attachment.edit') ?: 'Edit'}]]
+      </button>
     </li>
     <li th:if="${user == null || user.canRead(item)}" class="nav-item" role="presentation">
-      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-        data-bs-target="#pills-file-note" type="button"
-        role="tab">[[${#messages.msgOrNull('sbu.attachment.note') ?: 'Note'}]]</button>
+      <button class="nav-link" data-bs-toggle="pill"
+        th:attr="data-bs-target=${'#pills-file-note' + rid}" type="button" role="tab">
+        [[${#messages.msgOrNull('sbu.attachment.note') ?: 'Note'}]]
+      </button>
     </li>
     <li th:if="${user == null || user.canUpdate(item)}" class="nav-item" role="presentation">
-      <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-        data-bs-target="#pills-file-upload" type="button"
-        role="tab">[[${#messages.msgOrNull('sbu.attachment.upload') ?: 'Upload'}]]</button>
+      <button class="nav-link" data-bs-toggle="pill"
+        th:attr="data-bs-target=${'#pills-file-upload' + rid}" type="button" role="tab">
+        [[${#messages.msgOrNull('sbu.attachment.upload') ?: 'Upload'}]]
+      </button>
     </li>
   </ul>
 
-  <div class="tab-content" id="pills-tabContent">
-
-    <div class="tab-pane fade show active" id="pills-file-list" role="tabpanel">
+  <div class="tab-content">
+    <div class="tab-pane fade show active" th:id="${'pills-file-list' + rid}" role="tabpanel">
       <div id="accordionFileList" class="accordion">
         <div th:each="fileGroup, groupIndex : ${attachmentChecklist.getGroupNames()}"
           class="accordion-item">
@@ -50,7 +56,7 @@
                 <li class="list-group-item"
                   th:each="attachment : ${attachmentGroups.get(fileGroup)}">
                   <a th:href="@{${item.joinPath('attachments', attachment.id)}}"
-                    th:text="${attachment.name}"></a>
+                    th:text="${attachment.nameWithNote}"></a>
                 </li>
               </ul>
             </div>
@@ -59,42 +65,44 @@
       </div>
     </div>
 
-    <div th:if="${user == null ||  user.canDelete(item)}" class="tab-pane fade" id="pills-file-edit"
-      role="tabpanel">
-      <div id="attachmentEdit">
+    <div th:if="${user == null ||  user.canDelete(item)}" class="tab-pane fade"
+      th:id="${'pills-file-edit' + rid}" role="tabpanel">
+      <div th:id="${'attachmentEdit' + rid}">
         <a hx:get="@{${item.joinPath('attachments', 'edit')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
-          hx-target="#attachmentEdit" hx-ext="json-enc" hx-trigger="revealed" class="d-none"></a>
+          hx:target="${'#attachmentEdit' + rid}" hx-ext="json-enc" hx-trigger="revealed"
+          class="d-none"></a>
 
         <script th:inline="javascript" defer>
-          htmx.process(document.getElementById('attachmentEdit'));
+          htmx.process(document.getElementById(/*[[${'attachmentEdit' + rid}]]*/null));
         </script>
       </div>
     </div>
 
-    <div th:if="${user == null ||  user.canRead(item)}" class="tab-pane fade" id="pills-file-note"
-      role="tabpanel">
-      <div id="attachmentNote">
+    <div th:if="${user == null ||  user.canRead(item)}" class="tab-pane fade"
+      th:id="${'pills-file-note' + rid}" role="tabpanel">
+      <div th:id="${'attachmentNote' +rid}">
         <a hx:get="@{${item.joinPath('attachments', 'note')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
-          hx-target="#attachmentNote" hx-ext="json-enc" hx-trigger="revealed" class="d-none"></a>
+          hx:target="${'#attachmentNote' + rid}" hx-ext="json-enc" hx-trigger="revealed"
+          class="d-none"></a>
 
         <script th:inline="javascript" defer>
-          htmx.process(document.getElementById('attachmentNote'));
+          htmx.process(document.getElementById(/*[[${'attachmentNote' + rid}]]*/null));
         </script>
       </div>
     </div>
 
     <div th:if="${user == null || user.canUpdate(item)}" class="tab-pane fade"
-      id="pills-file-upload" role="tabpanel">
-      <div id="attachmentUpload">
+      th:id="${'pills-file-upload' + rid}" role="tabpanel">
+      <div th:id="${'attachmentUpload' + rid}">
         <a hx:get="@{${item.joinPath('attachments','upload')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
-          hx-target="#attachmentUpload" hx-ext="json-enc" hx-trigger="revealed" class="d-none"></a>
+          hx:target="${'#attachmentUpload' + rid}" hx-ext="json-enc" hx-trigger="revealed"
+          class="d-none"></a>
 
         <script th:inline="javascript" defer>
-          htmx.process(document.getElementById('attachmentUpload'));
+          htmx.process(document.getElementById(/*[[${'attachmentUpload' + rid}]]*/null));
         </script>
       </div>
     </div>
-
   </div>
 
 </div>

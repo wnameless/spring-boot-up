@@ -1,10 +1,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5"
-  th:with="_historyBack=${_historyBack} ?: false, jsfTheme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}"
+  th:with="attachmentDialog=${attachmentDialog} ?: false, _historyBack=${_historyBack} ?: false, jsfTheme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, user=${__${'@' + @webModelAttributes.USER_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}"
   class="card">
   <div class="card-header">
     <div class="d-flex justify-content-end">
+      <a th:if="${attachmentDialog and @sbuHtml.isAttachmentSnapshotProvider(item)}"
+        hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${@webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE})}"
+        hx:target="${'#' + @webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE}" hx-ext="json-enc"
+        data-bs-toggle="modal"
+        th:attr="data-bs-target=${'#' + @webModelAttributes.MODEL_TARGET_ID_VALUE}, aria-label=${#messages.msgOrNull('sbu.attachment.title') ?: 'Attachments'}"
+        class="pe-2 text-success hint--left">
+        <i class="fas fa-paperclip"></i>
+      </a>
       <!-- Keep the header height even if the edit icon is hidden  -->
       <i class="fa fa-fw" style="visibility: hidden;"></i>
       <a th:if="${user == null || user.canUpdate(item)}" class="pe-2 orange"
@@ -19,7 +27,8 @@
       <div></div>
     </react-form>
 
-    <div th:if="${@sbuHtml.isAttachmentSnapshotProvider(item)}" th:id="${'attachments' + rid}">
+    <div th:if="${!attachmentDialog and @sbuHtml.isAttachmentSnapshotProvider(item)}"
+      th:id="${'attachments' + rid}">
       <a hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${'attachments' + rid})}"
         hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load" class="d-none"></a>
     </div>
