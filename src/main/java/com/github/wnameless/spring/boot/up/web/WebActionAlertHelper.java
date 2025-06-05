@@ -12,6 +12,11 @@ import lombok.Data;
 
 public interface WebActionAlertHelper {
 
+  public static final String DANGER_NAME = "danger";
+  public static final String WARNING_NAME = "warning";
+  public static final String INFO_NAME = "info";
+  public static final String SUCCESS_NAME = "success";
+
   default void alert(String action, Object... args) {
     addAlertMessages(SpringBootUp.getBean(SpringBootUpControllerAdvice.class).getModelAndView(),
         action, args);

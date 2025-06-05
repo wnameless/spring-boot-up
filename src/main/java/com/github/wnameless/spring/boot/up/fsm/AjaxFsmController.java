@@ -37,6 +37,7 @@ import com.github.wnameless.spring.boot.up.web.RestfulItemProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRepositoryProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import com.github.wnameless.spring.boot.up.web.TemplateFragmentAware;
+import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper;
 import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper.AlertMessages;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxTrigger;
 import jakarta.validation.Validator;
@@ -46,6 +47,8 @@ import net.sf.rubycollect4j.Ruby;
 public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP extends PhaseProvider<PP, S, T, ID>, S extends State<T, ID>, T extends Trigger, D, ID>
     extends RestfulRepositoryProvider<PP, ID>, RestfulItemProvider<PP>, RestfulRouteProvider<ID>,
     BaseWebAction<D, ID>, TemplateFragmentAware {
+
+  org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AjaxFsmController.class);
 
   @SneakyThrows
   @SuppressWarnings("unchecked")
@@ -205,6 +208,68 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
       mav.addObject(Item.name(), phaseProvider);
     }
 
+    var alertMessages = new AlertMessages();
+    List<StateCondition> stateCondition =
+        SpringBootUp.findAllGenericBeans(StateCondition.class, phaseProvider.getClass(),
+            stateMachine.getState().getClass(), trigger.getClass(), id.getClass());
+    for (var sc : stateCondition) {
+      if ((Boolean) sc.apply(phaseProvider)) {
+        if (WebActionAlertHelper.DANGER_NAME.equals(sc.getAlertType())) {
+          String onEntryMsg = "sbu.fsm.message.danger.onEntryFrom."
+              + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
+              + triggerName + "." + stateMachine.getState();
+          try {
+            var message = SpringBootUp.getMessage(onEntryMsg);
+            alertMessages.getDanger().add(message);
+          } catch (Exception e) {
+            log.error("Message " + onEntryMsg + " is not found.", e);
+          }
+        }
+        if (WebActionAlertHelper.INFO_NAME.equals(sc.getAlertType())) {
+          String onEntryMsg = "sbu.fsm.message.info.onEntryFrom."
+              + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
+              + triggerName + "." + stateMachine.getState();
+          try {
+            var message = SpringBootUp.getMessage(onEntryMsg);
+            alertMessages.getInfo().add(message);
+          } catch (Exception e) {
+            log.error("Message " + onEntryMsg + " is not found.", e);
+          }
+        }
+        if (WebActionAlertHelper.SUCCESS_NAME.equals(sc.getAlertType())) {
+          String onEntryMsg = "sbu.fsm.message.success.onEntryFrom."
+              + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
+              + triggerName + "." + stateMachine.getState();
+          try {
+            var message = SpringBootUp.getMessage(onEntryMsg);
+            alertMessages.getSuccess().add(message);
+          } catch (Exception e) {
+            log.error("Message " + onEntryMsg + " is not found.", e);
+          }
+        }
+        if (WebActionAlertHelper.WARNING_NAME.equals(sc.getAlertType())) {
+          String onEntryMsg = "sbu.fsm.message.warning.onEntryFrom."
+              + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
+              + triggerName + "." + stateMachine.getState();
+          try {
+            var message = SpringBootUp.getMessage(onEntryMsg);
+            alertMessages.getWarning().add(message);
+          } catch (Exception e) {
+            log.error("Message " + onEntryMsg + " is not found.", e);
+          }
+        }
+      }
+    }
+
+    try {
+      String onEntryMsg = "sbu.fsm.message.onEntryFrom."
+          + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "." + triggerName
+          + "." + stateMachine.getState();
+      var message = SpringBootUp.getMessage(onEntryMsg);
+      alertMessages.getInfo().add(message);
+    } catch (Exception e) {}
+
+    if (alertMessages.isPresent()) mav.addObject(Alert.name(), alertMessages);
     return mav;
   }
 
