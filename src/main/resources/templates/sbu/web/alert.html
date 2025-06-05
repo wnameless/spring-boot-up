@@ -6,28 +6,36 @@
 
     <th:block th:each="message : ${alert.danger}">
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        [[${message}]]
+        <span th:if="${#messages.msgOrNull(message) != null}"
+          th:utext="${#messages.msgOrNull(message)}"></span>
+        <span th:unless="${#messages.msgOrNull(message) != null}">[[${message}]]</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     </th:block>
 
     <th:block th:each="message : ${alert.warning}">
       <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        [[${message}]]
+        <span th:if="${#messages.msgOrNull(message) != null}"
+          th:utext="${#messages.msgOrNull(message)}"></span>
+        <span th:unless="${#messages.msgOrNull(message) != null}">[[${message}]]</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     </th:block>
 
     <th:block th:each="message : ${alert.info}">
       <div class="alert alert-info alert-dismissible fade show" role="alert">
-        [[${message}]]
+        <span th:if="${#messages.msgOrNull(message) != null}"
+          th:utext="${#messages.msgOrNull(message)}"></span>
+        <span th:unless="${#messages.msgOrNull(message) != null}">[[${message}]]</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     </th:block>
 
     <th:block th:each="message : ${alert.success}">
       <div class="alert alert-success alert-dismissible fade show" role="alert">
-        [[${message}]]
+        <span th:if="${#messages.msgOrNull(message) != null}"
+          th:utext="${#messages.msgOrNull(message)}"></span>
+        <span th:unless="${#messages.msgOrNull(message) != null}">[[${message}]]</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     </th:block>

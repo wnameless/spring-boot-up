@@ -219,8 +219,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
               + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
               + triggerName + "." + stateMachine.getState();
           try {
-            var message = SpringBootUp.getMessage(onEntryMsg);
-            alertMessages.getDanger().add(message);
+            alertMessages.getDanger().add(onEntryMsg);
           } catch (Exception e) {
             log.error("Message " + onEntryMsg + " is not found.", e);
           }
@@ -230,8 +229,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
               + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
               + triggerName + "." + stateMachine.getState();
           try {
-            var message = SpringBootUp.getMessage(onEntryMsg);
-            alertMessages.getInfo().add(message);
+            alertMessages.getInfo().add(onEntryMsg);
           } catch (Exception e) {
             log.error("Message " + onEntryMsg + " is not found.", e);
           }
@@ -241,8 +239,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
               + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
               + triggerName + "." + stateMachine.getState();
           try {
-            var message = SpringBootUp.getMessage(onEntryMsg);
-            alertMessages.getSuccess().add(message);
+            alertMessages.getSuccess().add(onEntryMsg);
           } catch (Exception e) {
             log.error("Message " + onEntryMsg + " is not found.", e);
           }
@@ -252,8 +249,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
               + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
               + triggerName + "." + stateMachine.getState();
           try {
-            var message = SpringBootUp.getMessage(onEntryMsg);
-            alertMessages.getWarning().add(message);
+            alertMessages.getWarning().add(onEntryMsg);
           } catch (Exception e) {
             log.error("Message " + onEntryMsg + " is not found.", e);
           }
