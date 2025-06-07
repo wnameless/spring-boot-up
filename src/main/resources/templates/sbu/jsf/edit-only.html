@@ -1,27 +1,29 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5"
-  th:with="jsfTheme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}"
-  class="card">
-  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
-    <react-form th:id="${'editForm' + rid}"
-      th:action="@{${item.updatePath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
-      method="PUT" ajax:target="${ajaxTargetId}"
-      th:attr="theme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}">
-      <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
-        'Submit'}]]</button>
-    </react-form>
+<div th:fragment="bs5" class="card" th:insert="~{sbu/jsf/block :: scope(~{:: th:block})}">
+  <th:block>
 
-    <script th:inline="javascript">
-      window['editFormDataset' + /*[[${rid}]]*/ 0] = /*[[${item.toDataset()}]]*/ null;
-      var editFormId = /*[[${'editForm' + rid}]]*/ null;
-      var editForm = document.getElementById(editFormId);
-      editForm.setAttribute('props-var', 'editFormDataset' + /*[[${rid}]]*/ 0);
+    <div class="card-body">
+      <react-form th:id="${'editForm' + rid}"
+        th:action="@{${item.updatePath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
+        method="PUT" ajax:target="${ajaxTargetId}"
+        th:attr="theme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}">
+        <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
+          'Submit'}]]</button>
+      </react-form>
+
+      <script th:inline="javascript">
+        window['editFormDataset' + /*[[${rid}]]*/ 0] = /*[[${item.toDataset()}]]*/ null;
+        var editFormId = /*[[${'editForm' + rid}]]*/ null;
+        var editForm = document.getElementById(editFormId);
+        editForm.setAttribute('props-var', 'editFormDataset' + /*[[${rid}]]*/ 0);
+      </script>
+    </div>
+    <script th:inline="javascript" defer>
+      htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
     </script>
-  </div>
-  <script th:inline="javascript" defer>
-    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
-  </script>
+
+  </th:block>
 </div>
 
 </html>

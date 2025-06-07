@@ -1,35 +1,37 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5"
-  th:with="_historyBack=${_historyBack} ?: false, jsfTheme=${jsfTheme}, item=${__${@webModelAttributes.ITEM_NAME}__}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}"
-  class="card">
-  <div class="card-header">
-    <button th:if="${_historyBack}" onclick="history.back()" type="button" class="me-auto btn-close"
-      aria-label="Close"></button>
-    <button th:unless="${_historyBack}"
-      hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
-      hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
-      aria-label="Close"></button>
-  </div>
-  <div class="card-body" th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}">
-    <react-form th:id="${'newForm' + rid}"
-      th:action="@{${item.createPath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
-      method="POST" ajax:target="${ajaxTargetId}" th:attr="theme=${jsfTheme}">
-      <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
-        'Submit'}]]</button>
-    </react-form>
+<div th:fragment="bs5" class="card" th:insert="~{sbu/jsf/block :: scope(~{:: th:block})}">
+  <th:block>
 
-    <script th:inline="javascript">
-      window['newFormDataset' + /*[[${rid}]]*/ 0] = /*[[${item.toDataset()}]]*/ null;
-      var newFormId = /*[[${'newForm' + rid}]]*/ null;
-      var newForm = document.getElementById(newFormId);
-      newForm.setAttribute('props-var', 'newFormDataset' + /*[[${rid}]]*/ 0);
+    <div class="card-header">
+      <button th:if="${_historyBack}" onclick="history.back()" type="button"
+        class="me-auto btn-close" aria-label="Close"></button>
+      <button th:unless="${_historyBack}"
+        hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
+        hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
+        aria-label="Close"></button>
+    </div>
+    <div class="card-body">
+      <react-form th:id="${'newForm' + rid}"
+        th:action="@{${item.createPath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
+        method="POST" ajax:target="${ajaxTargetId}" th:attr="theme=${jsfTheme}">
+        <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
+          'Submit'}]]</button>
+      </react-form>
+
+      <script th:inline="javascript">
+        window['newFormDataset' + /*[[${rid}]]*/ 0] = /*[[${item.toDataset()}]]*/ null;
+        var newFormId = /*[[${'newForm' + rid}]]*/ null;
+        var newForm = document.getElementById(newFormId);
+        newForm.setAttribute('props-var', 'newFormDataset' + /*[[${rid}]]*/ 0);
+      </script>
+    </div>
+    <script th:inline="javascript" defer>
+      document.getElementsByTagName('body')[0].removeAttribute('style');
+      htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
     </script>
-  </div>
-  <script th:inline="javascript" defer>
-    document.getElementsByTagName('body')[0].removeAttribute('style');
-    htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
-  </script>
+
+  </th:block>
 </div>
 
 </html>

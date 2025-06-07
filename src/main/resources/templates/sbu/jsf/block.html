@@ -1,0 +1,21 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="scope(yield)" th:with="
+  rid=${(T(java.lang.Math).random() * 2147483647).intValue()},
+  attachmentDialog=${attachmentDialog} ?: false,
+  _historyBack=${_historyBack} ?: false,
+  jsfTheme=${jsfTheme},
+  saveonly=${saveonly},
+  saveonlybtntxt=${saveonlybtntxt},
+  item=${__${@webModelAttributes.ITEM_NAME}__},
+  queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__},
+  ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE},
+  backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId},
+  backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}
+  ">
+
+  <th:block th:replace="${yield}"></th:block>
+
+</th:block>
+
+</html>
