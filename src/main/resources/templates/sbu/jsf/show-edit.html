@@ -21,7 +21,7 @@
         </a>
         <a th:if="${user == null || user.canUpdate(item)}" class="pe-2 orange"
           hx:get="@{${item.getEditPath(queryConfig)}(_historyBack=${_historyBack}, jsfTheme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
-          hx-push-url="true" hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
+          hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
           <i class="fas fa-edit"></i></a>
       </div>
     </div>
