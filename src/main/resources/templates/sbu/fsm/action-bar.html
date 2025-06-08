@@ -1,10 +1,22 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5" class="card mb-2" th:id="${'fsmActionBar' + item.id}">
-  <div
-    th:with="showPermittedMessage=${showPermittedMessage != null ? showPermittedMessage : true}, showProhibitedMessage=${showProhibitedMessage != null ? showProhibitedMessage : true}, showProhibited=${showProhibited}, item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}"
-    class="card-body">
+  <div class="card-body" th:with="
+    showPermittedMessage=${showPermittedMessage != null ? showPermittedMessage : true},
+    showProhibitedMessage=${showProhibitedMessage != null ? showProhibitedMessage : true},
+    showProhibited=${showProhibited},
+    item=${__${@webModelAttributes.ITEM_NAME}__},
+    queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__},
+    ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE},
+    backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId},
+    _exitPath=${_exitPath}
+    ">
     <div class="d-grid gap-2 d-md-flex justify-content-md-start pb-2">
+      <button
+        hx:get="@{${!#strings.isEmpty(_exitPath) ? _exitPath : item.getBackPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
+        hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="btn btn-secondary">
+        <i class="fas fa-arrow-left fa-fw"></i>
+      </button>
       <button type="button" class="btn btn-outline-primary">
         <i class="fas fa-route fa-fw"></i>
         [[${item.phase.stateMachine.state.displayName}]]
@@ -32,7 +44,7 @@
           </button>
         </th:block>
         <button
-          hx:get="@{${item.joinPath('triggers')}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
+          hx:get="@{${item.joinPath('triggers')}(_exitPath=${_exitPath}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId})}"
           hx:target="${'#' + 'fsmActionBar' + item.id}" hx-ext="json-enc"
           hx-trigger="click, refresh-fsm-action-bar from:body" type="button"
           class="btn btn-outline-danger hint--right" aria-label="Refresh">
