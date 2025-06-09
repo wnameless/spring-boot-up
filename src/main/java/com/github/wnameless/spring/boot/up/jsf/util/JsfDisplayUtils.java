@@ -153,4 +153,15 @@ public class JsfDisplayUtils {
     return true;
   }
 
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Collection<ID> enums,
+      Collection<T> enumNames) {
+    if (enums == null || enums.isEmpty()) return false;
+    if (enumNames == null || enumNames.isEmpty()) return false;
+
+    docCtx.put(jsonPath, "enum", enums);
+    docCtx.put(jsonPath, "enumNames", enumNames);
+
+    return true;
+  }
+
 }

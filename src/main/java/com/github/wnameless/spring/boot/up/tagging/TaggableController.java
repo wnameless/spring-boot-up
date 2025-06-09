@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
+import com.github.wnameless.spring.boot.up.jsf.util.JsfDisplayUtils;
 import com.github.wnameless.spring.boot.up.permission.PermittedUser;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Alert;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
@@ -41,13 +42,13 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
 
     String schema = """
         {
-          "title": "註記標籤",
+          "title": "%s",
           "type": "object",
           "required": [],
           "properties": {
             "labelList": {
               "type": "array",
-              "title": "公用標籤",
+              "title": "%s",
               "items": {
                 "type": "string"
               },
@@ -55,7 +56,7 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
             },
             "userLabelList": {
               "type": "array",
-              "title": "私人標籤",
+              "title": "%s",
               "items": {
                 "type": "string"
               },
@@ -63,7 +64,7 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
             },
             "systemLabelList": {
               "type": "array",
-              "title": "系統標籤",
+              "title": "%s",
               "items": {
                 "type": "string"
               },
@@ -71,7 +72,8 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
             }
           }
         }
-            """;
+            """.formatted(TaggingI18nHelper.getTaggingTitle(), TaggingI18nHelper.getLabelListName(),
+        TaggingI18nHelper.getUserLabelListName(), TaggingI18nHelper.getSystemLabelListName());
     var schemaMap = mapper.readValue(schema, new TypeReference<Map<String, Object>>() {});
     DocumentContext docCtx = JsonPath.parse(schemaMap);
 
@@ -79,19 +81,23 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
         .filter(LabelTemplate::isUserEditable).toList();
     if (!labelList.isEmpty()) {
       var labelListEnum = labelList.stream().map(LabelTemplate::getId).toList();
-      docCtx.put("$.properties.labelList.items", "enum", labelListEnum);
+      // docCtx.put("$.properties.labelList.items", "enum", labelListEnum);
       var labelListEnumNames = labelList.stream()
           .map(lt -> "[" + lt.getGroupTitle() + "] " + lt.getLabelName()).toList();
-      docCtx.put("$.properties.labelList.items", "enumNames", labelListEnumNames);
+      // docCtx.put("$.properties.labelList.items", "enumNames", labelListEnumNames);
+      JsfDisplayUtils.setEnum(docCtx, "$.properties.labelList.items", labelListEnum,
+          labelListEnumNames);
     }
 
     var userLabelList = taggable.getUserLabelTemplates();
     if (!userLabelList.isEmpty()) {
       var userLabelListEnum = userLabelList.stream().map(UserLabelTemplate::getId).toList();
-      docCtx.put("$.properties.userLabelList.items", "enum", userLabelListEnum);
+      // docCtx.put("$.properties.userLabelList.items", "enum", userLabelListEnum);
       var userLabelListEnumNames = userLabelList.stream()
           .map(ult -> "[" + ult.getGroupTitle() + "] " + ult.getLabelName()).toList();
-      docCtx.put("$.properties.userLabelList.items", "enumNames", userLabelListEnumNames);
+      // docCtx.put("$.properties.userLabelList.items", "enumNames", userLabelListEnumNames);
+      JsfDisplayUtils.setEnum(docCtx, "$.properties.userLabelList.items", userLabelListEnum,
+          userLabelListEnumNames);
     }
 
     var systemLabelList = taggable.getSystemLabels().stream() //
@@ -100,10 +106,12 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
         .toList();
     if (!systemLabelList.isEmpty()) {
       var systemLabelListEnum = systemLabelList.stream().map(SystemLabel::getId).toList();
-      docCtx.put("$.properties.systemLabelList.items", "enum", systemLabelListEnum);
+      // docCtx.put("$.properties.systemLabelList.items", "enum", systemLabelListEnum);
       var systemLabelListEnumNames = systemLabelList.stream()
           .map(sl -> "[" + sl.getGroupTitle() + "] " + sl.getLabelName()).toList();
-      docCtx.put("$.properties.systemLabelList.items", "enumNames", systemLabelListEnumNames);
+      // docCtx.put("$.properties.systemLabelList.items", "enumNames", systemLabelListEnumNames);
+      JsfDisplayUtils.setEnum(docCtx, "$.properties.systemLabelList.items", systemLabelListEnum,
+          systemLabelListEnumNames);
     }
 
     schemaMap = docCtx.read("$", new TypeRef<Map<String, Object>>() {});
