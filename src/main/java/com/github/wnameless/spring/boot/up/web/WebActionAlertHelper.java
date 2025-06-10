@@ -34,6 +34,8 @@ public interface WebActionAlertHelper {
     private List<String> info = new ArrayList<>();
     private List<String> success = new ArrayList<>();
 
+    private boolean utext = false;
+
     public boolean isEmpty() {
       return danger.isEmpty() && warning.isEmpty() && info.isEmpty() && success.isEmpty();
     }

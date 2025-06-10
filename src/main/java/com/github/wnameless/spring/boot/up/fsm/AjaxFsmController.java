@@ -38,6 +38,7 @@ import com.github.wnameless.spring.boot.up.web.RestfulRepositoryProvider;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import com.github.wnameless.spring.boot.up.web.TemplateFragmentAware;
 import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper.AlertMessages;
+import com.google.common.base.MoreObjects;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxTrigger;
 import jakarta.validation.Validator;
 import lombok.SneakyThrows;
@@ -398,12 +399,22 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
           String onEntryMsg = "sbu.fsm.message." + t + ".onEntry."
               + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
               + stateMachine.getState();
-          switch (t) {
-            case "danger" -> alertMessages.getDanger().add(onEntryMsg);
-            case "info" -> alertMessages.getInfo().add(onEntryMsg);
-            case "success" -> alertMessages.getSuccess().add(onEntryMsg);
-            case "warning" -> alertMessages.getWarning().add(onEntryMsg);
-          }
+          try {
+            SpringBootUp.getMessage(onEntryMsg); // Check if message exists
+            var processedMsg =
+                sc.processMessage(onEntryMsg, phaseProvider, stateMachine.getState());
+            if (processedMsg != null) alertMessages.setUtext(true);
+            switch (t) {
+              case "danger" -> alertMessages.getDanger()
+                  .add(MoreObjects.firstNonNull(processedMsg, onEntryMsg));
+              case "info" -> alertMessages.getInfo()
+                  .add(MoreObjects.firstNonNull(processedMsg, onEntryMsg));
+              case "success" -> alertMessages.getSuccess()
+                  .add(MoreObjects.firstNonNull(processedMsg, onEntryMsg));
+              case "warning" -> alertMessages.getWarning()
+                  .add(MoreObjects.firstNonNull(processedMsg, onEntryMsg));
+            }
+          } catch (Exception e) {}
         });
       }
 
@@ -413,12 +424,22 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
           String onEntryFromMsg = "sbu.fsm.message." + t + ".onEntryFrom."
               + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
               + stateMachine.getState() + "." + trigger.getName();
-          switch (t) {
-            case "danger" -> alertMessages.getDanger().add(onEntryFromMsg);
-            case "info" -> alertMessages.getInfo().add(onEntryFromMsg);
-            case "success" -> alertMessages.getSuccess().add(onEntryFromMsg);
-            case "warning" -> alertMessages.getWarning().add(onEntryFromMsg);
-          }
+          try {
+            SpringBootUp.getMessage(onEntryFromMsg); // Check if message exists
+            var processedMsg =
+                sc.processMessage(onEntryFromMsg, phaseProvider, stateMachine.getState());
+            if (processedMsg != null) alertMessages.setUtext(true);
+            switch (t) {
+              case "danger" -> alertMessages.getDanger()
+                  .add(MoreObjects.firstNonNull(processedMsg, onEntryFromMsg));
+              case "info" -> alertMessages.getInfo()
+                  .add(MoreObjects.firstNonNull(processedMsg, onEntryFromMsg));
+              case "success" -> alertMessages.getSuccess()
+                  .add(MoreObjects.firstNonNull(processedMsg, onEntryFromMsg));
+              case "warning" -> alertMessages.getWarning()
+                  .add(MoreObjects.firstNonNull(processedMsg, onEntryFromMsg));
+            }
+          } catch (Exception e) {}
         });
       }
     }
@@ -440,12 +461,21 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
           String onMsg = "sbu.fsm.message." + t + ".on."
               + phaseProvider.getStateRecord().getState().getClass().getSimpleName() + "."
               + stateMachine.getState();
-          switch (t) {
-            case "danger" -> alertMessages.getDanger().add(onMsg);
-            case "info" -> alertMessages.getInfo().add(onMsg);
-            case "success" -> alertMessages.getSuccess().add(onMsg);
-            case "warning" -> alertMessages.getWarning().add(onMsg);
-          }
+          try {
+            SpringBootUp.getMessage(onMsg); // Check if message exists
+            var processedMsg = sc.processMessage(onMsg, phaseProvider, stateMachine.getState());
+            if (processedMsg != null) alertMessages.setUtext(true);
+            switch (t) {
+              case "danger" -> alertMessages.getDanger()
+                  .add(MoreObjects.firstNonNull(processedMsg, onMsg));
+              case "info" -> alertMessages.getInfo()
+                  .add(MoreObjects.firstNonNull(processedMsg, onMsg));
+              case "success" -> alertMessages.getSuccess()
+                  .add(MoreObjects.firstNonNull(processedMsg, onMsg));
+              case "warning" -> alertMessages.getWarning()
+                  .add(MoreObjects.firstNonNull(processedMsg, onMsg));
+            }
+          } catch (Exception e) {}
         });
       }
     }

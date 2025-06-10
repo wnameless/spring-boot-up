@@ -8,4 +8,8 @@ public interface StateMessageCondition<PP extends PhaseProvider<PP, S, T, ID>, S
 
   Boolean onEntryFrom(PP phaseProvider, S state, T trigger);
 
+  default String processMessage(String msgCode, PP phaseProvider, S state) {
+    return null;
+  }
+
 }
