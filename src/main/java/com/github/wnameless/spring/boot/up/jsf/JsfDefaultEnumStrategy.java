@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.wnameless.spring.boot.up.jsf.util.JsfDisplayUtils;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
@@ -23,11 +24,14 @@ public interface JsfDefaultEnumStrategy {
     if (defaultEnums.isEmpty()) return jsf;
 
     DocumentContext docCtx = JsonPath.parse(jsf.getSchema());
+    DocumentContext uiDocCtx = JsonPath.parse(jsf.getUiSchema());
 
     for (var de : defaultEnums) {
       if (de.getIfConditions().isEmpty()) {
-        docCtx.put(de.getEnumPath(), "enum", de.getEnum());
-        docCtx.put(de.getEnumPath(), "enumNames", de.getEnumNames());
+        JsfDisplayUtils.setEnum(docCtx, de.getEnumPath(), de.getEnum(), de.getEnumNames());
+        // docCtx.put(de.getEnumPath(), "enum", de.getEnum());
+        // docCtx.put(de.getEnumPath(), "enumNames", de.getEnumNames());
+        JsfDisplayUtils.setUiEnumNames(uiDocCtx, de.getEnumPath(), de.getEnumNames());
       } else {
         ObjectMapper mapper = new ObjectMapper();
         var allOf = mapper.createArrayNode();
@@ -89,6 +93,7 @@ public interface JsfDefaultEnumStrategy {
     }
 
     jsf.setSchema(docCtx.read("$", new TypeRef<Map<String, Object>>() {}));
+    jsf.setUiSchema(uiDocCtx.read("$", new TypeRef<Map<String, Object>>() {}));
     return jsf;
   }
 

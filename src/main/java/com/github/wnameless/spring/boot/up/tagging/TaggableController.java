@@ -40,6 +40,22 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
     var editform = new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id), "taggings");
     var mapper = SpringBootUp.getBean(ObjectMapper.class);
 
+    String uiSchema = """
+        {
+          "labelList": {
+            "ui:widget": "checkboxes"
+          },
+          "userLabelList": {
+            "ui:widget": "checkboxes"
+          },
+          "systemLabelList": {
+            "ui:widget": "checkboxes"
+          }
+        }
+             """;
+    var uiSchemaMap = mapper.readValue(uiSchema, new TypeReference<Map<String, Object>>() {});
+    DocumentContext uiDocCtx = JsonPath.parse(uiSchemaMap);
+
     String schema = """
         {
           "title": "%s",
@@ -81,23 +97,19 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
         .filter(LabelTemplate::isUserEditable).toList();
     if (!labelList.isEmpty()) {
       var labelListEnum = labelList.stream().map(LabelTemplate::getId).toList();
-      // docCtx.put("$.properties.labelList.items", "enum", labelListEnum);
       var labelListEnumNames = labelList.stream()
           .map(lt -> "[" + lt.getGroupTitle() + "] " + lt.getLabelName()).toList();
-      // docCtx.put("$.properties.labelList.items", "enumNames", labelListEnumNames);
       JsfDisplayUtils.setEnum(docCtx, "$.properties.labelList.items", labelListEnum,
-          labelListEnumNames);
+          labelListEnumNames, uiDocCtx, true);
     }
 
     var userLabelList = taggable.getUserLabelTemplates();
     if (!userLabelList.isEmpty()) {
       var userLabelListEnum = userLabelList.stream().map(UserLabelTemplate::getId).toList();
-      // docCtx.put("$.properties.userLabelList.items", "enum", userLabelListEnum);
       var userLabelListEnumNames = userLabelList.stream()
           .map(ult -> "[" + ult.getGroupTitle() + "] " + ult.getLabelName()).toList();
-      // docCtx.put("$.properties.userLabelList.items", "enumNames", userLabelListEnumNames);
       JsfDisplayUtils.setEnum(docCtx, "$.properties.userLabelList.items", userLabelListEnum,
-          userLabelListEnumNames);
+          userLabelListEnumNames, uiDocCtx, true);
     }
 
     var systemLabelList = taggable.getSystemLabels().stream() //
@@ -106,31 +118,17 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
         .toList();
     if (!systemLabelList.isEmpty()) {
       var systemLabelListEnum = systemLabelList.stream().map(SystemLabel::getId).toList();
-      // docCtx.put("$.properties.systemLabelList.items", "enum", systemLabelListEnum);
       var systemLabelListEnumNames = systemLabelList.stream()
           .map(sl -> "[" + sl.getGroupTitle() + "] " + sl.getLabelName()).toList();
-      // docCtx.put("$.properties.systemLabelList.items", "enumNames", systemLabelListEnumNames);
       JsfDisplayUtils.setEnum(docCtx, "$.properties.systemLabelList.items", systemLabelListEnum,
-          systemLabelListEnumNames);
+          systemLabelListEnumNames, uiDocCtx, true);
     }
 
     schemaMap = docCtx.read("$", new TypeRef<Map<String, Object>>() {});
     editform.setSchema(schemaMap);
 
-    String uiSchema = """
-        {
-          "labelList": {
-            "ui:widget": "checkboxes"
-          },
-          "userLabelList": {
-            "ui:widget": "checkboxes"
-          },
-          "systemLabelList": {
-            "ui:widget": "checkboxes"
-          }
-        }
-             """;
-    editform.setUiSchema(mapper.readValue(uiSchema, new TypeReference<Map<String, Object>>() {}));
+    uiSchemaMap = uiDocCtx.read("$", new TypeRef<Map<String, Object>>() {});
+    editform.setUiSchema(uiSchemaMap);
 
     var tags = taggable.getTagTemplates();
     String formDataSchema = """
