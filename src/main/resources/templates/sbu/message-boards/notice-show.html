@@ -1,76 +1,80 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5"
-  th:with="_historyBack=${_historyBack} ?: false, item=${notice}, rid=${(T(java.lang.Math).random() * 2147483647).intValue()}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}, backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}">
-  <div class="card">
-    <div class="card-header">
-      <button th:if="${_historyBack}" onclick="history.back()" type="button"
-        class="me-auto btn-close" aria-label="Close"></button>
-      <button
-        hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
-        hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
-        aria-label="Close"></button>
+<div th:fragment="bs5" th:insert="~{sbu/message-boards/block :: scope(~{:: th:block})}">
+  <th:block>
+
+    <div class="card">
+      <div class="card-header">
+        <button th:if="${_historyBack}" onclick="history.back()" type="button"
+          class="me-auto btn-close" aria-label="Close"></button>
+        <button
+          hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"
+          hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button"
+          class="me-auto btn-close" aria-label="Close"></button>
+      </div>
+
+      <div class="card-body">
+        <form class="container">
+
+          <div class="mb-3 form-floating">
+            <select name="messageBoard" class="form-select form-select-lg" disabled>
+              <option th:each="messageBoard :${@sbuHtml.getMessageBoardService().messageBoards}"
+                th:value="${messageBoard.boardId}"
+                th:selected="${messageBoard.boardId eq item.messageBoard}">
+                [[${messageBoard.boardName}]]
+              </option>
+            </select>
+            <label for="messageBoard">
+              [[${#messages.msgOrNull('sbu.MessageBoardNotice.messageBoard') ?: 'Message Board'}]]
+            </label>
+          </div>
+
+          <div class="mb-3">
+            <label for="title" class="form-label">
+              [[${#messages.msgOrNull('sbu.MessageBoardNotice.title') ?: 'Title'}]]
+            </label>
+            <input type="text" class="form-control" name="title" th:value="${item.title}" readonly>
+          </div>
+
+          <div class="mb-3">
+            <label for="title" class="form-label">
+              [[${#messages.msgOrNull('sbu.MessageBoardNotice.timelyDuration') ?: 'Timely
+              Duration'}]]
+            </label>
+            <input type="number" step="1" min="1" max="7" class="form-control" name="timelyDuration"
+              th:value="${item.timelyDuration?.toDays()}" readonly>
+          </div>
+
+          <div class="mb-3">
+            <label for="pinned" class="form-check-label">
+              [[${#messages.msgOrNull('sbu.MessageBoardNotice.pinned') ?: 'Pinned'}]]
+            </label>
+            <input type="checkbox" class="form-check-input" name="pinned" value="true"
+              th:checked="${item.pinned}" disabled>
+          </div>
+
+          <div th:id="${'editor' + rid}"></div>
+
+          <div class="mb-3">
+            <!-- Hidden input to hold markdown -->
+            <input name="content" th:id="${'content' + rid}" type="hidden"
+              th:value="${item.content}" readonly>
+          </div>
+
+        </form>
+
+        <script th:inline="javascript" defer>
+          document.getElementById(/*[[${'editor' + rid}]]*/null)._editorInstance = new toastui.Editor.factory({
+            el: document.getElementById(/*[[${'editor' + rid}]]*/null),
+            height: '400px',
+            viewer: true,
+            initialValue: document.getElementById(/*[[${'content' + rid}]]*/null).value
+          });
+        </script>
+      </div>
     </div>
 
-    <div class="card-body">
-      <form class="container">
-
-        <div class="mb-3 form-floating">
-          <select name="messageBoard" class="form-select form-select-lg" disabled>
-            <option th:each="messageBoard :${@sbuHtml.getMessageBoardService().messageBoards}"
-              th:value="${messageBoard.boardId}"
-              th:selected="${messageBoard.boardId eq item.messageBoard}">
-              [[${messageBoard.boardName}]]
-            </option>
-          </select>
-          <label for="messageBoard">
-            [[${#messages.msgOrNull('sbu.MessageBoardNotice.messageBoard') ?: 'Message Board'}]]
-          </label>
-        </div>
-
-        <div class="mb-3">
-          <label for="title" class="form-label">
-            [[${#messages.msgOrNull('sbu.MessageBoardNotice.title') ?: 'Title'}]]
-          </label>
-          <input type="text" class="form-control" name="title" th:value="${item.title}" readonly>
-        </div>
-
-        <div class="mb-3">
-          <label for="title" class="form-label">
-            [[${#messages.msgOrNull('sbu.MessageBoardNotice.timelyDuration') ?: 'Timely Duration'}]]
-          </label>
-          <input type="number" step="1" min="1" max="7" class="form-control" name="timelyDuration"
-            th:value="${item.timelyDuration?.toDays()}" readonly>
-        </div>
-
-        <div class="mb-3">
-          <label for="pinned" class="form-check-label">
-            [[${#messages.msgOrNull('sbu.MessageBoardNotice.pinned') ?: 'Pinned'}]]
-          </label>
-          <input type="checkbox" class="form-check-input" name="pinned" value="true"
-            th:checked="${item.pinned}" disabled>
-        </div>
-
-        <div th:id="${'editor' + rid}"></div>
-
-        <div class="mb-3">
-          <!-- Hidden input to hold markdown -->
-          <input name="content" th:id="${'content' + rid}" type="hidden" th:value="${item.content}"
-            readonly>
-        </div>
-
-      </form>
-
-      <script th:inline="javascript" defer>
-        document.getElementById(/*[[${'editor' + rid}]]*/null)._editorInstance = new toastui.Editor.factory({
-          el: document.getElementById(/*[[${'editor' + rid}]]*/null),
-          height: '400px',
-          viewer: true,
-          initialValue: document.getElementById(/*[[${'content' + rid}]]*/null).value
-        });
-      </script>
-    </div>
-  </div>
+  </th:block>
 </div>
 
 </html>

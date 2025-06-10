@@ -80,6 +80,14 @@ public class JsfDisplayUtils {
     return true;
   }
 
+  public <ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Collection<ID> enumValColl) {
+    if (enumValColl == null || enumValColl.isEmpty()) return false;
+
+    docCtx.put(jsonPath, "enum", enumValColl);
+
+    return true;
+  }
+
   public <ID> boolean setEnum(DocumentContext docCtx, String jsonPath, ID enumVal) {
     if (enumVal == null) return false;
 
