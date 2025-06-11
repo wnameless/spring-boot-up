@@ -4,31 +4,55 @@
   th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, usernameStrategy=${usernameStrategy}">
 
   <style>
-    .breadcrumb-item+.breadcrumb-item::before {
-      display: inline-flex;
+    .breadcrumb-scroll {
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .breadcrumb {
+      flex-wrap: nowrap !important;
+      display: flex;
       align-items: center;
-      height: 100%;
+      margin-bottom: 0;
+    }
+
+    .breadcrumb-item {
+      display: flex;
+      /* Make the list item a flex container */
+      align-items: center;
+      /* Vertically center the content */
+    }
+
+    .breadcrumb-item+.breadcrumb-item::before {
+      /* You can remove the flex properties from here as they are no longer needed */
       vertical-align: middle;
+      font-size: 1rem;
+      margin-right: 0.5rem;
+      /* Add some spacing if needed */
     }
   </style>
-  <nav style=" --bs-breadcrumb-divider: '>' ;" aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <th:block th:each="at : ${item.stateRecord.auditTrails}">
-        <li th:if="${at != null}" class="breadcrumb-item mt-1">
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-primary">
-              [[${usernameStrategy == null ? at.username : usernameStrategy.apply(at.username)}]]
-            </button>
-            <button type="button" class="btn btn-outline-info hint--right"
-              th:attr="aria-label=${at.timestamp}">
-              [[${at?.trigger?.displayName}]]<br>
-              [[${at?.timestamp?.toLocalDate}]]
-            </button>
-          </div>
-        </li>
-      </th:block>
-    </ol>
-  </nav>
+
+  <div class="breadcrumb-scroll">
+    <nav style="--bs-breadcrumb-divider: '<';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <th:block th:each="at : ${item.stateRecord.reversedAuditTrails}">
+          <li th:if="${at != null}" class="breadcrumb-item mt-1 mb-2">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-outline-primary">
+                [[${usernameStrategy == null ? at.username : usernameStrategy.apply(at.username)}]]
+              </button>
+              <button type="button" class="btn btn-outline-info hint--right"
+                th:attr="aria-label=${at.timestamp}">
+                [[${at?.trigger?.displayName}]]<br>
+                [[${at?.timestamp?.toLocalDate}]]
+              </button>
+            </div>
+          </li>
+        </th:block>
+      </ol>
+    </nav>
+  </div>
 
 </div>
 

@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.fsm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,6 +31,12 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
 
   public StateRecord(S state) {
     this.state = state;
+  }
+
+  public List<StateAuditTrail<S, T, ID>> getReversedAuditTrails() {
+    var auditTrailsCopy = new ArrayList<StateAuditTrail<S, T, ID>>(auditTrails);
+    Collections.reverse(auditTrailsCopy);
+    return auditTrailsCopy;
   }
 
   public void setStateWithAuditTrail(S state) {
