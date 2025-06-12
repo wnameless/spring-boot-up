@@ -1,10 +1,12 @@
 package com.github.wnameless.spring.boot.up.jsf.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -181,6 +183,14 @@ public class JsfDisplayUtils {
     return true;
   }
 
+  public <T, ID> boolean setUiEnumName(DocumentContext uiDocCtx, String jsonPath, T enumName) {
+    if (enumName == null) return false;
+
+    forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames", List.of(enumName));
+
+    return true;
+  }
+
   public <T, ID> boolean setUiEnumNames(DocumentContext uiDocCtx, String jsonPath,
       Collection<T> enumNames) {
     if (enumNames == null || enumNames.isEmpty()) return false;
@@ -205,15 +215,22 @@ public class JsfDisplayUtils {
   }
 
   @SuppressWarnings("unchecked")
-  private void forceCreateAndPut(DocumentContext docCtx, String jsonPath, String key,
-      Object value) {
-    // Remove the trailing property (like '.baz')
-    String[] parts = jsonPath.replaceFirst("^\\$\\.", "").split("\\.");
+  public void forceCreateAndPut(DocumentContext docCtx, String jsonPath, String key, Object value) {
+    // Remove root ($ or $.)
+    String path = jsonPath.replaceFirst("^\\$\\.?", "");
+    List<String> tokens = new ArrayList<>();
+    Pattern pattern = Pattern.compile("([^.\\[]+)|\\[['\"]?([^'\"]+)['\"]?\\]");
+    Matcher matcher = pattern.matcher(path);
+    while (matcher.find()) {
+      String token = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+      tokens.add(token);
+    }
+
     Map<String, Object> current = docCtx.json();
 
-    for (int i = 0; i < parts.length; i++) {
-      String part = parts[i];
-      if (i == parts.length - 1) {
+    for (int i = 0; i < tokens.size(); i++) {
+      String part = tokens.get(i);
+      if (i == tokens.size() - 1) {
         // Last part, put value
         if (current.get(part) == null || !(current.get(part) instanceof Map)) {
           current.put(part, new LinkedHashMap<String, Object>());
