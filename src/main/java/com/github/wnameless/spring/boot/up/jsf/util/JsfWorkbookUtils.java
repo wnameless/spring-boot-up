@@ -436,7 +436,6 @@ public class JsfWorkbookUtils {
           fieldRowColumnCount.put(0, 0);
 
           if (hasItemTitle) {
-            @SuppressWarnings("null")
             var cell = titleRow.createCell(i * 2);
             cell.setCellValue(pdCache.get(0).iterator().next().getItemTitle());
             setBold(16, cell, wb);
