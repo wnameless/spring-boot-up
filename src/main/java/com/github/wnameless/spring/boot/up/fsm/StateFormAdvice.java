@@ -9,14 +9,14 @@ import com.github.wnameless.spring.boot.up.jsf.RestfulVersioningJsonSchemaForm;
 
 public interface StateFormAdvice<SF extends JsonSchemaForm & JsfVersioning, PA extends PhaseProvider<?, ?, ?, ?>> {
 
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   default Class<SF> getStateFormType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), StateFormAdvice.class);
     return (Class<SF>) genericTypeResolver[0];
   }
 
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   default Class<PA> getPhaseAwareType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), StateFormAdvice.class);

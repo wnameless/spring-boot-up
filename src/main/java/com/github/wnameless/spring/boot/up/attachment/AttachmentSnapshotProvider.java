@@ -11,7 +11,7 @@ import jakarta.persistence.PostRemove;
 public interface AttachmentSnapshotProvider<T, A extends Attachment<ID>, ID>
     extends DataModelCRUDTrigger<T> {
 
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   default Class<A> getAttachmentType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), AttachmentSnapshotProvider.class);

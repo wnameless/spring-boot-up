@@ -27,7 +27,7 @@ public abstract class QuickRestfulController<R extends CrudRepository<I, ID>, I,
 
   abstract protected void quickConfigure(ModelPolicy<I> policy);
 
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   protected Class<I> getRestfulItemType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(itemRepository.getClass(), CrudRepository.class);

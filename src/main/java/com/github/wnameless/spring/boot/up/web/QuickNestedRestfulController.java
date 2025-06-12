@@ -45,7 +45,7 @@ public abstract class QuickNestedRestfulController<PR extends CrudRepository<P, 
     return new NestedRestfulRoute<ID>(parent.getShowPath(), item.getIndexPath());
   }
 
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   protected Class<P> getParentItemType() {
     var genericTypeResolver = GenericTypeResolver
         .resolveTypeArguments(getParentRepository().getClass(), CrudRepository.class);
@@ -57,7 +57,7 @@ public abstract class QuickNestedRestfulController<PR extends CrudRepository<P, 
     return getParentItemType().getDeclaredConstructor().newInstance();
   }
 
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   protected Class<I> getRestfulItemType() {
     var genericTypeResolver = GenericTypeResolver
         .resolveTypeArguments(getRestfulRepository().getClass(), CrudRepository.class);

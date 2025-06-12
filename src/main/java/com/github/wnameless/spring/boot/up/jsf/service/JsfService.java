@@ -25,7 +25,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
   JsfDataRepository<JD, JS, ID> getJsfDataRepository();
 
   @SneakyThrows
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   default JS newJsfSchema() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), JsfService.class);
@@ -33,7 +33,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
   }
 
   @SneakyThrows
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   default JD newJsfData() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), JsfService.class);

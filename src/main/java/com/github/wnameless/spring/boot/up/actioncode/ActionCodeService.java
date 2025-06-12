@@ -14,7 +14,7 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
   ActionCodeRepository<AC, A, T, ID> getActionCodeRepository();
 
   @SneakyThrows
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   default AC newActionCode() {
     var genericTypeResolver = GenericTypeResolver
         .resolveTypeArguments(getActionCodeRepository().getClass(), CrudRepository.class);

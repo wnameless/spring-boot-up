@@ -31,7 +31,7 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
   TagTemplateRepository<T, UL, L, ID> getTagTemplateRepository();
 
   @SneakyThrows
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   default L newLabelTemplate() {
     var genericTypeResolver = GenericTypeResolver
         .resolveTypeArguments(getLabelTemplateRepository().getClass(), CrudRepository.class);
@@ -39,7 +39,7 @@ public interface TaggingService<T extends TagTemplate<UL, L, ID>, UL extends Use
   }
 
   @SneakyThrows
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   default T newTagTemplate() {
     var genericTypeResolver = GenericTypeResolver
         .resolveTypeArguments(getTagTemplateRepository().getClass(), CrudRepository.class);

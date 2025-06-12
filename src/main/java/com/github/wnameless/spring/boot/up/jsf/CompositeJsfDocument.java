@@ -18,7 +18,7 @@ public interface CompositeJsfDocument<JD extends JsfData<JS, ID>, JS extends Jsf
 
   List<CompositeFormPart> getCompositeFormParts();
 
-  @SuppressWarnings({"unchecked"})
+  @SuppressWarnings("unchecked")
   default JD initJsfData(String formType, String formBranch) {
     return (JD) SpringBootUp.getBean(JsfService.class).newJsfData(formType, formBranch);
   }

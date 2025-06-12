@@ -12,7 +12,7 @@ import com.github.wnameless.spring.boot.up.permission.role.Role;
 @NoRepositoryBean
 public interface MembershipRepository<M extends Membership<ID>, ID> extends CrudRepository<M, ID> {
 
-  @SuppressWarnings({"unchecked", "null"})
+  @SuppressWarnings("unchecked")
   default Class<M> getMembershipType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), CrudRepository.class);
