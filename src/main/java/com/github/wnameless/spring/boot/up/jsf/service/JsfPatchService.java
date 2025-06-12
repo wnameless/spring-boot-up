@@ -17,5 +17,6 @@ public class JsfPatchService {
   private Function<? super JsonSchemaForm, Map<String, Object>> schemaPatch;
   private Function<? super JsonSchemaForm, Map<String, Object>> uiSchemaPatch;
   private Function<? super JsonSchemaForm, Map<String, Object>> formDataPatch;
+  private Function<? super JsonSchemaForm, ? extends JsonSchemaForm> wholePatch;
 
 }

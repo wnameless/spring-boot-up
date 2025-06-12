@@ -25,17 +25,32 @@ public interface JsfStratrgyProvider {
     }
 
     var documentStrategy = getJsonSchemaFormStrategy();
-    if (documentStrategy.isPresent() && documentStrategy.get().schemaStrategy() != null) {
-      return (Map<String, Object>) documentStrategy.get().schemaStrategy().apply(this, jsf);
+    if (documentStrategy.isPresent()) {
+      if (documentStrategy.get().wholeStrategy() != null) {
+        return (Map<String, Object>) ((JsonSchemaForm) documentStrategy.get().wholeStrategy()
+            .apply(this, jsf)).getSchema();
+      } else if (documentStrategy.get().schemaStrategy() != null) {
+        return (Map<String, Object>) documentStrategy.get().schemaStrategy().apply(this, jsf);
+      }
     }
     return jsf.getSchema();
   }
 
   @SuppressWarnings("unchecked")
   default Map<String, Object> applyUiSchemaStrategy(JsonSchemaForm jsf) {
+    var defaultEnumStategyOpt = getJsfDefaultEnumStategy();
+    if (defaultEnumStategyOpt.isPresent()) {
+      jsf = defaultEnumStategyOpt.get().applyDefaultEnumStategy(this, jsf);
+    }
+
     var documentStrategy = getJsonSchemaFormStrategy();
-    if (documentStrategy.isPresent() && documentStrategy.get().uiSchemaStrategy() != null) {
-      return (Map<String, Object>) documentStrategy.get().uiSchemaStrategy().apply(this, jsf);
+    if (documentStrategy.isPresent()) {
+      if (documentStrategy.get().wholeStrategy() != null) {
+        return (Map<String, Object>) ((JsonSchemaForm) documentStrategy.get().wholeStrategy()
+            .apply(this, jsf)).getUiSchema();
+      } else if (documentStrategy.get().uiSchemaStrategy() != null) {
+        return (Map<String, Object>) documentStrategy.get().uiSchemaStrategy().apply(this, jsf);
+      }
     }
     return jsf.getUiSchema();
   }
@@ -43,8 +58,13 @@ public interface JsfStratrgyProvider {
   @SuppressWarnings("unchecked")
   default Map<String, Object> applyFormDataStrategy(JsonSchemaForm jsf) {
     var documentStrategy = getJsonSchemaFormStrategy();
-    if (documentStrategy.isPresent() && documentStrategy.get().formDataStrategy() != null) {
-      return (Map<String, Object>) documentStrategy.get().formDataStrategy().apply(this, jsf);
+    if (documentStrategy.isPresent()) {
+      if (documentStrategy.get().wholeStrategy() != null) {
+        return (Map<String, Object>) ((JsonSchemaForm) documentStrategy.get().wholeStrategy()
+            .apply(this, jsf)).getFormData();
+      } else if (documentStrategy.get().formDataStrategy() != null) {
+        return (Map<String, Object>) documentStrategy.get().formDataStrategy().apply(this, jsf);
+      }
     }
     return jsf.getFormData();
   }

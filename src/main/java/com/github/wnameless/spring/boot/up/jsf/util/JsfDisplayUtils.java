@@ -55,6 +55,35 @@ public class JsfDisplayUtils {
     return false;
   }
 
+  public <F extends JsonSchemaForm, E, ID> boolean setDisplayEnum(DocumentContext docCtx, F entity,
+      String fieldName, Class<E> fieldClass, Function<E, String> toEnumName,
+      DocumentContext uiDocCtx) {
+    return setDisplayEnum(docCtx, entity, fieldName, fieldClass, toEnumName, uiDocCtx, false);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public <F extends JsonSchemaForm, E, ID> boolean setDisplayEnum(DocumentContext docCtx, F entity,
+      String fieldName, Class<E> fieldClass, Function<E, String> toEnumName,
+      DocumentContext uiDocCtx, boolean supportEnumNames) {
+    var repoOpt = SpringBootUp.findGenericBean(QuerydslPredicateExecutor.class, fieldClass);
+    if (repoOpt.isPresent() && entity.getFormData().get(fieldName) != null) {
+      if (supportEnumNames) {
+        JsfDisplayUtils.setEnum(docCtx, "$.properties." + fieldName,
+            entity.getFormData().get(fieldName),
+            toEnumName.apply((E) ((CrudRepository) repoOpt.get())
+                .findById((ID) entity.getFormData().get(fieldName)).get()));
+      } else {
+        JsfDisplayUtils.setEnum(docCtx, "$.properties." + fieldName,
+            entity.getFormData().get(fieldName));
+      }
+      JsfDisplayUtils.setDisplayUiEnumName(uiDocCtx, entity, fieldName, fieldClass, toEnumName);
+
+      return true;
+    }
+
+    return false;
+  }
+
   @SuppressWarnings({"rawtypes", "unchecked"})
   public <F extends JsonSchemaForm, E, ID> boolean setDisplayUiEnumName(DocumentContext uiDocCtx,
       F entity, String fieldName, Class<E> fieldClass, Function<E, String> toEnumName) {

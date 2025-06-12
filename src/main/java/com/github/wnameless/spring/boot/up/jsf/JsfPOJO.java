@@ -65,7 +65,10 @@ public interface JsfPOJO<T> extends YamlableJSF, JsfVersioning, JsfStratrgyProvi
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
       JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
-      if (jsfPatchService.formDataPatch() != null) {
+      if (jsfPatchService.wholePatch() != null) {
+        formData = jsfPatchService.wholePatch().apply(jsf).getFormData();
+        return formData;
+      } else if (jsfPatchService.formDataPatch() != null) {
         formData = jsfPatchService.formDataPatch().apply(jsf);
         return formData;
       }
@@ -94,7 +97,10 @@ public interface JsfPOJO<T> extends YamlableJSF, JsfVersioning, JsfStratrgyProvi
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
       JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
-      if (jsfPatchService.schemaPatch() != null) {
+      if (jsfPatchService.wholePatch() != null) {
+        schema = jsfPatchService.wholePatch().apply(jsf).getSchema();
+        return schema;
+      } else if (jsfPatchService.schemaPatch() != null) {
         schema = jsfPatchService.schemaPatch().apply(jsf);
         return schema;
       }
@@ -113,7 +119,10 @@ public interface JsfPOJO<T> extends YamlableJSF, JsfVersioning, JsfStratrgyProvi
     Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
     if (jsfPatchServiceOpt.isPresent()) {
       JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
-      if (jsfPatchService.uiSchemaPatch() != null) {
+      if (jsfPatchService.wholePatch() != null) {
+        uiSchema = jsfPatchService.wholePatch().apply(jsf).getUiSchema();
+        return uiSchema;
+      } else if (jsfPatchService.uiSchemaPatch() != null) {
         uiSchema = jsfPatchService.uiSchemaPatch().apply(jsf);
         return uiSchema;
       }

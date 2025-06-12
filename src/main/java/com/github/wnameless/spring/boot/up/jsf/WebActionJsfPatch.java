@@ -25,6 +25,9 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     if (indexActionFormDataPatch() != null) {
       getJsfPatchService().formDataPatch(indexActionFormDataPatch());
     }
+    if (indexActionWholePatch() != null) {
+      getJsfPatchService().wholePatch(indexActionWholePatch());
+    }
   }
 
   default Function<? super JsonSchemaForm, Map<String, Object>> indexActionSchemaPatch() {
@@ -39,6 +42,10 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     return null;
   }
 
+  default Function<? super JsonSchemaForm, ? extends JsonSchemaForm> indexActionWholePatch() {
+    return null;
+  }
+
   @Override
   default void showPostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {
     if (showActionSchemaPatch() != null) {
@@ -49,6 +56,9 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
     if (showActionFormDataPatch() != null) {
       getJsfPatchService().formDataPatch(showActionFormDataPatch());
+    }
+    if (showActionWholePatch() != null) {
+      getJsfPatchService().wholePatch(showActionWholePatch());
     }
   }
 
@@ -64,6 +74,10 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     return null;
   }
 
+  default Function<? super JsonSchemaForm, ? extends JsonSchemaForm> showActionWholePatch() {
+    return null;
+  }
+
   @Override
   default void newPostAction(ModelAndView mav, MultiValueMap<String, String> params) {
     if (newActionSchemaPatch() != null) {
@@ -74,6 +88,9 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
     if (newActionFormDataPatch() != null) {
       getJsfPatchService().formDataPatch(newActionFormDataPatch());
+    }
+    if (newActionWholePatch() != null) {
+      getJsfPatchService().wholePatch(newActionWholePatch());
     }
   }
 
@@ -89,6 +106,10 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     return null;
   }
 
+  default Function<? super JsonSchemaForm, ? extends JsonSchemaForm> newActionWholePatch() {
+    return null;
+  }
+
   @Override
   default void createPostAction(ModelAndView mav, MultiValueMap<String, String> params, D data) {
     if (createActionSchemaPatch() != null) {
@@ -99,6 +120,9 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
     if (createActionFormDataPatch() != null) {
       getJsfPatchService().formDataPatch(createActionFormDataPatch());
+    }
+    if (createActionWholePatch() != null) {
+      getJsfPatchService().wholePatch(createActionWholePatch());
     }
   }
 
@@ -114,6 +138,10 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     return null;
   }
 
+  default Function<? super JsonSchemaForm, ? extends JsonSchemaForm> createActionWholePatch() {
+    return null;
+  }
+
   @Override
   default void editPostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {
     if (editActionSchemaPatch() != null) {
@@ -124,6 +152,9 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
     if (editActionFormDataPatch() != null) {
       getJsfPatchService().formDataPatch(editActionFormDataPatch());
+    }
+    if (editActionWholePatch() != null) {
+      getJsfPatchService().wholePatch(editActionWholePatch());
     }
   }
 
@@ -139,6 +170,10 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     return null;
   }
 
+  default Function<? super JsonSchemaForm, ? extends JsonSchemaForm> editActionWholePatch() {
+    return null;
+  }
+
   @Override
   default void updatePostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params,
       D data) {
@@ -150,6 +185,9 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
     if (updateActionFormDataPatch() != null) {
       getJsfPatchService().formDataPatch(updateActionFormDataPatch());
+    }
+    if (updateActionWholePatch() != null) {
+      getJsfPatchService().wholePatch(updateActionWholePatch());
     }
   }
 
@@ -165,6 +203,10 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     return null;
   }
 
+  default Function<? super JsonSchemaForm, ? extends JsonSchemaForm> updateActionWholePatch() {
+    return null;
+  }
+
   @Override
   default void deletePostAction(ID id, ModelAndView mav, MultiValueMap<String, String> params) {
     if (deleteActionSchemaPatch() != null) {
@@ -175,6 +217,9 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
     }
     if (deleteActionFormDataPatch() != null) {
       getJsfPatchService().formDataPatch(deleteActionFormDataPatch());
+    }
+    if (deleteActionWholePatch() != null) {
+      getJsfPatchService().wholePatch(deleteActionWholePatch());
     }
   }
 
@@ -187,6 +232,10 @@ public interface WebActionJsfPatch<D, ID> extends BaseWebAction<D, ID> {
   }
 
   default Function<? super JsonSchemaForm, Map<String, Object>> deleteActionFormDataPatch() {
+    return null;
+  }
+
+  default Function<? super JsonSchemaForm, ? extends JsonSchemaForm> deleteActionWholePatch() {
     return null;
   }
 

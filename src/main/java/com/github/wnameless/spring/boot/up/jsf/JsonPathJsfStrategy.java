@@ -16,7 +16,9 @@ public interface JsonPathJsfStrategy<F extends JsonSchemaForm> extends JsfStrate
     return (Class<F>) genericTypeResolver[0];
   }
 
-  BiFunction<F, DocumentContext, DocumentContext> jsonPathSchemaStrategy();
+  default BiFunction<F, DocumentContext, DocumentContext> jsonPathSchemaStrategy() {
+    return null;
+  }
 
   default BiFunction<F, DocumentContext, DocumentContext> jsonPathUiSchemaStrategy() {
     return null;
@@ -26,6 +28,11 @@ public interface JsonPathJsfStrategy<F extends JsonSchemaForm> extends JsfStrate
     return null;
   }
 
+  default BiFunction<F, JsonPathJsonSchemaForm, JsonPathJsonSchemaForm> jsonPathWholeStrategy() {
+    return null;
+  }
+
+  @Override
   default BiFunction<F, JsonSchemaForm, Map<String, Object>> schemaStrategy() {
     if (jsonPathSchemaStrategy() == null) return null;
 
@@ -36,6 +43,7 @@ public interface JsonPathJsfStrategy<F extends JsonSchemaForm> extends JsfStrate
     };
   }
 
+  @Override
   default BiFunction<F, JsonSchemaForm, Map<String, Object>> uiSchemaStrategy() {
     if (jsonPathUiSchemaStrategy() == null) return null;
 
@@ -46,6 +54,7 @@ public interface JsonPathJsfStrategy<F extends JsonSchemaForm> extends JsfStrate
     };
   }
 
+  @Override
   default BiFunction<F, JsonSchemaForm, Map<String, Object>> formDataStrategy() {
     if (jsonPathFormDataStrategy() == null) return null;
 
@@ -53,6 +62,19 @@ public interface JsonPathJsfStrategy<F extends JsonSchemaForm> extends JsfStrate
       DocumentContext docCtx = JsonPath.parse(jsf.getFormData());
       return jsonPathFormDataStrategy().apply(entity, docCtx).read("$",
           new TypeRef<Map<String, Object>>() {});
+    };
+  }
+
+  @Override
+  default BiFunction<F, JsonSchemaForm, JsonSchemaForm> wholeStrategy() {
+    if (jsonPathWholeStrategy() == null) return null;
+
+    return (entity, jsf) -> {
+      var jsonPathJsf = new JsonPathJsonSchemaForm();
+      jsonPathJsf.setSchema(jsf.getSchema());
+      jsonPathJsf.setUiSchema(jsf.getUiSchema());
+      jsonPathJsf.setFormData(jsf.getFormData());
+      return jsonPathWholeStrategy().apply(entity, jsonPathJsf);
     };
   }
 

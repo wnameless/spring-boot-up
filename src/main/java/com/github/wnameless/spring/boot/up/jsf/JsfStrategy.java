@@ -18,4 +18,8 @@ public interface JsfStrategy<F extends JsonSchemaForm> {
 
   BiFunction<F, JsonSchemaForm, Map<String, Object>> formDataStrategy();
 
+  default BiFunction<F, JsonSchemaForm, JsonSchemaForm> wholeStrategy() {
+    return null;
+  }
+
 }
