@@ -45,7 +45,10 @@ public class JsfSimpleWorbookUtils {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
-  public static byte[] generateExcelBytesFromSchema(JsonNode schema) throws Exception {
+  public static byte[] generateExcelBytesFromSchema(JsonNode schema, JsonNode uiSchema)
+      throws Exception {
+    schema = RjsfSchemaConverter.toRjsfV5Schema(schema, uiSchema);
+
     try (XSSFWorkbook workbook = new XSSFWorkbook();
         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
       XSSFSheet sheet = workbook.createSheet("Data Entry");
@@ -144,10 +147,11 @@ public class JsfSimpleWorbookUtils {
     }
   }
 
-  public static byte[] generateExcelBytesFromSchema(Map<String, Object> schemaMap)
-      throws Exception {
+  public static byte[] generateExcelBytesFromSchema(Map<String, Object> schemaMap,
+      Map<String, Object> uiSchemaMap) throws Exception {
     JsonNode schemaNode = objectMapper.convertValue(schemaMap, JsonNode.class);
-    return generateExcelBytesFromSchema(schemaNode);
+    JsonNode uiSchemaNode = objectMapper.convertValue(uiSchemaMap, JsonNode.class);
+    return generateExcelBytesFromSchema(schemaNode, uiSchemaNode);
   }
 
   public static LinkedHashMap<Integer, Map<String, Object>> extractJsonDataFromWorkbook(

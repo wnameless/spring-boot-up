@@ -167,7 +167,7 @@ public class JsfWorkbookUtils {
     return JsonUnflattener.unflattenAsMap(map);
   }
 
-  public XSSFWorkbook toDataCollectionWorkbook(String schemaJson) {
+  public XSSFWorkbook toDataCollectionWorkbook(String schemaJson, String uiSchemaJson) {
     var wb = new XSSFWorkbook();
     var sheet = wb.createSheet(DATASHEET_NAME);
 
@@ -243,7 +243,8 @@ public class JsfWorkbookUtils {
             cell = row.createCell(currentCol++);
             cell.setCellValue(JsfFlattenedJsonUtils.isSchemaKeyRequired(key, schemaJson));
             cell = row.createCell(currentCol++);
-            var enumToNames = JsfFlattenedJsonUtils.schemaKeyToEnumToNames(key, schemaJson);
+            var enumToNames =
+                JsfFlattenedJsonUtils.schemaKeyToEnumToNames(key, schemaJson, uiSchemaJson);
             if (enumToNames.isEmpty()) {
               cell.setCellValue(false);
               cell = row.createCell(currentCol++);
@@ -270,7 +271,8 @@ public class JsfWorkbookUtils {
             cell = row.createCell(currentCol++);
             cell.setCellValue(JsfFlattenedJsonUtils.isSchemaKeyRequired(key, schemaJson));
             cell = row.createCell(currentCol++);
-            var enumToNames = JsfFlattenedJsonUtils.schemaKeyToEnumToNames(key, schemaJson);
+            var enumToNames =
+                JsfFlattenedJsonUtils.schemaKeyToEnumToNames(key, schemaJson, uiSchemaJson);
             if (enumToNames.isEmpty()) {
               cell.setCellValue(false);
               cell = row.createCell(currentCol++);
@@ -297,7 +299,8 @@ public class JsfWorkbookUtils {
             cell = row.createCell(currentCol++);
             cell.setCellValue(JsfFlattenedJsonUtils.isSchemaKeyRequired(key, schemaJson));
             cell = row.createCell(currentCol++);
-            var enumToNames = JsfFlattenedJsonUtils.schemaKeyToEnumToNames(key, schemaJson);
+            var enumToNames =
+                JsfFlattenedJsonUtils.schemaKeyToEnumToNames(key, schemaJson, uiSchemaJson);
             if (enumToNames.isEmpty()) {
               cell.setCellValue(false);
               cell = row.createCell(currentCol++);
@@ -324,7 +327,8 @@ public class JsfWorkbookUtils {
             cell = row.createCell(currentCol++);
             cell.setCellValue(JsfFlattenedJsonUtils.isSchemaKeyRequired(key, schemaJson));
             cell = row.createCell(currentCol++);
-            var enumToNames = JsfFlattenedJsonUtils.schemaKeyToEnumToNames(key, schemaJson);
+            var enumToNames =
+                JsfFlattenedJsonUtils.schemaKeyToEnumToNames(key, schemaJson, uiSchemaJson);
             if (enumToNames.isEmpty()) {
               cell.setCellValue(false);
               cell = row.createCell(currentCol++);

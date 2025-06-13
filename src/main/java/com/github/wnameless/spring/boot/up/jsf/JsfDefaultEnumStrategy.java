@@ -29,8 +29,6 @@ public interface JsfDefaultEnumStrategy {
     for (var de : defaultEnums) {
       if (de.getIfConditions().isEmpty()) {
         JsfDisplayUtils.setEnum(docCtx, de.getEnumPath(), de.getEnum(), de.getEnumNames());
-        // docCtx.put(de.getEnumPath(), "enum", de.getEnum());
-        // docCtx.put(de.getEnumPath(), "enumNames", de.getEnumNames());
         JsfDisplayUtils.setUiEnumNames(uiDocCtx, de.getEnumPath(), de.getEnumNames());
       } else {
         ObjectMapper mapper = new ObjectMapper();
@@ -67,6 +65,7 @@ public interface JsfDefaultEnumStrategy {
           if (thenCurrent != null) {
             thenCurrent.set("enum", mapper.valueToTree(de.getEnum()));
             thenCurrent.set("enumNames", mapper.valueToTree(de.getEnumNames()));
+            JsfDisplayUtils.setUiEnumNames(uiDocCtx, ifJsonPath, de.getEnumNames());
           }
 
           allOf.add(mapper.valueToTree(Map.of("if", ifRoot, "then", thenRoot)));

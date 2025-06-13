@@ -15,8 +15,10 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class JsfFlattenedJsonUtils {
 
-  public LinkedHashMap<Object, String> schemaKeyToEnumToNames(String key, String schemaJson) {
-    var docCtx = schemaJsonToDocumentContext(schemaJson);
+  public LinkedHashMap<Object, String> schemaKeyToEnumToNames(String key, String schemaJson,
+      String uiSchemaJson) {
+    var schemaV5 = RjsfSchemaConverter.toRjsfV5Schema(schemaJson, uiSchemaJson);
+    var docCtx = schemaJsonToDocumentContext(schemaV5);
 
     var enumToNames = new LinkedHashMap<Object, String>();
     var keyParts = keyToKeyParts(key);
