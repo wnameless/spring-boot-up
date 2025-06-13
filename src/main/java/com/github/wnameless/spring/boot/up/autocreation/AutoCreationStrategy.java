@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 
 public enum AutoCreationStrategy {
 
-  ONCE, HOURLY, DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY;
+  ONCE, MINUTELY, TEN_MINUTELY, FIFTEEN_MINUTELY, THIRTY_MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY;
 
   public boolean isNowExecutable(LocalDateTime lastAutoCreationTimepoint) {
     return isExecutable(LocalDateTime.now(), lastAutoCreationTimepoint);
@@ -32,6 +32,34 @@ public enum AutoCreationStrategy {
     switch (this) {
       case ONCE -> {
         return now;
+      }
+      case MINUTELY -> {
+        LocalDateTime result = baseDateTime;
+        while (result.isBefore(now)) {
+          result = result.plusMinutes(1);
+        }
+        return result;
+      }
+      case TEN_MINUTELY -> {
+        LocalDateTime result = baseDateTime;
+        while (result.isBefore(now)) {
+          result = result.plusMinutes(10);
+        }
+        return result;
+      }
+      case FIFTEEN_MINUTELY -> {
+        LocalDateTime result = baseDateTime;
+        while (result.isBefore(now)) {
+          result = result.plusMinutes(15);
+        }
+        return result;
+      }
+      case THIRTY_MINUTELY -> {
+        LocalDateTime result = baseDateTime;
+        while (result.isBefore(now)) {
+          result = result.plusMinutes(30);
+        }
+        return result;
       }
       case HOURLY -> {
         LocalDateTime result = baseDateTime;
