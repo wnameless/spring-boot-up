@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -102,8 +103,38 @@ public class HtmlHelper {
         .map(e -> URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8) + "="
             + URLEncoder.encode(String.valueOf(e.getValue()), StandardCharsets.UTF_8))
         .collect(Collectors.joining("&"));
-    return queryString.isBlank() ? "&" : queryString;
+    return "&" + queryString;
   }
+
+  public String fowardParam(Map<String, String[]> param,
+      org.thymeleaf.context.WebEngineContext vars) {
+    Map<String, Object> selectedMap = new LinkedHashMap<>();
+    for (var key : param.keySet()) {
+      if (key.startsWith(WebModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX)
+          // Not only (_)
+          && !WebModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX.equals(key)) {
+        selectedMap.put(key, param.get(key));
+      }
+    }
+    for (var name : vars.getVariableNames()) {
+      if (name.startsWith(WebModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX)
+          // Not only (_)
+          && !WebModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX.equals(name)) {
+        selectedMap.put(name, vars.getVariable(name));
+      }
+    }
+    return toQueryString(selectedMap);
+  };
+
+  public String fowardParam(Map<String, String[]> param) {
+    Map<String, Object> selectedMap = new LinkedHashMap<>();
+    for (var key : param.keySet()) {
+      if (key.startsWith(WebModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX)) {
+        selectedMap.put(key, param.get(key));
+      }
+    }
+    return toQueryString(selectedMap);
+  };
 
   public int toYearsOld(int year) {
     int diff = LocalDate.now().getYear() - year;

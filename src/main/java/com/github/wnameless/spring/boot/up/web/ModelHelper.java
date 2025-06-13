@@ -9,7 +9,9 @@ public class ModelHelper {
 
   public void forwrdAttributes(Model model, MultiValueMap<String, String> params) {
     for (String name : params.keySet()) {
-      if (name.startsWith(WebModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX)) {
+      if (name.startsWith(WebModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX)
+          // Not only (_)
+          && !WebModelAttributes.FORWARDABLE_ATTRIBUTE_PREFIX.equals(name)) {
         model.addAttribute(name, params.getFirst(name));
       }
     }

@@ -5,7 +5,7 @@
 
     <div class="card-body">
       <react-form th:id="${'editForm' + rid}"
-        th:action="@{${item.updatePath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
+        th:action="@{${item.updatePath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})} + ${fowardingParam}"
         method="PUT" ajax:target="${ajaxTargetId}"
         th:attr="theme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}">
         <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:

@@ -4,16 +4,16 @@
   <th:block>
 
     <div class="card-header">
-      <button th:if="${_historyBack}" onclick="history.back()" type="button"
+      <button th:if="${historyBack}" onclick="history.back()" type="button"
         class="me-auto btn-close" aria-label="Close"></button>
-      <button th:unless="${_historyBack}"
-        hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(__${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
+      <button th:unless="${historyBack}"
+        hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(_)} + ${fowardingParam}"
         hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
         aria-label="Close"></button>
     </div>
     <div class="card-body">
       <react-form th:id="${'newForm' + rid}"
-        th:action="@{${item.createPath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
+        th:action="@{${item.createPath}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${ajaxTargetId})} + ${fowardingParam}"
         method="POST" ajax:target="${ajaxTargetId}" th:attr="theme=${jsfTheme}">
         <button class="btn btn-primary" type="submit">[[${#messages.msgOrNull('sbu.ui.submit') ?:
           'Submit'}]]</button>

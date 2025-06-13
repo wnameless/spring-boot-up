@@ -1,7 +1,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5" th:with="
-  _historyBack=${_historyBack} ?: false,
+  attachmentDialog=${attachmentDialog ?: _attachmentDialog ?: true},
+  historyBack=${historyBack ?: _historyBack ?: false},
   user=${__${'@' + @webModelAttributes.USER_NAME}__},
   fid=${item.id},
   saveonly=${saveonly},
@@ -9,7 +10,8 @@
   item=${__${@webModelAttributes.ITEM_NAME}__},
   ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE},
   backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId}, 
-  backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}
+  backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__},
+  fowardingParam=${@sbuHtml.fowardParam(param, #vars)}
 ">
   <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item" role="presentation">
@@ -18,8 +20,7 @@
         [[${#messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) + '.' +
         item.phase.stateRecord.state.name + '.tabs.main') ?:
         #messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) +
-        '.stateForms.main') ?:
-        #messages.msgOrNull('sbu.fsm.content-editor.tabs.main') ?: 'Main'}]]
+        '.stateForms.main') ?: #messages.msgOrNull('sbu.fsm.content-editor.tabs.main') ?: 'Main'}]]
       </button>
     </li>
 
@@ -32,8 +33,7 @@
         [[${#messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) + '.' +
         item.phase.stateRecord.state.name + '.tabs.' + formType) ?:
         #messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) +
-        '.stateForms.' +
-        formType) ?: formType}]]
+        '.stateForms.' + formType) ?: formType}]]
       </button>
     </li>
 
@@ -46,15 +46,14 @@
         [[${#messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) + '.' +
         item.phase.stateRecord.state.name + '.tabs.entire.' + formType.key) ?:
         #messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) +
-        '.stateForms.entire.' +
-        formType.key) ?: 'Entire ' + formType.key}]]
+        '.stateForms.entire.' + formType.key) ?: 'Entire ' + formType.key}]]
       </button>
     </li>
   </ul>
   <div class="tab-content">
     <div class="tab-pane fade show active" th:id="${'mainForm' + fid}" role="tabpanel">
       <div th:if="user == null || user.canRead(item)" th:replace="~{sbu/jsf/show-edit-only :: bs5(
-          attachmentDialog=true,
+          _attachmentDialog=true,
           _historyBack=true,
           saveonly=${saveonly},
           saveonlybtntxt=${saveonlybtntxt},
@@ -70,7 +69,8 @@
       <div th:id="${'embedded' + fid + '_' + iter.index}" class="pt-2">
         <a hx:target="${'#embedded' + fid + '_' + iter.index}" hx-ext="json-enc" hx-trigger="load"
           hx:get="@{${item.joinPath('forms', formType)}(
-            _historyBack=${_historyBack},
+            _attachmentDialog=${_attachmentDialog},
+            _historyBack=${historyBack},
             _ajaxTargetId=${'embedded' + fid + '_' + iter.index},
             _backTargetId=${_ajaxTargetId}
           )}"></a>

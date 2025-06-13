@@ -8,7 +8,7 @@
     <div class="card-header">
       <div class="d-flex justify-content-end">
         <a th:if="${attachmentDialog and @sbuHtml.isAttachmentSnapshotProvider(item)}"
-          hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${@webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE})}"
+          hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${@webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE})} + ${fowardingParam}"
           hx:target="${'#' + @webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE}" hx-ext="json-enc"
           data-bs-toggle="modal"
           th:attr="data-bs-target=${'#' + @webModelAttributes.MODEL_TARGET_ID_VALUE}, aria-label=${#messages.msgOrNull('sbu.attachment.title') ?: 'Attachments'}"
@@ -18,20 +18,21 @@
         <!-- Keep the header height even if the edit icon is hidden  -->
         <i class="fa fa-fw" style="visibility: hidden;"></i>
         <a th:if="${user == null || user.canUpdate(item)}" class="pe-2 orange"
-          hx:get="@{${item.getEditPath(queryConfig)}(_historyBack=${_historyBack}, jsfTheme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt}, __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__=${ajaxTargetId}, __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__=${backTargetId}, __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__=${backPath})}"
+          hx:get="@{${item.getEditPath(queryConfig)}(jsfTheme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt})} + ${fowardingParam}"
           hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
           <i class="fas fa-edit"></i></a>
       </div>
     </div>
     <div class="card-body">
-      <react-form th:id="${'showEditForm' + rid}" th:action="@{${item.getBackPath(queryConfig)}}"
-        method="GET" ajax:target="${ajaxTargetId}" disabled="true" th:attr="theme=${jsfTheme}">
+      <react-form th:id="${'showEditForm' + rid}"
+        th:action="@{${item.getBackPath(queryConfig)}(_)} + ${fowardingParam}" method="GET"
+        ajax:target="${ajaxTargetId}" disabled="true" th:attr="theme=${jsfTheme}">
         <div></div>
       </react-form>
 
       <div th:if="${!attachmentDialog and @sbuHtml.isAttachmentSnapshotProvider(item)}"
         th:id="${'attachments' + rid}">
-        <a hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${'attachments' + rid})}"
+        <a hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${'attachments' + rid})} + ${fowardingParam}"
           hx:target="${'#attachments' + rid}" hx-ext="json-enc" hx-trigger="load"
           class="d-none"></a>
       </div>

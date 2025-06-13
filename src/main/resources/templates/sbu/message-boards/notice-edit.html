@@ -5,7 +5,7 @@
 
     <div class="card">
       <div class="card-header">
-        <button th:if="${_historyBack}" onclick="history.back()" type="button"
+        <button th:if="${historyBack}" onclick="history.back()" type="button"
           class="me-auto btn-close" aria-label="Close"></button>
         <button
           hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(_ajaxTargetId=${ajaxTargetId}, _backTargetId=${backTargetId}, _backPath=${backPath})}"

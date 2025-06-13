@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="bs5" th:with="
-  _historyBack=${_historyBack} ?: false,
+  historyBack=${historyBack ?: _historyBack ?: false},
   navTabs=${navTabs},
   tabContent=${tabContents},
   user=${__${'@' + @webModelAttributes.USER_NAME}__},
@@ -11,7 +11,8 @@
   item=${__${@webModelAttributes.ITEM_NAME}__},
   ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE},
   backTargetId=${__${@webModelAttributes.BACK_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_TARGET_ID_NAME}__ ?: ajaxTargetId},
-  backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__}
+  backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__},
+  fowardingParam=${@sbuHtml.fowardParam(param, #vars)}
 ">
   <ul class="nav nav-tabs" role="tablist">
     <th:block th:each="navTab : ${navTabs}">
@@ -27,8 +28,7 @@
         [[${#messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) + '.' +
         item.phase.stateRecord.state.name + '.tabs.' + formType) ?:
         #messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) +
-        '.stateForms.' +
-        formType) ?: formType}]]
+        '.stateForms.' + formType) ?: formType}]]
       </button>
     </li>
 
@@ -57,9 +57,9 @@
       <div th:id="${'embedded' + fid + '_' + iter.index}" class="pt-2">
         <a hx:target="${'#embedded' + fid + '_' + iter.index}" hx-ext="json-enc" hx-trigger="load"
           hx:get="@{${item.joinPath('forms', formType)}(
-            _historyBack=${_historyBack},
+            _historyBack=${historyBack},
             _ajaxTargetId=${'embedded' + fid + '_' + iter.index},
-            _backTargetId=${_ajaxTargetId}
+            _backTargetId=${ajaxTargetId}
           )}"></a>
       </div>
     </div>
