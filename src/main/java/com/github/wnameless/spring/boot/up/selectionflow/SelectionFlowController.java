@@ -15,7 +15,8 @@ public interface SelectionFlowController<ID> extends TemplateFragmentAware {
   default public ModelAndView creationFlow(ModelAndView mav,
       @RequestParam MultiValueMap<String, String> params) {
     mav.addObject("selectionFlow", getSelectionFlow());
-    if (getSelectionFlow().isEndpointReached(params)) {
+    if (getSelectionFlow().isEndpointReached(params)
+        && getSelectionFlow().endpointModelAndViewStrategy() != null) {
       return getSelectionFlow().endpointModelAndViewStrategy().apply(mav);
     } else {
       mav.setViewName("sbu/selection-flows/navigator :: " + getFragmentName());

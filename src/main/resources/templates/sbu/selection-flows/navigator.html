@@ -2,8 +2,7 @@
 
 <div th:fragment="bs5" id="selectionFlowPanel" th:with="selectionFlow=${selectionFlow}">
 
-  <form hx:get="@{${route.joinPath('selection-flow')}}" hx-ext="json-enc"
-    hx-target="#selectionFlowPanel">
+  <form hx:get="@{${route.joinPath('selection-flow')}}" hx-ext="json-enc" hx-target="#ajaxTarget">
     <th:block th:each="so,iter : ${selectionFlow.getSelectionOptions(param)}">
       <div class="input-group mb-1">
         <span th:if="${iter.first}" class="input-group-text">
@@ -20,10 +19,10 @@
         </span>
 
         <select hx:get="@{${route.joinPath('selection-flow')}}" hx-ext="json-enc"
-          hx-target="#selectionFlowPanel" hx-include="closest form" class="form-select"
-          th:name="${so.key}" required>
+          hx-target="#ajaxTarget" hx-include="closest form" class="form-select" th:name="${so.key}"
+          required>
           <option selected value="">
-            [[#{ui.resource.ProtocolCommissionMember.protocol_select}]]
+            [[${#messages.msgOrNull('sbu.selectionflow.no_data') ?: 'No Data'}]]
           </option>
           <option th:each="selectOpt : ${so.value}" th:value="${selectOpt.organizationalUnitId}"
             th:selected="${selectOpt.selected}">
@@ -32,13 +31,7 @@
         </select>
       </div>
     </th:block>
-
-    <button class="form-control btn btn-outline-primary" type="submit">
-      [[#{ui.resource.ProtocolCommissionMember.visit_commission}]]
-    </button>
   </form>
-
-  <div id="selectionFlowContent"></div>
 
 </div>
 
