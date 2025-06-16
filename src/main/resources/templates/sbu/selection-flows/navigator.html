@@ -1,0 +1,45 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5" id="selectionFlowPanel" th:with="selectionFlow=${selectionFlow}">
+
+  <form hx:get="@{${route.joinPath('selection-flow')}}" hx-ext="json-enc"
+    hx-target="#selectionFlowPanel">
+    <th:block th:each="so,iter : ${selectionFlow.getSelectionOptions(param)}">
+      <div class="input-group mb-1">
+        <span th:if="${iter.first}" class="input-group-text">
+          <i class="fas fa-house fa-fw"></i>
+        </span>
+        <span th:if="${iter.last and !iter.first}" class="input-group-text">
+          <i class="fas fa-flag fa-fw"></i>
+        </span>
+        <span th:if="${iter.last and iter.first}" class="input-group-text">
+          <i class="fas fa-house-flag fa-fw"></i>
+        </span>
+        <span th:if="${!iter.first and !iter.last}" class="input-group-text">
+          <i class="fas fa-forward fa-fw"></i>
+        </span>
+
+        <select hx:get="@{${route.joinPath('selection-flow')}}" hx-ext="json-enc"
+          hx-target="#selectionFlowPanel" hx-include="closest form" class="form-select"
+          th:name="${so.key}" required>
+          <option selected value="">
+            [[#{ui.resource.ProtocolCommissionMember.protocol_select}]]
+          </option>
+          <option th:each="selectOpt : ${so.value}" th:value="${selectOpt.organizationalUnitId}"
+            th:selected="${selectOpt.selected}">
+            [[${selectOpt.organizationalUnitName}]]
+          </option>
+        </select>
+      </div>
+    </th:block>
+
+    <button class="form-control btn btn-outline-primary" type="submit">
+      [[#{ui.resource.ProtocolCommissionMember.visit_commission}]]
+    </button>
+  </form>
+
+  <div id="selectionFlowContent"></div>
+
+</div>
+
+</html>
