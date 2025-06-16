@@ -1,6 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <th:block th:fragment="scope(yield)" th:with="
+  user=${__${'@' + @webModelAttributes.USER_NAME}__},
   rid=${(T(java.lang.Math).random() * 2147483647).intValue()},
   attachmentDialog=${attachmentDialog ?: _attachmentDialog ?: false},
   historyBack=${historyBack ?: _historyBack ?: false},
