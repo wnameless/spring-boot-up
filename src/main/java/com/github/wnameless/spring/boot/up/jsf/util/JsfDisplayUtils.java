@@ -240,37 +240,90 @@ public class JsfDisplayUtils {
   }
 
   private String jsonPathToUiPath(String jsonPath) {
-    return jsonPath.replaceAll(Pattern.quote(".properties"), "");
+    // 1. Remove .oneOf[...] and .properties segments
+    String path = jsonPath.replaceAll("\\.oneOf\\[\\d+\\]|\\.properties", "");
+    // 2. Remove a trailing .items if it's at the very end of the path
+    path = path.replaceAll("\\.items$", "");
+    return path;
   }
 
+  private boolean isNumeric(String str) {
+    if (str == null || str.isEmpty()) {
+      return false;
+    }
+    try {
+      Integer.parseInt(str);
+      return true;
+    } catch (NumberFormatException e) {
+      return false;
+    }
+  }
+
+  // COMPLETELY REWRITTEN METHOD
   @SuppressWarnings("unchecked")
   public void forceCreateAndPut(DocumentContext docCtx, String jsonPath, String key, Object value) {
-    // Remove root ($ or $.)
     String path = jsonPath.replaceFirst("^\\$\\.?", "");
     List<String> tokens = new ArrayList<>();
     Pattern pattern = Pattern.compile("([^.\\[]+)|\\[['\"]?([^'\"]+)['\"]?\\]");
     Matcher matcher = pattern.matcher(path);
     while (matcher.find()) {
-      String token = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
-      tokens.add(token);
+      tokens.add(matcher.group(1) != null ? matcher.group(1) : matcher.group(2));
     }
 
-    Map<String, Object> current = docCtx.json();
+    Object traverser = docCtx.json();
 
     for (int i = 0; i < tokens.size(); i++) {
-      String part = tokens.get(i);
-      if (i == tokens.size() - 1) {
-        // Last part, put value
-        if (current.get(part) == null || !(current.get(part) instanceof Map)) {
-          current.put(part, new LinkedHashMap<String, Object>());
+      String token = tokens.get(i);
+      boolean isLastToken = i == tokens.size() - 1;
+
+      if (isNumeric(token)) {
+        // Current token is an index, so the traverser must be a List
+        if (!(traverser instanceof List)) {
+          throw new IllegalStateException("Path segment '" + token
+              + "' is an index, but its parent is not a List in path: " + jsonPath);
         }
-        ((Map<String, Object>) current.get(part)).put(key, value);
-      } else {
-        // Traverse/create intermediate objects
-        if (current.get(part) == null || !(current.get(part) instanceof Map)) {
-          current.put(part, new LinkedHashMap<String, Object>());
+        List<Object> currentList = (List<Object>) traverser;
+        int index = Integer.parseInt(token);
+
+        // Ensure list is large enough, padding with empty maps
+        while (currentList.size() <= index) {
+          currentList.add(new LinkedHashMap<>());
         }
-        current = (Map<String, Object>) current.get(part);
+
+        Object nextTraverser = currentList.get(index);
+        if (!(nextTraverser instanceof Map)) {
+          nextTraverser = new LinkedHashMap<String, Object>();
+          currentList.set(index, nextTraverser);
+        }
+
+        if (isLastToken) {
+          ((Map<String, Object>) nextTraverser).put(key, value);
+        } else {
+          traverser = nextTraverser;
+        }
+      } else { // Token is a property name
+        // Current token is a property, so the traverser must be a Map
+        if (!(traverser instanceof Map)) {
+          throw new IllegalStateException("Path segment '" + token
+              + "' is a property, but its parent is not a Map in path: " + jsonPath);
+        }
+        Map<String, Object> currentMap = (Map<String, Object>) traverser;
+
+        if (isLastToken) {
+          Map<String, Object> targetObject =
+              (Map<String, Object>) currentMap.computeIfAbsent(token, k -> new LinkedHashMap<>());
+          targetObject.put(key, value);
+        } else {
+          // Look ahead to see if the next token is an index
+          String nextToken = tokens.get(i + 1);
+          if (isNumeric(nextToken)) {
+            // If next is an index, this property must point to a List
+            traverser = currentMap.computeIfAbsent(token, k -> new ArrayList<>());
+          } else {
+            // Otherwise, it must point to another Map
+            traverser = currentMap.computeIfAbsent(token, k -> new LinkedHashMap<>());
+          }
+        }
       }
     }
   }
