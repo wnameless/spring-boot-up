@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = PRIVATE)
 public class JsfSimpleField {
+
   final List<String> titles;
   final String flattenedKey;
   final String jsonPathKey;
@@ -38,4 +39,5 @@ public class JsfSimpleField {
     }
     return result;
   }
+
 }
