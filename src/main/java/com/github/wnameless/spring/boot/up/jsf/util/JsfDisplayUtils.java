@@ -19,6 +19,16 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class JsfDisplayUtils {
 
+  private static boolean STRICT_RJSF_V5 = false;
+
+  public boolean isStrictRjsfV5() {
+    return STRICT_RJSF_V5;
+  }
+
+  public void setStrictRjsfV5(boolean strictRjsfV5) {
+    STRICT_RJSF_V5 = strictRjsfV5;
+  }
+
   public void setDefaultFormData(JsonSchemaForm jsf, MultiValueMap<String, String> params,
       String paramName) {
     var param = params.getFirst(paramName);
@@ -76,7 +86,9 @@ public class JsfDisplayUtils {
         JsfDisplayUtils.setEnum(docCtx, "$.properties." + fieldName,
             entity.getFormData().get(fieldName));
       }
-      JsfDisplayUtils.setDisplayUiEnumName(uiDocCtx, entity, fieldName, fieldClass, toEnumName);
+      if (!STRICT_RJSF_V5) {
+        JsfDisplayUtils.setDisplayUiEnumName(uiDocCtx, entity, fieldName, fieldClass, toEnumName);
+      }
 
       return true;
     }
@@ -130,7 +142,9 @@ public class JsfDisplayUtils {
     if (supportEnumNames) {
       docCtx.put(jsonPath, "enumNames", List.of(enumName));
     }
-    forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames", List.of(enumName));
+    if (!STRICT_RJSF_V5) {
+      forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames", List.of(enumName));
+    }
 
     return true;
   }
@@ -176,8 +190,10 @@ public class JsfDisplayUtils {
     if (supportEnumNames) {
       docCtx.put(jsonPath, "enumNames", items.stream().map(toEnumName).toList());
     }
-    forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames",
-        items.stream().map(toEnumName).toList());
+    if (!STRICT_RJSF_V5) {
+      forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames",
+          items.stream().map(toEnumName).toList());
+    }
 
     return true;
   }
@@ -207,7 +223,9 @@ public class JsfDisplayUtils {
     if (supportEnumNames) {
       docCtx.put(jsonPath, "enumNames", enumNames);
     }
-    forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames", enumNames);
+    if (!STRICT_RJSF_V5) {
+      forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames", enumNames);
+    }
 
     return true;
   }
