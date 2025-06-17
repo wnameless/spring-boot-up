@@ -77,7 +77,7 @@ public class JsfDisplayUtils {
       DocumentContext uiDocCtx, boolean supportEnumNames) {
     var repoOpt = SpringBootUp.findGenericBean(QuerydslPredicateExecutor.class, fieldClass);
     if (repoOpt.isPresent() && entity.getFormData().get(fieldName) != null) {
-      if (supportEnumNames) {
+      if (supportEnumNames || STRICT_RJSF_V5) {
         JsfDisplayUtils.setEnum(docCtx, "$.properties." + fieldName,
             entity.getFormData().get(fieldName),
             toEnumName.apply((E) ((CrudRepository) repoOpt.get())
@@ -139,7 +139,7 @@ public class JsfDisplayUtils {
     if (enumVal == null || enumName == null) return false;
 
     docCtx.put(jsonPath, "enum", List.of(enumVal));
-    if (supportEnumNames) {
+    if (supportEnumNames || STRICT_RJSF_V5) {
       docCtx.put(jsonPath, "enumNames", List.of(enumName));
     }
     if (!STRICT_RJSF_V5) {
@@ -187,7 +187,7 @@ public class JsfDisplayUtils {
     if (items == null || items.isEmpty()) return false;
 
     docCtx.put(jsonPath, "enum", items.stream().map(toEnum).toList());
-    if (supportEnumNames) {
+    if (supportEnumNames || STRICT_RJSF_V5) {
       docCtx.put(jsonPath, "enumNames", items.stream().map(toEnumName).toList());
     }
     if (!STRICT_RJSF_V5) {
@@ -220,7 +220,7 @@ public class JsfDisplayUtils {
     if (enumNames == null || enumNames.isEmpty()) return false;
 
     docCtx.put(jsonPath, "enum", enums);
-    if (supportEnumNames) {
+    if (supportEnumNames || STRICT_RJSF_V5) {
       docCtx.put(jsonPath, "enumNames", enumNames);
     }
     if (!STRICT_RJSF_V5) {
