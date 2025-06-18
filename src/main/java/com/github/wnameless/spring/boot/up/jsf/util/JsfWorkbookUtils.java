@@ -83,7 +83,12 @@ public class JsfWorkbookUtils {
     var lastRow = sheet.getLastRowNum();
 
     while (rowCount <= lastRow) {
-      if (row != null && row.getCell(startCol) != null
+      if (row != null //
+          && row.getCell(DATA_POINT_JSON_PATH_COL) != null //
+          && row.getCell(DATA_POINT_TYPE_COL) != null //
+          && row.getCell(DATA_POINT_IS_IN_ARRAY_COL) != null //
+          && row.getCell(DATA_POINT_IS_ENUM_COL) != null //
+          && row.getCell(startCol) != null //
           && row.getCell(startCol).getCellType() != CellType.BLANK) {
         var jsonPath = row.getCell(DATA_POINT_JSON_PATH_COL).getStringCellValue();
         var type = row.getCell(DATA_POINT_TYPE_COL).getStringCellValue();
