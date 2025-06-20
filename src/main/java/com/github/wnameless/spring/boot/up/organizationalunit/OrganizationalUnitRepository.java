@@ -11,7 +11,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 public interface OrganizationalUnitRepository<OU extends OrganizationalUnit<ID>, ID>
     extends CrudRepository<OU, ID> {
 
-  @SuppressWarnings("null")
   default Class<?> getResourceType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), CrudRepository.class);

@@ -58,7 +58,6 @@ public interface MessageBoardService<N extends MessageBoardNotice<B>, B extends 
 
   String getDefaultBoardId();
 
-  @SuppressWarnings("null")
   default String getMessageBoardPath(String boardId) {
     ResolvableType[] generics =
         ResolvableType.forClass(getClass()).as(MessageBoardService.class).getGenerics();
