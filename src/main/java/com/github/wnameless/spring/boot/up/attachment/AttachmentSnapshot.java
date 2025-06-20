@@ -9,19 +9,9 @@ import java.util.Optional;
 
 public interface AttachmentSnapshot<A extends Attachment<ID>, ID> {
 
-  // void setId(ID id);
-
   List<A> getAttachments();
 
   void setAttachments(List<A> attachments);
-
-  // LocalDateTime getCreatedAt();
-
-  // void setCreatedAt(LocalDateTime createdAt);
-
-  // LocalDateTime getUpdatedAt();
-
-  // void setUpdatedAt(LocalDateTime updatedAt);
 
   default Optional<A> findAttachment(ID id) {
     if (getAttachments() == null) return Optional.empty();
