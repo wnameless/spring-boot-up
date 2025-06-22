@@ -30,25 +30,24 @@ import net.sf.rubycollect4j.Ruby;
 public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotProvider<AA, A, ID> & RestfulItem<ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
     extends RestfulRouteProvider<ID>, TemplateFragmentAware {
 
-  AA getAttachmentSnapshotProvider(ID id);
-
   @SuppressWarnings("unchecked")
   default S getAttachmentService() {
     return (S) SpringBootUp.getBean(AttachmentService.class);
   }
 
-  default void updateSnapshot(AA attachmentSnapshotAware, List<A> attachments) {
-    var original = attachmentSnapshotAware.getAttachmentSnapshot().getAttachments();
+  default void updateSnapshot(AA attachmentSnapshotProvider, List<A> attachments) {
+    var original = attachmentSnapshotProvider.getAttachmentSnapshot().getAttachments();
     if (original == null) original = new ArrayList<>();
 
+    var service = getAttachmentService();
+
     for (var a : attachments) {
-      if (attachmentSnapshotAware.isValidAttachment(a)) {
-        if (attachmentSnapshotAware.isExistedAttachment(a)) {
-          var removedOne = attachmentSnapshotAware.removeExistedAttachment(a);
+      if (attachmentSnapshotProvider.isValidAttachment(a)) {
+        if (attachmentSnapshotProvider.isExistedAttachment(a)) {
+          var removedOne = attachmentSnapshotProvider.removeExistedAttachment(a);
           if (removedOne != null) {
-            if (getAttachmentService().outdatedAttachmentProcedure().isPresent()) {
-              getAttachmentService().outdatedAttachmentProcedure().get()
-                  .accept(Arrays.asList(removedOne));
+            if (service.outdatedAttachmentProcedure().isPresent()) {
+              service.outdatedAttachmentProcedure().get().accept(Arrays.asList(removedOne));
             }
           }
         }
@@ -56,19 +55,18 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
       }
     }
 
-    attachmentSnapshotAware.getAttachmentSnapshot().setAttachments(original);
-    attachmentSnapshotAware.saveAttachmentSnapshotProvider();;
+    attachmentSnapshotProvider.getAttachmentSnapshot().setAttachments(original);
+    attachmentSnapshotProvider.saveAttachmentSnapshotProvider();;
   }
 
   @SneakyThrows
   default RestfulJsonSchemaForm<?> createEditForm(AttachmentChecklist checklist,
-      AttachmentSnapshot<A, ID> snapshot, ID id) {
+      AttachmentSnapshot<A, ID> snapshot, String infixPath) {
     var editform =
-        new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id), "attachments");
+        new RestfulJsonSchemaForm<String>(getRestfulRoute().joinPath(infixPath), "attachments");
     var mapper = SpringBootUp.getBean(ObjectMapper.class);
     var attachmentsGroups = snapshot.getAttachmentsByGroup();
 
-    // editform.getSchema().put("title", "Files");
     editform.getSchema().put("type", "object");
     var aryProps = new LinkedHashMap<>();
     String ary = """
@@ -124,9 +122,9 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
 
   @SneakyThrows
   default RestfulJsonSchemaForm<?> createNoteForm(AttachmentChecklist checklist,
-      AttachmentSnapshot<A, ID> snapshot, ID id) {
+      AttachmentSnapshot<A, ID> snapshot, String infixPath) {
     var editform =
-        new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id), "attachments");
+        new RestfulJsonSchemaForm<String>(getRestfulRoute().joinPath(infixPath), "attachments");
     var mapper = SpringBootUp.getBean(ObjectMapper.class);
     var attachmentsGroups = snapshot.getAttachmentsByGroup();
 
@@ -190,9 +188,10 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
   }
 
   @SneakyThrows
-  default RestfulJsonSchemaForm<?> createUploadSelectiveForm(AttachmentChecklist checklist, ID id) {
+  default RestfulJsonSchemaForm<?> createUploadSelectiveForm(AttachmentChecklist checklist,
+      String infixPath) {
     var uploadform =
-        new RestfulJsonSchemaForm<String>(getRestfulRoute().getShowPath(id) + "/attachments", "");
+        new RestfulJsonSchemaForm<String>(getRestfulRoute().joinPath(infixPath, "attachments"), "");
     var mapper = SpringBootUp.getBean(ObjectMapper.class);
 
     uploadform.getSchema().put("type", "object");
@@ -234,10 +233,10 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return uploadform;
   }
 
-  default ModelAndView retrieveAttachmentsAction(ModelAndView mav, ID id, String ajaxTargetId) {
+  default ModelAndView retrieveAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
+      String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
-    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
     var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
     var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
 
@@ -247,47 +246,46 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return mav;
   }
 
-  default ModelAndView editAttachmentsAction(ModelAndView mav, ID id, String ajaxTargetId) {
+  default ModelAndView editAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
+      String infixPath, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/edit :: " + getFragmentName());
 
-    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
     var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
     var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
 
-    mav.addObject(Item.name(), createEditForm(checklist, snapshot, id));
+    mav.addObject(Item.name(), createEditForm(checklist, snapshot, infixPath));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
 
     return mav;
   }
 
-  default ModelAndView noteAttachmentsAction(ModelAndView mav, ID id, String ajaxTargetId) {
+  default ModelAndView noteAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
+      String infixPath, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/note :: " + getFragmentName());
 
-    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
     var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
     var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
 
-    mav.addObject(Item.name(), createNoteForm(checklist, snapshot, id));
+    mav.addObject(Item.name(), createNoteForm(checklist, snapshot, infixPath));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
 
-  default ModelAndView uploadFragmentAction(ModelAndView mav, ID id, String ajaxTargetId) {
+  default ModelAndView uploadFragmentAction(ModelAndView mav, AA attachmentSnapshotProvider,
+      String infixPath, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/upload :: " + getFragmentName());
 
-    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
     var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
 
-    mav.addObject(Item.name(), createUploadSelectiveForm(checklist, id));
+    mav.addObject(Item.name(), createUploadSelectiveForm(checklist, infixPath));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
     return mav;
   }
 
-  default ModelAndView uploadAttachmentsAction(ModelAndView mav, ID id,
+  default ModelAndView uploadAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
       @RequestBody Map<String, Object> jsfFiles, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
-    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
     var service = getAttachmentService();
 
     List<A> attachments = new ArrayList<>();
@@ -332,8 +330,9 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return mav;
   }
 
-  default void downloadAttachmentAction(HttpServletResponse response, ID id, ID attachmentId) {
-    var attachmentSnapshot = getAttachmentSnapshotProvider(id).getAttachmentSnapshot();
+  default void downloadAttachmentAction(HttpServletResponse response, AA attachmentSnapshotProvider,
+      ID attachmentId) {
+    var attachmentSnapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
     Optional<A> attachmentOpt = attachmentSnapshot.findAttachment(attachmentId);
 
     if (attachmentOpt.isEmpty()) return;
@@ -351,11 +350,10 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     } catch (IOException e) {}
   }
 
-  default ModelAndView modifyAttachmentsAction(ModelAndView mav, ID id,
+  default ModelAndView modifyAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
       Map<String, Object> jsfFiles, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
-    var attachmentSnapshotProvider = getAttachmentSnapshotProvider(id);
     var original = attachmentSnapshotProvider.getAttachmentSnapshot().getAttachments();
     var filtered = new ArrayList<A>();
 
@@ -385,9 +383,11 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     var oldAttachments = attachmentSnapshotProvider.getAttachmentSnapshot().getAttachments();
     attachmentSnapshotProvider.getAttachmentSnapshot().setAttachments(filtered);
     attachmentSnapshotProvider.saveAttachmentSnapshotProvider();
-    if (getAttachmentService().outdatedAttachmentProcedure().isPresent()) {
+
+    var service = getAttachmentService();
+    if (service.outdatedAttachmentProcedure().isPresent()) {
       oldAttachments.removeAll(filtered);
-      getAttachmentService().outdatedAttachmentProcedure().get().accept(oldAttachments);
+      service.outdatedAttachmentProcedure().get().accept(oldAttachments);
     }
 
     mav.addObject("attachmentChecklist", attachmentSnapshotProvider.getAttachmentChecklist());

@@ -22,40 +22,43 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
   @GetMapping("/{id}/attachments")
   default ModelAndView retrieveAttachments(ModelAndView mav, @PathVariable ID id,
       String ajaxTargetId) {
-    return retrieveAttachmentsAction(mav, id, ajaxTargetId);
+    return retrieveAttachmentsAction(mav, getAttachmentSnapshotProvider(id), ajaxTargetId);
   }
 
   @GetMapping("/{id}/attachments/edit")
   default ModelAndView editAttachments(ModelAndView mav, @PathVariable ID id, String ajaxTargetId) {
-    return editAttachmentsAction(mav, id, ajaxTargetId);
+    return editAttachmentsAction(mav, getAttachmentSnapshotProvider(id), id.toString(),
+        ajaxTargetId);
   }
 
   @GetMapping("/{id}/attachments/note")
   default ModelAndView noteAttachments(ModelAndView mav, @PathVariable ID id, String ajaxTargetId) {
-    return noteAttachmentsAction(mav, id, ajaxTargetId);
+    return noteAttachmentsAction(mav, getAttachmentSnapshotProvider(id), id.toString(),
+        ajaxTargetId);
   }
 
   @GetMapping("/{id}/attachments/upload")
   default ModelAndView uploadFragment(ModelAndView mav, @PathVariable ID id, String ajaxTargetId) {
-    return uploadFragmentAction(mav, id, ajaxTargetId);
+    return uploadFragmentAction(mav, getAttachmentSnapshotProvider(id), id.toString(),
+        ajaxTargetId);
   }
 
   @PostMapping("/{id}/attachments")
   default ModelAndView uploadAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestBody Map<String, Object> jsfFiles, String ajaxTargetId) {
-    return uploadAttachmentsAction(mav, id, jsfFiles, ajaxTargetId);
+    return uploadAttachmentsAction(mav, getAttachmentSnapshotProvider(id), jsfFiles, ajaxTargetId);
   }
 
   @GetMapping(path = "/{id}/attachments/{attachmentId}")
   default void downloadAttachment(HttpServletResponse response, @PathVariable ID id,
       @PathVariable ID attachmentId) {
-    downloadAttachmentAction(response, id, attachmentId);
+    downloadAttachmentAction(response, getAttachmentSnapshotProvider(id), attachmentId);
   }
 
   @PutMapping(path = "/{id}/attachments")
   default ModelAndView modifyAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestBody Map<String, Object> jsfFiles, @RequestParam String ajaxTargetId) {
-    return modifyAttachmentsAction(mav, id, jsfFiles, ajaxTargetId);
+    return modifyAttachmentsAction(mav, getAttachmentSnapshotProvider(id), jsfFiles, ajaxTargetId);
   }
 
 }
