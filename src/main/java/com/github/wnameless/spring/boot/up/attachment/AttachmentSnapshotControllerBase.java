@@ -251,7 +251,6 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
 
     mav.addObject(Item.name(), createEditForm(checklist, snapshot, infixPath));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
-    mav.addObject(Item.name(), attachmentSnapshotProvider);
     return mav;
   }
 
