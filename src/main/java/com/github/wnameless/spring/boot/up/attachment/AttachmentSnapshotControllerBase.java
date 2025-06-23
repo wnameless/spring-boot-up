@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
-public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotProvider<AA, A, ID> & RestfulItem<ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
+public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotProvider<A, ID> & RestfulItem<ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
     extends RestfulRouteProvider<ID>, TemplateFragmentAware {
 
   @SuppressWarnings("unchecked")
@@ -237,12 +237,8 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
       String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
-    var snapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
-    var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
-
-    mav.addObject("attachmentChecklist", checklist);
-    mav.addObject("attachmentGroups", snapshot.getAttachmentsByGroup());
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    mav.addObject(Item.name(), attachmentSnapshotProvider);
     return mav;
   }
 
@@ -255,7 +251,7 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
 
     mav.addObject(Item.name(), createEditForm(checklist, snapshot, infixPath));
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
-
+    mav.addObject(Item.name(), attachmentSnapshotProvider);
     return mav;
   }
 
@@ -323,10 +319,8 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     });
     updateSnapshot(attachmentSnapshotProvider, attachments);
 
-    mav.addObject("attachmentChecklist", attachmentSnapshotProvider.getAttachmentChecklist());
-    mav.addObject("attachmentGroups",
-        attachmentSnapshotProvider.getAttachmentSnapshot().getAttachmentsByGroup());
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    mav.addObject(Item.name(), attachmentSnapshotProvider);
     return mav;
   }
 
@@ -390,10 +384,8 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
       service.outdatedAttachmentProcedure().get().accept(oldAttachments);
     }
 
-    mav.addObject("attachmentChecklist", attachmentSnapshotProvider.getAttachmentChecklist());
-    mav.addObject("attachmentGroups",
-        attachmentSnapshotProvider.getAttachmentSnapshot().getAttachmentsByGroup());
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
+    mav.addObject(Item.name(), attachmentSnapshotProvider);
     return mav;
   }
 

@@ -1,8 +1,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5"
-  th:with="user=${__${'@' + @webModelAttributes.USER_NAME}__}, rid=${(T(java.lang.Math).random() * 2147483647).intValue()}"
-  class="m-2 p-1 border rounded-1 border-primary">
+<div th:fragment="bs5" class="m-2 p-1 border rounded-1 border-primary" th:with="
+  user=${__${'@' + @webModelAttributes.USER_NAME}__},
+  rid=${(T(java.lang.Math).random() * 2147483647).intValue()}
+">
 
   <ul class="nav nav-pills mb-3" role="tablist">
     <li class="nav-item">
@@ -39,7 +40,7 @@
   <div class="tab-content">
     <div class="tab-pane fade show active" th:id="${'pills-file-list' + rid}" role="tabpanel">
       <div id="accordionFileList" class="accordion">
-        <div th:each="fileGroup, groupIndex : ${attachmentChecklist.getGroupNames()}"
+        <div th:each="fileGroup, groupIndex : ${item.attachmentChecklist.getGroupNames()}"
           class="accordion-item">
           <h2 class="accordion-header" th:id="'heading_' + ${groupIndex.index}">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -54,7 +55,7 @@
             <div class="accordion-body">
               <ul class="list-group">
                 <li class="list-group-item"
-                  th:each="attachment : ${attachmentGroups.get(fileGroup)}">
+                  th:each="attachment : ${item.attachmentSnapshot.attachmentsByGroup.get(fileGroup)}">
                   <a th:href="@{${item.joinPath('attachments', attachment.id)}}"
                     th:text="${attachment.nameWithNote}"></a>
                 </li>

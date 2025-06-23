@@ -3,28 +3,21 @@ package com.github.wnameless.spring.boot.up.attachment;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.core.GenericTypeResolver;
-import com.github.wnameless.spring.boot.up.SpringBootUp;
-import com.github.wnameless.spring.boot.up.data.mongodb.interceptor.annotation.AfterDeleteFromMongo;
-import com.github.wnameless.spring.boot.up.model.DataModelCRUDTrigger;
-import jakarta.persistence.PostRemove;
 
-public interface AttachmentSnapshotProvider<T, A extends Attachment<ID>, ID>
-    extends DataModelCRUDTrigger<T> {
+public interface AttachmentSnapshotProvider<A extends Attachment<ID>, ID> {
 
   @SuppressWarnings("unchecked")
   default Class<A> getAttachmentType() {
     var genericTypeResolver =
         GenericTypeResolver.resolveTypeArguments(this.getClass(), AttachmentSnapshotProvider.class);
-    return (Class<A>) genericTypeResolver[1];
+    return (Class<A>) genericTypeResolver[0];
   }
 
   AttachmentSnapshot<A, ID> getAttachmentSnapshot();
 
   AttachmentChecklist getAttachmentChecklist();
 
-  default void saveAttachmentSnapshotProvider() {
-    updateThisDataModel();
-  }
+  void saveAttachmentSnapshotProvider();
 
   default boolean isValidAttachment(A attachment) {
     return getAttachmentChecklist().getAttachmentGroups().stream().filter(g -> {
@@ -55,15 +48,6 @@ public interface AttachmentSnapshotProvider<T, A extends Attachment<ID>, ID>
     return removedAttachment.orElse(null);
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  @PostRemove // JPA
-  @AfterDeleteFromMongo // MongoDB
-  default void afterDeleteFromMongo() {
-    var attachmentService = SpringBootUp.getBeansOfType(AttachmentService.class).values().stream()
-        .filter(as -> as.getAttachmentType().equals(getAttachmentType())).findFirst().get();
-    getAttachmentSnapshot().getAttachments().forEach(attachment -> {
-      attachmentService.deleteAttachment((Attachment) attachment);
-    });
-  }
+  void afterDeleteFromMongo();
 
 }
