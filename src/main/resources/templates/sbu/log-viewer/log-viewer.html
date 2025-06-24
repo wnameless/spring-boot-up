@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-time Log Viewer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+      /* Light gray background */
+    }
+
+    .log-container {
+      height: 70vh;
+      /* Set a fixed height for scrolling */
+      overflow-y: scroll;
+      /* Enable vertical scrolling */
+      background-color: #1a202c;
+      /* Dark background for logs */
+      color: #e2e8f0;
+      /* Light text color */
+      font-family: 'monospace';
+      /* Monospace font for log readability */
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      white-space: pre-wrap;
+      /* Preserve whitespace and wrap long lines */
+      word-break: break-all;
+      /* Break long words */
+    }
+
+    .log-line {
+      padding: 0.1rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      /* Subtle line separator */
+    }
+
+    .log-line:last-child {
+      border-bottom: none;
+    }
+
+    .log-line.INFO {
+      color: #81e6d9;
+    }
+
+    /* Teal */
+    .log-line.DEBUG {
+      color: #cbd5e0;
+    }
+
+    /* Light gray */
+    .log-line.WARN {
+      color: #f6ad55;
+    }
+
+    /* Orange */
+    .log-line.ERROR {
+      color: #f56565;
+    }
+
+    /* Red */
+  </style>
+</head>
+
+<body class="p-8">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-xl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Real-time Application Log Viewer
+    </h1>
+
+    <div class="log-container" id="logContent">
+      Loading logs...
+    </div>
+
+    <div class="mt-6 text-center text-gray-600">
+      <p>New log entries will appear here in real-time.</p>
+    </div>
+  </div>
+
+  <script>
+    const logContentDiv = document.getElementById('logContent');
+
+    /**
+     * Appends a new log line to the log content div and scrolls to the bottom.
+     * @param {string} logLine - The log line to append.
+     */
+    function appendLogLine(logLine) {
+      // Create a span for the log line
+      const span = document.createElement('span');
+      span.classList.add('log-line');
+
+      // Simple classification for coloring based on log level
+      if (logLine.includes(" INFO ")) {
+        span.classList.add('INFO');
+      } else if (logLine.includes(" DEBUG ")) {
+        span.classList.add('DEBUG');
+      } else if (logLine.includes(" WARN ")) {
+        span.classList.add('WARN');
+      } else if (logLine.includes(" ERROR ")) {
+        span.classList.add('ERROR');
+      }
+      span.textContent = logLine;
+      logContentDiv.appendChild(span);
+
+      // Add a line break for new lines
+      logContentDiv.appendChild(document.createTextNode('\n'));
+
+      // Auto-scroll to the bottom
+      logContentDiv.scrollTop = logContentDiv.scrollHeight;
+    }
+
+    // Initialize EventSource for SSE
+    const eventSource = new EventSource('/api/logs/stream');
+
+    // Event listener for the 'initial-log' event (when the connection is established)
+    eventSource.addEventListener('initial-log', function (event) {
+      logContentDiv.textContent = ''; // Clear "Loading logs..."
+      const initialLog = event.data;
+      const lines = initialLog.split('\n');
+      lines.forEach(line => {
+        if (line.trim() !== '') {
+          appendLogLine(line);
+        }
+      });
+      console.log('Initial log content loaded.');
+    });
+
+    // Event listener for the 'new-log-entry' event (for subsequent updates)
+    eventSource.addEventListener('new-log-entry', function (event) {
+      const newLogLine = event.data;
+      appendLogLine(newLogLine);
+      console.log('New log entry received:', newLogLine.trim());
+    });
+
+    // Event listener for errors
+    eventSource.onerror = function (err) {
+      console.error("EventSource failed:", err);
+      logContentDiv.innerHTML += '<span class="log-line ERROR">Error connecting to log stream. Please refresh the page.</span>\n';
+      eventSource.close();
+    };
+
+    // Event listener for connection opening
+    eventSource.onopen = function () {
+      console.log("SSE connection opened.");
+    };
+
+    // Event listener for connection closing
+    eventSource.onclose = function () {
+      console.log("SSE connection closed.");
+    };
+
+    // Optional: Close the EventSource when the page is unloaded to prevent memory leaks
+    window.onbeforeunload = function () {
+      eventSource.close();
+      console.log("SSE connection closed on page unload.");
+    };
+  </script>
+</body>
+
+</html>
