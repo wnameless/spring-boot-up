@@ -36,19 +36,22 @@
   <div class="breadcrumb-scroll">
     <nav style="--bs-breadcrumb-divider: '<';" aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <th:block th:each="at : ${item.stateRecord.reversedAuditTrails}">
-          <li th:if="${at != null}" class="breadcrumb-item mt-1 mb-2">
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-outline-primary">
-                [[${usernameStrategy == null ? at.username : usernameStrategy.apply(at.username)}]]
-              </button>
-              <button type="button" class="btn btn-outline-info hint--right"
-                th:attr="aria-label=${at.timestamp}">
-                [[${at?.trigger?.displayName}]]<br>
-                [[${at?.timestamp?.toLocalDate}]]
-              </button>
-            </div>
-          </li>
+        <th:block th:if="${item.stateRecord != null}">
+          <th:block th:each="at : ${item.stateRecord.reversedAuditTrails}">
+            <li th:if="${at != null}" class="breadcrumb-item mt-1 mb-2">
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary">
+                  [[${usernameStrategy == null ? at.username :
+                  usernameStrategy.apply(at.username)}]]
+                </button>
+                <button type="button" class="btn btn-outline-info hint--right"
+                  th:attr="aria-label=${at.timestamp}">
+                  [[${at?.trigger?.displayName}]]<br>
+                  [[${at?.timestamp?.toLocalDate}]]
+                </button>
+              </div>
+            </li>
+          </th:block>
         </th:block>
       </ol>
     </nav>
