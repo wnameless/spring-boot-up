@@ -16,11 +16,11 @@ import org.springframework.beans.factory.annotation.Qualifier; // Needed for @Qu
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException; // Import for throwing
-// AccessDeniedException
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import jakarta.servlet.ServletContext; // Import ServletContext
 
 @Controller
 public class LogController {
@@ -34,20 +34,24 @@ public class LogController {
   private long lastKnownFilePointer = 0;
   private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-  // Autowire the BooleanSupplier bean provided by LogViewerConfiguration
-  // Use @Qualifier to specify the exact bean name if there are multiple BooleanSupplier beans
   private final BooleanSupplier logViewerAccessSupplier;
 
+  // Inject ServletContext to get the application's context path
+  private final ServletContext servletContext;
+
   public LogController(
-      @Autowired @Qualifier("logViewerAccessSupplier") BooleanSupplier logViewerAccessSupplier) {
+      @Autowired @Qualifier("logViewerAccessSupplier") BooleanSupplier logViewerAccessSupplier,
+      @Autowired ServletContext servletContext) { // Inject ServletContext
     this.logViewerAccessSupplier = logViewerAccessSupplier;
+    this.servletContext = servletContext; // Assign to field
     scheduler.scheduleAtFixedRate(this::tailLogFile, 0, 1, TimeUnit.SECONDS);
     logger.info("Log tailing scheduler started.");
   }
 
   /**
    * Serves the Thymeleaf HTML page for the log viewer. Access is first checked here using the
-   * injected BooleanSupplier.
+   * injected BooleanSupplier. The application's context path is added to the model for use in the
+   * HTML.
    * 
    * @param model The model to pass attributes to the view.
    * @return The name of the Thymeleaf template.
@@ -60,6 +64,8 @@ public class LogController {
       logger.warn("Access denied for /log-viewer based on custom condition.");
       throw new AccessDeniedException("Access to log viewer is denied.");
     }
+    // Add the context path to the model so it can be used in Thymeleaf to build URLs
+    model.addAttribute("contextPath", servletContext.getContextPath());
     return "sbu/log-viewer/log-viewer";
   }
 

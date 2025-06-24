@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.web;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 public class ModelPolicy<I> {
 
@@ -21,6 +22,8 @@ public class ModelPolicy<I> {
   private Function<QueryConfig<?>, QueryConfig<?>> queryConfig = null;
 
   private Function<? super I, ? extends I> itemInitialized;
+
+  private UnaryOperator<Object> parentInitialized;
 
   public ModelPolicy() {}
 
@@ -69,6 +72,15 @@ public class ModelPolicy<I> {
 
   public Function<? super I, ? extends I> onItemInitialized() {
     return itemInitialized;
+  }
+
+  public ModelPolicy<I> forParentInitialized(UnaryOperator<Object> parentInitialized) {
+    this.parentInitialized = parentInitialized;
+    return this;
+  }
+
+  public UnaryOperator<Object> onParentInitialized() {
+    return parentInitialized;
   }
 
   public ModelPolicy<I> forQuerySetting(Supplier<QuerySetting<?>> querySetting) {

@@ -92,6 +92,7 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
     return policy;
   }
 
+  @SuppressWarnings("unchecked")
   @ModelAttribute
   default void setParentAndItem(Model model, @PathVariable(required = false) PID parentId,
       @PathVariable(required = false) ID id) {
@@ -99,6 +100,9 @@ public interface NestedRestfulController<PR extends CrudRepository<P, PID>, P, P
     P parent = null;
     if (parentId != null) {
       parent = findParentItemById(parentId).orElse(null);
+    }
+    if (getModelPolicy().onParentInitialized() != null) {
+      parent = (P) getModelPolicy().onParentInitialized().apply(parent);
     }
     updateParent(model, parent);
 

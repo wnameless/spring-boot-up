@@ -8,6 +8,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import jakarta.servlet.ServletContext;
 
 /**
  * Spring @Configuration class for the real-time log viewer. This class is imported by
@@ -42,9 +43,10 @@ public class LogViewerConfiguration implements WebMvcConfigurer, ImportAware {
    * @return An instance of LogController.
    */
   @Bean
-  public LogController logController(BooleanSupplier logViewerAccessSupplier) {
+  public LogController logController(BooleanSupplier logViewerAccessSupplier,
+      ServletContext servletContext) {
     // Now, we pass the injected BooleanSupplier to the LogController's constructor.
-    return new LogController(logViewerAccessSupplier);
+    return new LogController(logViewerAccessSupplier, servletContext);
   }
 
   /**

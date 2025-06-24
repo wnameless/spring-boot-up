@@ -78,11 +78,13 @@ public abstract class QuickNestedRestfulController<PR extends CrudRepository<P, 
         && Objects.equals(p, Ruby.Object.send(c, getterName));
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void configure(ModelPolicy<I> policy) {
     policy.forDefaultItem(() -> newRestfulItem());
 
     policy.forItemInitialized(child -> this.item = child);
+    policy.forParentInitialized(parent -> this.parent = (P) parent);
 
     policy.forQueryConfig(c -> {
       this.pageable = c.getPageable();

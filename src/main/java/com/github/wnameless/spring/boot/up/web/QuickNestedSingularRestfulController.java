@@ -47,11 +47,13 @@ public abstract class QuickNestedSingularRestfulController<PR extends CrudReposi
     return getRestfulItemType().getDeclaredConstructor().newInstance();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void configure(ModelPolicy<I> policy) {
     policy.forDefaultItem(() -> newRestfulItem());
 
     policy.forItemInitialized(item -> this.item = item);
+    policy.forParentInitialized(parent -> this.parent = (P) parent);
 
     policy.forQueryConfig(c -> {
       this.pageable = c.getPageable();

@@ -5,40 +5,318 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Real-time Log Viewer</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
+
+  <!-- Embedded Tailwind CSS (downloaded from CDN and placed here) -->
   <style>
+    /* This is a minimal set of Tailwind CSS classes commonly used in the page.
+           For a full local Tailwind setup, you'd typically use PostCSS and build tools.
+           For demonstration, this includes core utilities that make the existing layout work.
+           You can replace this with the full content of https://cdn.tailwindcss.com if needed,
+           but it's generally large. For a true offline environment, Tailwind CLI or build
+           process is recommended to purge unused CSS.
+        */
+    *,
+    ::before,
+    ::after {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
+      border-color: #e5e7eb;
+    }
+
+    ::before,
+    ::after {
+      --tw-content: '';
+    }
+
+    html {
+      line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+      font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    }
+
     body {
-      font-family: 'Inter', sans-serif;
+      margin: 0;
+      line-height: inherit;
+    }
+
+    hr {
+      height: 0;
+      color: inherit;
+      border-top-width: 1px;
+    }
+
+    abbr:where([title]) {
+      text-decoration: underline dotted;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: inherit;
+      font-weight: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: inherit;
+    }
+
+    b,
+    strong {
+      font-weight: bolder;
+    }
+
+    code,
+    kbd,
+    samp,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 1em;
+    }
+
+    small {
+      font-size: 80%;
+    }
+
+    sub,
+    sup {
+      font-size: 75%;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline;
+    }
+
+    sub {
+      bottom: -0.25em;
+    }
+
+    sup {
+      top: -0.5em;
+    }
+
+    table {
+      text-indent: 0;
+      border-color: inherit;
+      border-collapse: collapse;
+    }
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+      font-family: inherit;
+      font-size: 100%;
+      font-weight: inherit;
+      line-height: inherit;
+      color: inherit;
+      margin: 0;
+      padding: 0;
+    }
+
+    button,
+    [type='button'],
+    [type='reset'],
+    [type='submit'] {
+      -webkit-appearance: button;
+      background-color: transparent;
+      background-image: none;
+    }
+
+    :-moz-focusring {
+      outline: auto;
+    }
+
+    :-moz-ui-invalid {
+      box-shadow: none;
+    }
+
+    progress {
+      vertical-align: baseline;
+    }
+
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button {
+      height: auto;
+    }
+
+    [type='search'] {
+      -webkit-appearance: textfield;
+      outline-offset: -2px;
+    }
+
+    ::-webkit-search-decoration {
+      -webkit-appearance: none;
+    }
+
+    ::-webkit-file-upload-button {
+      -webkit-appearance: button;
+      font: inherit;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    blockquote,
+    dl,
+    dd,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    hr,
+    figure,
+    p,
+    pre {
+      margin: 0;
+    }
+
+    fieldset {
+      margin: 0;
+      padding: 0;
+    }
+
+    legend {
+      padding: 0;
+    }
+
+    ol,
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      opacity: 1;
+      color: #9ca3af;
+    }
+
+    button,
+    [role="button"] {
+      cursor: pointer;
+    }
+
+    :disabled {
+      cursor: default;
+    }
+
+    img,
+    svg,
+    video,
+    canvas,
+    audio,
+    iframe,
+    embed,
+    object {
+      display: block;
+      vertical-align: middle;
+    }
+
+    img,
+    video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    [hidden] {
+      display: none;
+    }
+
+    .p-8 {
+      padding: 2rem;
+    }
+
+    .max-w-4xl {
+      max-width: 56rem;
+    }
+
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .bg-white {
+      background-color: #ffffff;
+    }
+
+    .p-6 {
+      padding: 1.5rem;
+    }
+
+    .rounded-lg {
+      border-radius: 0.5rem;
+    }
+
+    .shadow-xl {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-3xl {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+    }
+
+    .font-bold {
+      font-weight: 700;
+    }
+
+    .text-gray-800 {
+      color: #1f2937;
+    }
+
+    .mb-6 {
+      margin-bottom: 1.5rem;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-6 {
+      margin-top: 1.5rem;
+    }
+
+    .text-gray-600 {
+      color: #4b5563;
+    }
+
+    /* Custom styles for the log viewer */
+    body {
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      /* Fallback to system sans-serif */
       background-color: #f3f4f6;
-      /* Light gray background */
     }
 
     .log-container {
       height: 70vh;
-      /* Set a fixed height for scrolling */
       overflow-y: scroll;
-      /* Enable vertical scrolling */
       background-color: #1a202c;
-      /* Dark background for logs */
       color: #e2e8f0;
-      /* Light text color */
-      font-family: 'monospace';
-      /* Monospace font for log readability */
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      /* System monospace for logs */
       padding: 1rem;
       border-radius: 0.5rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       white-space: pre-wrap;
-      /* Preserve whitespace and wrap long lines */
       word-break: break-all;
-      /* Break long words */
     }
 
     .log-line {
       padding: 0.1rem 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      /* Subtle line separator */
     }
 
     .log-line:last-child {
@@ -49,23 +327,19 @@
       color: #81e6d9;
     }
 
-    /* Teal */
     .log-line.DEBUG {
       color: #cbd5e0;
     }
 
-    /* Light gray */
     .log-line.WARN {
       color: #f6ad55;
     }
 
-    /* Orange */
     .log-line.ERROR {
       color: #f56565;
     }
-
-    /* Red */
   </style>
+  <!-- Removed Google Fonts link -->
 </head>
 
 <body class="p-8">
@@ -82,7 +356,11 @@
     </div>
   </div>
 
-  <script>
+  <script th:inline="javascript">
+    // /*<![CDATA[*/
+    const contextPath = /*[[${contextPath}]]*/ ''; // Get context path from Thymeleaf model
+    // /*]]>*/
+
     const logContentDiv = document.getElementById('logContent');
 
     /**
@@ -90,11 +368,9 @@
      * @param {string} logLine - The log line to append.
      */
     function appendLogLine(logLine) {
-      // Create a span for the log line
       const span = document.createElement('span');
       span.classList.add('log-line');
 
-      // Simple classification for coloring based on log level
       if (logLine.includes(" INFO ")) {
         span.classList.add('INFO');
       } else if (logLine.includes(" DEBUG ")) {
@@ -106,20 +382,15 @@
       }
       span.textContent = logLine;
       logContentDiv.appendChild(span);
-
-      // Add a line break for new lines
       logContentDiv.appendChild(document.createTextNode('\n'));
-
-      // Auto-scroll to the bottom
       logContentDiv.scrollTop = logContentDiv.scrollHeight;
     }
 
-    // Initialize EventSource for SSE
-    const eventSource = new EventSource('/api/logs/stream');
+    // Initialize EventSource for SSE, dynamically building the URL with the context path
+    const eventSource = new EventSource(contextPath + '/api/logs/stream');
 
-    // Event listener for the 'initial-log' event (when the connection is established)
     eventSource.addEventListener('initial-log', function (event) {
-      logContentDiv.textContent = ''; // Clear "Loading logs..."
+      logContentDiv.textContent = '';
       const initialLog = event.data;
       const lines = initialLog.split('\n');
       lines.forEach(line => {
@@ -130,31 +401,26 @@
       console.log('Initial log content loaded.');
     });
 
-    // Event listener for the 'new-log-entry' event (for subsequent updates)
     eventSource.addEventListener('new-log-entry', function (event) {
       const newLogLine = event.data;
       appendLogLine(newLogLine);
       console.log('New log entry received:', newLogLine.trim());
     });
 
-    // Event listener for errors
     eventSource.onerror = function (err) {
       console.error("EventSource failed:", err);
       logContentDiv.innerHTML += '<span class="log-line ERROR">Error connecting to log stream. Please refresh the page.</span>\n';
       eventSource.close();
     };
 
-    // Event listener for connection opening
     eventSource.onopen = function () {
       console.log("SSE connection opened.");
     };
 
-    // Event listener for connection closing
     eventSource.onclose = function () {
       console.log("SSE connection closed.");
     };
 
-    // Optional: Close the EventSource when the page is unloaded to prevent memory leaks
     window.onbeforeunload = function () {
       eventSource.close();
       console.log("SSE connection closed on page unload.");
