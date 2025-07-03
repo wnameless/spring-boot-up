@@ -223,7 +223,6 @@
         <configuration>
           <publishingServerId>central</publishingServerId>
           <autoPublish>true</autoPublish>
-          <waitForPublishingCompletion>true</waitForPublishingCompletion>
         </configuration>
       </plugin>
       <plugin>
