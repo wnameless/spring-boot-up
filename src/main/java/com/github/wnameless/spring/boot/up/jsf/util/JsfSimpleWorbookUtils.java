@@ -305,6 +305,7 @@ public class JsfSimpleWorbookUtils {
       Map<String, String> propertyTitleMap = new LinkedHashMap<>();
       Map<String, String> propertyTypeMap = new HashMap<>();
       Map<String, String> propertyFormatMap = new HashMap<>();
+      Map<String, Map<String, String>> enumValueToNameMap = new HashMap<>();
 
       int colIndex = 0;
       int enumColIndex = 0;
@@ -344,6 +345,16 @@ public class JsfSimpleWorbookUtils {
 
           for (JsonNode name : source)
             enumNames.add(name.asText());
+
+          // Create enum value to name mapping
+          if (prop.has("enumNames")) {
+            Map<String, String> valueToNameMapping = new HashMap<>();
+            for (int i = 0; i < prop.get("enum").size(); i++) {
+              valueToNameMapping.put(prop.get("enum").get(i).asText(), 
+                                   prop.get("enumNames").get(i).asText());
+            }
+            enumValueToNameMap.put(propName, valueToNameMapping);
+          }
 
           for (int i = 0; i < enumNames.size(); i++) {
             Row enumRow = enumSheet.getRow(i);
@@ -417,7 +428,13 @@ public class JsfSimpleWorbookUtils {
                   cell.setCellValue(value.toString());
                 }
               } else {
-                cell.setCellValue(value.toString());
+                // Check if this property has enum mapping
+                Map<String, String> valueToName = enumValueToNameMap.get(prop);
+                if (valueToName != null && valueToName.containsKey(value.toString())) {
+                  cell.setCellValue(valueToName.get(value.toString()));
+                } else {
+                  cell.setCellValue(value.toString());
+                }
               }
           }
 
