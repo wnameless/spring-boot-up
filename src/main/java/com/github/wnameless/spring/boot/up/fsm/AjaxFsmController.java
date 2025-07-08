@@ -463,7 +463,12 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
   @SuppressWarnings({"rawtypes", "unchecked"})
   default AlertMessages getAlertMessagesByStateConditions(PP phaseProvider, ID id) {
     AlertMessages alertMessages = new AlertMessages();
-    StateMachine<S, T> stateMachine = phaseProvider.getPhase().getStateMachine();
+
+    var phase = phaseProvider.getPhase();
+    var stateRecord = getPhaseAware().getStateRecord();
+    StateMachine<S, T> stateMachine =
+        new StateMachine<>(stateRecord != null ? stateRecord.getState() : phase.initialState(),
+            phase.getStateMachineConfigInternal());
 
     List<StateMessageCondition> stateCondition = SpringBootUp.findAllGenericBeans(
         StateMessageCondition.class, phaseProvider.getClass(), stateMachine.getState().getClass(),
