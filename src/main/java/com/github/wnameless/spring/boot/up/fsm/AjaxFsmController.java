@@ -24,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.triggers.TriggerWithParameters1;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
+import com.github.wnameless.spring.boot.up.fsm.autoexecutor.AutoExecutorUtils;
 import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
 import com.github.wnameless.spring.boot.up.jsf.JsonSchemaForm;
 import com.github.wnameless.spring.boot.up.jsf.RestfulVersioningJsonSchemaForm;
@@ -104,12 +105,22 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
     return getRestfulItem();
   }
 
+  @SuppressWarnings("unchecked")
   default void excuateAlwaysTriggers() {
-    for (T alwaysTrigger : getPhaseAware().getPhase().getAlwaysTriggers()) {
-      if (getPhaseAware().getPhase().getStateMachine().canFire(alwaysTrigger)) {
-        getPhaseAware().getPhase().getStateMachine().fire(alwaysTrigger);
+    var phase = getPhaseAware().getPhase();
+    for (var alwaysTrigger : (List<T>) AutoExecutorUtils.getAlwaysTriggers(phase)) {
+      var stateMachine = new StateMachine<>(getPhaseAware().getStateRecord().getState(),
+          phase.getStateMachineConfigInternal());
+      if (stateMachine.canFire(alwaysTrigger)) {
+        stateMachine.fire(alwaysTrigger);
       }
     }
+
+    // for (T alwaysTrigger : getPhaseAware().getPhase().getAlwaysTriggers()) {
+    // if (getPhaseAware().getPhase().getStateMachine().canFire(alwaysTrigger)) {
+    // getPhaseAware().getPhase().getStateMachine().fire(alwaysTrigger);
+    // }
+    // }
   }
 
   @Override
