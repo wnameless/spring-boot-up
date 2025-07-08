@@ -108,9 +108,11 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
   @SuppressWarnings("unchecked")
   default void excuateAlwaysTriggers() {
     var phase = getPhaseAware().getPhase();
+    var stateRecord = getPhaseAware().getStateRecord();
     for (var alwaysTrigger : (List<T>) AutoExecutorUtils.getAlwaysTriggers(phase)) {
-      var stateMachine = new StateMachine<>(getPhaseAware().getStateRecord().getState(),
-          phase.getStateMachineConfigInternal());
+      var stateMachine =
+          new StateMachine<>(stateRecord != null ? stateRecord.getState() : phase.initialState(),
+              phase.getStateMachineConfigInternal());
       if (stateMachine.canFire(alwaysTrigger)) {
         stateMachine.fire(alwaysTrigger);
       }

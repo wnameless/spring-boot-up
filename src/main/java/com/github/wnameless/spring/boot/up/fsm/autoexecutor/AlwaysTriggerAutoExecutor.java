@@ -49,8 +49,10 @@ public interface AlwaysTriggerAutoExecutor extends SchedulingConfigurer {
       for (var phaseProviderType : getPhaseProviderTypes()) {
         for (var fsmItem : findAllPhaseProvidersContainingAlwaysTriggerState(phaseProviderType)) {
           var phase = fsmItem.getPhase();
+          var stateRecord = fsmItem.getStateRecord();
           for (var alwaysTrigger : AutoExecutorUtils.getAlwaysTriggers(phase)) {
-            var stateMachine = new StateMachine<>(fsmItem.getStateRecord().getState(),
+            var stateMachine = new StateMachine<>(
+                stateRecord != null ? stateRecord.getState() : phase.initialState(),
                 phase.getStateMachineConfigInternal());
             if (stateMachine.canFire(alwaysTrigger)) {
               stateMachine.fire(alwaysTrigger);
