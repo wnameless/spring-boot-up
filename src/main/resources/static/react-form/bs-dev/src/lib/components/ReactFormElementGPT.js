@@ -1,6 +1,6 @@
 import Form from '@rjsf/bootstrap-4';
 import bs3Form from '@rjsf/core';
-import validator from '@rjsf/validator-ajv6';
+import validator from '@rjsf/validator-ajv8';
 import parse from 'html-react-parser';
 import debounce from 'lodash.debounce';
 import React from 'react';
