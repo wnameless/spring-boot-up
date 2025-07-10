@@ -58,7 +58,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
       return (SF) sf.jsfPojoType().getDeclaredConstructor().newInstance();
     } else {
       return (SF) SpringBootUp.getBean(JsfService.class).newJsfData(formType,
-          sf.formBranchStock().get());
+          sf.formBranchStrategy().apply(getRestfulItem()));
     }
   }
 
@@ -260,9 +260,9 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
 
       SF data = this.getStateForm(sf, formId);
 
-      RestfulVersioningJsonSchemaForm<?> item =
-          new RestfulVersioningJsonSchemaForm<>(formType, sf.formBranchStock().get(),
-              getRestfulRoute().joinPath(getRestfulRoute().idToParam(id), "forms"), formType);
+      RestfulVersioningJsonSchemaForm<?> item = new RestfulVersioningJsonSchemaForm<>(formType,
+          sf.formBranchStrategy().apply(phaseProvider),
+          getRestfulRoute().joinPath(getRestfulRoute().idToParam(id), "forms"), formType);
       item.setIndexPath(getRestfulRoute().getShowPath(id));
       item.setSchema(data.getSchema());
       item.setUiSchema(data.getUiSchema());
@@ -297,7 +297,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
         .filter(item -> Objects.equals(item.formTypeStock().get(), formType)).findFirst();
     if (stateRecord.hasForm() && sfOpt.isPresent()) {
       StateForm<T, ID> sf = sfOpt.get();
-      var dataIdOpt = stateRecord.findStateFormId(formType, sf.formBranchStock().get());
+      var dataIdOpt =
+          stateRecord.findStateFormId(formType, sf.formBranchStrategy().apply(phaseProvider));
 
       SF data;
       if (dataIdOpt.isEmpty()) {
@@ -306,9 +307,9 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
         data = this.getStateForm(sf, dataIdOpt.get());
       }
 
-      RestfulVersioningJsonSchemaForm<?> item =
-          new RestfulVersioningJsonSchemaForm<>(formType, sf.formBranchStock().get(),
-              getRestfulRoute().joinPath(getRestfulRoute().idToParam(id), "forms"), formType);
+      RestfulVersioningJsonSchemaForm<?> item = new RestfulVersioningJsonSchemaForm<>(formType,
+          sf.formBranchStrategy().apply(phaseProvider),
+          getRestfulRoute().joinPath(getRestfulRoute().idToParam(id), "forms"), formType);
       item.setIndexPath(getRestfulRoute().getShowPath(id));
       item.setSchema(data.getSchema());
       item.setUiSchema(data.getUiSchema());
@@ -341,7 +342,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
         .filter(item -> Objects.equals(item.formTypeStock().get(), formType)).findFirst();
     if (stateRecord.hasForm() && sfOpt.isPresent()) {
       StateForm<T, ID> sf = sfOpt.get();
-      var dataIdOpt = stateRecord.findStateFormId(formType, sf.formBranchStock().get());
+      var dataIdOpt =
+          stateRecord.findStateFormId(formType, sf.formBranchStrategy().apply(phaseProvider));
 
       SF data;
       if (dataIdOpt.isEmpty()) {
@@ -350,9 +352,9 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
         data = getStateForm(sf, dataIdOpt.get());
       }
 
-      RestfulVersioningJsonSchemaForm<?> item =
-          new RestfulVersioningJsonSchemaForm<>(formType, sf.formBranchStock().get(),
-              getRestfulRoute().joinPath(getRestfulRoute().idToParam(id), "forms"), formType);
+      RestfulVersioningJsonSchemaForm<?> item = new RestfulVersioningJsonSchemaForm<>(formType,
+          sf.formBranchStrategy().apply(phaseProvider),
+          getRestfulRoute().joinPath(getRestfulRoute().idToParam(id), "forms"), formType);
       item.setIndexPath(getRestfulRoute().getShowPath(id));
       item.setSchema(data.getSchema());
       item.setUiSchema(data.getUiSchema());
@@ -384,7 +386,8 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
 
       if (messages.isEmpty()) {
         data = saveStateForm(sf, data);
-        stateRecord.putStateFormId(formType, sf.formBranchStock().get(), getStateFormId(data));
+        stateRecord.putStateFormId(formType, sf.formBranchStrategy().apply(phaseProvider),
+            getStateFormId(data));
         getRestfulRepository().save(phaseProvider);
 
         if (afterSaveStateForm() != null) {

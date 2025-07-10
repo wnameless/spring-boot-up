@@ -24,9 +24,8 @@
       </button>
     </li>
 
-    <li
-      th:each="formType,iter : ${item.phase.stateRecord.getViewableForms(item.phase.stateMachine)}"
-      class="nav-item" role="presentation">
+    <li th:each="formType,iter : ${item.phase.stateRecord.getViewableForms(item)}" class="nav-item"
+      role="presentation">
       <button class="nav-link" data-bs-toggle="tab"
         th:attr="data-bs-target=${'#viewableForm' + fid + '_' + iter.index}" type="button"
         role="tab">
@@ -63,8 +62,7 @@
       </div>
     </div>
 
-    <div
-      th:each="formType,iter : ${item.phase.stateRecord.getViewableForms(item.phase.stateMachine)}"
+    <div th:each="formType,iter : ${item.phase.stateRecord.getViewableForms(item)}"
       class="tab-pane fade" th:id="${'viewableForm' + fid + '_' + iter.index}" role="tabpanel">
       <div th:id="${'embedded' + fid + '_' + iter.index}" class="pt-2">
         <a hx:target="${'#embedded' + fid + '_' + iter.index}" hx-ext="json-enc" hx-trigger="load"

@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.fsm;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.springframework.data.repository.CrudRepository;
 import com.github.wnameless.spring.boot.up.jsf.JsfConfig;
@@ -16,7 +17,7 @@ public class StateForm<T extends Trigger, ID> {
   private final Class<? extends JsfPOJO<?>> jsfPojoType;
   private final Class<? extends CrudRepository<?, ID>> jsfRepositoryType;
 
-  private final Supplier<String> formBranchStock;
+  private final Function<Object, String> formBranchStrategy;
   private final Supplier<T> viewableTriggerStock;
   private final Supplier<T> editableTriggerStock;
 
@@ -24,41 +25,41 @@ public class StateForm<T extends Trigger, ID> {
   private final Supplier<T> entireEditableTriggerStock;
 
   public static <T extends Trigger, ID> StateForm<T, ID> of(Supplier<String> formTypeStock,
-      Supplier<String> formBranchStock, Supplier<T> viewableTriggerStock,
+      Function<Object, String> formBranchStock, Supplier<T> viewableTriggerStock,
       Supplier<T> editableTriggerStock) {
     return new StateForm<>(formTypeStock, formBranchStock, viewableTriggerStock,
         editableTriggerStock);
   }
 
   public static <T extends Trigger, ID> StateForm<T, ID> of(Supplier<String> formTypeStock,
-      Supplier<String> formBranchStock, Supplier<T> viewableTriggerStock,
+      Function<Object, String> formBranchStock, Supplier<T> viewableTriggerStock,
       Supplier<T> editableTriggerStock, Supplier<T> entireViewableTriggerStock,
       Supplier<T> entireEditableTriggerStock) {
     return new StateForm<>(formTypeStock, formBranchStock, viewableTriggerStock,
         editableTriggerStock, entireViewableTriggerStock, entireEditableTriggerStock);
   }
 
-  public StateForm(Supplier<String> formTypeStock, Supplier<String> formBranchStock,
+  public StateForm(Supplier<String> formTypeStock, Function<Object, String> formBranchStrategy,
       Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock) {
     this.formTypeStock = formTypeStock;
     isJsfPojo = false;
     jsfPojoType = null;
     jsfRepositoryType = null;
-    this.formBranchStock = formBranchStock;
+    this.formBranchStrategy = formBranchStrategy;
     this.viewableTriggerStock = viewableTriggerStock;
     this.editableTriggerStock = editableTriggerStock;
     this.entireViewableTriggerStock = () -> null;
     this.entireEditableTriggerStock = () -> null;
   }
 
-  public StateForm(Supplier<String> formTypeStock, Supplier<String> formBranchStock,
+  public StateForm(Supplier<String> formTypeStock, Function<Object, String> formBranchStrategy,
       Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock,
       Supplier<T> entireViewableTriggerStock, Supplier<T> entireEditableTriggerStock) {
     this.formTypeStock = formTypeStock;
     isJsfPojo = false;
     jsfPojoType = null;
     jsfRepositoryType = null;
-    this.formBranchStock = formBranchStock;
+    this.formBranchStrategy = formBranchStrategy;
     this.viewableTriggerStock = viewableTriggerStock;
     this.editableTriggerStock = editableTriggerStock;
     this.entireViewableTriggerStock = entireViewableTriggerStock;
@@ -66,29 +67,32 @@ public class StateForm<T extends Trigger, ID> {
   }
 
   public static <T extends Trigger, ID> StateForm<T, ID> of(Class<? extends JsfPOJO<?>> formType,
-      Class<? extends CrudRepository<?, ID>> jsfRepositoryType, Supplier<String> formBranchStock,
-      Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock) {
-    return new StateForm<>(formType, jsfRepositoryType, formBranchStock, viewableTriggerStock,
+      Class<? extends CrudRepository<?, ID>> jsfRepositoryType,
+      Function<Object, String> formBranchStrategy, Supplier<T> viewableTriggerStock,
+      Supplier<T> editableTriggerStock) {
+    return new StateForm<>(formType, jsfRepositoryType, formBranchStrategy, viewableTriggerStock,
         editableTriggerStock, () -> null, () -> null);
   }
 
   public static <T extends Trigger, ID> StateForm<T, ID> of(Class<? extends JsfPOJO<?>> formType,
-      Class<? extends CrudRepository<?, ID>> jsfRepositoryType, Supplier<String> formBranchStock,
-      Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock,
-      Supplier<T> entireViewableTriggerStock, Supplier<T> entireEditableTriggerStock) {
-    return new StateForm<>(formType, jsfRepositoryType, formBranchStock, viewableTriggerStock,
+      Class<? extends CrudRepository<?, ID>> jsfRepositoryType,
+      Function<Object, String> formBranchStrategy, Supplier<T> viewableTriggerStock,
+      Supplier<T> editableTriggerStock, Supplier<T> entireViewableTriggerStock,
+      Supplier<T> entireEditableTriggerStock) {
+    return new StateForm<>(formType, jsfRepositoryType, formBranchStrategy, viewableTriggerStock,
         editableTriggerStock, entireViewableTriggerStock, entireEditableTriggerStock);
   }
 
   public StateForm(Class<? extends JsfPOJO<?>> formType,
-      Class<? extends CrudRepository<?, ID>> jsfRepositoryType, Supplier<String> formBranchStock,
-      Supplier<T> viewableTriggerStock, Supplier<T> editableTriggerStock,
-      Supplier<T> entireViewableTriggerStock, Supplier<T> entireEditableTriggerStock) {
+      Class<? extends CrudRepository<?, ID>> jsfRepositoryType,
+      Function<Object, String> formBranchStrategy, Supplier<T> viewableTriggerStock,
+      Supplier<T> editableTriggerStock, Supplier<T> entireViewableTriggerStock,
+      Supplier<T> entireEditableTriggerStock) {
     this.formTypeStock = () -> formType.getSimpleName();
     isJsfPojo = true;
     jsfPojoType = formType;
     this.jsfRepositoryType = jsfRepositoryType;
-    this.formBranchStock = formBranchStock;
+    this.formBranchStrategy = formBranchStrategy;
     this.viewableTriggerStock = viewableTriggerStock;
     this.editableTriggerStock = editableTriggerStock;
     this.entireViewableTriggerStock = entireViewableTriggerStock;
@@ -104,7 +108,7 @@ public class StateForm<T extends Trigger, ID> {
     isJsfPojo = false;
     jsfPojoType = null;
     jsfRepositoryType = null;
-    this.formBranchStock = () -> JsfConfig.getDefaultBranchName();
+    this.formBranchStrategy = (obj) -> JsfConfig.getDefaultBranchName();
     this.viewableTriggerStock = () -> null;
     this.editableTriggerStock = () -> null;
     this.entireViewableTriggerStock = () -> null;
@@ -122,7 +126,7 @@ public class StateForm<T extends Trigger, ID> {
     isJsfPojo = true;
     jsfPojoType = formType;
     this.jsfRepositoryType = jsfRepositoryType;
-    this.formBranchStock = () -> JsfConfig.getDefaultBranchName();
+    this.formBranchStrategy = (obj) -> JsfConfig.getDefaultBranchName();
     this.viewableTriggerStock = () -> null;
     this.editableTriggerStock = () -> null;
     this.entireViewableTriggerStock = () -> null;
@@ -138,7 +142,7 @@ public class StateForm<T extends Trigger, ID> {
     isJsfPojo = false;
     jsfPojoType = null;
     jsfRepositoryType = null;
-    this.formBranchStock = () -> JsfConfig.getDefaultBranchName();
+    this.formBranchStrategy = (obj) -> JsfConfig.getDefaultBranchName();
     this.viewableTriggerStock = () -> viewableTrigger;
     this.editableTriggerStock = () -> null;
     this.entireViewableTriggerStock = () -> null;
@@ -156,7 +160,7 @@ public class StateForm<T extends Trigger, ID> {
     isJsfPojo = true;
     jsfPojoType = formType;
     this.jsfRepositoryType = jsfRepositoryType;
-    this.formBranchStock = () -> JsfConfig.getDefaultBranchName();
+    this.formBranchStrategy = (obj) -> JsfConfig.getDefaultBranchName();
     this.viewableTriggerStock = () -> viewableTrigger;
     this.editableTriggerStock = () -> null;
     this.entireViewableTriggerStock = () -> null;
@@ -173,7 +177,7 @@ public class StateForm<T extends Trigger, ID> {
     isJsfPojo = false;
     jsfPojoType = null;
     jsfRepositoryType = null;
-    this.formBranchStock = () -> JsfConfig.getDefaultBranchName();
+    this.formBranchStrategy = (obj) -> JsfConfig.getDefaultBranchName();
     this.viewableTriggerStock = () -> viewableTrigger;
     this.editableTriggerStock = () -> editableTrigger;
     this.entireViewableTriggerStock = () -> null;
@@ -193,7 +197,7 @@ public class StateForm<T extends Trigger, ID> {
     isJsfPojo = true;
     jsfPojoType = formType;
     this.jsfRepositoryType = jsfRepositoryType;
-    this.formBranchStock = () -> JsfConfig.getDefaultBranchName();
+    this.formBranchStrategy = (obj) -> JsfConfig.getDefaultBranchName();
     this.viewableTriggerStock = () -> viewableTrigger;
     this.editableTriggerStock = () -> editableTrigger;
     this.entireViewableTriggerStock = () -> null;
@@ -214,7 +218,7 @@ public class StateForm<T extends Trigger, ID> {
     isJsfPojo = true;
     jsfPojoType = formType;
     this.jsfRepositoryType = jsfRepositoryType;
-    this.formBranchStock = () -> JsfConfig.getDefaultBranchName();
+    this.formBranchStrategy = (obj) -> JsfConfig.getDefaultBranchName();
     this.viewableTriggerStock = () -> viewableTrigger;
     this.editableTriggerStock = () -> editableTrigger;
     this.entireViewableTriggerStock = () -> entireViewableTrigger;

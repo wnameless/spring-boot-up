@@ -57,14 +57,15 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
     return state.getForms().stream().anyMatch(f -> sm.canFire(f.viewableTriggerStock().get()));
   }
 
-  public List<String> getViewableForms(StateMachine<S, T> sm) {
+  public List<String> getViewableForms(PhaseProvider<?, S, T, ID> pp) {
+    StateMachine<S, T> sm = pp.getPhase().getStateMachine();
     var viewableFormTypes = new ArrayList<String>();
 
     var stateForms =
         state.getForms().stream().filter(f -> sm.canFire(f.viewableTriggerStock().get())).toList();
     stateForms.forEach(sf -> {
       var formType = sf.formTypeStock().get();
-      var formBranch = sf.formBranchStock().get();
+      var formBranch = sf.formBranchStrategy().apply(pp);
       if (formDataTable.keySet().contains(formType)) {
         if (formDataTable.get(formType) instanceof Map<String, ID> formBranchIdMap) {
           if (formBranchIdMap.get(formBranch) != null) {
