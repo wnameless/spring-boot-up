@@ -5,8 +5,6 @@ import parse from 'html-react-parser';
 import debounce from 'lodash.debounce';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import applyNavs from 'react-jsonschema-form-pagination';
-import applyBs4Navs from 'react-jsonschema-form-pagination-bs4';
 import { DownloadWidget, FileListWidget, ImageWidget } from './Bootstrap4RjsfWidget';
 import * as HtmlHelper from './HtmlHelperGPT';
 
@@ -232,10 +230,10 @@ class ReactFormElement extends HTMLElement {
     };
 
     // Choose bootstrap 3 or 4
-    const FormWithPagination =
+    const ThemedForm =
       this.attrs.theme === 'bs3'
-        ? applyNavs(bs3Form)
-        : applyBs4Navs(Form);
+        ? bs3Form
+        : Form;
 
     // For saveonly mode
     const saveonlyEnabled = !!this.attrs.saveonly;
@@ -315,7 +313,7 @@ class ReactFormElement extends HTMLElement {
           }
         />
 
-        <FormWithPagination
+        <ThemedForm
           {...this.attrs}
           {...this.props}
           schema={data.schema}
@@ -332,7 +330,7 @@ class ReactFormElement extends HTMLElement {
           */}
           {this.children?.length > 0 && parse(this.innerHTML)}
           {saveButton}
-        </FormWithPagination>
+        </ThemedForm>
       </React.Fragment>
     );
   }
