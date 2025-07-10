@@ -13,8 +13,10 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.MediaType;
+import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,14 +53,21 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
 
   org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AjaxFsmController.class);
 
+  @ModelAttribute
+  default void setEntireStateFormTitleReplacer(Model model) {
+    SpringBootUp.findBean(EntireStateFormTitleReplacer.class).ifPresent(replacer -> {
+      model.addAttribute("entireStateFormTitleReplacer", replacer);
+    });
+  }
+
   @SneakyThrows
   @SuppressWarnings("unchecked")
-  default SF newStateForm(StateForm<T, ID> sf, String formType) {
+  default SF newStateForm(StateForm<T, ID> sf, String formType, PP phaseProvider) {
     if (sf.isJsfPojo()) {
       return (SF) sf.jsfPojoType().getDeclaredConstructor().newInstance();
     } else {
       return (SF) SpringBootUp.getBean(JsfService.class).newJsfData(formType,
-          sf.formBranchStrategy().apply(getRestfulItem()));
+          sf.formBranchStrategy().apply(phaseProvider));
     }
   }
 
@@ -302,7 +311,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
 
       SF data;
       if (dataIdOpt.isEmpty()) {
-        data = newStateForm(sf, formType);
+        data = newStateForm(sf, formType, phaseProvider);
       } else {
         data = this.getStateForm(sf, dataIdOpt.get());
       }
@@ -347,7 +356,7 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
 
       SF data;
       if (dataIdOpt.isEmpty()) {
-        data = newStateForm(sf, formType);
+        data = newStateForm(sf, formType, phaseProvider);
       } else {
         data = getStateForm(sf, dataIdOpt.get());
       }

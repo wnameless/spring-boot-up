@@ -53,6 +53,10 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
     return !state.getForms().isEmpty();
   }
 
+  public boolean hasViewableForm(PhaseProvider<?, S, T, ID> pp) {
+    return hasViewableForm(pp.getPhase().getStateMachine());
+  }
+
   public boolean hasViewableForm(StateMachine<S, T> sm) {
     return state.getForms().stream().anyMatch(f -> sm.canFire(f.viewableTriggerStock().get()));
   }
@@ -80,12 +84,17 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
     return viewableFormTypes;
   }
 
+  public boolean hasEntireViewableForms(PhaseProvider<?, S, T, ID> pp) {
+    return hasEntireViewableForms(pp.getPhase().getStateMachine());
+  }
+
   public boolean hasEntireViewableForms(StateMachine<S, T> sm) {
     return state.getForms().stream()
         .anyMatch(f -> sm.canFire(f.entireViewableTriggerStock().get()));
   }
 
-  public Map<String, Map<String, ID>> getEntireViewableForms(StateMachine<S, T> sm) {
+  public Map<String, Map<String, ID>> getEntireViewableForms(PhaseProvider<?, S, T, ID> pp) {
+    StateMachine<S, T> sm = pp.getPhase().getStateMachine();
     var dataTableCopy = new LinkedHashMap<>(formDataTable);
 
     var formTypes =

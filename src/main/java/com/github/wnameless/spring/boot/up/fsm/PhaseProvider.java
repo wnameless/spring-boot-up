@@ -75,4 +75,24 @@ public interface PhaseProvider<E extends PhaseProvider<E, S, T, ID>, S extends S
     return getPhase();
   }
 
+  default boolean hasEntireViewableForms() {
+    if (getPhase().getStateRecord() == null) return false;
+    return getPhase().getStateRecord().hasEntireViewableForms(this);
+  }
+
+  default Map<String, Map<String, ID>> getEntireViewableForms() {
+    if (getPhase().getStateRecord() == null) return Map.of();
+    return getPhase().getStateRecord().getEntireViewableForms(this);
+  }
+
+  default boolean hasViewableForm() {
+    if (getPhase().getStateRecord() == null) return false;
+    return getPhase().getStateRecord().hasViewableForm(this);
+  }
+
+  default List<String> getViewableForms() {
+    if (getPhase().getStateRecord() == null) return List.of();
+    return getPhase().getStateRecord().getViewableForms(this);
+  }
+
 }
