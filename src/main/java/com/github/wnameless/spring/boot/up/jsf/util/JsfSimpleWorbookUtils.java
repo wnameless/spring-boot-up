@@ -155,8 +155,22 @@ public class JsfSimpleWorbookUtils {
   }
 
   public static LinkedHashMap<Integer, Map<String, Object>> extractJsonDataFromWorkbook(
+      byte[] excelBytes, Map<String, Object> schemaMap, Map<String, Object> uiSchemaMap)
+      throws Exception {
+    JsonNode schemaNode = objectMapper.convertValue(schemaMap, JsonNode.class);
+    JsonNode uiSchemaNode = objectMapper.convertValue(uiSchemaMap, JsonNode.class);
+    return extractJsonDataFromWorkbook(excelBytes, schemaNode, uiSchemaNode);
+  }
+
+  public static LinkedHashMap<Integer, Map<String, Object>> extractJsonDataFromWorkbook(
       byte[] excelBytes, Map<String, Object> schemaMap) throws Exception {
     JsonNode schemaNode = objectMapper.convertValue(schemaMap, JsonNode.class);
+    return extractJsonDataFromWorkbook(excelBytes, schemaNode);
+  }
+
+  public static LinkedHashMap<Integer, Map<String, Object>> extractJsonDataFromWorkbook(
+      byte[] excelBytes, JsonNode schema, JsonNode uiSchema) throws Exception {
+    var schemaNode = RjsfSchemaConverter.toRjsfV5Schema(schema, uiSchema);
     return extractJsonDataFromWorkbook(excelBytes, schemaNode);
   }
 
@@ -272,14 +286,26 @@ public class JsfSimpleWorbookUtils {
   }
 
   public static byte[] exportJsonDataToWorkbook(List<Map<String, Object>> dataList,
+      Map<String, Object> schemaMap, Map<String, Object> uiSchemaMap) throws Exception {
+    JsonNode schemaNode = objectMapper.convertValue(schemaMap, JsonNode.class);
+    JsonNode uiSchemaNode = objectMapper.convertValue(uiSchemaMap, JsonNode.class);
+    return exportJsonDataToWorkbook(dataList, schemaNode, uiSchemaNode);
+  }
+
+  public static byte[] exportJsonDataToWorkbook(List<Map<String, Object>> dataList,
       Map<String, Object> schemaMap) throws Exception {
     JsonNode schemaNode = objectMapper.convertValue(schemaMap, JsonNode.class);
     return exportJsonDataToWorkbook(dataList, schemaNode);
   }
 
+  public static byte[] exportJsonDataToWorkbook(List<Map<String, Object>> dataList, JsonNode schema,
+      JsonNode uiSchema) throws Exception {
+    var schemaNode = RjsfSchemaConverter.toRjsfV5Schema(schema, uiSchema);
+    return exportJsonDataToWorkbook(dataList, schemaNode);
+  }
+
   public static byte[] exportJsonDataToWorkbook(List<Map<String, Object>> dataList, JsonNode schema)
       throws Exception {
-
     try (XSSFWorkbook workbook = new XSSFWorkbook();
         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
@@ -350,8 +376,8 @@ public class JsfSimpleWorbookUtils {
           if (prop.has("enumNames")) {
             Map<String, String> valueToNameMapping = new HashMap<>();
             for (int i = 0; i < prop.get("enum").size(); i++) {
-              valueToNameMapping.put(prop.get("enum").get(i).asText(), 
-                                   prop.get("enumNames").get(i).asText());
+              valueToNameMapping.put(prop.get("enum").get(i).asText(),
+                  prop.get("enumNames").get(i).asText());
             }
             enumValueToNameMap.put(propName, valueToNameMapping);
           }
