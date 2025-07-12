@@ -9,7 +9,7 @@ import lombok.SneakyThrows;
 
 /**
  * Converts RJSF v6-style schemas (with separate uiSchema) to a single, v5-compatible schema by
- * merging ui:enumNames into the main schema.
+ * merging ui:enumNames, ui:title, and ui:description into the main schema.
  */
 public class RjsfSchemaConverter {
 
@@ -23,8 +23,8 @@ public class RjsfSchemaConverter {
     JsonNode schemaNode = mapper.readTree(schema);
     JsonNode uiSchemaNode = mapper.readTree(uiSchema);
 
-    // Recursively merge enumNames
-    mergeEnumNames(schemaNode, uiSchemaNode);
+    // Recursively merge UI properties
+    mergeUiProperties(schemaNode, uiSchemaNode);
 
     return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schemaNode);
   }
@@ -34,17 +34,17 @@ public class RjsfSchemaConverter {
    */
   @SneakyThrows
   public static JsonNode toRjsfV5Schema(JsonNode schemaNode, JsonNode uiSchemaNode) {
-    // Recursively merge enumNames
-    mergeEnumNames(schemaNode, uiSchemaNode);
+    // Recursively merge UI properties
+    mergeUiProperties(schemaNode, uiSchemaNode);
     return schemaNode;
   }
 
   /**
-   * Recursively traverses a schema and merges `ui:enumNames` from a parallel uiSchema wherever an
-   * `enum` is found. This version handles nested properties, simple arrays, tuples (fixed arrays),
-   * and combiner keywords (oneOf, allOf, anyOf).
+   * Recursively traverses a schema and merges UI properties from a parallel uiSchema. This includes
+   * ui:enumNames, ui:title, and ui:description. This version handles nested properties, simple
+   * arrays, tuples (fixed arrays), and combiner keywords (oneOf, allOf, anyOf).
    */
-  private static void mergeEnumNames(JsonNode schemaNode, JsonNode uiSchemaNode) {
+  private static void mergeUiProperties(JsonNode schemaNode, JsonNode uiSchemaNode) {
     // Base case: If the schema node is not a processable object, stop.
     if (schemaNode == null || !schemaNode.isObject()) {
       return;
@@ -52,12 +52,26 @@ public class RjsfSchemaConverter {
 
     ObjectNode objSchema = (ObjectNode) schemaNode;
 
-    // Core Logic: If this schema level has an "enum", look for a corresponding "ui:enumNames"
-    // in the uiSchema and merge it.
-    if (schemaNode.has("enum") && uiSchemaNode != null && uiSchemaNode.isObject()) {
-      JsonNode enumNamesNode = uiSchemaNode.get("ui:enumNames");
-      if (enumNamesNode != null && enumNamesNode.isArray()) {
-        objSchema.set("enumNames", enumNamesNode);
+    // Core Logic: Merge all supported UI properties at this level
+    if (uiSchemaNode != null && uiSchemaNode.isObject()) {
+      // Merge ui:enumNames -> enumNames (only if enum exists)
+      if (schemaNode.has("enum")) {
+        JsonNode enumNamesNode = uiSchemaNode.get("ui:enumNames");
+        if (enumNamesNode != null && enumNamesNode.isArray()) {
+          objSchema.set("enumNames", enumNamesNode);
+        }
+      }
+
+      // Merge ui:title -> title
+      JsonNode titleNode = uiSchemaNode.get("ui:title");
+      if (titleNode != null && titleNode.isTextual()) {
+        objSchema.put("title", titleNode.asText());
+      }
+
+      // Merge ui:description -> description
+      JsonNode descriptionNode = uiSchemaNode.get("ui:description");
+      if (descriptionNode != null && descriptionNode.isTextual()) {
+        objSchema.put("description", descriptionNode.asText());
       }
     }
 
@@ -70,7 +84,7 @@ public class RjsfSchemaConverter {
         for (JsonNode subSchema : schemaNode.get(keyword)) {
           // The uiSchema doesn't have a parallel oneOf/allOf/anyOf structure,
           // so we pass the *parent* uiSchemaNode down for the recursive call.
-          mergeEnumNames(subSchema, uiSchemaNode);
+          mergeUiProperties(subSchema, uiSchemaNode);
         }
       }
     }
@@ -83,15 +97,15 @@ public class RjsfSchemaConverter {
 
       if (itemsSchema.isObject()) {
         // Case A: Simple array (items is an object)
-        // The ternary logic handles cases where ui:enumNames is at the top level of the array's UI
-        // schema
-        mergeEnumNames(itemsSchema, itemsUiSchema != null ? itemsUiSchema : uiSchemaNode);
+        // The ternary logic handles cases where UI properties are at the top level of the array's
+        // UI schema
+        mergeUiProperties(itemsSchema, itemsUiSchema != null ? itemsUiSchema : uiSchemaNode);
       } else if (itemsSchema.isArray()) {
         // Case B: Tuple validation (items is an array)
         if (itemsUiSchema != null && itemsUiSchema.isArray()) {
           for (int i = 0; i < itemsSchema.size(); i++) {
             if (i < itemsUiSchema.size()) { // Safely access corresponding uiSchema
-              mergeEnumNames(itemsSchema.get(i), itemsUiSchema.get(i));
+              mergeUiProperties(itemsSchema.get(i), itemsUiSchema.get(i));
             }
           }
         }
@@ -110,7 +124,7 @@ public class RjsfSchemaConverter {
           // Find the corresponding field in the uiSchema for the recursive call
           JsonNode childUiSchema =
               uiSchemaNode != null && uiSchemaNode.isObject() ? uiSchemaNode.get(fieldName) : null;
-          mergeEnumNames(childSchema, childUiSchema);
+          mergeUiProperties(childSchema, childUiSchema);
         }
       }
     }

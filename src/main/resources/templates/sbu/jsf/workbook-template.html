@@ -86,7 +86,9 @@
               [[${templateValueMap.get(templateValueKey)}]]
             </option>
           </select>
-          <input class="form-control" type="file" name="workbook" required />
+          <input class="form-control" type="file"
+            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            name="workbook" required />
           <button class="btn btn-warning" type="submit">
             [[${#messages.msgOrNull('ui.upload') ?: 'Upload'}]]
           </button>

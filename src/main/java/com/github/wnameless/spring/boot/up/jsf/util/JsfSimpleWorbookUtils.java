@@ -488,7 +488,7 @@ public class JsfSimpleWorbookUtils {
       var violations = validator.validate(item);
       if (violations.size() > 0) {
         alertMessages.getWarning()
-            .add("Row " + e.getKey() + " -> " + violations.iterator().next().getMessage());
+            .add("Row " + (e.getKey() + 1) + " -> " + violations.iterator().next().getMessage());
       }
     });
 

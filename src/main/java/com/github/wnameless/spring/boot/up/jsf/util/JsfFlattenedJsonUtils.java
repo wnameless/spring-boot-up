@@ -18,7 +18,11 @@ public class JsfFlattenedJsonUtils {
   public LinkedHashMap<Object, String> schemaKeyToEnumToNames(String key, String schemaJson,
       String uiSchemaJson) {
     var schemaV5 = RjsfSchemaConverter.toRjsfV5Schema(schemaJson, uiSchemaJson);
-    var docCtx = schemaJsonToDocumentContext(schemaV5);
+    return schemaKeyToEnumToNames(key, schemaV5);
+  }
+
+  public LinkedHashMap<Object, String> schemaKeyToEnumToNames(String key, String schemaJson) {
+    var docCtx = schemaJsonToDocumentContext(schemaJson);
 
     var enumToNames = new LinkedHashMap<Object, String>();
     var keyParts = keyToKeyParts(key);
@@ -72,6 +76,12 @@ public class JsfFlattenedJsonUtils {
     return docCtx;
   }
 
+  public String keyToTitle(String key, DocumentContext schemaJson, DocumentContext uiSchemaJson) {
+    var schemaJsonString =
+        RjsfSchemaConverter.toRjsfV5Schema(schemaJson.jsonString(), uiSchemaJson.jsonString());
+    return keyToTitle(key, schemaJsonToDocumentContext(schemaJsonString));
+  }
+
   public String keyToTitle(String key, DocumentContext schemaJson) {
     var keyParts = keyToKeyParts(key);
 
@@ -95,6 +105,13 @@ public class JsfFlattenedJsonUtils {
   private List<String> keyToKeyParts(String key) {
     if (key.isBlank()) return new ArrayList<>();
     return new ArrayList<>(Arrays.asList(key.split("\\.")));
+  }
+
+  public String keyToItemTitle(String key, DocumentContext schemaJson,
+      DocumentContext uiSchemaJson) {
+    var schemaJsonString =
+        RjsfSchemaConverter.toRjsfV5Schema(schemaJson.jsonString(), uiSchemaJson.jsonString());
+    return keyToItemTitle(key, schemaJsonToDocumentContext(schemaJsonString));
   }
 
   public String keyToItemTitle(String key, DocumentContext schemaJson) {
@@ -138,7 +155,7 @@ public class JsfFlattenedJsonUtils {
     return index;
   }
 
-  public String keyToArrayKey(String key, DocumentContext schemaJson) {
+  public String keyToArrayKey(String key) {
     if (!key.matches(".*\\[\\d+\\]$") && !key.matches(".*\\[\\d+\\]\\..*")) return null;
 
     var keyParts = keyToKeyParts(key);
@@ -153,10 +170,17 @@ public class JsfFlattenedJsonUtils {
     return keyParts.stream().collect(Collectors.joining("."));
   }
 
+  public String keyToArrayTitle(String key, DocumentContext schemaJson,
+      DocumentContext uiSchemaJson) {
+    var schemaJsonString =
+        RjsfSchemaConverter.toRjsfV5Schema(schemaJson.jsonString(), uiSchemaJson.jsonString());
+    return keyToArrayTitle(key, schemaJsonToDocumentContext(schemaJsonString));
+  }
+
   public String keyToArrayTitle(String key, DocumentContext schemaJson) {
     if (!key.matches(".*\\[\\d+\\]$") && !key.matches(".*\\[\\d+\\]\\..*")) return null;
 
-    var keyParts = keyToKeyParts(keyToArrayKey(key, schemaJson));
+    var keyParts = keyToKeyParts(keyToArrayKey(key));
     var jsonPath =
         keyParts.stream().map(k -> ".properties." + k.replaceAll("\\[\\d+\\]$", ".items"))
             .collect(Collectors.joining());
@@ -164,7 +188,7 @@ public class JsfFlattenedJsonUtils {
     return schemaJson.read("$" + jsonPath + ".title", String.class);
   }
 
-  public String keyToParentKey(String key, DocumentContext schemaJson) {
+  public String keyToParentKey(String key) {
     var keyParts = keyToKeyParts(key);
 
     if (isKeyInArray(key) && !key.matches(".*\\[\\d+\\]$")) {
@@ -175,8 +199,15 @@ public class JsfFlattenedJsonUtils {
     return keyParts.stream().collect(Collectors.joining("."));
   }
 
+  public String keyToParentTitle(String key, DocumentContext schemaJson,
+      DocumentContext uiSchemaJson) {
+    var schemaJsonString =
+        RjsfSchemaConverter.toRjsfV5Schema(schemaJson.jsonString(), uiSchemaJson.jsonString());
+    return keyToParentTitle(key, schemaJsonToDocumentContext(schemaJsonString));
+  }
+
   public String keyToParentTitle(String key, DocumentContext schemaJson) {
-    var keyParts = keyToKeyParts(keyToParentKey(key, schemaJson));
+    var keyParts = keyToKeyParts(keyToParentKey(key));
 
     var jsonPath =
         keyParts.stream().map(k -> ".properties." + k.replaceAll("\\[\\d+\\]$", ".items"))
@@ -196,10 +227,17 @@ public class JsfFlattenedJsonUtils {
     return schemaJson.read("$" + jsonPath + ".type", String.class);
   }
 
-  public String keyToRootKey(String key, DocumentContext schemaJson) {
+  public String keyToRootKey(String key) {
     var keyParts = keyToKeyParts(key);
     var rootKey = keyParts.get(0);
     return keyParts.size() <= 1 ? "" : rootKey.replaceAll("\\[\\d+\\]$", "");
+  }
+
+  public String keyToRootTitle(String key, DocumentContext schemaJson,
+      DocumentContext uiSchemaJson) {
+    var schemaJsonString =
+        RjsfSchemaConverter.toRjsfV5Schema(schemaJson.jsonString(), uiSchemaJson.jsonString());
+    return keyToRootTitle(key, schemaJsonToDocumentContext(schemaJsonString));
   }
 
   public String keyToRootTitle(String key, DocumentContext schemaJson) {
@@ -212,6 +250,13 @@ public class JsfFlattenedJsonUtils {
         )).collect(Collectors.joining());
 
     return schemaJson.read("$" + jsonPath + ".title", String.class);
+  }
+
+  public LinkedHashMap<Object, String> keyToEnumToNames(String key, DocumentContext schemaJson,
+      DocumentContext uiSchemaJson) {
+    var schemaJsonString =
+        RjsfSchemaConverter.toRjsfV5Schema(schemaJson.jsonString(), uiSchemaJson.jsonString());
+    return keyToEnumToNames(key, schemaJsonToDocumentContext(schemaJsonString));
   }
 
   public LinkedHashMap<Object, String> keyToEnumToNames(String key, DocumentContext schemaJson) {

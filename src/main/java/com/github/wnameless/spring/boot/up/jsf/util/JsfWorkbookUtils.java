@@ -508,7 +508,7 @@ public class JsfWorkbookUtils {
   }
 
   public List<JsfPropertyDetail> schemaData2JsfPropertyDetails(Object pojo,
-      DocumentContext schemaJson) throws JsonProcessingException {
+      DocumentContext schemaJson, DocumentContext uiSchemaJson) throws JsonProcessingException {
     var propertyDetails = new ArrayList<JsfPropertyDetail>();
 
     ObjectMapper mapper = new ObjectMapper();
@@ -517,38 +517,39 @@ public class JsfWorkbookUtils {
 
     var map = JsonFlattener.flattenAsMap(json);
     map.entrySet().forEach(e -> {
-      propertyDetails.add(flattenKey2JsfPropertyDetail(e.getKey(), e.getValue(), schemaJson));
+      propertyDetails
+          .add(flattenKey2JsfPropertyDetail(e.getKey(), e.getValue(), schemaJson, uiSchemaJson));
     });
 
     return propertyDetails;
   }
 
   public JsfPropertyDetail flattenKey2JsfPropertyDetail(String key, Object value,
-      DocumentContext schemaJson) {
+      DocumentContext schemaJson, DocumentContext uiSchemaJson) {
     var propertyDetail = new JsfPropertyDetail();
 
     propertyDetail.setKey(key);
     propertyDetail.setNestedLevel(key.split("\\.").length);
 
-    propertyDetail.setRootKey(keyToRootKey(key, schemaJson));
-    propertyDetail.setRootTitle(keyToRootTitle(key, schemaJson));
+    propertyDetail.setRootKey(keyToRootKey(key));
+    propertyDetail.setRootTitle(keyToRootTitle(key, schemaJson, uiSchemaJson));
 
-    propertyDetail.setParentKey(keyToParentKey(key, schemaJson));
-    propertyDetail.setParentTitle(keyToParentTitle(key, schemaJson));
+    propertyDetail.setParentKey(keyToParentKey(key));
+    propertyDetail.setParentTitle(keyToParentTitle(key, schemaJson, uiSchemaJson));
     propertyDetail.setParentType(keyToParentType(key, schemaJson));
 
     propertyDetail.setInArray(isKeyInArray(key));
     if (propertyDetail.isInArray()) {
       propertyDetail.setArrayIndex(getKeyArrayIndex(key));
-      propertyDetail.setArrayKey(keyToArrayKey(key, schemaJson));
-      propertyDetail.setArrayTitle(keyToArrayTitle(key, schemaJson));
-      propertyDetail.setItemTitle(keyToItemTitle(key, schemaJson));
+      propertyDetail.setArrayKey(keyToArrayKey(key));
+      propertyDetail.setArrayTitle(keyToArrayTitle(key, schemaJson, uiSchemaJson));
+      propertyDetail.setItemTitle(keyToItemTitle(key, schemaJson, uiSchemaJson));
       propertyDetail.setItemType(keyToItemType(key, schemaJson));
     }
 
-    propertyDetail.setEnumToNames(keyToEnumToNames(key, schemaJson));
+    propertyDetail.setEnumToNames(keyToEnumToNames(key, schemaJson, uiSchemaJson));
 
-    propertyDetail.setTitle(keyToTitle(key, schemaJson));
+    propertyDetail.setTitle(keyToTitle(key, schemaJson, uiSchemaJson));
     propertyDetail.setType(keyToType(key, schemaJson));
     if (propertyDetail.getEnumToNames().get(value) != null) {
       propertyDetail.setValue(propertyDetail.getEnumToNames().get(value));
