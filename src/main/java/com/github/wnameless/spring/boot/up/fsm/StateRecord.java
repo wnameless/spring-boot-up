@@ -148,6 +148,14 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
     return findAllStateFormIds(formType.getSimpleName(), List.of(JsfConfig.getDefaultBranchName()));
   }
 
+  public <F> Optional<F> findStateForm(Class<F> formType) {
+    return findStateForm(formType, JsfConfig.getDefaultBranchName());
+  }
+
+  public <F> Optional<F> findStateFormOnDefaultBranch(Class<F> formType) {
+    return findStateForm(formType);
+  }
+
   @SuppressWarnings({"rawtypes", "unchecked"})
   public <F> Optional<F> findStateForm(Class<F> formType, String formBranch) {
     var idOpt = findStateFormId(formType, formBranch);
@@ -163,8 +171,16 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
     return formRepoOpt.flatMap(repo -> repo.findById(idOpt.get()));
   }
 
-  public <F> Optional<F> findStateFormOnDefaultBranch(Class<F> formType) {
-    return findStateForm(formType, JsfConfig.getDefaultBranchName());
+  public <F> boolean hasStateForm(Class<F> formType) {
+    return findStateFormId(formType.getSimpleName(), JsfConfig.getDefaultBranchName()).isPresent();
+  }
+
+  public <F> boolean hasStateFormOnDefaultBranch(Class<F> formType) {
+    return hasStateForm(formType);
+  }
+
+  public <F> boolean hasStateForm(Class<F> formType, String formBranch) {
+    return findStateFormId(formType.getSimpleName(), formBranch).isPresent();
   }
 
 }
