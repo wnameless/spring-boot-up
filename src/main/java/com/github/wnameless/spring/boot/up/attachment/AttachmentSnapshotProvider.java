@@ -3,8 +3,9 @@ package com.github.wnameless.spring.boot.up.attachment;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.core.GenericTypeResolver;
+import com.github.wnameless.spring.boot.up.web.RestfulItem;
 
-public interface AttachmentSnapshotProvider<A extends Attachment<ID>, ID> {
+public interface AttachmentSnapshotProvider<A extends Attachment<ID>, ID> extends RestfulItem<ID> {
 
   @SuppressWarnings("unchecked")
   default Class<A> getAttachmentType() {

@@ -20,14 +20,13 @@ import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.jsf.RestfulJsonSchemaForm;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.AjaxTargetId;
 import com.github.wnameless.spring.boot.up.web.ModelAttributes.Item;
-import com.github.wnameless.spring.boot.up.web.RestfulItem;
 import com.github.wnameless.spring.boot.up.web.RestfulRouteProvider;
 import com.github.wnameless.spring.boot.up.web.TemplateFragmentAware;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import net.sf.rubycollect4j.Ruby;
 
-public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotProvider<A, ID> & RestfulItem<ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
+public interface AttachmentSnapshotControllerBase<S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
     extends RestfulRouteProvider<ID>, TemplateFragmentAware {
 
   @SuppressWarnings("unchecked")
@@ -35,7 +34,8 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return (S) SpringBootUp.getBean(AttachmentService.class);
   }
 
-  default void updateSnapshot(AA attachmentSnapshotProvider, List<A> attachments) {
+  default void updateSnapshot(AttachmentSnapshotProvider<A, ID> attachmentSnapshotProvider,
+      List<A> attachments) {
     var original = attachmentSnapshotProvider.getAttachmentSnapshot().getAttachments();
     if (original == null) original = new ArrayList<>();
 
@@ -233,8 +233,8 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return uploadform;
   }
 
-  default ModelAndView retrieveAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
-      String ajaxTargetId) {
+  default ModelAndView retrieveAttachmentsAction(ModelAndView mav,
+      AttachmentSnapshotProvider<A, ID> attachmentSnapshotProvider, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     mav.addObject(AjaxTargetId.name(), ajaxTargetId);
@@ -242,8 +242,9 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return mav;
   }
 
-  default ModelAndView editAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
-      String infixPath, String ajaxTargetId) {
+  default ModelAndView editAttachmentsAction(ModelAndView mav,
+      AttachmentSnapshotProvider<A, ID> attachmentSnapshotProvider, String infixPath,
+      String ajaxTargetId) {
     mav.setViewName("sbu/attachments/edit :: " + getFragmentName());
 
     var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
@@ -254,8 +255,9 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return mav;
   }
 
-  default ModelAndView noteAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
-      String infixPath, String ajaxTargetId) {
+  default ModelAndView noteAttachmentsAction(ModelAndView mav,
+      AttachmentSnapshotProvider<A, ID> attachmentSnapshotProvider, String infixPath,
+      String ajaxTargetId) {
     mav.setViewName("sbu/attachments/note :: " + getFragmentName());
 
     var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
@@ -266,8 +268,9 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return mav;
   }
 
-  default ModelAndView uploadFragmentAction(ModelAndView mav, AA attachmentSnapshotProvider,
-      String infixPath, String ajaxTargetId) {
+  default ModelAndView uploadFragmentAction(ModelAndView mav,
+      AttachmentSnapshotProvider<A, ID> attachmentSnapshotProvider, String infixPath,
+      String ajaxTargetId) {
     mav.setViewName("sbu/attachments/upload :: " + getFragmentName());
 
     var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
@@ -277,7 +280,8 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return mav;
   }
 
-  default ModelAndView uploadAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
+  default ModelAndView uploadAttachmentsAction(ModelAndView mav,
+      AttachmentSnapshotProvider<A, ID> attachmentSnapshotProvider,
       @RequestBody Map<String, Object> jsfFiles, String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
@@ -323,8 +327,8 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     return mav;
   }
 
-  default void downloadAttachmentAction(HttpServletResponse response, AA attachmentSnapshotProvider,
-      ID attachmentId) {
+  default void downloadAttachmentAction(HttpServletResponse response,
+      AttachmentSnapshotProvider<A, ID> attachmentSnapshotProvider, ID attachmentId) {
     var attachmentSnapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
     Optional<A> attachmentOpt = attachmentSnapshot.findAttachment(attachmentId);
 
@@ -343,8 +347,9 @@ public interface AttachmentSnapshotControllerBase<AA extends AttachmentSnapshotP
     } catch (IOException e) {}
   }
 
-  default ModelAndView modifyAttachmentsAction(ModelAndView mav, AA attachmentSnapshotProvider,
-      Map<String, Object> jsfFiles, String ajaxTargetId) {
+  default ModelAndView modifyAttachmentsAction(ModelAndView mav,
+      AttachmentSnapshotProvider<A, ID> attachmentSnapshotProvider, Map<String, Object> jsfFiles,
+      String ajaxTargetId) {
     mav.setViewName("sbu/attachments/panel :: " + getFragmentName());
 
     var original = attachmentSnapshotProvider.getAttachmentSnapshot().getAttachments();

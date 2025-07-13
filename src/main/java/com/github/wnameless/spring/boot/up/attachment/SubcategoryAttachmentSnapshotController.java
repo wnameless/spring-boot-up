@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import com.github.wnameless.spring.boot.up.web.RestfulItem;
 import jakarta.servlet.http.HttpServletResponse;
 import net.sf.rubycollect4j.Ruby;
 
-public interface SubcategoryAttachmentSnapshotController<AA extends AttachmentSnapshotProvider<A, ID> & RestfulItem<ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
-    extends AttachmentSnapshotControllerBase<AA, S, A, ID> {
+public interface SubcategoryAttachmentSnapshotController<AA extends AttachmentSnapshotProvider<A, ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
+    extends AttachmentSnapshotControllerBase<S, A, ID> {
 
   AA getAttachmentSnapshotProvider(ID id, ID subId);
 

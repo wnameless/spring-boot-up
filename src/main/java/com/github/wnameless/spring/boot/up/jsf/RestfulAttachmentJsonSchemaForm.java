@@ -6,12 +6,11 @@ import com.github.wnameless.spring.boot.up.attachment.Attachment;
 import com.github.wnameless.spring.boot.up.attachment.AttachmentChecklist;
 import com.github.wnameless.spring.boot.up.attachment.BasicAttachmentSnapshot;
 import com.github.wnameless.spring.boot.up.attachment.StatelessAttachmentSnapshotProvider;
-import com.github.wnameless.spring.boot.up.web.RestfulItem;
 import lombok.Data;
 
 @Data
 public class RestfulAttachmentJsonSchemaForm<A extends Attachment<ID>, ID>
-    implements JsonSchemaForm, RestfulItem<ID>, StatelessAttachmentSnapshotProvider<A, ID> {
+    implements JsonSchemaForm, StatelessAttachmentSnapshotProvider<A, ID> {
 
   private ID id;
 

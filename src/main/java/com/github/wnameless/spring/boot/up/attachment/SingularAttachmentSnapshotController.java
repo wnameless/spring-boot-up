@@ -12,7 +12,7 @@ import com.github.wnameless.spring.boot.up.web.RestfulItem;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface SingularAttachmentSnapshotController<AA extends AttachmentSnapshotProvider<A, ID> & RestfulItem<ID>, S extends AttachmentService<A, ID>, A extends Attachment<ID>, ID>
-    extends AttachmentSnapshotControllerBase<AA, S, A, ID> {
+    extends AttachmentSnapshotControllerBase<S, A, ID> {
 
   AA getAttachmentSnapshotProvider();
 
