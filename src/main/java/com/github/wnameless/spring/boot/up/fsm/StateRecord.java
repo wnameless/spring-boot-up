@@ -74,6 +74,8 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
         if (formDataTable.get(formType) instanceof Map<String, ID> formBranchIdMap) {
           if (formBranchIdMap.get(formBranch) != null) {
             viewableFormTypes.add(formType);
+          } else if (sm.canFire(sf.editableTriggerStock().get())) {
+            viewableFormTypes.add(formType);
           }
         }
       } else if (sm.canFire(sf.editableTriggerStock().get())) {
