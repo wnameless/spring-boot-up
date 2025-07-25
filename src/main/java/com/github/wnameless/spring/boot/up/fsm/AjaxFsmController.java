@@ -126,12 +126,6 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
         stateMachine.fire(alwaysTrigger);
       }
     }
-
-    // for (T alwaysTrigger : getPhaseAware().getPhase().getAlwaysTriggers()) {
-    // if (getPhaseAware().getPhase().getStateMachine().canFire(alwaysTrigger)) {
-    // getPhaseAware().getPhase().getStateMachine().fire(alwaysTrigger);
-    // }
-    // }
   }
 
   @Override
