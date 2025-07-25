@@ -3,11 +3,13 @@ package com.github.wnameless.spring.boot.up.jsf.service;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.spring.boot.up.jsf.JsfConfig;
 import com.github.wnameless.spring.boot.up.jsf.JsonCoreFactory;
 import com.github.wnameless.spring.boot.up.jsf.JsonSchemaFormUtils;
@@ -23,6 +25,9 @@ public final class JsfPOJOService {
   // Cache needs defensive copy
   private final Map<String, Map<String, Object>> schemaCache = new HashMap<>();
 
+  @Autowired
+  private ObjectMapper objectMapper;
+
   public Map<String, Object> getSchemaTemplate(String formType, Locale locale) {
     return getSchemaTemplate(formType, locale.toString());
   }
@@ -31,7 +36,7 @@ public final class JsfPOJOService {
     String templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".schema."
         + branch + ".json";
     if (schemaCache.containsKey(templatePath)) {
-      return new LinkedHashMap<>(schemaCache.get(templatePath));
+      return deepCopySchema(schemaCache.get(templatePath));
     }
     try {
       return readTemplate(templatePath);
@@ -40,7 +45,7 @@ public final class JsfPOJOService {
     templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".schema."
         + DEFAULT_SCHEMA_BRANCH + ".json";
     if (schemaCache.containsKey(templatePath)) {
-      return new LinkedHashMap<>(schemaCache.get(templatePath));
+      return deepCopySchema(schemaCache.get(templatePath));
     }
     try {
       return readTemplate(templatePath);
@@ -59,7 +64,7 @@ public final class JsfPOJOService {
     String templatePath =
         JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".schema.json";
     if (schemaCache.containsKey(templatePath)) {
-      return new LinkedHashMap<>(schemaCache.get(templatePath));
+      return deepCopySchema(schemaCache.get(templatePath));
     }
 
     try {
@@ -78,7 +83,7 @@ public final class JsfPOJOService {
     String templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType
         + ".uiSchema." + branch + ".json";
     if (schemaCache.containsKey(templatePath)) {
-      return new LinkedHashMap<>(schemaCache.get(templatePath));
+      return deepCopySchema(schemaCache.get(templatePath));
     }
     try {
       return readTemplate(templatePath);
@@ -87,7 +92,7 @@ public final class JsfPOJOService {
     templatePath = JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".uiSchema."
         + DEFAULT_SCHEMA_BRANCH + ".json";
     if (schemaCache.containsKey(templatePath)) {
-      return new LinkedHashMap<>(schemaCache.get(templatePath));
+      return deepCopySchema(schemaCache.get(templatePath));
     }
     try {
       return readTemplate(templatePath);
@@ -106,7 +111,7 @@ public final class JsfPOJOService {
     String templatePath =
         JsfConfig.getTemplatePath() + "/" + formType + "/" + formType + ".uiSchema.json";
     if (schemaCache.containsKey(templatePath)) {
-      return new LinkedHashMap<>(schemaCache.get(templatePath));
+      return deepCopySchema(schemaCache.get(templatePath));
     }
 
     try {
@@ -117,12 +122,16 @@ public final class JsfPOJOService {
     }
   }
 
-  private LinkedHashMap<String, Object> readTemplate(String templatePath) throws Exception {
+  private Map<String, Object> readTemplate(String templatePath) throws Exception {
     URL schemaUrl = Resources.getResource(templatePath);
     String json = Resources.toString(schemaUrl, StandardCharsets.UTF_8);
     Map<String, Object> template = JsonCoreFactory.INSTANCE.readJson(json).asObject().toMap();
     schemaCache.put(templatePath, template);
-    return new LinkedHashMap<>(template);
+    return deepCopySchema(template);
+  }
+
+  private Map<String, Object> deepCopySchema(Map<String, Object> schema) {
+    return objectMapper.convertValue(schema, new TypeReference<Map<String, Object>>() {});
   }
 
 }
