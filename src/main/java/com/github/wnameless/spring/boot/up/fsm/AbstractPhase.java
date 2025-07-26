@@ -30,7 +30,11 @@ public abstract class AbstractPhase<E extends PhaseProvider<E, S, T, ID>, S exte
 
   @Override
   public StateRecord<S, T, ID> getStateRecord() {
-    return Optional.ofNullable(stateRecordSupplier.get()).orElse(new StateRecord<>(initialState()));
+    return Optional.ofNullable(stateRecordSupplier.get()).orElseGet(() -> {
+      var stateRecord = new StateRecord<>(initialState());
+      stateRecordConsumer.accept(stateRecord);
+      return stateRecord;
+    });
   }
 
   @Override
