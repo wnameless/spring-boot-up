@@ -14,6 +14,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.wnameless.spring.boot.up.jsf.model.ConditionalDependency;
+import com.github.wnameless.spring.boot.up.jsf.model.FieldOrigin;
+import com.github.wnameless.spring.boot.up.jsf.model.FlattenedSchemaResult;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -414,6 +417,207 @@ public class JsfSchemaUtils {
       String propName = it.next();
       if (!target.has(propName)) {
         target.set(propName, nestedConditionals.get(propName));
+      }
+    }
+  }
+
+  public FlattenedSchemaResult flattenConditionalSchemaWithOrigins(String jsonSchema) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode root = mapper.readTree(jsonSchema);
+
+      Map<String, FieldOrigin> fieldOrigins = new HashMap<>();
+      List<ConditionalDependency> dependencies = new ArrayList<>();
+      Set<String> originalRequired = new HashSet<>();
+
+      // Collect original required fields
+      if (root.has("required") && root.get("required").isArray()) {
+        root.get("required").forEach(req -> originalRequired.add(req.asText()));
+      }
+
+      // Track origins while flattening
+      JsonNode flattened = flattenConditionalNodeWithOrigins(root, mapper, fieldOrigins,
+          dependencies, "", originalRequired);
+
+      // Convert to Map
+      Map<String, Object> flattenedMap = mapper.readValue(mapper.writeValueAsString(flattened),
+          new TypeReference<Map<String, Object>>() {});
+
+      return new FlattenedSchemaResult(flattenedMap, fieldOrigins, dependencies, originalRequired);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to flatten conditional schema with origins", e);
+    }
+  }
+
+  public FlattenedSchemaResult flattenConditionalSchemaWithOrigins(Map<String, Object> jsonSchema) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      String json = mapper.writeValueAsString(jsonSchema);
+      return flattenConditionalSchemaWithOrigins(json);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("Failed to process schema", e);
+    }
+  }
+
+  private JsonNode flattenConditionalNodeWithOrigins(JsonNode node, ObjectMapper mapper,
+      Map<String, FieldOrigin> fieldOrigins, List<ConditionalDependency> dependencies,
+      String currentPath, Set<String> originalRequired) {
+    if (!node.isObject()) {
+      return node.deepCopy();
+    }
+
+    ObjectNode result = mapper.createObjectNode();
+
+    // Copy all non-conditional fields
+    for (Iterator<String> it = node.fieldNames(); it.hasNext();) {
+      String fieldName = it.next();
+      if (!isConditionalKeyword(fieldName)) {
+        JsonNode fieldValue = node.get(fieldName);
+        if ("properties".equals(fieldName) && fieldValue.isObject()) {
+          // Process original properties
+          ObjectNode flattenedProps = mapper.createObjectNode();
+          for (Iterator<String> propIt = fieldValue.fieldNames(); propIt.hasNext();) {
+            String propName = propIt.next();
+            // Track origin as ORIGINAL_REQUIRED or ORIGINAL_OPTIONAL
+            FieldOrigin origin = originalRequired.contains(propName) ? FieldOrigin.ORIGINAL_REQUIRED
+                : FieldOrigin.ORIGINAL_OPTIONAL;
+            fieldOrigins.put(propName, origin);
+            flattenedProps.set(propName, fieldValue.get(propName).deepCopy());
+          }
+          result.set(fieldName, flattenedProps);
+        } else {
+          result.set(fieldName, fieldValue.deepCopy());
+        }
+      }
+    }
+
+    // Process conditional keywords with origin tracking
+    processConditionalsWithOrigins(node, mapper, result, fieldOrigins, dependencies, currentPath);
+
+    return result;
+  }
+
+  private void processConditionalsWithOrigins(JsonNode node, ObjectMapper mapper, ObjectNode result,
+      Map<String, FieldOrigin> fieldOrigins, List<ConditionalDependency> dependencies,
+      String currentPath) {
+
+    ObjectNode existingProps = (ObjectNode) result.get("properties");
+    if (existingProps == null) {
+      existingProps = mapper.createObjectNode();
+      result.set("properties", existingProps);
+    }
+
+    // Process allOf - recursively process each subschema
+    if (node.has("allOf") && node.get("allOf").isArray()) {
+      for (JsonNode subSchema : node.get("allOf")) {
+        // First merge direct properties
+        mergePropertiesWithOrigin(existingProps, subSchema, FieldOrigin.ALL_OF, fieldOrigins,
+            mapper);
+        // Then recursively process any conditionals within this subschema
+        processConditionalsWithOrigins(subSchema, mapper, result, fieldOrigins, dependencies,
+            currentPath);
+      }
+    }
+
+    // Process anyOf - recursively process each subschema
+    if (node.has("anyOf") && node.get("anyOf").isArray()) {
+      for (JsonNode subSchema : node.get("anyOf")) {
+        // First merge direct properties
+        mergePropertiesWithOrigin(existingProps, subSchema, FieldOrigin.ANY_OF, fieldOrigins,
+            mapper);
+        // Then recursively process any conditionals within this subschema
+        processConditionalsWithOrigins(subSchema, mapper, result, fieldOrigins, dependencies,
+            currentPath);
+      }
+    }
+
+    // Process oneOf - recursively process each subschema
+    if (node.has("oneOf") && node.get("oneOf").isArray()) {
+      for (JsonNode subSchema : node.get("oneOf")) {
+        // First merge direct properties
+        mergePropertiesWithOrigin(existingProps, subSchema, FieldOrigin.ONE_OF, fieldOrigins,
+            mapper);
+        // Then recursively process any conditionals within this subschema
+        processConditionalsWithOrigins(subSchema, mapper, result, fieldOrigins, dependencies,
+            currentPath);
+      }
+    }
+
+    // Process if/then/else with dependency tracking
+    if (node.has("if")) {
+      JsonNode ifNode = node.get("if");
+
+      // Extract condition details
+      String conditionField = null;
+      Object conditionValue = null;
+      String operator = "equals";
+
+      if (ifNode.has("properties")) {
+        JsonNode ifProps = ifNode.get("properties");
+        for (Iterator<String> it = ifProps.fieldNames(); it.hasNext();) {
+          conditionField = it.next();
+          JsonNode condProp = ifProps.get(conditionField);
+          if (condProp.has("const")) {
+            conditionValue = condProp.get("const").asText();
+            operator = "const";
+          } else if (condProp.has("enum") && condProp.get("enum").size() == 1) {
+            conditionValue = condProp.get("enum").get(0).asText();
+            operator = "enum";
+          }
+          break; // Handle first condition only for now
+        }
+      }
+
+      // Process then branch
+      if (node.has("then") && conditionField != null) {
+        JsonNode thenNode = node.get("then");
+        if (thenNode.has("properties")) {
+          JsonNode thenProps = thenNode.get("properties");
+          for (Iterator<String> it = thenProps.fieldNames(); it.hasNext();) {
+            String propName = it.next();
+            if (!existingProps.has(propName)) {
+              existingProps.set(propName, thenProps.get(propName).deepCopy());
+              fieldOrigins.put(propName, FieldOrigin.THEN_BRANCH);
+              // Add dependency
+              dependencies.add(new ConditionalDependency(conditionField, conditionValue, operator,
+                  propName, true));
+            }
+          }
+        }
+      }
+
+      // Process else branch
+      if (node.has("else") && conditionField != null) {
+        JsonNode elseNode = node.get("else");
+        if (elseNode.has("properties")) {
+          JsonNode elseProps = elseNode.get("properties");
+          for (Iterator<String> it = elseProps.fieldNames(); it.hasNext();) {
+            String propName = it.next();
+            if (!existingProps.has(propName)) {
+              existingProps.set(propName, elseProps.get(propName).deepCopy());
+              fieldOrigins.put(propName, FieldOrigin.ELSE_BRANCH);
+              // Add dependency
+              dependencies.add(new ConditionalDependency(conditionField, conditionValue, operator,
+                  propName, false));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void mergePropertiesWithOrigin(ObjectNode target, JsonNode source, FieldOrigin origin,
+      Map<String, FieldOrigin> fieldOrigins, ObjectMapper mapper) {
+    if (!source.isObject()) return;
+
+    if (source.has("properties") && source.get("properties").isObject()) {
+      JsonNode sourceProps = source.get("properties");
+      for (Iterator<String> it = sourceProps.fieldNames(); it.hasNext();) {
+        String propName = it.next();
+        if (!target.has(propName)) {
+          target.set(propName, sourceProps.get(propName).deepCopy());
+          fieldOrigins.putIfAbsent(propName, origin);
+        }
       }
     }
   }
