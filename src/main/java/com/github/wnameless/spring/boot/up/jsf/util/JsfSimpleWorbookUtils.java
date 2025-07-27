@@ -766,7 +766,7 @@ public class JsfSimpleWorbookUtils {
     row1.createCell(2).setCellValue("Original schema required field");
 
     Row row2 = legendSheet.createRow(rowNum++);
-    Cell colorCell2 = row2.createCell(0);
+    // Cell colorCell2 = row2.createCell(0);
     row2.createCell(1).setCellValue("Optional Field");
     row2.createCell(2).setCellValue("Original schema optional field (no color)");
 
