@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -276,6 +277,145 @@ public class JsfSchemaUtils {
   private String parentPath(String path) {
     int idx = path.lastIndexOf('.');
     return (idx == -1) ? "" : path.substring(0, idx);
+  }
+
+  public Map<String, Object> flattenConditionalSchema(Map<String, Object> jsonSchema) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      String json = mapper.writeValueAsString(jsonSchema);
+      String flattened = flattenConditionalSchema(json);
+      return mapper.readValue(flattened, new TypeReference<Map<String, Object>>() {});
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to process schema", e);
+    }
+  }
+
+  public String flattenConditionalSchema(String jsonSchema) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode root = mapper.readTree(jsonSchema);
+      JsonNode flattened = flattenConditionalNode(root, mapper);
+      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(flattened);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to flatten conditional schema", e);
+    }
+  }
+
+  private JsonNode flattenConditionalNode(JsonNode node, ObjectMapper mapper) {
+    if (!node.isObject()) {
+      return node.deepCopy();
+    }
+
+    ObjectNode result = mapper.createObjectNode();
+
+    // Copy all non-conditional fields
+    for (Iterator<String> it = node.fieldNames(); it.hasNext();) {
+      String fieldName = it.next();
+      if (!isConditionalKeyword(fieldName)) {
+        JsonNode fieldValue = node.get(fieldName);
+        if ("properties".equals(fieldName) && fieldValue.isObject()) {
+          // Recursively flatten properties
+          ObjectNode flattenedProps = mapper.createObjectNode();
+          for (Iterator<String> propIt = fieldValue.fieldNames(); propIt.hasNext();) {
+            String propName = propIt.next();
+            flattenedProps.set(propName, flattenConditionalNode(fieldValue.get(propName), mapper));
+          }
+          result.set(fieldName, flattenedProps);
+        } else if ("items".equals(fieldName) && fieldValue.isObject()) {
+          // Recursively flatten items
+          result.set(fieldName, flattenConditionalNode(fieldValue, mapper));
+        } else {
+          result.set(fieldName, fieldValue.deepCopy());
+        }
+      }
+    }
+
+    // Merge properties from conditional keywords
+    ObjectNode mergedProperties = extractAndMergeConditionalProperties(node, mapper);
+    if (mergedProperties.size() > 0) {
+      ObjectNode existingProps = (ObjectNode) result.get("properties");
+      if (existingProps == null) {
+        existingProps = mapper.createObjectNode();
+        result.set("properties", existingProps);
+      }
+      // Merge conditional properties into existing properties
+      for (Iterator<String> it = mergedProperties.fieldNames(); it.hasNext();) {
+        String propName = it.next();
+        if (!existingProps.has(propName)) {
+          existingProps.set(propName, mergedProperties.get(propName));
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private boolean isConditionalKeyword(String keyword) {
+    return "allOf".equals(keyword) || "anyOf".equals(keyword) || "oneOf".equals(keyword)
+        || "if".equals(keyword) || "then".equals(keyword) || "else".equals(keyword);
+  }
+
+  private ObjectNode extractAndMergeConditionalProperties(JsonNode node, ObjectMapper mapper) {
+    ObjectNode mergedProps = mapper.createObjectNode();
+
+    // Process allOf
+    if (node.has("allOf") && node.get("allOf").isArray()) {
+      for (JsonNode subSchema : node.get("allOf")) {
+        mergeSchemaProperties(mergedProps, flattenConditionalNode(subSchema, mapper), mapper);
+      }
+    }
+
+    // Process anyOf
+    if (node.has("anyOf") && node.get("anyOf").isArray()) {
+      for (JsonNode subSchema : node.get("anyOf")) {
+        mergeSchemaProperties(mergedProps, flattenConditionalNode(subSchema, mapper), mapper);
+      }
+    }
+
+    // Process oneOf
+    if (node.has("oneOf") && node.get("oneOf").isArray()) {
+      for (JsonNode subSchema : node.get("oneOf")) {
+        mergeSchemaProperties(mergedProps, flattenConditionalNode(subSchema, mapper), mapper);
+      }
+    }
+
+    // Process if/then/else
+    if (node.has("if")) {
+      if (node.has("then")) {
+        mergeSchemaProperties(mergedProps, flattenConditionalNode(node.get("then"), mapper),
+            mapper);
+      }
+      if (node.has("else")) {
+        mergeSchemaProperties(mergedProps, flattenConditionalNode(node.get("else"), mapper),
+            mapper);
+      }
+    }
+
+    return mergedProps;
+  }
+
+  private void mergeSchemaProperties(ObjectNode target, JsonNode source, ObjectMapper mapper) {
+    if (!source.isObject()) return;
+
+    // Merge properties
+    if (source.has("properties") && source.get("properties").isObject()) {
+      JsonNode sourceProps = source.get("properties");
+      for (Iterator<String> it = sourceProps.fieldNames(); it.hasNext();) {
+        String propName = it.next();
+        if (!target.has(propName)) {
+          target.set(propName, sourceProps.get(propName).deepCopy());
+        }
+      }
+    }
+
+    // Also merge any nested conditional properties from the source
+    ObjectNode nestedConditionals = extractAndMergeConditionalProperties(source, mapper);
+    for (Iterator<String> it = nestedConditionals.fieldNames(); it.hasNext();) {
+      String propName = it.next();
+      if (!target.has(propName)) {
+        target.set(propName, nestedConditionals.get(propName));
+      }
+    }
   }
 
 }
