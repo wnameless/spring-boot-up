@@ -9,7 +9,7 @@ import lombok.Data;
 
 /**
  * Result of flattening a JSON Schema with conditional statements.
- * Contains the flattened schema, field origins, and conditional dependencies.
+ * Contains the flattened schema, field origins, conditional dependencies, and JSON path mappings.
  */
 @Data
 public class FlattenedSchemaResult {
@@ -34,14 +34,39 @@ public class FlattenedSchemaResult {
    */
   private final Set<String> originalRequiredFields;
   
+  /**
+   * Map of flattened field names to their original JSON schema paths
+   * Example: "ifConditions.constPath" -> "$.properties.ifConditions.items.properties.constPath"
+   */
+  private final Map<String, String> fieldJsonPaths;
+  
+  /**
+   * Map of flattened field names to their array depth information
+   * Example: "ifConditions.constPath" -> 1 (single level array)
+   */
+  private final Map<String, Integer> fieldArrayDepths;
+  
   public FlattenedSchemaResult(Map<String, Object> flattenedSchema, 
       Map<String, FieldOrigin> fieldOrigins,
       List<ConditionalDependency> conditionalDependencies,
-      Set<String> originalRequiredFields) {
+      Set<String> originalRequiredFields,
+      Map<String, String> fieldJsonPaths,
+      Map<String, Integer> fieldArrayDepths) {
     this.flattenedSchema = flattenedSchema;
     this.fieldOrigins = fieldOrigins;
     this.conditionalDependencies = conditionalDependencies;
     this.originalRequiredFields = originalRequiredFields;
+    this.fieldJsonPaths = fieldJsonPaths;
+    this.fieldArrayDepths = fieldArrayDepths;
+  }
+  
+  // Backward compatibility constructor
+  public FlattenedSchemaResult(Map<String, Object> flattenedSchema, 
+      Map<String, FieldOrigin> fieldOrigins,
+      List<ConditionalDependency> conditionalDependencies,
+      Set<String> originalRequiredFields) {
+    this(flattenedSchema, fieldOrigins, conditionalDependencies, originalRequiredFields, 
+         new HashMap<>(), new HashMap<>());
   }
   
   /**
@@ -83,5 +108,47 @@ public class FlattenedSchemaResult {
       }
     }
     return dependentFields;
+  }
+  
+  /**
+   * Get the JSON path for a flattened field name
+   * @param fieldName The flattened field name
+   * @return The JSON schema path, or null if not found
+   */
+  public String getJsonPath(String fieldName) {
+    return fieldJsonPaths.get(fieldName);
+  }
+  
+  /**
+   * Get the array depth for a flattened field name
+   * @param fieldName The flattened field name
+   * @return The array depth (0 = not array, 1 = single level array, etc.)
+   */
+  public int getArrayDepth(String fieldName) {
+    return fieldArrayDepths.getOrDefault(fieldName, 0);
+  }
+  
+  /**
+   * Check if a field is from an array property
+   * @param fieldName The flattened field name
+   * @return true if the field is from an array
+   */
+  public boolean isArrayField(String fieldName) {
+    return getArrayDepth(fieldName) > 0;
+  }
+  
+  /**
+   * Get all array fields grouped by their parent array name
+   * @return Map of array parent names to their child fields
+   */
+  public Map<String, List<String>> getArrayFieldGroups() {
+    Map<String, List<String>> groups = new HashMap<>();
+    for (String fieldName : fieldJsonPaths.keySet()) {
+      if (isArrayField(fieldName) && fieldName.contains(".")) {
+        String arrayParent = fieldName.substring(0, fieldName.indexOf("."));
+        groups.computeIfAbsent(arrayParent, k -> new ArrayList<>()).add(fieldName);
+      }
+    }
+    return groups;
   }
 }

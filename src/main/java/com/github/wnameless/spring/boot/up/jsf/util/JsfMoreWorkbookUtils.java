@@ -126,6 +126,14 @@ public class JsfMoreWorkbookUtils {
 
         // Get title
         String title = prop.has("title") ? prop.get("title").asText() : propName;
+        
+        // Add array indicator to title if it's an array property
+        if (prop.has("type") && "array".equals(prop.get("type").asText())) {
+          title = title + " []";
+        } else if (prop.has("arrayProperty") && prop.get("arrayProperty").asBoolean()) {
+          // This is a flattened array property
+          title = title + " []";
+        }
 
         // Create visible column
         headerRow.createCell(colIndex).setCellValue(title);
@@ -228,24 +236,30 @@ public class JsfMoreWorkbookUtils {
   public static LinkedHashMap<Integer, Map<String, Object>> extractJsonDataFromWorkbook(
       byte[] excelBytes, JsonNode schema) throws Exception {
 
+    // Flatten the schema to handle array properties properly
+    FlattenedSchemaResult flattenResult = JsfSchemaUtils.flattenConditionalSchemaWithOrigins(
+        schema.toString());
+    JsonNode flattenedSchema = objectMapper.convertValue(flattenResult.getFlattenedSchema(), JsonNode.class);
+    
     Map<String, String> titleToPropertyMap = new HashMap<>();
-    Map<String, String> propertyTypeMap = new HashMap<>();
-    Map<String, String> propertyFormatMap = new HashMap<>();
+    Map<String, JsonNode> propertySchemaMap = new HashMap<>();
     Map<String, Integer> hiddenColumnMap = new HashMap<>();
 
-    JsonNode properties = schema.get("properties");
+    JsonNode properties = flattenedSchema.get("properties");
     if (properties == null || !properties.isObject()) {
       throw new IllegalArgumentException("Invalid JSON Schema: 'properties' is missing");
     }
 
-    // Build property mappings
+    // Build property mappings from flattened schema
     for (Iterator<String> it = properties.fieldNames(); it.hasNext();) {
       String propName = it.next();
       JsonNode prop = properties.get(propName);
       String title = prop.has("title") ? prop.get("title").asText() : propName;
-      titleToPropertyMap.put(title, propName);
-      if (prop.has("type")) propertyTypeMap.put(propName, prop.get("type").asText());
-      if (prop.has("format")) propertyFormatMap.put(propName, prop.get("format").asText());
+      
+      // Remove array indicator from title for mapping
+      String mappingTitle = title.endsWith(" []") ? title.substring(0, title.length() - 3) : title;
+      titleToPropertyMap.put(mappingTitle, propName);
+      propertySchemaMap.put(propName, prop);
     }
 
     LinkedHashMap<Integer, Map<String, Object>> result = new LinkedHashMap<>();
@@ -302,9 +316,11 @@ public class JsfMoreWorkbookUtils {
 
           if (cell == null || cell.getCellType() == CellType.BLANK) continue;
 
-          String type = propertyTypeMap.get(propKey);
-          String format = propertyFormatMap.get(propKey);
-          Object value = extractCellValue(cell, type, format);
+          // Use schema-aware extraction for better array handling
+          JsonNode propSchema = propertySchemaMap.get(propKey);
+          Object value = propSchema != null ? 
+              extractCellValueWithSchema(cell, propSchema) :
+              extractCellValue(cell, "string", null);
 
           if (value != null) {
             rowData.put(propKey, value);
@@ -312,7 +328,9 @@ public class JsfMoreWorkbookUtils {
         }
 
         if (!rowData.isEmpty()) {
-          result.put(rowNum - DATA_START_ROW + 1, rowData);
+          // Reconstruct object arrays from flattened data
+          Map<String, Object> reconstructedData = reconstructObjectArrays(rowData, flattenResult.getFieldOrigins());
+          result.put(rowNum - DATA_START_ROW + 1, reconstructedData);
         }
       }
     }
@@ -335,6 +353,11 @@ public class JsfMoreWorkbookUtils {
 
     // First generate empty workbook with structure
     byte[] emptyWorkbook = generateWorkbookFromSchema(schema, uiSchema);
+    
+    // Flatten the schema to handle array properties properly
+    FlattenedSchemaResult flattenResult = JsfSchemaUtils.flattenConditionalSchemaWithOrigins(
+        schema.toString());
+    JsonNode flattenedSchema = objectMapper.convertValue(flattenResult.getFlattenedSchema(), JsonNode.class);
 
     try (ByteArrayInputStream bis = new ByteArrayInputStream(emptyWorkbook);
         XSSFWorkbook workbook = new XSSFWorkbook(bis);
@@ -344,12 +367,12 @@ public class JsfMoreWorkbookUtils {
       Row headerRow = sheet.getRow(HEADER_ROW);
       Row hiddenFlagRow = sheet.getRow(HIDDEN_FLAG_ROW);
 
-      // Build column mappings
+      // Build column mappings using flattened schema
       Map<String, Integer> propertyToColumnMap = new HashMap<>();
       Map<String, Integer> propertyToHiddenColumnMap = new HashMap<>();
       Map<String, Map<String, String>> enumValueToNameMap = new HashMap<>();
 
-      JsonNode properties = schema.get("properties");
+      JsonNode properties = flattenedSchema.get("properties");
 
       for (int i = 0; i < headerRow.getLastCellNum(); i++) {
         Cell headerCell = headerRow.getCell(i);
@@ -393,7 +416,10 @@ public class JsfMoreWorkbookUtils {
       for (Map<String, Object> jsonData : jsonDataList) {
         Row dataRow = sheet.createRow(rowIndex++);
 
-        for (Map.Entry<String, Object> entry : jsonData.entrySet()) {
+        // Flatten object arrays in the data before mapping to columns
+        Map<String, Object> flattenedData = flattenObjectArrays(jsonData);
+
+        for (Map.Entry<String, Object> entry : flattenedData.entrySet()) {
           String propName = entry.getKey();
           Object value = entry.getValue();
 
@@ -411,11 +437,18 @@ public class JsfMoreWorkbookUtils {
             // Set actual value in hidden column
             Integer hiddenCol = propertyToHiddenColumnMap.get(propName);
             if (hiddenCol != null) {
-              setCellValue(dataRow.createCell(hiddenCol), value, properties.get(propName));
+              JsonNode propSchema = properties.get(propName);
+              setCellValue(dataRow.createCell(hiddenCol), value, propSchema);
             }
           } else {
-            // Regular field without enum display names
-            setCellValue(dataRow.createCell(colIndex), value, properties.get(propName));
+            // Regular field - use schema-aware setting for arrays
+            JsonNode propSchema = properties.get(propName);
+            if (propSchema != null) {
+              setCellValue(dataRow.createCell(colIndex), value, propSchema);
+            } else {
+              // Fallback for unknown properties
+              dataRow.createCell(colIndex).setCellValue(value.toString());
+            }
           }
         }
       }
@@ -821,6 +854,71 @@ public class JsfMoreWorkbookUtils {
         .setCellValue("• Hidden rows 2-4 contain metadata for conditional formatting");
     legendSheet.addMergedRegion(new CellRangeAddress(rowNum - 1, rowNum - 1, 0, 2));
 
+    rowNum++;
+
+    // Array notation section
+    Row arraySectionRow = legendSheet.createRow(rowNum++);
+    arraySectionRow.createCell(0).setCellValue("ARRAY NOTATION");
+    arraySectionRow.getCell(0).setCellStyle(headerStyle);
+    legendSheet.addMergedRegion(new CellRangeAddress(rowNum - 1, rowNum - 1, 0, 2));
+    
+    Row arrayDescRow = legendSheet.createRow(rowNum++);
+    arrayDescRow.createCell(0).setCellValue("How to enter array values in cells:");
+    legendSheet.addMergedRegion(new CellRangeAddress(rowNum - 1, rowNum - 1, 0, 2));
+
+    // Array examples
+    Row arrayHeader = legendSheet.createRow(rowNum++);
+    arrayHeader.createCell(0).setCellValue("Type");
+    arrayHeader.createCell(1).setCellValue("Format");
+    arrayHeader.createCell(2).setCellValue("Example");
+
+    // Simple arrays
+    Row simpleRow = legendSheet.createRow(rowNum++);
+    simpleRow.createCell(0).setCellValue("Simple Arrays");
+    simpleRow.createCell(1).setCellValue("Comma-separated values");
+    simpleRow.createCell(2).setCellValue("apple, banana, cherry");
+
+    // Arrays with commas
+    Row commaRow = legendSheet.createRow(rowNum++);
+    commaRow.createCell(0).setCellValue("Values with commas");
+    commaRow.createCell(1).setCellValue("Use \\, for literal comma");
+    commaRow.createCell(2).setCellValue("Hello\\, World, Goodbye");
+
+    // Nested arrays
+    Row nestedRow = legendSheet.createRow(rowNum++);
+    nestedRow.createCell(0).setCellValue("Nested Arrays");
+    nestedRow.createCell(1).setCellValue("Use indexed notation");
+    nestedRow.createCell(2).setCellValue("A,[0,0],B,[0,1],C,[1,0]");
+
+    // Object arrays
+    Row objectRow = legendSheet.createRow(rowNum++);
+    objectRow.createCell(0).setCellValue("Object Arrays");
+    objectRow.createCell(1).setCellValue("Aligned values across columns");
+    objectRow.createCell(2).setCellValue("John, Jane | 25, 30 | IT, HR");
+
+    rowNum++;
+
+    // Escape sequences
+    Row escapeHeader = legendSheet.createRow(rowNum++);
+    escapeHeader.createCell(0).setCellValue("ESCAPE SEQUENCES");
+    escapeHeader.getCell(0).setCellStyle(headerStyle);
+    legendSheet.addMergedRegion(new CellRangeAddress(rowNum - 1, rowNum - 1, 0, 2));
+
+    Row escape1 = legendSheet.createRow(rowNum++);
+    escape1.createCell(0).setCellValue("\\,");
+    escape1.createCell(1).setCellValue("Literal comma");
+    escape1.createCell(2).setCellValue("Hello\\, World → \"Hello, World\"");
+
+    Row escape2 = legendSheet.createRow(rowNum++);
+    escape2.createCell(0).setCellValue("\\\\");
+    escape2.createCell(1).setCellValue("Literal backslash");
+    escape2.createCell(2).setCellValue("Path\\\\file → \"Path\\file\"");
+
+    Row escape3 = legendSheet.createRow(rowNum++);
+    escape3.createCell(0).setCellValue("\\[ \\]");
+    escape3.createCell(1).setCellValue("Literal brackets");
+    escape3.createCell(2).setCellValue("\\[0\\] → \"[0]\"");
+
     // Auto-size columns
     legendSheet.autoSizeColumn(0);
     legendSheet.autoSizeColumn(1);
@@ -841,6 +939,12 @@ public class JsfMoreWorkbookUtils {
     if (cell == null || cell.getCellType() == CellType.BLANK) return null;
 
     switch (type) {
+      case "array":
+        // Parse array values using ArrayValueParser
+        String arrayText = cell.toString();
+        // Default to string array if no specific item type provided
+        return ArrayValueParser.parseArrayValue(arrayText, "string");
+        
       case "string":
         if (cell.getCellType() == CellType.NUMERIC && "date".equals(format)) {
           Date date = cell.getDateCellValue();
@@ -869,6 +973,221 @@ public class JsfMoreWorkbookUtils {
         return cell.toString();
     }
   }
+  
+  private Object extractCellValueWithSchema(Cell cell, JsonNode propSchema) {
+    if (cell == null || cell.getCellType() == CellType.BLANK) return null;
+    
+    String type = propSchema.has("type") ? propSchema.get("type").asText() : "string";
+    
+    switch (type) {
+      case "array":
+        // Parse array values with proper item type
+        String arrayText = cell.toString();
+        JsonNode items = propSchema.get("items");
+        String itemType = items != null && items.has("type") ? items.get("type").asText() : "string";
+        
+        if (items != null && items.has("items")) {
+          // Nested array - use indexed notation
+          return ArrayValueParser.parseNestedArrayValue(arrayText, itemType);
+        } else {
+          // Simple array - use comma-separated parsing
+          return ArrayValueParser.parseArrayValue(arrayText, itemType);
+        }
+        
+      default:
+        // Check if it's a flattened array property
+        if (propSchema.has("arrayProperty") && propSchema.get("arrayProperty").asBoolean()) {
+          // Parse as array with the property's original type
+          String cellText = cell.toString();
+          return ArrayValueParser.parseArrayValue(cellText, type);
+        } else {
+          // Use existing logic for non-array types
+          String format = propSchema.has("format") ? propSchema.get("format").asText() : null;
+          return extractCellValue(cell, type, format);
+        }
+    }
+  }
+
+  /**
+   * Reconstruct object arrays from flattened column data.
+   * Groups flattened properties by their array parent and reconstructs objects.
+   */
+  private static Map<String, Object> reconstructObjectArrays(Map<String, Object> flattenedData, 
+      Map<String, FieldOrigin> fieldOrigins) {
+    Map<String, Object> result = new HashMap<>();
+    Map<String, Map<String, List<Object>>> arrayGroups = new HashMap<>();
+    
+    // Group flattened array properties by parent array
+    for (Map.Entry<String, Object> entry : flattenedData.entrySet()) {
+      String propName = entry.getKey();
+      Object value = entry.getValue();
+      
+      if (propName.contains(".")) {
+        // This might be a flattened array property
+        String[] parts = propName.split("\\.", 2);
+        String arrayName = parts[0];
+        String itemProp = parts[1];
+        
+        // Check if this is from an array property
+        FieldOrigin origin = fieldOrigins.get(propName);
+        if (origin != null) {
+          arrayGroups.computeIfAbsent(arrayName, k -> new HashMap<>())
+              .put(itemProp, parseArrayProperty(value));
+        }
+      } else {
+        // Regular property - add directly
+        result.put(propName, value);
+      }
+    }
+    
+    // Reconstruct object arrays
+    for (Map.Entry<String, Map<String, List<Object>>> arrayEntry : arrayGroups.entrySet()) {
+      String arrayName = arrayEntry.getKey();
+      Map<String, List<Object>> properties = arrayEntry.getValue();
+      
+      // Find the maximum array length
+      int maxLength = properties.values().stream()
+          .mapToInt(List::size)
+          .max().orElse(0);
+      
+      if (maxLength > 0) {
+        List<Map<String, Object>> arrayObjects = new ArrayList<>();
+        for (int i = 0; i < maxLength; i++) {
+          Map<String, Object> obj = new HashMap<>();
+          for (Map.Entry<String, List<Object>> propEntry : properties.entrySet()) {
+            String propKey = propEntry.getKey();
+            List<Object> propValues = propEntry.getValue();
+            if (i < propValues.size()) {
+              obj.put(propKey, propValues.get(i));
+            }
+          }
+          if (!obj.isEmpty()) {
+            arrayObjects.add(obj);
+          }
+        }
+        result.put(arrayName, arrayObjects);
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Parse array property value into list.
+   */
+  private static List<Object> parseArrayProperty(Object value) {
+    if (value instanceof List) {
+      @SuppressWarnings("unchecked")
+      List<Object> list = (List<Object>) value;
+      return list;
+    } else if (value instanceof String) {
+      // Parse comma-separated values
+      return ArrayValueParser.parseArrayValue((String) value, "string");
+    } else {
+      return List.of(value);
+    }
+  }
+  
+  /**
+   * Flatten object arrays into separate column properties.
+   */
+  private static Map<String, Object> flattenObjectArrays(Map<String, Object> originalData) {
+    Map<String, Object> result = new HashMap<>();
+    
+    for (Map.Entry<String, Object> entry : originalData.entrySet()) {
+      String propName = entry.getKey();
+      Object value = entry.getValue();
+      
+      if (value instanceof List) {
+        List<?> list = (List<?>) value;
+        if (!list.isEmpty() && list.get(0) instanceof Map) {
+          // This is an object array - flatten it
+          @SuppressWarnings("unchecked")
+          List<Map<String, Object>> objectArray = (List<Map<String, Object>>) list;
+          
+          // Group by property name
+          Map<String, List<Object>> propertyGroups = new HashMap<>();
+          for (Map<String, Object> obj : objectArray) {
+            for (Map.Entry<String, Object> objEntry : obj.entrySet()) {
+              String objPropName = objEntry.getKey();
+              Object objValue = objEntry.getValue();
+              propertyGroups.computeIfAbsent(objPropName, k -> new ArrayList<>()).add(objValue);
+            }
+          }
+          
+          // Create flattened properties
+          for (Map.Entry<String, List<Object>> propGroup : propertyGroups.entrySet()) {
+            String flattenedName = propName + "." + propGroup.getKey();
+            List<Object> values = propGroup.getValue();
+            result.put(flattenedName, ArrayValueParser.formatArrayValue(values));
+          }
+        } else {
+          // Simple array
+          result.put(propName, ArrayValueParser.formatArrayValue(value));
+        }
+      } else {
+        // Regular property
+        result.put(propName, value);
+      }
+    }
+    
+    return result;
+  }
+
+  private Object getCellValue(Cell cell, JsonNode propSchema) {
+    if (cell == null) return null;
+
+    String type = propSchema.has("type") ? propSchema.get("type").asText() : "string";
+
+    switch (type) {
+      case "array":
+        // Parse array values
+        String arrayText = cell.toString();
+        JsonNode items = propSchema.get("items");
+        String itemType = items != null && items.has("type") ? items.get("type").asText() : "string";
+        
+        if (items != null && items.has("items")) {
+          // Nested array - use indexed notation
+          return ArrayValueParser.parseNestedArrayValue(arrayText, itemType);
+        } else {
+          // Simple array - use comma-separated parsing
+          return ArrayValueParser.parseArrayValue(arrayText, itemType);
+        }
+        
+      case "number":
+        if (cell.getCellType() == CellType.NUMERIC) {
+          return cell.getNumericCellValue();
+        }
+        try {
+          return Double.parseDouble(cell.toString());
+        } catch (NumberFormatException e) {
+          return cell.toString();
+        }
+
+      case "integer":
+        if (cell.getCellType() == CellType.NUMERIC) {
+          return (int) cell.getNumericCellValue();
+        }
+        try {
+          return Integer.parseInt(cell.toString());
+        } catch (NumberFormatException e) {
+          return cell.toString();
+        }
+
+      case "boolean":
+        return Boolean.parseBoolean(cell.toString());
+
+      default:
+        // Check if it's a flattened array property
+        if (propSchema.has("arrayProperty") && propSchema.get("arrayProperty").asBoolean()) {
+          // Parse as array
+          String cellText = cell.toString();
+          return ArrayValueParser.parseArrayValue(cellText, type);
+        } else {
+          return cell.toString();
+        }
+    }
+  }
 
   private void setCellValue(Cell cell, Object value, JsonNode propSchema) {
     if (value == null) return;
@@ -876,6 +1195,12 @@ public class JsfMoreWorkbookUtils {
     String type = propSchema.has("type") ? propSchema.get("type").asText() : "string";
 
     switch (type) {
+      case "array":
+        // Handle array values
+        String formatted = ArrayValueParser.formatArrayValue(value);
+        cell.setCellValue(formatted);
+        break;
+        
       case "number":
       case "integer":
         if (value instanceof Number) {
@@ -888,7 +1213,14 @@ public class JsfMoreWorkbookUtils {
         break;
 
       default:
-        cell.setCellValue(value.toString());
+        // Check if it's a flattened array property
+        if (propSchema.has("arrayProperty") && propSchema.get("arrayProperty").asBoolean()) {
+          // This is a flattened array property - format as comma-separated
+          String arrayFormatted = ArrayValueParser.formatArrayValue(value);
+          cell.setCellValue(arrayFormatted);
+        } else {
+          cell.setCellValue(value.toString());
+        }
     }
   }
 }
