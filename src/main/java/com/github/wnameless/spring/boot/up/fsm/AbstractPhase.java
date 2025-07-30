@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 import org.springframework.core.GenericTypeResolver;
 import com.github.oxo42.stateless4j.StateMachineConfig;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
+import com.github.wnameless.spring.boot.up.notification.NotifiableStateMachine;
+import com.github.wnameless.spring.boot.up.notification.NotificationStrategy;
 
 public abstract class AbstractPhase<E extends PhaseProvider<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
     implements Phase<E, S, T, ID> {
@@ -54,6 +56,17 @@ public abstract class AbstractPhase<E extends PhaseProvider<E, S, T, ID>, S exte
         GenericTypeResolver.resolveTypeArguments(this.getClass(), AbstractPhase.class);
 
     return config -> {
+      // Because NotifiableStateMachine#stateMachineConfigStrategy has been overwritten, we need to
+      // add it back here
+      if (this instanceof NotifiableStateMachine nsm) {
+        var strategies = SpringBootUp.getBeansOfType(NotificationStrategy.class).values();
+        for (var strategy : strategies) {
+          if (strategy.getNotifiableStateMachineType().equals(this.getClass())) {
+            strategy.applyNotificationStrategy(config, nsm.getNotifiableStateMachine());
+          }
+        }
+      }
+
       var stateFormConfigOpt = SpringBootUp.findGenericBean(StateFormConfigurator.class,
           this.getClass(), genericTypeResolver[0], genericTypeResolver[1], genericTypeResolver[2],
           genericTypeResolver[3]);
