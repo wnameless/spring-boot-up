@@ -10,13 +10,19 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.FieldNameConstants;
 
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@FieldNameConstants
 public abstract class AuditableDocument implements TimeAuditable, UserAuditable {
+
+  public static final class Fields {
+    public static final String id = "id";
+    public static final String createdAt = "createdAt";
+    public static final String updatedAt = "updatedAt";
+    public static final String createdBy = "createdBy";
+    public static final String updatedBy = "updatedBy";
+  }
 
   @EqualsAndHashCode.Include
   @Id
