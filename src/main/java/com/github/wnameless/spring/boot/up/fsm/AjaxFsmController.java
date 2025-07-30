@@ -398,6 +398,10 @@ public interface AjaxFsmController<SF extends JsonSchemaForm & JsfVersioning, PP
         }
       }
 
+      if (afterLoadStateForm() != null) {
+        item = afterLoadStateForm().apply(phaseProvider, data, item);
+      }
+
       mav.addObject(Item.name(), item);
     }
 
