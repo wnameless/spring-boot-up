@@ -26,7 +26,6 @@ public interface QuickConfigurableNotificationStrategy< //
   Set<NR> roleNamesToReceivers(List<String> roleNames, CN configurableNotification,
       SM stateMachine);
 
-  @SuppressWarnings("unchecked")
   default NotificationPlan<S, T> convertToNotificationPlan(CN configurableNotification,
       SM stateMachine) {
     var onAdvice = NotificationAdvice
