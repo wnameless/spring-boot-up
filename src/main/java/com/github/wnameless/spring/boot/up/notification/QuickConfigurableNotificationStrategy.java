@@ -18,7 +18,7 @@ public interface QuickConfigurableNotificationStrategy< //
     NS extends NotificationSource<ID>, //
     NR extends NotificationReceiver<M>, //
     M, //
-    SM extends NotifiableStateMachine<SM, S, T> & Phase<? extends RestfulItem<?>, S, T, ID>, //
+    SM extends NotifiableStateMachine<SM, S, T> & Phase<? extends RestfulItem<ID>, S, T, ID>, //
     S extends Enum<S> & State<T, ID>, //
     T extends Enum<T> & Trigger, //
     ID> extends ConfigurableNotificationStrategy<CN, NC, NT, NS, NR, M, SM, S, T, ID> {
