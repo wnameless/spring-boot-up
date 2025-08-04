@@ -47,14 +47,14 @@ public class DocxTemplateProcessor {
    * @param templateInputStream InputStream of the .docx template file.
    * @param textReplacements Map of placeholder keywords to replacement text.
    * @param imageReplacements Map of placeholder keywords to list of image resource paths.
-   * @param documentImageReplacements Map of placeholder keywords to DocumentImage objects with
-   *        custom dimensions.
+   * @param documentImageReplacements Map of placeholder keywords to list of DocumentImage objects
+   *        with custom dimensions.
    * @return Byte array of the processed .docx file.
    * @throws Exception If an error occurs during processing.
    */
   public byte[] processTemplate(InputStream templateInputStream,
       Map<String, String> textReplacements, Map<String, List<String>> imageReplacements,
-      Map<String, DocumentImage> documentImageReplacements) throws Exception {
+      Map<String, List<DocumentImage>> documentImageReplacements) throws Exception {
 
     XWPFDocument document = new XWPFDocument(templateInputStream);
 
@@ -106,7 +106,7 @@ public class DocxTemplateProcessor {
 
   private void replaceInParagraph(XWPFParagraph paragraph, Map<String, String> textReplacements,
       Map<String, List<String>> imageReplacements,
-      Map<String, DocumentImage> documentImageReplacements) throws Exception {
+      Map<String, List<DocumentImage>> documentImageReplacements) throws Exception {
     List<XWPFRun> runs = paragraph.getRuns();
     if (runs == null || runs.size() == 0) {
       return;
@@ -238,29 +238,41 @@ public class DocxTemplateProcessor {
             paragraph.removeRun(i);
           }
 
-          DocumentImage documentImage = documentImageReplacements.get(key);
+          List<DocumentImage> documentImages = documentImageReplacements.get(key);
 
-          if (documentImage != null) {
-            // Insert image with custom dimensions
-            InputStream imgInputStream = documentImage.getImageStream();
-            String imgFileName = documentImage.getFileName();
-            int imgFormat = getImageFormat(imgFileName);
+          if (documentImages != null && !documentImages.isEmpty()) {
+            // Insert images side by side
+            int insertPosition = runStartIndex;
+            for (DocumentImage documentImage : documentImages) {
+              // Insert image with custom dimensions
+              InputStream imgInputStream = documentImage.getImageStream();
+              String imgFileName = documentImage.getFileName();
+              int imgFormat = getImageFormat(imgFileName);
 
-            XWPFRun imageRun = paragraph.insertNewRun(runStartIndex);
+              XWPFRun imageRun = paragraph.insertNewRun(insertPosition++);
 
-            // Calculate dimensions
-            int width, height;
-            if (documentImage.hasCustomDimensions()) {
-              // Convert cm to EMU (1 cm = 360000 EMU)
-              width = (int) (documentImage.getWidthCm() * 360000);
-              height = (int) (documentImage.getHeightCm() * 360000);
-            } else {
-              // Use default size
-              width = Units.toEMU(100);
-              height = Units.toEMU(100);
+              // Calculate dimensions
+              int width, height;
+              if (documentImage.hasCustomDimensions()) {
+                // Convert cm to EMU (1 cm = 360000 EMU)
+                width = (int) (documentImage.getWidthCm() * 360000);
+                height = (int) (documentImage.getHeightCm() * 360000);
+              } else {
+                // Use default size
+                width = Units.toEMU(100);
+                height = Units.toEMU(100);
+              }
+
+              imageRun.addPicture(imgInputStream, imgFormat, imgFileName, width, height);
+
+              // Optionally, add a space between images
+              XWPFRun spaceRun = paragraph.insertNewRun(insertPosition++);
+              spaceRun.setText(" ");
             }
-
-            imageRun.addPicture(imgInputStream, imgFormat, imgFileName, width, height);
+            // Remove the extra space run at the end
+            if (insertPosition > runStartIndex) {
+              paragraph.removeRun(insertPosition - 1);
+            }
 
             // Recursively handle any other placeholders in the paragraph
             replaceInParagraph(paragraph, textReplacements, imageReplacements,
