@@ -37,25 +37,45 @@ public class DocxTemplateProcessor {
   public byte[] processTemplate(InputStream templateInputStream,
       Map<String, String> textReplacements, Map<String, List<String>> imageReplacements)
       throws Exception {
+    return processTemplate(templateInputStream, textReplacements, imageReplacements, null);
+  }
+
+  /**
+   * Processes a .docx template from an InputStream, replacing placeholders with provided text,
+   * static images, or dynamic images, and returns the resulting document as a byte array.
+   *
+   * @param templateInputStream InputStream of the .docx template file.
+   * @param textReplacements Map of placeholder keywords to replacement text.
+   * @param imageReplacements Map of placeholder keywords to list of image resource paths.
+   * @param documentImageReplacements Map of placeholder keywords to DocumentImage objects with
+   *        custom dimensions.
+   * @return Byte array of the processed .docx file.
+   * @throws Exception If an error occurs during processing.
+   */
+  public byte[] processTemplate(InputStream templateInputStream,
+      Map<String, String> textReplacements, Map<String, List<String>> imageReplacements,
+      Map<String, DocumentImage> documentImageReplacements) throws Exception {
 
     XWPFDocument document = new XWPFDocument(templateInputStream);
 
     // Process paragraphs
     for (XWPFParagraph paragraph : document.getParagraphs()) {
-      replaceInParagraph(paragraph, textReplacements, imageReplacements);
+      replaceInParagraph(paragraph, textReplacements, imageReplacements, documentImageReplacements);
     }
 
     // Process headers
     for (XWPFHeader header : document.getHeaderList()) {
       for (XWPFParagraph paragraph : header.getParagraphs()) {
-        replaceInParagraph(paragraph, textReplacements, imageReplacements);
+        replaceInParagraph(paragraph, textReplacements, imageReplacements,
+            documentImageReplacements);
       }
     }
 
     // Process footers
     for (XWPFFooter footer : document.getFooterList()) {
       for (XWPFParagraph paragraph : footer.getParagraphs()) {
-        replaceInParagraph(paragraph, textReplacements, imageReplacements);
+        replaceInParagraph(paragraph, textReplacements, imageReplacements,
+            documentImageReplacements);
       }
     }
 
@@ -64,7 +84,8 @@ public class DocxTemplateProcessor {
       for (XWPFTableRow row : table.getRows()) {
         for (XWPFTableCell cell : row.getTableCells()) {
           for (XWPFParagraph paragraph : cell.getParagraphs()) {
-            replaceInParagraph(paragraph, textReplacements, imageReplacements);
+            replaceInParagraph(paragraph, textReplacements, imageReplacements,
+                documentImageReplacements);
           }
         }
       }
@@ -84,7 +105,8 @@ public class DocxTemplateProcessor {
   }
 
   private void replaceInParagraph(XWPFParagraph paragraph, Map<String, String> textReplacements,
-      Map<String, List<String>> imageReplacements) throws Exception {
+      Map<String, List<String>> imageReplacements,
+      Map<String, DocumentImage> documentImageReplacements) throws Exception {
     List<XWPFRun> runs = paragraph.getRuns();
     if (runs == null || runs.size() == 0) {
       return;
@@ -167,7 +189,8 @@ public class DocxTemplateProcessor {
           }
 
           // Recursively handle any other placeholders in the paragraph
-          replaceInParagraph(paragraph, textReplacements, imageReplacements);
+          replaceInParagraph(paragraph, textReplacements, imageReplacements,
+              documentImageReplacements);
 
         } else if (imageReplacements != null && imageReplacements.containsKey(key)) {
           // Remove runs containing the placeholder
@@ -205,7 +228,43 @@ public class DocxTemplateProcessor {
             }
 
             // Recursively handle any other placeholders in the paragraph
-            replaceInParagraph(paragraph, textReplacements, imageReplacements);
+            replaceInParagraph(paragraph, textReplacements, imageReplacements,
+                documentImageReplacements);
+          }
+        } else if (documentImageReplacements != null
+            && documentImageReplacements.containsKey(key)) {
+          // Remove runs containing the placeholder
+          for (int i = runEndIndex; i >= runStartIndex; i--) {
+            paragraph.removeRun(i);
+          }
+
+          DocumentImage documentImage = documentImageReplacements.get(key);
+
+          if (documentImage != null) {
+            // Insert image with custom dimensions
+            InputStream imgInputStream = documentImage.getImageStream();
+            String imgFileName = documentImage.getFileName();
+            int imgFormat = getImageFormat(imgFileName);
+
+            XWPFRun imageRun = paragraph.insertNewRun(runStartIndex);
+
+            // Calculate dimensions
+            int width, height;
+            if (documentImage.hasCustomDimensions()) {
+              // Convert cm to EMU (1 cm = 360000 EMU)
+              width = (int) (documentImage.getWidthCm() * 360000);
+              height = (int) (documentImage.getHeightCm() * 360000);
+            } else {
+              // Use default size
+              width = Units.toEMU(100);
+              height = Units.toEMU(100);
+            }
+
+            imageRun.addPicture(imgInputStream, imgFormat, imgFileName, width, height);
+
+            // Recursively handle any other placeholders in the paragraph
+            replaceInParagraph(paragraph, textReplacements, imageReplacements,
+                documentImageReplacements);
           }
         }
       }
