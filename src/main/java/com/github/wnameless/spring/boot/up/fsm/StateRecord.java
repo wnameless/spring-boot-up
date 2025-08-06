@@ -109,9 +109,18 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
     return dataTableCopy;
   }
 
+  public ID putStateFormId(String formType, ID formId) {
+    formDataTable.putIfAbsent(formType, new LinkedHashMap<>());
+    return formDataTable.get(formType).put(JsfConfig.getDefaultBranchName(), formId);
+  }
+
   public ID putStateFormId(String formType, String formBranch, ID formId) {
     formDataTable.putIfAbsent(formType, new LinkedHashMap<>());
     return formDataTable.get(formType).put(formBranch, formId);
+  }
+
+  public Optional<ID> findStateFormId(Class<?> formType) {
+    return findStateFormIdOnDefaultBranch(formType.getSimpleName());
   }
 
   public Optional<ID> findStateFormId(String formType, String formBranch) {
