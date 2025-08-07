@@ -11,6 +11,11 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class JsfDataUtils {
 
+  public Map<String, Object> mergeData(Map<String, Object> data,
+      Map<String, Object> additionalData) {
+    return mergeSchema(data, additionalData);
+  }
+
   public Map<String, Object> mergeSchema(Map<String, Object> schema,
       Map<String, Object> additionalData) {
     var mapperOpt = SpringBootUp.findBean(ObjectMapper.class);
