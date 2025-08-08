@@ -51,6 +51,9 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
       @SuppressWarnings("unchecked")
       StateRepresentation<S, T> representation =
           stateMachineConfig.getRepresentation((S) callback.getState());
+      if (representation == null) {
+        continue;
+      }
 
       switch (callback.getAdvice()) {
         case ENTRY:
