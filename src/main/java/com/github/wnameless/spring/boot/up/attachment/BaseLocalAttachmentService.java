@@ -8,10 +8,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.HexFormat;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Consumer;
 import org.springframework.data.repository.CrudRepository;
 import lombok.SneakyThrows;
@@ -36,22 +37,15 @@ public abstract class BaseLocalAttachmentService<A extends Attachment<ID>, ID>
 
   @Override
   public URI writeData(byte[] data) {
-    String filePath = getRootFilePath() + getRandomCode();
+    String filePath = getRootFilePath() + bytesToSHA256(data);
     return saveToFile(filePath, data);
   }
 
-  private String getRandomCode() {
-    int letterNumberZero = 48;
-    int letterAlphabetLowerZ = 122;
-    int codeLength = 32;
-    Random random = new Random();
-
-    String generatedCode = random.ints(letterNumberZero, letterAlphabetLowerZ + 1)
-        .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(codeLength)
-        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-        .toString();
-
-    return generatedCode;
+  @SneakyThrows
+  private String bytesToSHA256(byte[] input) {
+    MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    byte[] hashBytes = digest.digest(input);
+    return HexFormat.of().formatHex(hashBytes);
   }
 
   private URI saveToFile(String filePath, byte[] content) {

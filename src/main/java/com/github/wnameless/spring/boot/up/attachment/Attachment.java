@@ -34,4 +34,8 @@ public interface Attachment<ID> extends IdProvider<ID> {
     return "" + getName() + (note.isBlank() ? "" : " - " + note);
   }
 
+  String getUiClassNames();
+
+  void setUiClassNames(String classNames);
+
 }

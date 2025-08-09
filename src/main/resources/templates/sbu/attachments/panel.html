@@ -57,7 +57,8 @@
                 <li class="list-group-item"
                   th:each="attachment : ${item.attachmentSnapshot.attachmentsByGroup.get(fileGroup)}">
                   <a th:href="@{${item.joinPath('attachments', attachment.id)}}"
-                    th:text="${attachment.nameWithNote}"></a>
+                    th:text="${attachment.nameWithNote}"
+                    th:classappend="${attachment.uiClassNames}"></a>
                 </li>
               </ul>
             </div>
