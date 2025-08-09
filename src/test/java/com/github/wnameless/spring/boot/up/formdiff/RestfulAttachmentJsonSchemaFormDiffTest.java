@@ -45,7 +45,7 @@ class RestfulAttachmentJsonSchemaFormDiffTest {
 
     // Verify
     RestfulAttachmentJsonSchemaForm<?, String> beforeDiff = diff.getBeforeFormDiff();
-    RestfulAttachmentJsonSchemaForm<?, String> afterDiff = diff.getAfterFormDiff();
+    // RestfulAttachmentJsonSchemaForm<?, String> afterDiff = diff.getAfterFormDiff();
 
     // Check that age field has danger color in beforeForm
     @SuppressWarnings("unchecked")
