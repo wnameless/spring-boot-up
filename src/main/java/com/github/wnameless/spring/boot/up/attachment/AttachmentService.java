@@ -24,6 +24,8 @@ public interface AttachmentService<A extends Attachment<ID>, ID> {
 
   A saveAttachment(A attachment);
 
+  Optional<A> findAttachmentByUri(URI uri);
+
   void deleteAttachment(A attachment);
 
   URI writeData(byte[] data);

@@ -14,19 +14,23 @@ import java.util.Collection;
 import java.util.HexFormat;
 import java.util.Optional;
 import java.util.function.Consumer;
-import org.springframework.data.repository.CrudRepository;
 import lombok.SneakyThrows;
 
 public abstract class BaseLocalAttachmentService<A extends Attachment<ID>, ID>
     implements AttachmentService<A, ID> {
 
-  abstract public CrudRepository<A, ID> attachmentRepository();
+  abstract public BaseLocalAttachmentRepository<A, ID> attachmentRepository();
 
   abstract public String getRootFilePath();
 
   @Override
   public A saveAttachment(A attachment) {
     return attachmentRepository().save(attachment);
+  }
+
+  @Override
+  public Optional<A> findAttachmentByUri(URI uri) {
+    return attachmentRepository().findFirstByUri(uri);
   }
 
   @Override
