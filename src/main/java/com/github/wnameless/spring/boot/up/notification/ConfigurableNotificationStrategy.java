@@ -30,7 +30,10 @@ public interface ConfigurableNotificationStrategy< //
     var notificationPlans = new ArrayList<NotificationPlan<S, T>>();
 
     findConfigurableNotifications(stateMachine).forEach(cn -> {
-      notificationPlans.add(convertToNotificationPlan(cn, stateMachine));
+      NotificationPlan<S, T> np = convertToNotificationPlan(cn, stateMachine);
+      if (np != null) {
+        notificationPlans.add(np);
+      }
     });
 
     return notificationPlans;

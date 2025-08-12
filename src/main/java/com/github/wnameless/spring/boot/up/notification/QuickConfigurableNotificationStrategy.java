@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.notification;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import org.springframework.core.GenericTypeResolver;
@@ -36,6 +37,12 @@ public interface QuickConfigurableNotificationStrategy< //
     rule.setState(getStateMachineStates().stream().filter(s -> s.name().equals(targetState))
         .findFirst().get());
 
+    var notificationInterval =
+        configurableNotification.getNotificationConfiguration().getNotificationInterval();
+    if (notificationInterval != null && notificationInterval > 0) {
+      rule.setAlwaysActionInterval(Duration.ofHours(notificationInterval));
+    }
+
     String title = getFormattedMessage(
         configurableNotification.getNotificationConfiguration().getMessageTitle(),
         configurableNotification.getNotificationConfiguration().getTitleProperties(), stateMachine);
@@ -60,12 +67,17 @@ public interface QuickConfigurableNotificationStrategy< //
           break;
       }
     }
-    var notificationSource =
-        getNotificationService().createNotificationSource(title, content, actionPath);
+
     var receivers =
         roleNamesToReceivers(configurableNotification.getNotificationConfiguration().getMessageTo(),
             configurableNotification, stateMachine);
-
+    NS notificationSource;
+    if (onAdvice != NotificationAdvice.ALWAYS) {
+      notificationSource =
+          getNotificationService().createNotificationSource(title, content, actionPath);
+    } else {
+      notificationSource = null;
+    }
     switch (onAdvice) {
       case ENTRY_FROM:
         var initTrigger = configurableNotification.getNotificationConfiguration().getInitTrigger();
@@ -88,9 +100,25 @@ public interface QuickConfigurableNotificationStrategy< //
           getNotificationService().createNotificationTarget(notificationSource, receivers);
         });
         break;
+      case ALWAYS:
+        if (rule.getAlwaysActionInterval() == null) return null;
+
+        NS alwaysNotificationSource = getNotificationService().findOrCreateNotificationSource(title,
+            content, actionPath, stateMachine.getEntity().getId());
+        rule.setAdvice(NotificationAdvice.ALWAYS);
+        rule.setAlwaysAction(() -> {
+          var alwaysTriggerReceivers =
+              getNotificationService().getAlwaysTriggerNotificationReceivers(
+                  rule.getAlwaysActionInterval(), alwaysNotificationSource, receivers);
+          getNotificationService().createNotificationTarget(alwaysNotificationSource,
+              alwaysTriggerReceivers);
+        });
+        break;
     }
 
     // Callback
+    if (notificationSource == null) return rule;
+
     NC callback = newNotificationCallback();
     callback.setStateMachineEntityId((ID) stateMachine.getEntity().getId());
     callback.setNotificationSource(notificationSource);

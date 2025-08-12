@@ -16,4 +16,6 @@ public interface NotificationTarget<S extends NotificationSource<ID>, R extends 
 
   LocalDateTime getCreatedAt();
 
+  LocalDateTime getUpdatedAt();
+
 }

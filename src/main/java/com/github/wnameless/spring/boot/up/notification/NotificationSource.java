@@ -13,4 +13,6 @@ public interface NotificationSource<ID> extends IdProvider<ID> {
 
   LocalDateTime getCreatedAt();
 
+  ID getSenderId();
+
 }

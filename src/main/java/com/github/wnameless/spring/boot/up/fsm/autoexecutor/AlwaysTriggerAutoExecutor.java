@@ -12,6 +12,8 @@ import com.github.oxo42.stateless4j.StateMachine;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.fsm.PhaseProvider;
 import com.github.wnameless.spring.boot.up.fsm.State;
+import com.github.wnameless.spring.boot.up.notification.NotifiableStateMachine;
+import com.github.wnameless.spring.boot.up.notification.NotificationStrategy;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import lombok.SneakyThrows;
@@ -39,6 +41,32 @@ public interface AlwaysTriggerAutoExecutor extends SchedulingConfigurer {
     return fsmItemList;
   }
 
+  @SuppressWarnings("rawtypes")
+  Set<State> getAlwaysNotificationStates(Class<? extends PhaseProvider> phaseProviderType);
+
+  @SneakyThrows
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  default List<? extends PhaseProvider> findAllPhaseProvidersContainingAlwaysNotificationAdvice(
+      Class<? extends PhaseProvider> phaseProviderType) {
+    var pp = phaseProviderType.getDeclaredConstructor().newInstance();
+    var repoOpt = SpringBootUp.findGenericBean(QuerydslPredicateExecutor.class, pp.getClass());
+    if (repoOpt.isEmpty()) return Collections.emptyList();
+
+    Set<State> states = getAlwaysNotificationStates(phaseProviderType);
+    if (!states.isEmpty()) {
+      var repo = repoOpt.get();
+      PathBuilder<?> entityPath =
+          new PathBuilder<>(phaseProviderType, phaseProviderType.getSimpleName());
+      var stateNames = states.stream().map(State::getName).toList();
+      var q = Expressions.stringPath(entityPath, "stateRecord.state").in(stateNames);
+      var fsmItems = repo.findAll(q);
+      var fsmItemList = StreamSupport.stream(fsmItems.spliterator(), false).toList();
+      return fsmItemList;
+    }
+
+    return Collections.emptyList();
+  }
+
   @SuppressWarnings("unchecked")
   default void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
     ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
@@ -59,12 +87,24 @@ public interface AlwaysTriggerAutoExecutor extends SchedulingConfigurer {
             }
           }
         }
+
+        var strategies = SpringBootUp.getBeansOfType(NotificationStrategy.class).values();
+        for (var fsmItem : findAllPhaseProvidersContainingAlwaysNotificationAdvice(
+            phaseProviderType)) {
+          var phase = fsmItem.getPhase();
+          for (var strategy : strategies) {
+            if (strategy.getNotifiableStateMachineType().equals(phase.getClass())) {
+              if (phase instanceof NotifiableStateMachine nsm)
+                strategy.applyAlwaysNotificationStrategy(nsm);
+            }
+          }
+        }
       }
     }, getCronExpression());
   }
 
   default String getCronExpression() {
-    return "0 */1 * * * *"; // Every 1 minute
+    return "0 */10 * * * *"; // Every 10 minute
   }
 
 }

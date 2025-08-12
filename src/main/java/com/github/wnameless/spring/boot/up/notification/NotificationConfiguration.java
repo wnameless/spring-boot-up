@@ -10,6 +10,8 @@ public interface NotificationConfiguration {
 
   String getOnAdvice();
 
+  Integer getNotificationInterval();
+
   String getInitTrigger();
 
   String getTargetState();

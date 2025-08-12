@@ -24,6 +24,12 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
 
   NotificationService<NC, NT, NS, NR, M, ID> getNotificationService();
 
+  default void applyAlwaysNotificationStrategy(SM stateMachine) {
+    for (var np : getAlwaysNotificationPlans(stateMachine)) {
+      np.getAlwaysAction().run();
+    }
+  }
+
   default void applyNotificationStrategy(StateMachineConfig<S, T> stateMachineConfig,
       SM stateMachine) {
     for (NotificationPlan<S, T> rule : getNotificationPlans(stateMachine)) {
@@ -43,6 +49,9 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
           break;
         case EXIT:
           representation.addExitAction(rule.getExitAction());
+          break;
+        case ALWAYS:
+          // ALWAYS advice is handled separately
           break;
       }
     }
@@ -67,11 +76,19 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
         case EXIT:
           representation.addExitAction(getNotificationCallbackAction1(callback));
           break;
+        case ALWAYS:
+          // ALWAYS advice has no callback
+          break;
       }
     }
   }
 
   List<NotificationPlan<S, T>> getNotificationPlans(SM stateMachine);
+
+  default List<NotificationPlan<S, T>> getAlwaysNotificationPlans(SM stateMachine) {
+    return getNotificationPlans(stateMachine).stream()
+        .filter(np -> np.getAdvice() == NotificationAdvice.ALWAYS).toList();
+  }
 
   default List<NC> getNotificationCallbacks(SM stateMachine) {
     return getNotificationService().getNotificationCallbackRepository()

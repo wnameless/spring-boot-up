@@ -9,6 +9,7 @@ public final class BasicNotificationConfiguration implements NotificationConfigu
   String phaseTypeName;
   String ruleName;
   String onAdvice;
+  Integer notificationInterval;
   String initTrigger;
   String targetState;
   String defaultProperties;

@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.notification;
 
 import static lombok.AccessLevel.PRIVATE;
+import java.time.Duration;
 import com.github.oxo42.stateless4j.delegates.Action1;
 import com.github.oxo42.stateless4j.delegates.Action2;
 import com.github.oxo42.stateless4j.transitions.Transition;
@@ -21,6 +22,10 @@ public class NotificationRule<S, T> implements NotificationPlan<S, T> {
   Action1<Transition<S, T>> exitAction;
 
   Action2<Transition<S, T>, Object[]> entryAction;
+
+  Runnable alwaysAction;
+
+  Duration alwaysActionInterval;
 
   public NotificationRule() {}
 
