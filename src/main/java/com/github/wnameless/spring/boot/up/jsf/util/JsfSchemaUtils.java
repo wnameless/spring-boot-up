@@ -43,11 +43,17 @@ public class JsfSchemaUtils {
   }
 
   public List<JsfSimpleField> schemaToFields(String jsonSchema, boolean keyAsMissingTitle) {
+    return schemaToFields(jsonSchema, keyAsMissingTitle, false);
+  }
+
+  public List<JsfSimpleField> schemaToFields(String jsonSchema, boolean keyAsMissingTitle,
+      boolean doNotTraverseNestedArray) {
     try {
       ObjectMapper mapper = new ObjectMapper();
       JsonNode root = mapper.readTree(jsonSchema);
       List<JsfSimpleField> fields = new ArrayList<>();
-      traverseSchema(root, "", "$", false, new ArrayList<>(), "", fields, keyAsMissingTitle);
+      traverseSchema(root, "", "$", false, new ArrayList<>(), "", fields, keyAsMissingTitle,
+          doNotTraverseNestedArray);
       return fields;
     } catch (Exception e) {
       throw new RuntimeException("Failed to parse schema", e);
@@ -56,7 +62,7 @@ public class JsfSchemaUtils {
 
   private void traverseSchema(JsonNode schemaNode, String flattenedPrefix, String jsonPathPrefix,
       boolean parentIsArray, List<String> parentTitles, String currentPropName,
-      List<JsfSimpleField> fields, boolean keyAsMissingTitle) {
+      List<JsfSimpleField> fields, boolean keyAsMissingTitle, boolean doNotTraverseNestedArray) {
     String type = getType(schemaNode);
     List<String> currentTitles = new ArrayList<>(parentTitles);
 
@@ -82,16 +88,23 @@ public class JsfSchemaUtils {
           String nextFlat = flattenedPrefix.isEmpty() ? propName : flattenedPrefix + "." + propName;
           String nextJsonPath = jsonPathPrefix + ".properties." + propName;
           traverseSchema(propSchema, nextFlat, nextJsonPath, false, currentTitles, propName, fields,
-              keyAsMissingTitle);
+              keyAsMissingTitle, doNotTraverseNestedArray);
         }
       }
     } else if ("array".equals(type)) {
-      JsonNode items = schemaNode.get("items");
-      String nextFlat = flattenedPrefix;
-      String nextJsonPath = jsonPathPrefix + ".items";
-      // For arrays, currentPropName not updated
-      traverseSchema(items, nextFlat, nextJsonPath, true, currentTitles, currentPropName, fields,
-          keyAsMissingTitle);
+      if (doNotTraverseNestedArray) {
+        // When doNotTraverseNestedArray is true, add the array itself as a field
+        fields.add(new JsfSimpleField(currentTitles, flattenedPrefix, jsonPathPrefix, parentIsArray,
+            hasTitle));
+      } else {
+        // Original behavior: traverse into array items
+        JsonNode items = schemaNode.get("items");
+        String nextFlat = flattenedPrefix;
+        String nextJsonPath = jsonPathPrefix + ".items";
+        // For arrays, currentPropName not updated
+        traverseSchema(items, nextFlat, nextJsonPath, true, currentTitles, currentPropName, fields,
+            keyAsMissingTitle, doNotTraverseNestedArray);
+      }
     } else {
       fields.add(new JsfSimpleField(currentTitles, flattenedPrefix, jsonPathPrefix, parentIsArray,
           hasTitle));
