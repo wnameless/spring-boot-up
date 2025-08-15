@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.notification;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,7 +46,8 @@ public interface NotificationService<NC extends NotificationCallback<NS, ID>, NT
           .filter(nt -> nt.getNotificationReceiver().equals(reveiver)).findFirst();
       if (nrOpt.isPresent()) {
         var nr = nrOpt.get();
-        if (nr.getUpdatedAt().plus(alwaysActionInterval).isBefore(LocalDateTime.now())) {
+        if (nr.getUpdatedAt().plus(alwaysActionInterval)
+            .isBefore(LocalDateTime.now(Clock.systemUTC()))) {
           finalReceivers.add(reveiver);
         }
       } else {

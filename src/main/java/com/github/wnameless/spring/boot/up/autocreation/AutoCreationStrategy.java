@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.autocreation;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import org.springframework.lang.NonNull;
 
@@ -8,7 +9,7 @@ public enum AutoCreationStrategy {
   ONCE, MINUTELY, TEN_MINUTELY, FIFTEEN_MINUTELY, THIRTY_MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY;
 
   public boolean isNowExecutable(LocalDateTime lastAutoCreationTimepoint) {
-    return isExecutable(LocalDateTime.now(), lastAutoCreationTimepoint);
+    return isExecutable(LocalDateTime.now(Clock.systemUTC()), lastAutoCreationTimepoint);
   }
 
   public boolean isExecutable(@NonNull LocalDateTime timeAt,
@@ -25,7 +26,7 @@ public enum AutoCreationStrategy {
   }
 
   public LocalDateTime getClosestTimepoint(LocalDateTime baseDateTime) {
-    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
 
     if (baseDateTime.isAfter(now)) return baseDateTime;
 

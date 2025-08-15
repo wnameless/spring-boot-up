@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.jsf.service;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +47,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
     js.setFormType(formType);
     js.setSchema(schema);
     js.setUiSchema(uiSchema);
-    js.setVersion(LocalDateTime.now());
+    js.setVersion(LocalDateTime.now(Clock.systemUTC()));
 
     return getJsfSchemaRepository().save(js);
   }
@@ -100,7 +101,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
     JS js = newJsfSchema();
     js.setFormType(formType);
     js.setFormBranch(formBranch);
-    js.setVersion(LocalDateTime.now());
+    js.setVersion(LocalDateTime.now(Clock.systemUTC()));
     js.setSchema(upstream.getSchema());
     js.setUiSchema(upstream.getUiSchema());
 
@@ -129,7 +130,7 @@ public interface JsfService<JD extends JsfData<JS, ID>, JS extends JsfSchema<ID>
     JD jd = newJsfData();
     jd.setFormData(JsonSchemaFormUtils.defaultFormData());
     jd.setJsfSchema(js);
-    jd.setVersion(LocalDateTime.now());
+    jd.setVersion(LocalDateTime.now(Clock.systemUTC()));
 
     return jd;
   }

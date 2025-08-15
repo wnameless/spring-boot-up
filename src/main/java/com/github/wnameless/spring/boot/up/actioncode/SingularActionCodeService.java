@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.actioncode;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.function.BiFunction;
@@ -32,7 +33,7 @@ public interface SingularActionCodeService<AC extends SingularActionCode<A>, A e
   default BiFunction<ModelAndView, A, ModelAndView> actionCodeRequest() {
     return (mav, action) -> {
       var rgOpt = getActionCodeRepository().findByActionAndExpiredAtGreaterThan(action,
-          LocalDateTime.now());
+          LocalDateTime.now(Clock.systemUTC()));
       if (rgOpt.isPresent()) {
         var rg = rgOpt.get();
         if (rg.isValid()) {
@@ -46,12 +47,12 @@ public interface SingularActionCodeService<AC extends SingularActionCode<A>, A e
   default BiFunction<ModelAndView, A, ModelAndView> actionCodeGeneration() {
     return (mav, action) -> {
       var acOpt = getActionCodeRepository().findByActionAndExpiredAtGreaterThan(action,
-          LocalDateTime.now());
+          LocalDateTime.now(Clock.systemUTC()));
       if (acOpt.isPresent() && acOpt.get().isValid()) {
         var ac = acOpt.get();
         if (ac.isExpired()) {
           ac.setCode(getRandomCode());
-          ac.setExpiredAt(LocalDateTime.now().plusDays(30));
+          ac.setExpiredAt(LocalDateTime.now(Clock.systemUTC()).plusDays(30));
           getActionCodeRepository().save(ac);
         }
         mav.addObject(ActionCodeAttributes.CODE, ac.getCode());
@@ -59,7 +60,7 @@ public interface SingularActionCodeService<AC extends SingularActionCode<A>, A e
         AC actionCode = newActionCode();
         actionCode.setAction(action);
         actionCode.setCode(getRandomCode());
-        actionCode.setExpiredAt(LocalDateTime.now().plusDays(30));
+        actionCode.setExpiredAt(LocalDateTime.now(Clock.systemUTC()).plusDays(30));
         getActionCodeRepository().save(actionCode);
         mav.addObject(ActionCodeAttributes.CODE, actionCode.getCode());
       }

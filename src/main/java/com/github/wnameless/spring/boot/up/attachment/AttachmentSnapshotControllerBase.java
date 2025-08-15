@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -299,7 +300,7 @@ public interface AttachmentSnapshotControllerBase<S extends AttachmentService<A,
             A a = getAttachmentService().newAttachment();
             a.setGroup(group);
             a.setName(data.getName());
-            a.setCreatedAt(LocalDateTime.now());
+            a.setCreatedAt(LocalDateTime.now(Clock.systemUTC()));
             a.setUri(service.writeData(data.getBytes()));
             service.saveAttachment(a);
 
@@ -313,7 +314,7 @@ public interface AttachmentSnapshotControllerBase<S extends AttachmentService<A,
         A a = getAttachmentService().newAttachment();
         a.setGroup(group);
         a.setName(data.getName());
-        a.setCreatedAt(LocalDateTime.now());
+        a.setCreatedAt(LocalDateTime.now(Clock.systemUTC()));
         a.setUri(service.writeData(data.getBytes()));
         service.saveAttachment(a);
 

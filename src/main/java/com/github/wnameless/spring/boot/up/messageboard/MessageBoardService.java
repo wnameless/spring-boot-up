@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.messageboard;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +34,7 @@ public interface MessageBoardService<N extends MessageBoardNotice<B>, B extends 
     if (messageBoardOpt.isEmpty()) return Collections.emptyList();
 
     var messageBoard = messageBoardOpt.get();
-    var now = LocalDateTime.now();
+    var now = LocalDateTime.now(Clock.systemUTC());
     var retentionDuration = messageBoard.getRetentionDuration();
     var notices = getMessageBoardNoticeRepository().findByMessageBoardAndCreatedAtAfter(
         messageBoard, now.minusDays(retentionDuration.toDays()));
@@ -46,7 +47,7 @@ public interface MessageBoardService<N extends MessageBoardNotice<B>, B extends 
     if (messageBoardOpt.isEmpty()) return 0;
 
     var messageBoard = messageBoardOpt.get();
-    var now = LocalDateTime.now();
+    var now = LocalDateTime.now(Clock.systemUTC());
     var retentionDuration = messageBoard.getRetentionDuration();
     var timelyDuration = messageBoard.getTimelyDuration();
     return getMessageBoardNoticeRepository().countByMessageBoardAndCreatedAtAfter(messageBoard,

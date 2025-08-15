@@ -2,8 +2,11 @@ package com.github.wnameless.spring.boot.up.web;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -76,26 +79,35 @@ public class HtmlHelper {
     return Math.abs(new Random().nextInt());
   }
 
-  public String toTimeAgo(LocalDateTime dateTime) {
-    LocalDateTime now = LocalDateTime.now();
-    long diff = ChronoUnit.MINUTES.between(dateTime, now);
+  public String toTimeAgo(LocalDateTime utcDateTime) {
+    LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
+    long diff = ChronoUnit.MINUTES.between(utcDateTime, now);
 
     if (diff < 1) {
-      diff = ChronoUnit.SECONDS.between(dateTime, now);
+      diff = ChronoUnit.SECONDS.between(utcDateTime, now);
       return messageSource.getMessage("sbu.web.time.ago.seconds", new Object[] {diff},
           diff == 1 ? "{0} second ago" : "{0} seconds ago", LocaleContextHolder.getLocale());
     } else if (diff >= 1 && diff < 60) {
       return messageSource.getMessage("sbu.web.time.ago.minutes", new Object[] {diff},
           diff == 1 ? "{0} minute ago" : "{0} minutes ago", LocaleContextHolder.getLocale());
     } else if (diff >= 60 && diff < 1440) {
-      diff = ChronoUnit.HOURS.between(dateTime, now);
+      diff = ChronoUnit.HOURS.between(utcDateTime, now);
       return messageSource.getMessage("sbu.web.time.ago.hours", new Object[] {diff},
           diff == 1 ? "{0} hour ago" : "{0} hours ago", LocaleContextHolder.getLocale());
     }
 
-    diff = ChronoUnit.DAYS.between(dateTime, now);
+    diff = ChronoUnit.DAYS.between(utcDateTime, now);
     return messageSource.getMessage("sbu.web.time.ago.days", new Object[] {diff},
         diff == 1 ? "{0} day ago" : "{0} days ago", LocaleContextHolder.getLocale());
+  }
+
+  public String toZonedTime(LocalDateTime utcDateTime) {
+    return toZonedTime(utcDateTime, ZoneId.systemDefault().getId());
+  }
+
+  public String toZonedTime(LocalDateTime utcDateTime, String zoneId) {
+    return utcDateTime.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of(zoneId))
+        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
   }
 
   public String toQueryString(Map<String, ?> params) {

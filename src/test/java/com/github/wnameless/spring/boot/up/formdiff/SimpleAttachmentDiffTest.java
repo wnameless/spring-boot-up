@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.formdiff;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.net.URI;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -79,7 +80,7 @@ class SimpleAttachmentDiffTest {
     String name;
     URI uri;
     String note;
-    LocalDateTime createdAt = LocalDateTime.now();
+    LocalDateTime createdAt = LocalDateTime.now(Clock.systemUTC());
     String uiClassNames;
 
     @Override

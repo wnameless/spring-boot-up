@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.fsm;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -23,7 +24,7 @@ public class StateAuditTrail<S extends State<T, ID>, T extends Trigger, ID> {
     this.trigger = trigger;
     this.state = state;
     this.username = username;
-    timestamp = LocalDateTime.now();
+    timestamp = LocalDateTime.now(Clock.systemUTC());
   }
 
 }
