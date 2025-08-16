@@ -1,0 +1,19 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="bs5(contentNodes)">
+
+  <nav>
+    <ol class="breadcrumb">
+      <th:block th:each="contentNode,idx : ${contentNodes}">
+        <li th:unless="${idx.last}" class="breadcrumb-item">
+          <a th:href="${contentNode.path}">[[${contentNode.name}]]</a>
+        </li>
+        <li th:if="${idx.last}" class="breadcrumb-item active">
+          <a>[[${contentNode.name}]]</a>
+        </li>
+      </th:block>
+    </ol>
+  </nav>
+</div>
+
+</html>
