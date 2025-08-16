@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -58,6 +60,56 @@ public class JsfSchemaUtils {
     } catch (Exception e) {
       throw new RuntimeException("Failed to parse schema", e);
     }
+  }
+
+  public Map<String, Object> keepArrayData(Map<String, Object> input,
+      List<JsfSimpleField> simpleFields) {
+    var output = new LinkedHashMap<String, Object>();
+
+    Set<String> arrayKeys = simpleFields.stream().filter(JsfSimpleField::isArray)
+        .map(JsfSimpleField::getFlattenedKey).collect(Collectors.toSet());
+
+    for (Map.Entry<String, Object> entry : input.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue();
+
+      if (arrayKeys.contains(key)) {
+        output.put(key, value);
+      } else if (value instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> nestedMap = (Map<String, Object>) value;
+        Map<String, Object> filteredNested = keepArrayDataNested(nestedMap, key, arrayKeys);
+        if (!filteredNested.isEmpty()) {
+          output.put(key, filteredNested);
+        }
+      }
+    }
+
+    return output;
+  }
+
+  private Map<String, Object> keepArrayDataNested(Map<String, Object> input, String prefix,
+      Set<String> arrayKeys) {
+    var output = new LinkedHashMap<String, Object>();
+
+    for (Map.Entry<String, Object> entry : input.entrySet()) {
+      String key = entry.getKey();
+      String fullKey = prefix + "." + key;
+      Object value = entry.getValue();
+
+      if (arrayKeys.contains(fullKey)) {
+        output.put(key, value);
+      } else if (value instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> nestedMap = (Map<String, Object>) value;
+        Map<String, Object> filteredNested = keepArrayDataNested(nestedMap, fullKey, arrayKeys);
+        if (!filteredNested.isEmpty()) {
+          output.put(key, filteredNested);
+        }
+      }
+    }
+
+    return output;
   }
 
   private void traverseSchema(JsonNode schemaNode, String flattenedPrefix, String jsonPathPrefix,
@@ -499,12 +551,12 @@ public class JsfSchemaUtils {
             // Track origin as ORIGINAL_REQUIRED or ORIGINAL_OPTIONAL
             FieldOrigin origin = originalRequired.contains(propName) ? FieldOrigin.ORIGINAL_REQUIRED
                 : FieldOrigin.ORIGINAL_OPTIONAL;
-            
+
             // Check if this is an array with object items
             if (isArrayOfObjects(propSchema)) {
               // Flatten array[object] properties
               String propJsonPath = currentPath + "." + propName;
-              flattenArrayProperty(flattenedProps, propName, propSchema, origin, fieldOrigins, 
+              flattenArrayProperty(flattenedProps, propName, propSchema, origin, fieldOrigins,
                   mapper, propJsonPath, fieldJsonPaths, fieldArrayDepths);
             } else {
               // Regular property
@@ -531,7 +583,8 @@ public class JsfSchemaUtils {
 
   private void processConditionalsWithOrigins(JsonNode node, ObjectMapper mapper, ObjectNode result,
       Map<String, FieldOrigin> fieldOrigins, List<ConditionalDependency> dependencies,
-      String currentPath, Map<String, String> fieldJsonPaths, Map<String, Integer> fieldArrayDepths) {
+      String currentPath, Map<String, String> fieldJsonPaths,
+      Map<String, Integer> fieldArrayDepths) {
 
     ObjectNode existingProps = (ObjectNode) result.get("properties");
     if (existingProps == null) {
@@ -609,19 +662,20 @@ public class JsfSchemaUtils {
             String propName = it.next();
             if (!existingProps.has(propName)) {
               JsonNode propSchema = thenProps.get(propName);
-              
+
               // Check if this is an array with object items
               if (isArrayOfObjects(propSchema)) {
                 // Flatten array[object] properties
-                flattenArrayProperty(existingProps, propName, propSchema, FieldOrigin.THEN_BRANCH, 
-                    fieldOrigins, mapper, currentPath + "." + propName, fieldJsonPaths, fieldArrayDepths);
+                flattenArrayProperty(existingProps, propName, propSchema, FieldOrigin.THEN_BRANCH,
+                    fieldOrigins, mapper, currentPath + "." + propName, fieldJsonPaths,
+                    fieldArrayDepths);
                 // Add dependencies for each flattened property
                 JsonNode itemProps = propSchema.get("items").get("properties");
                 for (Iterator<String> itemIt = itemProps.fieldNames(); itemIt.hasNext();) {
                   String itemPropName = itemIt.next();
                   String flattenedName = propName + "." + itemPropName;
-                  dependencies.add(new ConditionalDependency(conditionField, conditionValue, operator,
-                      flattenedName, true));
+                  dependencies.add(new ConditionalDependency(conditionField, conditionValue,
+                      operator, flattenedName, true));
                 }
               } else {
                 existingProps.set(propName, propSchema.deepCopy());
@@ -644,19 +698,20 @@ public class JsfSchemaUtils {
             String propName = it.next();
             if (!existingProps.has(propName)) {
               JsonNode propSchema = elseProps.get(propName);
-              
+
               // Check if this is an array with object items
               if (isArrayOfObjects(propSchema)) {
                 // Flatten array[object] properties
                 flattenArrayProperty(existingProps, propName, propSchema, FieldOrigin.ELSE_BRANCH,
-                    fieldOrigins, mapper, currentPath + "." + propName, fieldJsonPaths, fieldArrayDepths);
+                    fieldOrigins, mapper, currentPath + "." + propName, fieldJsonPaths,
+                    fieldArrayDepths);
                 // Add dependencies for each flattened property
                 JsonNode itemProps = propSchema.get("items").get("properties");
                 for (Iterator<String> itemIt = itemProps.fieldNames(); itemIt.hasNext();) {
                   String itemPropName = itemIt.next();
                   String flattenedName = propName + "." + itemPropName;
-                  dependencies.add(new ConditionalDependency(conditionField, conditionValue, operator,
-                      flattenedName, false));
+                  dependencies.add(new ConditionalDependency(conditionField, conditionValue,
+                      operator, flattenedName, false));
                 }
               } else {
                 existingProps.set(propName, propSchema.deepCopy());
@@ -683,7 +738,7 @@ public class JsfSchemaUtils {
         String propName = it.next();
         if (!target.has(propName)) {
           JsonNode propSchema = sourceProps.get(propName);
-          
+
           // Check if this is an array with object items
           if (isArrayOfObjects(propSchema)) {
             // Flatten array[object] properties
@@ -698,73 +753,75 @@ public class JsfSchemaUtils {
       }
     }
   }
-  
+
   private boolean isArrayOfObjects(JsonNode propSchema) {
     if (!propSchema.has("type") || !"array".equals(propSchema.get("type").asText())) {
       return false;
     }
-    
+
     JsonNode items = propSchema.get("items");
     return items != null && items.has("type") && "object".equals(items.get("type").asText());
   }
-  
+
   private void flattenArrayProperty(ObjectNode target, String arrayPropName, JsonNode arraySchema,
       FieldOrigin origin, Map<String, FieldOrigin> fieldOrigins, ObjectMapper mapper,
-      String baseJsonPath, Map<String, String> fieldJsonPaths, Map<String, Integer> fieldArrayDepths) {
+      String baseJsonPath, Map<String, String> fieldJsonPaths,
+      Map<String, Integer> fieldArrayDepths) {
     JsonNode items = arraySchema.get("items");
     if (items == null) return;
-    
+
     // Create a modified array schema that indicates it's been flattened
     ObjectNode flattenedArraySchema = mapper.createObjectNode();
     flattenedArraySchema.put("type", "array");
     flattenedArraySchema.put("flattenedArray", true);
-    
+
     // Create array indicator for the main property
     flattenedArraySchema.set("originalSchema", arraySchema.deepCopy());
-    
+
     // Process regular properties in array items
     if (items.has("properties")) {
       JsonNode itemProperties = items.get("properties");
       for (Iterator<String> it = itemProperties.fieldNames(); it.hasNext();) {
         String itemPropName = it.next();
         String flattenedName = arrayPropName + "." + itemPropName;
-        
+
         ObjectNode flattenedProp = mapper.createObjectNode();
         flattenedProp.setAll((ObjectNode) itemProperties.get(itemPropName).deepCopy());
         flattenedProp.put("arrayProperty", true);
         flattenedProp.put("arrayParent", arrayPropName);
         flattenedProp.put("arrayItemProperty", itemPropName);
-        
+
         target.set(flattenedName, flattenedProp);
         fieldOrigins.putIfAbsent(flattenedName, origin);
-        
+
         // Track JSON path and array depth for flattened properties
         String itemJsonPath = baseJsonPath + ".items.properties." + itemPropName;
         fieldJsonPaths.put(flattenedName, itemJsonPath);
         fieldArrayDepths.put(flattenedName, 1); // Single level array
       }
     }
-    
+
     // Process conditional keywords in array items (anyOf, oneOf, allOf)
     processArrayItemConditionals(target, arrayPropName, items, origin, fieldOrigins, mapper,
         baseJsonPath, fieldJsonPaths, fieldArrayDepths);
-    
+
     // Also store the array schema itself for reference
     target.set(arrayPropName, flattenedArraySchema);
     fieldOrigins.putIfAbsent(arrayPropName, origin);
-    
+
     // Track JSON path for the array itself
     fieldJsonPaths.put(arrayPropName, baseJsonPath);
     fieldArrayDepths.put(arrayPropName, 0); // Array container, not individual elements
   }
-  
+
   /**
    * Process conditional keywords (anyOf, oneOf, allOf) within array items
    */
   private void processArrayItemConditionals(ObjectNode target, String arrayPropName, JsonNode items,
       FieldOrigin origin, Map<String, FieldOrigin> fieldOrigins, ObjectMapper mapper,
-      String baseJsonPath, Map<String, String> fieldJsonPaths, Map<String, Integer> fieldArrayDepths) {
-    
+      String baseJsonPath, Map<String, String> fieldJsonPaths,
+      Map<String, Integer> fieldArrayDepths) {
+
     // Process anyOf in array items
     if (items.has("anyOf") && items.get("anyOf").isArray()) {
       for (JsonNode anyOfItem : items.get("anyOf")) {
@@ -773,7 +830,7 @@ public class JsfSchemaUtils {
           for (Iterator<String> it = anyOfProps.fieldNames(); it.hasNext();) {
             String propName = it.next();
             String flattenedName = arrayPropName + "." + propName;
-            
+
             // Only add if not already present
             if (!target.has(flattenedName)) {
               ObjectNode flattenedProp = mapper.createObjectNode();
@@ -781,10 +838,10 @@ public class JsfSchemaUtils {
               flattenedProp.put("arrayProperty", true);
               flattenedProp.put("arrayParent", arrayPropName);
               flattenedProp.put("arrayItemProperty", propName);
-              
+
               target.set(flattenedName, flattenedProp);
               fieldOrigins.putIfAbsent(flattenedName, FieldOrigin.ANY_OF);
-              
+
               // Track JSON path for anyOf properties
               String itemJsonPath = baseJsonPath + ".items.anyOf.properties." + propName;
               fieldJsonPaths.put(flattenedName, itemJsonPath);
@@ -794,7 +851,7 @@ public class JsfSchemaUtils {
         }
       }
     }
-    
+
     // Process oneOf in array items
     if (items.has("oneOf") && items.get("oneOf").isArray()) {
       for (JsonNode oneOfItem : items.get("oneOf")) {
@@ -803,17 +860,17 @@ public class JsfSchemaUtils {
           for (Iterator<String> it = oneOfProps.fieldNames(); it.hasNext();) {
             String propName = it.next();
             String flattenedName = arrayPropName + "." + propName;
-            
+
             if (!target.has(flattenedName)) {
               ObjectNode flattenedProp = mapper.createObjectNode();
               flattenedProp.setAll((ObjectNode) oneOfProps.get(propName).deepCopy());
               flattenedProp.put("arrayProperty", true);
               flattenedProp.put("arrayParent", arrayPropName);
               flattenedProp.put("arrayItemProperty", propName);
-              
+
               target.set(flattenedName, flattenedProp);
               fieldOrigins.putIfAbsent(flattenedName, FieldOrigin.ONE_OF);
-              
+
               String itemJsonPath = baseJsonPath + ".items.oneOf.properties." + propName;
               fieldJsonPaths.put(flattenedName, itemJsonPath);
               fieldArrayDepths.put(flattenedName, 1);
@@ -822,7 +879,7 @@ public class JsfSchemaUtils {
         }
       }
     }
-    
+
     // Process allOf in array items
     if (items.has("allOf") && items.get("allOf").isArray()) {
       for (JsonNode allOfItem : items.get("allOf")) {
@@ -831,17 +888,17 @@ public class JsfSchemaUtils {
           for (Iterator<String> it = allOfProps.fieldNames(); it.hasNext();) {
             String propName = it.next();
             String flattenedName = arrayPropName + "." + propName;
-            
+
             if (!target.has(flattenedName)) {
               ObjectNode flattenedProp = mapper.createObjectNode();
               flattenedProp.setAll((ObjectNode) allOfProps.get(propName).deepCopy());
               flattenedProp.put("arrayProperty", true);
               flattenedProp.put("arrayParent", arrayPropName);
               flattenedProp.put("arrayItemProperty", propName);
-              
+
               target.set(flattenedName, flattenedProp);
               fieldOrigins.putIfAbsent(flattenedName, FieldOrigin.ALL_OF);
-              
+
               String itemJsonPath = baseJsonPath + ".items.allOf.properties." + propName;
               fieldJsonPaths.put(flattenedName, itemJsonPath);
               fieldArrayDepths.put(flattenedName, 1);
