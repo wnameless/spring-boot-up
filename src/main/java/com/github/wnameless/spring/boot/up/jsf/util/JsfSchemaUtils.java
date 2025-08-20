@@ -146,8 +146,8 @@ public class JsfSchemaUtils {
     } else if ("array".equals(type)) {
       if (doNotTraverseNestedArray) {
         // When doNotTraverseNestedArray is true, add the array itself as a field
-        fields.add(new JsfSimpleField(currentTitles, flattenedPrefix, jsonPathPrefix, parentIsArray,
-            hasTitle));
+        fields.add(
+            new JsfSimpleField(currentTitles, flattenedPrefix, jsonPathPrefix, true, hasTitle));
       } else {
         // Original behavior: traverse into array items
         JsonNode items = schemaNode.get("items");
