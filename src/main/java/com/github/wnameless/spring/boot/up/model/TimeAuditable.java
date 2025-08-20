@@ -1,15 +1,15 @@
 package com.github.wnameless.spring.boot.up.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public interface TimeAuditable {
 
-  LocalDateTime getCreatedAt();
+  Instant getCreatedAt();
 
-  void setCreatedAt(LocalDateTime createdAt);
+  void setCreatedAt(Instant createdAt);
 
-  LocalDateTime getUpdatedAt();
+  Instant getUpdatedAt();
 
-  void setUpdatedAt(LocalDateTime updatedAt);
+  void setUpdatedAt(Instant updatedAt);
 
 }

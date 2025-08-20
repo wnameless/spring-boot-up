@@ -1,6 +1,6 @@
 package com.github.wnameless.spring.boot.up.notification;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import com.github.wnameless.spring.boot.up.web.IdProvider;
 
 public interface NotificationSource<ID> extends IdProvider<ID> {
@@ -11,7 +11,7 @@ public interface NotificationSource<ID> extends IdProvider<ID> {
 
   String getActionPath();
 
-  LocalDateTime getCreatedAt();
+  Instant getCreatedAt();
 
   ID getSenderId();
 

@@ -2,8 +2,7 @@ package com.github.wnameless.spring.boot.up.formdiff;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.net.URI;
-import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -694,7 +693,7 @@ class RestfulAttachmentJsonSchemaFormDiffTest {
       private String attachmentName = name;
       private URI attachmentUri = uri;
       private String attachmentNote = note;
-      private LocalDateTime createdAt = LocalDateTime.now(Clock.systemUTC());
+      private Instant createdAt = Instant.now();
       private String uiClassNames;
 
       @Override
@@ -748,12 +747,12 @@ class RestfulAttachmentJsonSchemaFormDiffTest {
       }
 
       @Override
-      public LocalDateTime getCreatedAt() {
+      public Instant getCreatedAt() {
         return createdAt;
       }
 
       @Override
-      public void setCreatedAt(LocalDateTime createdAt) {
+      public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
       }
 

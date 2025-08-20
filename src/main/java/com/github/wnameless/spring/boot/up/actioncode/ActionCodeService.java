@@ -1,7 +1,8 @@
 package com.github.wnameless.spring.boot.up.actioncode;
 
-import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Random;
 import org.apache.commons.lang3.function.TriFunction;
 import org.springframework.core.GenericTypeResolver;
@@ -33,7 +34,7 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
   default TriFunction<ModelAndView, A, T, ModelAndView> actionCodeRequest() {
     return (mav, action, item) -> {
       var rgOpt = getActionCodeRepository().findByActionTargetAndActionAndExpiredAtGreaterThan(item,
-          action, LocalDateTime.now(Clock.systemUTC()));
+          action, Instant.now());
       if (rgOpt.isPresent()) {
         var rg = rgOpt.get();
         if (rg.isValid()) {
@@ -47,12 +48,13 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
   default TriFunction<ModelAndView, A, T, ModelAndView> actionCodeGeneration() {
     return (mav, action, item) -> {
       var acOpt = getActionCodeRepository().findByActionTargetAndActionAndExpiredAtGreaterThan(item,
-          action, LocalDateTime.now(Clock.systemUTC()));
+          action, Instant.now());
       if (acOpt.isPresent() && acOpt.get().isValid()) {
         var ac = acOpt.get();
         if (ac.isExpired()) {
           ac.setCode(getRandomCode());
-          ac.setExpiredAt(LocalDateTime.now(Clock.systemUTC()).plusDays(30));
+          ac.setExpiredAt(LocalDateTime.ofInstant(Instant.now(), ZoneOffset.ofHours(0)).plusDays(30)
+              .toInstant(ZoneOffset.ofHours(0)));
           getActionCodeRepository().save(ac);
         }
         mav.addObject(ActionCodeAttributes.CODE, ac.getCode());
@@ -61,7 +63,8 @@ public interface ActionCodeService<AC extends ActionCode<A, T>, A extends Enum<?
         actionCode.setAction(action);
         actionCode.setCode(getRandomCode());
         actionCode.setActionTarget(item);
-        actionCode.setExpiredAt(LocalDateTime.now(Clock.systemUTC()).plusDays(30));
+        actionCode.setExpiredAt(LocalDateTime.ofInstant(Instant.now(), ZoneOffset.ofHours(0))
+            .plusDays(30).toInstant(ZoneOffset.ofHours(0)));
         getActionCodeRepository().save(actionCode);
         mav.addObject(ActionCodeAttributes.CODE, actionCode.getCode());
       }

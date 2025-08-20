@@ -1,7 +1,6 @@
 package com.github.wnameless.spring.boot.up.autocreation;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public interface AutoCreator<T extends AutoCreationPlan<C>, C> {
@@ -10,7 +9,7 @@ public interface AutoCreator<T extends AutoCreationPlan<C>, C> {
 
   default void execuateAutoCreationPlans() {
     getAutoCreationPlans().forEach(p -> {
-      p.setLastAutoCreationTimepoint(LocalDateTime.now(Clock.systemUTC()));
+      p.setLastAutoCreationTimepoint(Instant.now());
       p.execuateCreation();
     });
   }

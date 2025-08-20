@@ -1,7 +1,6 @@
 package com.github.wnameless.spring.boot.up.autocreation;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -22,7 +21,7 @@ public interface AutoCreationService extends SchedulingConfigurer {
         for (var plan : autoCreator.getAutoCreationPlans()) {
           if (autoCreationPlanTypeStrategy().apply(plan.getAutoCreationPlanType())) {
             if (plan.isExecutable()) {
-              plan.saveLastAutoCreationTimepoint(LocalDateTime.now(Clock.systemUTC()));
+              plan.saveLastAutoCreationTimepoint(Instant.now());
               plan.execuateCreation();
             }
           }

@@ -1,7 +1,7 @@
 package com.github.wnameless.spring.boot.up.attachment;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import com.github.wnameless.spring.boot.up.web.IdProvider;
 import com.google.common.base.Strings;
 
@@ -25,9 +25,9 @@ public interface Attachment<ID> extends IdProvider<ID> {
 
   void setNote(String note);
 
-  LocalDateTime getCreatedAt();
+  Instant getCreatedAt();
 
-  void setCreatedAt(LocalDateTime createdAt);
+  void setCreatedAt(Instant createdAt);
 
   default String getNameWithNote() {
     String note = Strings.nullToEmpty(getNote());

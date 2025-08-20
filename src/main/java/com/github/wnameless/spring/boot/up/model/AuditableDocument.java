@@ -1,6 +1,6 @@
 package com.github.wnameless.spring.boot.up.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -30,11 +30,11 @@ public abstract class AuditableDocument implements TimeAuditable, UserAuditable 
 
   @Indexed
   @CreatedDate
-  protected LocalDateTime createdAt;
+  protected Instant createdAt;
 
   @Indexed
   @LastModifiedDate
-  protected LocalDateTime updatedAt;
+  protected Instant updatedAt;
 
   @Indexed
   @CreatedBy

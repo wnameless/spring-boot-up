@@ -2,9 +2,8 @@ package com.github.wnameless.spring.boot.up.web;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -79,8 +78,8 @@ public class HtmlHelper {
     return Math.abs(new Random().nextInt());
   }
 
-  public String toTimeAgo(LocalDateTime utcDateTime) {
-    LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
+  public String toTimeAgo(Instant utcDateTime) {
+    var now = Instant.now();
     long diff = ChronoUnit.MINUTES.between(utcDateTime, now);
 
     if (diff < 1) {
@@ -101,11 +100,11 @@ public class HtmlHelper {
         diff == 1 ? "{0} day ago" : "{0} days ago", LocaleContextHolder.getLocale());
   }
 
-  public String toZonedTime(LocalDateTime utcDateTime) {
+  public String toZonedTime(Instant utcDateTime) {
     return toZonedTime(utcDateTime, ZoneId.systemDefault().getId());
   }
 
-  public String toZonedTime(LocalDateTime utcDateTime, String zoneId) {
+  public String toZonedTime(Instant utcDateTime, String zoneId) {
     return utcDateTime.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of(zoneId))
         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
   }

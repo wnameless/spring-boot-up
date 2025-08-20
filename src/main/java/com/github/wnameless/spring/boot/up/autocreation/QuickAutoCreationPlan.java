@@ -1,6 +1,6 @@
 package com.github.wnameless.spring.boot.up.autocreation;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import com.github.wnameless.spring.boot.up.model.DataModelCRUDTrigger;
 import com.github.wnameless.spring.boot.up.model.TimeAuditable;
 
@@ -13,12 +13,12 @@ public interface QuickAutoCreationPlan<T, C>
   }
 
   @Override
-  default LocalDateTime getAutoCreationTimepoint() {
+  default Instant getAutoCreationTimepoint() {
     return getCreatedAt();
   }
 
   @Override
-  default void saveLastAutoCreationTimepoint(LocalDateTime lastTime) {
+  default void saveLastAutoCreationTimepoint(Instant lastTime) {
     setLastAutoCreationTimepoint(lastTime);
     updateThisDataModel();
   }

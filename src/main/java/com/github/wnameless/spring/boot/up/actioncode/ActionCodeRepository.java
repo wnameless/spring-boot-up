@@ -1,6 +1,6 @@
 package com.github.wnameless.spring.boot.up.actioncode;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -10,7 +10,7 @@ public interface ActionCodeRepository<AC extends ActionCode<A, T>, A extends Enu
     extends CrudRepository<AC, ID> {
 
   Optional<AC> findByActionTargetAndActionAndExpiredAtGreaterThan(T actionTarget, A action,
-      LocalDateTime now);
+      Instant now);
 
   Optional<AC> findByActionAndCode(A action, String code);
 

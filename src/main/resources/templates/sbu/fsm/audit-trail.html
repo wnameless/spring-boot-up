@@ -47,7 +47,7 @@
                 <button type="button" class="btn btn-outline-info hint--right"
                   th:attr="aria-label=${at.timestamp}">
                   [[${at?.trigger?.displayName}]]<br>
-                  [[${at?.timestamp?.toLocalDate}]]
+                  [[${at?.timestamp?.atZone(T(java.time.ZoneId).systemDefault()).toLocalDate}]]
                 </button>
               </div>
             </li>

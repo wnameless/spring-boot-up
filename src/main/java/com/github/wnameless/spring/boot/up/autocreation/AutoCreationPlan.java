@@ -1,6 +1,6 @@
 package com.github.wnameless.spring.boot.up.autocreation;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public interface AutoCreationPlan<C> {
 
@@ -8,13 +8,13 @@ public interface AutoCreationPlan<C> {
 
   AutoCreationStrategy getAutoCreationStrategy();
 
-  LocalDateTime getAutoCreationTimepoint();
+  Instant getAutoCreationTimepoint();
 
-  LocalDateTime getLastAutoCreationTimepoint();
+  Instant getLastAutoCreationTimepoint();
 
-  void setLastAutoCreationTimepoint(LocalDateTime lastTime);
+  void setLastAutoCreationTimepoint(Instant lastTime);
 
-  void saveLastAutoCreationTimepoint(LocalDateTime lastTime);
+  void saveLastAutoCreationTimepoint(Instant lastTime);
 
   void execuateCreation();
 

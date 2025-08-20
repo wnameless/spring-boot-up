@@ -1,19 +1,19 @@
 package com.github.wnameless.spring.boot.up.autocreation;
 
-import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import org.springframework.lang.NonNull;
 
 public enum AutoCreationStrategy {
 
   ONCE, MINUTELY, TEN_MINUTELY, FIFTEEN_MINUTELY, THIRTY_MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY;
 
-  public boolean isNowExecutable(LocalDateTime lastAutoCreationTimepoint) {
-    return isExecutable(LocalDateTime.now(Clock.systemUTC()), lastAutoCreationTimepoint);
+  public boolean isNowExecutable(Instant lastAutoCreationTimepoint) {
+    return isExecutable(Instant.now(), lastAutoCreationTimepoint);
   }
 
-  public boolean isExecutable(@NonNull LocalDateTime timeAt,
-      LocalDateTime lastAutoCreationTimepoint) {
+  public boolean isExecutable(@NonNull Instant timeAt, Instant lastAutoCreationTimepoint) {
     switch (this) {
       case ONCE -> {
         return lastAutoCreationTimepoint == null;
@@ -25,84 +25,83 @@ public enum AutoCreationStrategy {
     }
   }
 
-  public LocalDateTime getClosestTimepoint(LocalDateTime baseDateTime) {
-    LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
+  public Instant getClosestTimepoint(Instant baseDateTime) {
+    if (baseDateTime.isAfter(Instant.now())) return baseDateTime;
 
-    if (baseDateTime.isAfter(now)) return baseDateTime;
-
+    var now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.ofHours(0));
     switch (this) {
       case ONCE -> {
-        return now;
+        return now.toInstant(ZoneOffset.ofHours(0));
       }
       case MINUTELY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusMinutes(1);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       case TEN_MINUTELY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusMinutes(10);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       case FIFTEEN_MINUTELY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusMinutes(15);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       case THIRTY_MINUTELY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusMinutes(30);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       case HOURLY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusHours(1);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       case DAILY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusDays(1);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       case WEEKLY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusWeeks(1);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       case MONTHLY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusMonths(1);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       case QUARTERLY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusMonths(3);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       case YEARLY -> {
-        LocalDateTime result = baseDateTime;
+        LocalDateTime result = LocalDateTime.ofInstant(baseDateTime, ZoneOffset.ofHours(0));
         while (result.isBefore(now)) {
           result = result.plusYears(1);
         }
-        return result;
+        return result.toInstant(ZoneOffset.ofHours(0));
       }
       default -> {
         return baseDateTime;

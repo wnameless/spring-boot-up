@@ -1,7 +1,6 @@
 package com.github.wnameless.spring.boot.up.actioncode;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public interface SingularActionCode<A extends Enum<?>> {
 
@@ -13,18 +12,18 @@ public interface SingularActionCode<A extends Enum<?>> {
 
   void setCode(String code);
 
-  LocalDateTime getExpiredAt();
+  Instant getExpiredAt();
 
-  void setExpiredAt(LocalDateTime expiredAt);
+  void setExpiredAt(Instant expiredAt);
 
   default boolean isExpired() {
     if (getExpiredAt() == null) isValid();
-    return LocalDateTime.now(Clock.systemUTC()).isAfter(getExpiredAt());
+    return Instant.now().isAfter(getExpiredAt());
   }
 
   default boolean isValid() {
     if (getExpiredAt() == null) return true;
-    return LocalDateTime.now(Clock.systemUTC()).isBefore(getExpiredAt());
+    return Instant.now().isBefore(getExpiredAt());
   }
 
 }

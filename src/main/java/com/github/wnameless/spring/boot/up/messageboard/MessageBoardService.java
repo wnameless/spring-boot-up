@@ -1,7 +1,8 @@
 package com.github.wnameless.spring.boot.up.messageboard;
 
-import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import org.atteo.evo.inflector.English;
@@ -34,10 +35,11 @@ public interface MessageBoardService<N extends MessageBoardNotice<B>, B extends 
     if (messageBoardOpt.isEmpty()) return Collections.emptyList();
 
     var messageBoard = messageBoardOpt.get();
-    var now = LocalDateTime.now(Clock.systemUTC());
+    var now = Instant.now();
     var retentionDuration = messageBoard.getRetentionDuration();
     var notices = getMessageBoardNoticeRepository().findByMessageBoardAndCreatedAtAfter(
-        messageBoard, now.minusDays(retentionDuration.toDays()));
+        messageBoard, LocalDateTime.ofInstant(now, ZoneOffset.ofHours(0))
+            .minusDays(retentionDuration.toDays()).toInstant(ZoneOffset.ofHours(0)));
     return Ruby.Array.of(notices).sortBy(n -> n.getCreatedAt()).reverse()
         .sortBy(n -> !n.isPinned());
   }
@@ -47,14 +49,18 @@ public interface MessageBoardService<N extends MessageBoardNotice<B>, B extends 
     if (messageBoardOpt.isEmpty()) return 0;
 
     var messageBoard = messageBoardOpt.get();
-    var now = LocalDateTime.now(Clock.systemUTC());
+    var now = Instant.now();
     var retentionDuration = messageBoard.getRetentionDuration();
     var timelyDuration = messageBoard.getTimelyDuration();
     return getMessageBoardNoticeRepository().countByMessageBoardAndCreatedAtAfter(messageBoard,
-        now.minusDays(timelyDuration.toDays()))
+        LocalDateTime.ofInstant(now, ZoneOffset.ofHours(0)).minusDays(timelyDuration.toDays())
+            .toInstant(ZoneOffset.ofHours(0)))
         + getMessageBoardNoticeRepository()
             .countByMessageBoardAndTimelyDurationIsNotNullAndCreatedAtBetween(messageBoard,
-                now.minusDays(retentionDuration.toDays()), now.minusDays(timelyDuration.toDays()));
+                LocalDateTime.ofInstant(now, ZoneOffset.ofHours(0))
+                    .minusDays(retentionDuration.toDays()).toInstant(ZoneOffset.ofHours(0)),
+                LocalDateTime.ofInstant(now, ZoneOffset.ofHours(0))
+                    .minusDays(timelyDuration.toDays()).toInstant(ZoneOffset.ofHours(0)));
   }
 
   String getDefaultBoardId();

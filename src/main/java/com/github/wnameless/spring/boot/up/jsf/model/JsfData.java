@@ -1,6 +1,6 @@
 package com.github.wnameless.spring.boot.up.jsf.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Map;
 import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
 import com.github.wnameless.spring.boot.up.jsf.YamlableJSF;
@@ -13,9 +13,9 @@ public interface JsfData<JS extends JsfSchema<ID>, ID>
 
   void setJsfSchema(JS JsfSchema);
 
-  LocalDateTime getVersion();
+  Instant getVersion();
 
-  void setVersion(LocalDateTime version);
+  void setVersion(Instant version);
 
   Map<String, Object> getFormData();
 

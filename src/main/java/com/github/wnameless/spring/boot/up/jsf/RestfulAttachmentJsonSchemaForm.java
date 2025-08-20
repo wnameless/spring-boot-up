@@ -1,7 +1,7 @@
 package com.github.wnameless.spring.boot.up.jsf;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -128,7 +128,7 @@ public class RestfulAttachmentJsonSchemaForm<A extends Attachment<ID>, ID>
       private String name = original.getName();
       private URI uri = original.getUri();
       private String note = original.getNote();
-      private LocalDateTime createdAt = original.getCreatedAt();
+      private Instant createdAt = original.getCreatedAt();
       private String uiClassNames = original.getUiClassNames();
 
       @Override
@@ -182,12 +182,12 @@ public class RestfulAttachmentJsonSchemaForm<A extends Attachment<ID>, ID>
       }
 
       @Override
-      public LocalDateTime getCreatedAt() {
+      public Instant getCreatedAt() {
         return createdAt;
       }
 
       @Override
-      public void setCreatedAt(LocalDateTime createdAt) {
+      public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
       }
 

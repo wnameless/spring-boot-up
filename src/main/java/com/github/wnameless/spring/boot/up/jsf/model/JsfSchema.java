@@ -1,6 +1,6 @@
 package com.github.wnameless.spring.boot.up.jsf.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Map;
 import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
 import com.github.wnameless.spring.boot.up.web.IdProvider;
@@ -11,9 +11,9 @@ public interface JsfSchema<ID> extends JsfVersioning, IdProvider<ID> {
 
   void setFormBranch(String formBranch);
 
-  LocalDateTime getVersion();
+  Instant getVersion();
 
-  void setVersion(LocalDateTime version);
+  void setVersion(Instant version);
 
   Map<String, Object> getSchema();
 

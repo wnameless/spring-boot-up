@@ -1,6 +1,6 @@
 package com.github.wnameless.spring.boot.up.notification;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import com.github.wnameless.spring.boot.up.web.IdProvider;
 
 public interface NotificationTarget<S extends NotificationSource<ID>, R extends NotificationReceiver<M>, M, ID>
@@ -14,8 +14,8 @@ public interface NotificationTarget<S extends NotificationSource<ID>, R extends 
 
   void setReviewed(boolean reviewed);
 
-  LocalDateTime getCreatedAt();
+  Instant getCreatedAt();
 
-  LocalDateTime getUpdatedAt();
+  Instant getUpdatedAt();
 
 }
