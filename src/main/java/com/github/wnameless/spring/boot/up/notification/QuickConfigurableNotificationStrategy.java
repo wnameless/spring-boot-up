@@ -74,7 +74,7 @@ public interface QuickConfigurableNotificationStrategy< //
     NS notificationSource;
     if (onAdvice != NotificationAdvice.ALWAYS) {
       notificationSource =
-          getNotificationService().createNotificationSource(title, content, actionPath);
+          getNotificationService().findOrCreateNotificationSource(title, content, actionPath);
     } else {
       notificationSource = null;
     }
@@ -138,7 +138,7 @@ public interface QuickConfigurableNotificationStrategy< //
             .findFirst().get();
         callback.setTrigger(messageHookTrigger);
       }
-      getNotificationService().getNotificationCallbackRepository().save(callback);
+      getNotificationService().findOrCreateNotificationCallback(callback);
     }
 
     return rule;

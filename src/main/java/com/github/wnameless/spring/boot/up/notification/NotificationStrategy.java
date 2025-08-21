@@ -101,7 +101,7 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
           .findAllByNotificationSource(callback.getNotificationSource());
       targets.forEach(t -> t.setReviewed(true));
       getNotificationService().getNotificationTargetRepository().saveAll(targets);
-      getNotificationService().getNotificationCallbackRepository().delete(callback);
+      getNotificationService().deleteNotificationCallback(callback);
     };
   }
 
@@ -111,7 +111,7 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
           .findAllByNotificationSource(callback.getNotificationSource());
       targets.forEach(t -> t.setReviewed(true));
       getNotificationService().getNotificationTargetRepository().saveAll(targets);
-      getNotificationService().getNotificationCallbackRepository().delete(callback);
+      getNotificationService().deleteNotificationCallback(callback);
     };
   }
 

@@ -17,13 +17,69 @@ public interface NotificationService<NC extends NotificationCallback<NS, ID>, NT
 
   NotificationCallbackRepository<NC, NS, ID> getNotificationCallbackRepository();
 
-  default NS createNotificationSource(String title, String content, String actionPath) {
+  default boolean deleteNotificationCallback(NC callback) {
+    return getNotificationCallbackRepository()
+        .deleteByStateMachineEntityIdAndNotificationSourceAndAdviceAndTriggerNameAndTriggerEnumTypeNameAndStateNameAndStateEnumTypeName(
+            callback.getStateMachineEntityId(), callback.getNotificationSource(),
+            callback.getAdvice(), callback.getTriggerName(), callback.getTriggerEnumTypeName(),
+            callback.getStateName(), callback.getStateEnumTypeName());
+  }
+
+  default boolean deleteNotificationCallback(ID stateMachineEntityId, NS notificationSource,
+      NotificationAdvice advice, String triggerName, String triggerNameTypeName, String stateName,
+      String stateEnumTypeName) {
+    return getNotificationCallbackRepository()
+        .deleteByStateMachineEntityIdAndNotificationSourceAndAdviceAndTriggerNameAndTriggerEnumTypeNameAndStateNameAndStateEnumTypeName(
+            stateMachineEntityId, notificationSource, advice, triggerName, triggerNameTypeName,
+            stateName, stateEnumTypeName);
+  }
+
+  default NC findOrCreateNotificationCallback(NC callback) {
+    return findOrCreateNotificationCallback(callback.getStateMachineEntityId(),
+        callback.getNotificationSource(), callback.getAdvice(), callback.getTriggerName(),
+        callback.getTriggerEnumTypeName(), callback.getStateName(),
+        callback.getStateEnumTypeName());
+  }
+
+  default NC findOrCreateNotificationCallback(ID stateMachineEntityId, NS notificationSource,
+      NotificationAdvice advice, String triggerName, String triggerNameTypeName, String stateName,
+      String stateEnumTypeName) {
+    var notificationCallbackOpt = getNotificationCallbackRepository()
+        .findByStateMachineEntityIdAndNotificationSourceAndAdviceAndTriggerNameAndTriggerEnumTypeNameAndStateNameAndStateEnumTypeName(
+            stateMachineEntityId, notificationSource, advice, triggerName, triggerNameTypeName,
+            stateName, stateEnumTypeName);
+    if (notificationCallbackOpt.isPresent()) {
+      return notificationCallbackOpt.get();
+    } else {
+      return createNotificationCallback(stateMachineEntityId, notificationSource, advice,
+          triggerName, triggerNameTypeName, stateName, stateEnumTypeName);
+    }
+  }
+
+  NC createNotificationCallback(ID stateMachineEntityId, NS notificationSource,
+      NotificationAdvice advice, String triggerName, String triggerNameTypeName, String stateName,
+      String stateEnumTypeName);
+
+  default NS findOrCreateNotificationSource(String title, String content, String actionPath) {
+    var notificationSourceOpt = getNotificationSourceRepository()
+        .findByTitleAndContentAndActionPathAndSenderId(title, content, actionPath, null);
+    if (notificationSourceOpt.isPresent()) {
+      return notificationSourceOpt.get();
+    }
     return createNotificationSource(title, content, actionPath, null);
   }
 
   NS createNotificationSource(String title, String content, String actionPath, ID senderId);
 
-  NS findOrCreateNotificationSource(String title, String content, String actionPath, ID senderId);
+  default NS findOrCreateNotificationSource(String title, String content, String actionPath,
+      ID senderId) {
+    var notificationSourceOpt = getNotificationSourceRepository()
+        .findByTitleAndContentAndActionPathAndSenderId(title, content, actionPath, senderId);
+    if (notificationSourceOpt.isPresent()) {
+      return notificationSourceOpt.get();
+    }
+    return createNotificationSource(title, content, actionPath, senderId);
+  }
 
   List<NT> createNotificationTarget(NS source, Collection<NR> receivers);
 
