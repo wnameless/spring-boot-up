@@ -30,6 +30,7 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
     }
   }
 
+  @SuppressWarnings("unchecked")
   default void applyNotificationStrategy(StateMachineConfig<S, T> stateMachineConfig,
       SM stateMachine) {
     for (NotificationPlan<S, T> rule : getNotificationPlans(stateMachine)) {
@@ -57,11 +58,11 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
     }
 
     for (NC callback : getNotificationCallbacks(stateMachine)) {
-      @SuppressWarnings("unchecked")
       StateRepresentation<S, T> representation =
           stateMachineConfig.getRepresentation((S) callback.getState());
       if (representation == null) {
-        continue;
+        stateMachineConfig.configure((S) callback.getState());
+        representation = stateMachineConfig.getRepresentation((S) callback.getState());;
       }
 
       switch (callback.getAdvice()) {
@@ -69,7 +70,6 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
           representation.addEntryAction(getNotificationCallbackAction2(callback));
           break;
         case ENTRY_FROM:
-          @SuppressWarnings("unchecked")
           T trigger = (T) callback.getTrigger();
           representation.addEntryAction(trigger, getNotificationCallbackAction2(callback));
           break;
