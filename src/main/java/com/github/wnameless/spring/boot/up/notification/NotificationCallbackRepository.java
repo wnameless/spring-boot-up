@@ -23,7 +23,7 @@ public interface NotificationCallbackRepository<NC extends NotificationCallback<
             stateMachineEntityId, notificationSource, advice, triggerName, triggerNameTypeName,
             stateName, stateEnumTypeName);
     if (opt.isPresent()) {
-      delete(opt.get());
+      deleteById(opt.get().getId());
       return true;
     }
     return false;

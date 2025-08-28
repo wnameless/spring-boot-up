@@ -85,19 +85,25 @@ public interface QuickConfigurableNotificationStrategy< //
             .findFirst().get());
         rule.setAdvice(NotificationAdvice.ENTRY_FROM);
         rule.setEntryAction((arg1, arg2) -> {
-          getNotificationService().createNotificationTarget(notificationSource, receivers);
+          // getNotificationService().createNotificationTarget(notificationSource, receivers);
+          getNotificationService().deleteAllThenCreateNotificationTarget(notificationSource,
+              receivers);
         });
         break;
       case ENTRY:
         rule.setAdvice(NotificationAdvice.ENTRY);
         rule.setEntryAction((arg1, arg2) -> {
-          getNotificationService().createNotificationTarget(notificationSource, receivers);
+          // getNotificationService().createNotificationTarget(notificationSource, receivers);
+          getNotificationService().deleteAllThenCreateNotificationTarget(notificationSource,
+              receivers);
         });
         break;
       case EXIT:
         rule.setAdvice(NotificationAdvice.EXIT);
         rule.setExitAction(arg1 -> {
-          getNotificationService().createNotificationTarget(notificationSource, receivers);
+          // getNotificationService().createNotificationTarget(notificationSource, receivers);
+          getNotificationService().deleteAllThenCreateNotificationTarget(notificationSource,
+              receivers);
         });
         break;
       case ALWAYS:
@@ -110,7 +116,9 @@ public interface QuickConfigurableNotificationStrategy< //
           var alwaysTriggerReceivers =
               getNotificationService().getAlwaysTriggerNotificationReceivers(
                   rule.getAlwaysActionInterval(), alwaysNotificationSource, receivers);
-          getNotificationService().createNotificationTarget(alwaysNotificationSource,
+          // getNotificationService().createNotificationTarget(alwaysNotificationSource,
+          // alwaysTriggerReceivers);
+          getNotificationService().deleteAllThenCreateNotificationTarget(alwaysNotificationSource,
               alwaysTriggerReceivers);
         });
         break;
