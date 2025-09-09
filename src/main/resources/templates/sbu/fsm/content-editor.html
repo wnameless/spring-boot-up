@@ -13,6 +13,8 @@
   backPath=${__${@webModelAttributes.BACK_PATH_NAME}__ ?: __${@webModelAttributes.FORWARDING_BACK_PATH_NAME}__},
   fowardingParam=${@sbuHtml.fowardParam(param, #vars)}
 ">
+  <div th:replace="~{sbu/web/alert :: bs5}"></div>
+
   <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item" role="presentation">
       <button class="nav-link active" data-bs-toggle="tab"
