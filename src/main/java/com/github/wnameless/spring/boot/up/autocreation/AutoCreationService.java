@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.autocreation;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -16,7 +17,8 @@ public interface AutoCreationService extends SchedulingConfigurer {
 
   default void configureTasks(@NonNull ScheduledTaskRegistrar taskRegistrar) {
     taskRegistrar.setScheduler(Executors.newSingleThreadScheduledExecutor());
-    taskRegistrar.addCronTask(() -> {
+    // Use fixed delay instead of cron - waits for completion before scheduling next execution
+    taskRegistrar.addFixedDelayTask(() -> {
       for (var autoCreator : getAutoCreators()) {
         for (var plan : autoCreator.getAutoCreationPlans()) {
           if (autoCreationPlanTypeStrategy().apply(plan.getAutoCreationPlanType())) {
@@ -27,11 +29,11 @@ public interface AutoCreationService extends SchedulingConfigurer {
           }
         }
       }
-    }, getCronExpression());
+    }, getFixedDelay());
   }
 
-  default String getCronExpression() {
-    return "0 */1 * * * *"; // Every 1 minutes
+  default Duration getFixedDelay() {
+    return Duration.ofMinutes(1); // 1 minute delay after task completion
   }
 
 }
