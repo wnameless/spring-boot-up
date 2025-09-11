@@ -1,12 +1,13 @@
 package com.github.wnameless.spring.boot.up.fsm.autoexecutor;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.stream.StreamSupport;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
@@ -69,11 +70,8 @@ public interface AlwaysTriggerAutoExecutor extends SchedulingConfigurer {
 
   @SuppressWarnings("unchecked")
   default void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-    taskScheduler.setPoolSize(1);
-    taskScheduler.setThreadNamePrefix("always-trigger-auto-executor-pool-");
-    taskScheduler.initialize(); // Important: initialize the scheduler!
-    taskRegistrar.addCronTask(() -> {
+    taskRegistrar.setScheduler(Executors.newSingleThreadScheduledExecutor());
+    taskRegistrar.addFixedDelayTask(() -> {
       for (var phaseProviderType : getPhaseProviderTypes()) {
         for (var fsmItem : findAllPhaseProvidersContainingAlwaysTriggerState(phaseProviderType)) {
           var phase = fsmItem.getPhase();
@@ -100,11 +98,11 @@ public interface AlwaysTriggerAutoExecutor extends SchedulingConfigurer {
           }
         }
       }
-    }, getCronExpression());
+    }, getFixedDelay());
   }
 
-  default String getCronExpression() {
-    return "0 */10 * * * *"; // Every 10 minute
+  default Duration getFixedDelay() {
+    return Duration.ofMinutes(10); // 10 minute delay after task completion
   }
 
 }
