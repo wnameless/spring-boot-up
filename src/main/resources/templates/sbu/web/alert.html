@@ -1,6 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="bs5" th:with="alert=${__${@webModelAttributes.ALERT_NAME}__}">
+<div th:fragment="bs5" th:with="alert=${__${@webModelAttributes.ALERT_NAME}__}"
+  class="sbu-alert-container">
 
   <th:block th:if="${alert}">
 
@@ -53,6 +54,67 @@
     </th:block>
 
   </th:block>
+
+  <script th:if="${alert}">
+    (function () {
+      // Consolidate alerts to first container only
+      function consolidateAlerts() {
+        const containers = document.querySelectorAll('.sbu-alert-container');
+        if (containers.length <= 1) return;
+
+        // Find first container with alerts
+        let firstContainer = null;
+        let alertsToMove = [];
+
+        containers.forEach((container, index) => {
+          const alerts = container.querySelectorAll('.alert');
+          if (alerts.length > 0) {
+            if (!firstContainer) {
+              firstContainer = container;
+            } else {
+              // Collect alerts from other containers
+              alerts.forEach(alert => {
+                alertsToMove.push(alert.cloneNode(true));
+                alert.remove();
+              });
+            }
+          }
+        });
+
+        // Move collected alerts to first container
+        if (firstContainer && alertsToMove.length > 0) {
+          alertsToMove.forEach(alert => {
+            // Check if identical alert doesn't already exist
+            const existingAlerts = firstContainer.querySelectorAll('.alert');
+            let isDuplicate = false;
+            existingAlerts.forEach(existing => {
+              if (existing.textContent.trim() === alert.textContent.trim()) {
+                isDuplicate = true;
+              }
+            });
+            if (!isDuplicate) {
+              firstContainer.appendChild(alert);
+            }
+          });
+        }
+      }
+
+      // Run on DOM ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', consolidateAlerts);
+      } else {
+        consolidateAlerts();
+      }
+
+      // Also run after HTMX requests if HTMX is present
+      if (typeof htmx !== 'undefined') {
+        document.body.addEventListener('htmx:afterSwap', function () {
+          setTimeout(consolidateAlerts, 10);
+        });
+        document.body.addEventListener('htmx:afterSettle', consolidateAlerts);
+      }
+    })();
+  </script>
 
 </div>
 
