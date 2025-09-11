@@ -118,8 +118,10 @@ public interface QuickConfigurableNotificationStrategy< //
                   rule.getAlwaysActionInterval(), alwaysNotificationSource, receivers);
           // getNotificationService().createNotificationTarget(alwaysNotificationSource,
           // alwaysTriggerReceivers);
-          getNotificationService().deleteAllThenCreateNotificationTarget(alwaysNotificationSource,
-              alwaysTriggerReceivers);
+          if (alwaysTriggerReceivers.size() > 0) {
+            getNotificationService().deleteAllThenCreateNotificationTarget(alwaysNotificationSource,
+                alwaysTriggerReceivers);
+          }
         });
         break;
     }
