@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.wnameless.spring</groupId>
   <artifactId>spring-boot-up</artifactId>
-  <version>0.16.13-SNAPSHOT</version>
+  <version>0.16.14-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -156,12 +156,12 @@
     <dependency>
       <groupId>com.networknt</groupId>
       <artifactId>json-schema-validator</artifactId>
-      <version>1.5.8</version>
+      <version>1.5.9</version>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.21.1</version>
+      <version>1.21.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
@@ -297,7 +297,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.3</version>
+        <version>3.5.4</version>
         <configuration>
           <useModulePath>false</useModulePath> <!-- tests use classpath -->
         </configuration>

@@ -35,10 +35,12 @@ public class SpringBootUpControllerAdvice {
   }
 
   public Optional<String> findParam(String key) {
+    if (params == null) return Optional.empty();
     return Optional.ofNullable(params.getFirst(key));
   }
 
   public Optional<List<String>> findAllParams(String key) {
+    if (params == null) return Optional.empty();
     return Optional.ofNullable(params.get(key));
   }
 
