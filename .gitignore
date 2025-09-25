@@ -5,6 +5,10 @@
 .DS_Store
 .vscode
 
+### AI ###
+CLAUDE.md
+.claude/
+
 ### NodeJS ###
 node_modules/
 webpack/
