@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.notification;
 
 import static java.util.stream.Collectors.toSet;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import com.github.wnameless.spring.boot.up.permission.role.Role;
 import com.github.wnameless.spring.boot.up.permission.role.Rolify;
@@ -14,11 +15,20 @@ public class RolifyNotificationReceiver implements NotificationReceiver<Set<Role
 
   private Set<Role> userMeta;
 
+  private Map<String, ?> membershipMetadata;
+
   public RolifyNotificationReceiver() {}
 
   public RolifyNotificationReceiver(String username, Collection<? extends Rolify> userMeta) {
     this.username = username;
     this.userMeta = userMeta.stream().map(Rolify::toRole).collect(toSet());
+  }
+
+  public RolifyNotificationReceiver(String username, Collection<? extends Rolify> userMeta,
+      Map<String, ?> membershipMetadata) {
+    this.username = username;
+    this.userMeta = userMeta.stream().map(Rolify::toRole).collect(toSet());
+    this.membershipMetadata = membershipMetadata;
   }
 
 }
