@@ -3,13 +3,13 @@
 <div th:fragment="bs5" class="container-fluid pb-1">
   <div class="btn-group" role="group"
     th:with="bookmarkField=${bookmarkField}, bookmarkName=${bookmarkName}, queryConfig=${__${@webModelAttributes.QUERY_CONFIG_NAME}__}, item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
-    <button type="button" class="btn btn-outline-secondary" hx:get="@{${item.indexPath}}"
+    <button type="button" class="btn btn-outline-dark" hx:get="@{${item.indexPath}}"
       hx-push-url="true" hx-ext="json-enc" hx:target="${'#' + ajaxTargetId}">
       <i class="fas fa-house fa-fw"></i><span th:if="${bookmarkName}">[[${bookmarkName}]]</span>
     </button>
     <button th:if="${queryConfig.getFilterFields.get(bookmarkField).hasSelectOption}"
       th:each="opt : ${queryConfig.getFilterFields.get(bookmarkField).selectOption}" type="button"
-      class="btn btn-outline-secondary"
+      class="btn btn-outline-dark"
       th:classappend="${(param['' + bookmarkField] != null) and (param['' + bookmarkField][0] eq opt.value)} ? 'active'"
       hx:get="@{${item.indexPath}(__${bookmarkField}__=${opt.value})}" hx-push-url="true"
       hx-ext="json-enc" hx:target="${'#' + ajaxTargetId}">[[${opt.key}]]</button>

@@ -3,11 +3,11 @@
 <div th:fragment="bs5" class="container-fluid pb-1">
   <div class="btn-group" role="group"
     th:with="item=${__${@webModelAttributes.ITEM_NAME}__}, ajaxTargetId=${__${@webModelAttributes.AJAX_TARGET_ID_NAME}__ ?: __${@webModelAttributes.FORWARDING_AJAX_TARGET_ID_NAME}__ ?: @webModelAttributes.AJAX_TARGET_ID_VALUE}">
-    <button type="button" class="btn btn-outline-secondary" hx:get="@{${item.indexPath}}"
+    <button type="button" class="btn btn-outline-dark" hx:get="@{${item.indexPath}}"
       hx-push-url="true" hx-ext="json-enc" hx:target="${'#' + ajaxTargetId}">
       <i class="fas fa-filter fa-fw"></i>
     </button>
-    <button th:each="s : ${item.phase.allStates}" type="button" class="btn btn-outline-secondary"
+    <button th:each="s : ${item.phase.allStates}" type="button" class="btn btn-outline-dark"
       th:classappend="${(param['stateRecord.state'] != null) and (param['stateRecord.state'][0] eq s.displayName)} ? 'active'"
       hx:get="@{${item.indexPath}(stateRecord.state=${s.displayName})}" hx-push-url="true"
       hx-ext="json-enc" hx:target="${'#' + ajaxTargetId}">[[${s.displayName}]]</button>
