@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.util.MultiValueMap;
@@ -159,24 +160,57 @@ public class JsfDisplayUtils {
 
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Collection<T> items,
       Function<T, ID> toEnum) {
-    if (items == null || items.isEmpty()) return false;
+    if (items == null) return false;
 
-    docCtx.put(jsonPath, "enum", items.stream().map(toEnum).toList());
+    return setEnum(docCtx, jsonPath, items.stream(), toEnum);
+  }
+
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
+      Function<T, ID> toEnum) {
+    if (items == null) return false;
+
+    var enumList = items.map(toEnum).toList();
+    if (enumList.isEmpty()) return false;
+
+    docCtx.put(jsonPath, "enum", enumList);
 
     return true;
   }
 
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Collection<T> items,
       Function<T, ID> toEnum, Function<T, String> toEnumName) {
-    if (items == null || items.isEmpty()) return false;
+    if (items == null) return false;
 
-    docCtx.put(jsonPath, "enum", items.stream().map(toEnum).toList());
-    docCtx.put(jsonPath, "enumNames", items.stream().map(toEnumName).toList());
+    return setEnum(docCtx, jsonPath, items.stream(), toEnum, toEnumName);
+  }
+
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
+      Function<T, ID> toEnum, Function<T, String> toEnumName) {
+    if (items == null) return false;
+
+    var enumList = new ArrayList<ID>();
+    var enumNameList = new ArrayList<String>();
+    items.forEach(i -> {
+      enumList.add(toEnum.apply(i));
+      enumNameList.add(toEnumName.apply(i));
+    });
+
+    if (enumList.isEmpty()) return false;
+
+    docCtx.put(jsonPath, "enum", enumList);
+    docCtx.put(jsonPath, "enumNames", enumNameList);
 
     return true;
   }
 
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Collection<T> items,
+      Function<T, ID> toEnum, Function<T, String> toEnumName, DocumentContext uiDocCtx) {
+    if (items == null) return false;
+
+    return setEnum(docCtx, jsonPath, items.stream(), toEnum, toEnumName, uiDocCtx, false);
+  }
+
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
       Function<T, ID> toEnum, Function<T, String> toEnumName, DocumentContext uiDocCtx) {
     return setEnum(docCtx, jsonPath, items, toEnum, toEnumName, uiDocCtx, false);
   }
@@ -184,15 +218,32 @@ public class JsfDisplayUtils {
   public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Collection<T> items,
       Function<T, ID> toEnum, Function<T, String> toEnumName, DocumentContext uiDocCtx,
       boolean supportEnumNames) {
-    if (items == null || items.isEmpty()) return false;
+    if (items == null) return false;
 
-    docCtx.put(jsonPath, "enum", items.stream().map(toEnum).toList());
+    return setEnum(docCtx, jsonPath, items.stream(), toEnum, toEnumName, uiDocCtx,
+        supportEnumNames);
+  }
+
+  public <T, ID> boolean setEnum(DocumentContext docCtx, String jsonPath, Stream<T> items,
+      Function<T, ID> toEnum, Function<T, String> toEnumName, DocumentContext uiDocCtx,
+      boolean supportEnumNames) {
+    if (items == null) return false;
+
+    var enumList = new ArrayList<ID>();
+    var enumNameList = new ArrayList<String>();
+    items.forEach(i -> {
+      enumList.add(toEnum.apply(i));
+      enumNameList.add(toEnumName.apply(i));
+    });
+
+    if (enumList.isEmpty()) return false;
+
+    docCtx.put(jsonPath, "enum", enumList);
     if (supportEnumNames || STRICT_RJSF_V5) {
-      docCtx.put(jsonPath, "enumNames", items.stream().map(toEnumName).toList());
+      docCtx.put(jsonPath, "enumNames", enumNameList);
     }
     if (!STRICT_RJSF_V5) {
-      forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames",
-          items.stream().map(toEnumName).toList());
+      forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames", enumNameList);
     }
 
     return true;
@@ -240,19 +291,38 @@ public class JsfDisplayUtils {
 
   public <T, ID> boolean setUiEnumNames(DocumentContext uiDocCtx, String jsonPath,
       Collection<T> enumNames) {
-    if (enumNames == null || enumNames.isEmpty()) return false;
+    if (enumNames == null) return false;
 
-    forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames", enumNames);
+    return setUiEnumNames(uiDocCtx, jsonPath, enumNames.stream());
+  }
+
+  public <T, ID> boolean setUiEnumNames(DocumentContext uiDocCtx, String jsonPath,
+      Stream<T> enumNames) {
+    if (enumNames == null) return false;
+
+    var enumNameList = enumNames.toList();
+    if (enumNameList.isEmpty()) return false;
+
+    forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames", enumNameList);
 
     return true;
   }
 
   public <T, ID> boolean setUiEnumNames(DocumentContext uiDocCtx, String jsonPath,
       Collection<T> enums, Function<T, String> toEnumName) {
-    if (enums == null || enums.isEmpty()) return false;
+    if (enums == null) return false;
 
-    forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames",
-        enums.stream().map(toEnumName).toList());
+    return setUiEnumNames(uiDocCtx, jsonPath, enums.stream(), toEnumName);
+  }
+
+  public <T, ID> boolean setUiEnumNames(DocumentContext uiDocCtx, String jsonPath, Stream<T> enums,
+      Function<T, String> toEnumName) {
+    if (enums == null) return false;
+
+    var enumNameList = enums.map(toEnumName).toList();
+    if (enumNameList.isEmpty()) return false;
+
+    forceCreateAndPut(uiDocCtx, jsonPathToUiPath(jsonPath), "ui:enumNames", enumNameList);
 
     return true;
   }
