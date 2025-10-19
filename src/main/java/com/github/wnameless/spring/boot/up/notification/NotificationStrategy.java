@@ -1,5 +1,6 @@
 package com.github.wnameless.spring.boot.up.notification;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.github.oxo42.stateless4j.StateMachineConfig;
 import com.github.oxo42.stateless4j.StateRepresentation;
@@ -57,7 +58,10 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
       }
     }
 
-    for (NC callback : getNotificationCallbacks(stateMachine)) {
+    // Use collected callbacks from getNotificationPlans() to avoid race condition
+    // where callbacks are saved to MongoDB but not yet visible when queried
+    List<NC> callbacks = getCollectedCallbacks(stateMachine);
+    for (NC callback : callbacks) {
       StateRepresentation<S, T> representation =
           stateMachineConfig.getRepresentation((S) callback.getState());
       if (representation == null) {
@@ -93,6 +97,27 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
   default List<NC> getNotificationCallbacks(SM stateMachine) {
     return getNotificationService().getNotificationCallbackRepository()
         .findAllByStateMachineEntityId(stateMachine.getEntity().getId());
+  }
+
+  @SuppressWarnings("unchecked")
+  default List<NC> getCollectedCallbacks(SM stateMachine) {
+    // If this is a ConfigurableNotificationStrategy, use collected callbacks to avoid race
+    // condition
+    if (this instanceof ConfigurableNotificationStrategy) {
+      try {
+        var collectedCallbacks =
+            (List<NC>) ConfigurableNotificationStrategy.COLLECTED_CALLBACKS.get();
+        // Return copy and clear ThreadLocal to prevent memory leaks
+        List<NC> result = new ArrayList<>(collectedCallbacks);
+        collectedCallbacks.clear();
+        ConfigurableNotificationStrategy.COLLECTED_CALLBACKS.remove();
+        return result;
+      } catch (Exception e) {
+        // Fall back to database query if there's any issue
+      }
+    }
+    // Fall back to querying database (for non-configurable strategies or if collection failed)
+    return getNotificationCallbacks(stateMachine);
   }
 
   default Action2<Transition<S, T>, Object[]> getNotificationCallbackAction2(NC callback) {

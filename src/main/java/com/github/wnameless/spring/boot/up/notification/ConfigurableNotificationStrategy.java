@@ -18,6 +18,11 @@ public interface ConfigurableNotificationStrategy< //
     T extends Trigger, //
     ID> extends NotificationStrategy<NC, NT, NS, NR, M, SM, S, T, ID> {
 
+  // ThreadLocal to collect callbacks created during getNotificationPlans()
+  // This avoids race condition where callbacks are saved to DB but not yet visible when queried
+  // Using raw List type because generics cannot be used in static context
+  ThreadLocal<List<?>> COLLECTED_CALLBACKS = ThreadLocal.withInitial(ArrayList::new);
+
   List<T> getStateMachineTriggers();
 
   List<S> getStateMachineStates();
@@ -26,8 +31,12 @@ public interface ConfigurableNotificationStrategy< //
 
   NotificationPlan<S, T> convertToNotificationPlan(CN configurableNotification, SM stateMachine);
 
+  @SuppressWarnings("unchecked")
   default List<NotificationPlan<S, T>> getNotificationPlans(SM stateMachine) {
     var notificationPlans = new ArrayList<NotificationPlan<S, T>>();
+
+    // Clear any previously collected callbacks
+    ((List<NC>) COLLECTED_CALLBACKS.get()).clear();
 
     findConfigurableNotifications(stateMachine).forEach(cn -> {
       NotificationPlan<S, T> np = convertToNotificationPlan(cn, stateMachine);
