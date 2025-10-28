@@ -2368,6 +2368,7 @@ pre code {
 .form-control[readonly] {
   background-color: #e9ecef;
   opacity: 1;
+  color: #212529;
 }
 
 input[type="date"].form-control,
@@ -2499,7 +2500,7 @@ textarea.form-control {
 
 .form-check-input[disabled]~.form-check-label,
 .form-check-input:disabled~.form-check-label {
-  color: #868e96;
+  color: #495057;
 }
 
 .form-check-label {
@@ -4265,7 +4266,7 @@ input[type="button"].btn-block {
 
 .custom-control-input[disabled]~.custom-control-label,
 .custom-control-input:disabled~.custom-control-label {
-  color: #868e96;
+  color: #495057;
 }
 
 .custom-control-input[disabled]~.custom-control-label::before,
@@ -4416,7 +4417,7 @@ input[type="button"].btn-block {
 }
 
 .custom-select:disabled {
-  color: #868e96;
+  color: #495057;
   background-color: #e9ecef;
 }
 
