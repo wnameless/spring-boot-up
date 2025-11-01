@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.wnameless.spring</groupId>
   <artifactId>spring-boot-up</artifactId>
-  <version>0.16.20-SNAPSHOT</version>
+  <version>0.16.21-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -45,12 +45,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.18.0</version>
-    </dependency>
-
     <!-- Spring Boot Up-->
     <dependency>
       <groupId>com.github.wnameless.spring.boot.up</groupId>
@@ -73,11 +67,6 @@
       <groupId>com.github.wnameless.apt</groupId>
       <artifactId>apt-constant-generator</artifactId>
       <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.wnameless.json</groupId>
-      <artifactId>json-schema-data-yamlifier</artifactId>
-      <version>0.0.2-SNAPSHOT</version>
     </dependency>
 
     <!-- Spring -->
@@ -126,6 +115,11 @@
     </dependency>
 
     <!-- Util -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.18.0</version>
+    </dependency>
     <dependency>
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>

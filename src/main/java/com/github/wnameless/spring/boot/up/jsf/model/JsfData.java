@@ -3,11 +3,11 @@ package com.github.wnameless.spring.boot.up.jsf.model;
 import java.time.Instant;
 import java.util.Map;
 import com.github.wnameless.spring.boot.up.jsf.JsfVersioning;
-import com.github.wnameless.spring.boot.up.jsf.YamlableJSF;
+import com.github.wnameless.spring.boot.up.jsf.JsonSchemaForm;
 import com.github.wnameless.spring.boot.up.web.IdProvider;
 
 public interface JsfData<JS extends JsfSchema<ID>, ID>
-    extends YamlableJSF, JsfVersioning, IdProvider<ID> {
+    extends JsonSchemaForm, JsfVersioning, IdProvider<ID> {
 
   JS getJsfSchema();
 

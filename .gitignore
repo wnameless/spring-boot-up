@@ -4,6 +4,8 @@
 /.settings
 .DS_Store
 .vscode
+dependency-check-maven.sh
+dependency-check-suppression.xml
 
 ### AI ###
 CLAUDE.md
