@@ -19,8 +19,8 @@ public class DocumentImageUtils {
 
   /**
    * Creates a DocumentImage from a JSON Schema Form base64 data URL.
-   * 
-   * @param base64DataUrl The data URL in format: "data:image/png;name=abc.png;base64,<base64string>"
+   *
+   * @param base64DataUrl The data URL in format: "data:image/png;name=abc.png;base64,&lt;base64string&gt;"
    * @return A DocumentImage object with the decoded image data and filename
    * @throws IllegalArgumentException if the data URL format is invalid
    */
@@ -74,8 +74,8 @@ public class DocumentImageUtils {
 
   /**
    * Creates a DocumentImage from a JSON Schema Form base64 data URL with custom dimensions.
-   * 
-   * @param base64DataUrl The data URL in format: "data:image/png;name=abc.png;base64,<base64string>"
+   *
+   * @param base64DataUrl The data URL in format: "data:image/png;name=abc.png;base64,&lt;base64string&gt;"
    * @param widthCm Width in centimeters
    * @param heightCm Height in centimeters
    * @return A DocumentImage object with the decoded image data, filename, and dimensions
