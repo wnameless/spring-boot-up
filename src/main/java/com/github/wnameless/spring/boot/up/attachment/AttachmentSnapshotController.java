@@ -54,6 +54,11 @@ public interface AttachmentSnapshotController<AA extends AttachmentSnapshotProvi
     downloadAttachmentAction(response, getAttachmentSnapshotProvider(id), attachmentId);
   }
 
+  @GetMapping(path = "/{id}/attachments/download-all")
+  default void downloadAllAttachments(HttpServletResponse response, @PathVariable ID id) {
+    downloadAllAttachmentsAction(response, getAttachmentSnapshotProvider(id));
+  }
+
   @PutMapping(path = "/{id}/attachments")
   default ModelAndView modifyAttachments(ModelAndView mav, @PathVariable ID id,
       @RequestBody Map<String, Object> jsfFiles, @RequestParam String ajaxTargetId) {

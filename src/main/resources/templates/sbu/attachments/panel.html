@@ -35,6 +35,13 @@
         [[${#messages.msgOrNull('sbu.attachment.upload') ?: 'Upload'}]]
       </button>
     </li>
+    <li th:if="${(user == null || user.canRead(item)) && item.attachmentSnapshot.attachments != null && !item.attachmentSnapshot.attachments.isEmpty()}"
+      class="nav-item" role="presentation">
+      <a class="nav-link" th:href="@{${item.joinPath('attachments', 'download-all')}}" download>
+        <i class="fas fa-download me-1"></i>
+        [[${#messages.msgOrNull('sbu.attachment.zipall') ?: 'Zip All'}]]
+      </a>
+    </li>
   </ul>
 
   <div class="tab-content">

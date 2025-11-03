@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.ModelAndView;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -343,6 +347,41 @@ public interface AttachmentSnapshotControllerBase<S extends AttachmentService<A,
       int nRead;
       while ((nRead = inputStream.read()) != -1) {
         response.getWriter().write(nRead);
+      }
+    } catch (IOException e) {}
+  }
+
+  default void downloadAllAttachmentsAction(HttpServletResponse response,
+      AttachmentSnapshotProvider<A, ID> attachmentSnapshotProvider) {
+    var attachmentSnapshot = attachmentSnapshotProvider.getAttachmentSnapshot();
+    var attachments = attachmentSnapshot.getAttachments();
+
+    if (attachments == null || attachments.isEmpty()) return;
+
+    try {
+      // Generate filename with timestamp
+      String timestamp = DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmss")
+          .withZone(ZoneId.systemDefault())
+          .format(Instant.now());
+      String filename = "attachments-" + timestamp + ".zip";
+
+      response.setContentType("application/zip");
+      response.setHeader("Content-Disposition",
+          "attachment; filename=" + URLEncoder.encode(filename, StandardCharsets.UTF_8));
+
+      try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
+        for (A attachment : attachments) {
+          // Create entry with group/filename structure
+          String entryName = attachment.getGroup() + "/" + attachment.getName();
+          ZipEntry zipEntry = new ZipEntry(entryName);
+          zos.putNextEntry(zipEntry);
+
+          // Read and write file data
+          try (InputStream is = getAttachmentService().readData(attachment)) {
+            is.transferTo(zos);
+          }
+          zos.closeEntry();
+        }
       }
     } catch (IOException e) {}
   }
