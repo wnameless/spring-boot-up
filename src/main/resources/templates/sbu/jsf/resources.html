@@ -9,6 +9,81 @@
   <!-- Glyphicon -->
   <link th:href="@{/react-form/css/glyphicon.min.css}" rel="stylesheet" />
 
+  <!-- html2pdf.js -->
+  <script th:src="@{/html2pdf/0.12.1/html2pdf.bundle.min.js}"></script>
+  <script>
+    async function printShadowDomToPdf(elementId, filename = 'document.pdf') {
+      const shadowHost = document.getElementById(elementId);
+
+      if (!shadowHost) {
+        throw new Error(`Element with id "${elementId}" not found`);
+      }
+
+      if (!shadowHost.shadowRoot) {
+        throw new Error(`Element "${elementId}" does not have a shadow root`);
+      }
+
+      // Create temporary container
+      const tempDiv = document.createElement('div');
+
+      // Copy all external stylesheets from the document
+      const documentStyles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'));
+      documentStyles.forEach(style => {
+        tempDiv.appendChild(style.cloneNode(true));
+      });
+
+      // Copy styles from shadow DOM
+      const shadowStyles = shadowHost.shadowRoot.querySelectorAll('style, link[rel="stylesheet"]');
+      shadowStyles.forEach(style => {
+        tempDiv.appendChild(style.cloneNode(true));
+      });
+
+      // Copy the content
+      const contentClone = document.createElement('div');
+      contentClone.innerHTML = shadowHost.shadowRoot.innerHTML;
+      contentClone.style.padding = '0 10px'; // Add horizontal padding for radio buttons
+      contentClone.style.boxSizing = 'border-box';
+      tempDiv.appendChild(contentClone);
+
+      // Hide the temp div and add to DOM
+      tempDiv.style.position = 'fixed';
+      tempDiv.style.top = '0';
+      tempDiv.style.left = '0';
+      tempDiv.style.visibility = 'hidden';
+      tempDiv.style.width = '800px'; // Reasonable width for rendering
+      tempDiv.style.maxWidth = '800px';
+      tempDiv.style.overflow = 'visible';
+      document.body.appendChild(tempDiv);
+
+      try {
+        // Wait a bit for styles to load
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Generate PDF
+        await html2pdf()
+          .set({
+            margin: [10, 15, 10, 15], // top, right, bottom, left - more margin on sides
+            filename: filename,
+            html2canvas: {
+              scale: 1.5,
+              useCORS: true,
+              logging: false,
+              windowWidth: 800,
+              windowHeight: 1200,
+              x: 0,
+              y: 0
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          })
+          .from(contentClone)  // Use contentClone instead of tempDiv
+          .save();
+      } finally {
+        // Clean up
+        document.body.removeChild(tempDiv);
+      }
+    }
+  </script>
+
   <!-- Webpack -->
   <script th:src="@{/react-form/bs/main.js}" defer></script>
 </th:block>

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.wnameless.spring</groupId>
   <artifactId>spring-boot-up</artifactId>
-  <version>0.16.21-SNAPSHOT</version>
+  <version>0.16.22-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -118,7 +118,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.18.0</version>
+      <version>3.19.0</version>
     </dependency>
     <dependency>
       <groupId>jakarta.persistence</groupId>

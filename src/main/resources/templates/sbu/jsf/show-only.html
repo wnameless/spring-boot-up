@@ -6,6 +6,9 @@
     <div th:if="${attachmentDialog and @sbuHtml.isAttachmentSnapshotProvider(item)}"
       class="card-header">
       <div class="d-flex">
+        <a href="#" th:onclick="printShadowDomToPdf([[${'showForm' + rid}]])">
+          <i class="fas fa-file-pdf"></i>
+        </a>
         <a hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${@webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE})} + ${fowardingParam}"
           hx:target="${'#' + @webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE}" hx-ext="json-enc"
           data-bs-toggle="modal"

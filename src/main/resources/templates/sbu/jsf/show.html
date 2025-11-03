@@ -10,6 +10,10 @@
         hx:get="@{${!#strings.isEmpty(backPath) ? backPath : item.getBackPath(queryConfig)}(_)} + ${fowardingParam}"
         hx:target="${'#' + backTargetId}" hx-ext="json-enc" type="button" class="me-auto btn-close"
         aria-label="Close"></button>
+
+      <a href="#" th:onclick="printShadowDomToPdf([[${'showForm' + rid}]])">
+        <i class="fas fa-file-pdf"></i>
+      </a>
       <a th:if="${attachmentDialog and @sbuHtml.isAttachmentSnapshotProvider(item)}"
         hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${@webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE})} + ${fowardingParam}"
         hx:target="${'#' + @webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE}" hx-ext="json-enc"

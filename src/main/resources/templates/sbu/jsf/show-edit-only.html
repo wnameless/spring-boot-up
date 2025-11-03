@@ -15,6 +15,9 @@
         </a>
         <!-- Keep the header height even if the edit icon is hidden  -->
         <i class="fa fa-fw" style="visibility: hidden;"></i>
+        <a href="#" th:onclick="printShadowDomToPdf([[${'showEditForm' + rid}]])">
+          <i class="fas fa-file-pdf"></i>
+        </a>
         <a th:if="${user == null || user.canUpdate(item)}" class="pe-2 orange"
           hx:get="@{${item.getEditPath(queryConfig)}(jsfTheme=${jsfTheme}, saveonly=${saveonly}, saveonlybtntxt=${saveonlybtntxt})} + ${fowardingParam}"
           hx:target="${'#' + ajaxTargetId}" hx-ext="json-enc">
