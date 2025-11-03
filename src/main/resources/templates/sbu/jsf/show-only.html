@@ -4,11 +4,9 @@
   <th:block>
 
     <div th:if="${attachmentDialog and @sbuHtml.isAttachmentSnapshotProvider(item)}"
-      class="card-header">
-      <div class="d-flex">
-        <a href="#" th:onclick="printShadowDomToPdf([[${'showForm' + rid}]])">
-          <i class="fas fa-file-pdf"></i>
-        </a>
+      class="card-header d-flex align-items-center">
+      <!-- Right-aligned icons -->
+      <div class="ms-auto d-flex align-items-center gap-2">
         <a hx:get="@{${item.joinPath('attachments')}(__${@webModelAttributes.AJAX_TARGET_ID_NAME}__=${@webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE})} + ${fowardingParam}"
           hx:target="${'#' + @webModelAttributes.MODEL_CONTENT_TARGET_ID_VALUE}" hx-ext="json-enc"
           data-bs-toggle="modal"
@@ -16,6 +14,23 @@
           class="pe-2 text-success hint--left">
           <i class="fas fa-paperclip"></i>
         </a>
+
+        <!-- More Options Dropdown -->
+        <div class="dropdown">
+          <a href="#" class="text-dark" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <i class="fas fa-ellipsis-v"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="#"
+                th:onclick="|event.preventDefault(); printShadowDomToPdf('showForm${rid}');|">
+                <i class="fas fa-file-pdf me-2"></i>Export to PDF
+              </a>
+            </li>
+            <!-- Add more menu items here in the future -->
+          </ul>
+        </div>
       </div>
     </div>
     <div class="card-body">
