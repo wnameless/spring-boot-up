@@ -43,6 +43,27 @@
       contentClone.innerHTML = shadowHost.shadowRoot.innerHTML;
       contentClone.style.padding = '0 10px'; // Add horizontal padding for radio buttons
       contentClone.style.boxSizing = 'border-box';
+
+      // Preserve form element states (select values, checkbox states, etc.)
+      const originalInputs = shadowHost.shadowRoot.querySelectorAll('input, select, textarea');
+      const clonedInputs = contentClone.querySelectorAll('input, select, textarea');
+
+      originalInputs.forEach((original, index) => {
+        const cloned = clonedInputs[index];
+        if (!cloned) return;
+
+        if (original.tagName === 'SELECT') {
+          // Preserve selected option
+          cloned.value = original.value;
+        } else if (original.type === 'checkbox' || original.type === 'radio') {
+          // Preserve checked state
+          cloned.checked = original.checked;
+        } else {
+          // Preserve text input values
+          cloned.value = original.value;
+        }
+      });
+
       tempDiv.appendChild(contentClone);
 
       // Hide the temp div and add to DOM
