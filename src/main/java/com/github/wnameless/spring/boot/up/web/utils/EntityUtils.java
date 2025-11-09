@@ -36,6 +36,9 @@ public class EntityUtils {
     var idFieldName =
         findAnnotatedFieldName(src.getClass(), Id.class, jakarta.persistence.Id.class);
     if (idFieldName.isPresent()) copyField(src, mock, idFieldName.get());
+
+    log.warn("User can NOT read {} resource, a mock ID-only entity is created.",
+        src.getClass().getSimpleName());
     return mock;
   }
 
