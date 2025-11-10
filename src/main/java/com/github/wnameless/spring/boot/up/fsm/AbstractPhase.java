@@ -9,6 +9,9 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import com.github.wnameless.spring.boot.up.SpringBootUp;
 import com.github.wnameless.spring.boot.up.notification.NotifiableStateMachine;
 import com.github.wnameless.spring.boot.up.notification.NotificationStrategy;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 
 public abstract class AbstractPhase<E extends PhaseProvider<E, S, T, ID>, S extends State<T, ID>, T extends Trigger, ID>
     implements Phase<E, S, T, ID> {
@@ -61,7 +64,16 @@ public abstract class AbstractPhase<E extends PhaseProvider<E, S, T, ID>, S exte
       if (this instanceof NotifiableStateMachine nsm) {
         var strategies = SpringBootUp.getBeansOfType(NotificationStrategy.class).values();
         for (var strategy : strategies) {
-          if (strategy.getNotifiableStateMachineType().equals(this.getClass())) {
+          var expectedClass = strategy.getNotifiableStateMachineType();
+          var actualClass = this.getClass();
+
+          // Check exact match OR if actual is subclass/proxy of expected
+          // IMPORTANT: isAssignableFrom() is required to handle Spring CGLIB proxies
+          // where actualClass might be "IrbApplicationPhase$$EnhancerBySpringCGLIB$$abc123"
+          // instead of the expected "IrbApplicationPhase"
+          if (expectedClass.equals(actualClass) || expectedClass.isAssignableFrom(actualClass)) {
+            log.debug("Applying notification strategy {} to phase {}",
+                     strategy.getClass().getSimpleName(), actualClass.getSimpleName());
             strategy.applyNotificationStrategy(config, nsm.getNotifiableStateMachine());
           }
         }

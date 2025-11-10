@@ -148,11 +148,7 @@ public interface QuickConfigurableNotificationStrategy< //
             .findFirst().get();
         callback.setTrigger(messageHookTrigger);
       }
-      NC savedCallback = getNotificationService().findOrCreateNotificationCallback(callback);
-      // Collect callback for immediate use, avoiding race condition with MongoDB query
-      @SuppressWarnings("unchecked")
-      List<NC> collectedCallbacks = (List<NC>) COLLECTED_CALLBACKS.get();
-      collectedCallbacks.add(savedCallback);
+      getNotificationService().findOrCreateNotificationCallback(callback);
     }
 
     return rule;

@@ -1,6 +1,5 @@
 package com.github.wnameless.spring.boot.up.notification;
 
-import java.util.ArrayList;
 import java.util.List;
 import com.github.oxo42.stateless4j.StateMachineConfig;
 import com.github.oxo42.stateless4j.StateRepresentation;
@@ -58,9 +57,8 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
       }
     }
 
-    // Use collected callbacks from getNotificationPlans() to avoid race condition
-    // where callbacks are saved to MongoDB but not yet visible when queried
-    List<NC> callbacks = getCollectedCallbacks(stateMachine);
+    // Retrieve callbacks from database for this state machine instance
+    List<NC> callbacks = getNotificationCallbacks(stateMachine);
     for (NC callback : callbacks) {
       StateRepresentation<S, T> representation =
           stateMachineConfig.getRepresentation((S) callback.getState());
@@ -99,68 +97,6 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
         .findAllByStateMachineEntityId(stateMachine.getEntity().getId());
   }
 
-  @SuppressWarnings("unchecked")
-  default List<NC> getCollectedCallbacks(SM stateMachine) {
-    // If this is a ConfigurableNotificationStrategy, use collected callbacks to avoid race
-    // condition
-    if (this instanceof ConfigurableNotificationStrategy) {
-      try {
-        // First, try ThreadLocal (works if we're in the same thread as getNotificationPlans)
-        var collectedCallbacks =
-            (List<NC>) ConfigurableNotificationStrategy.COLLECTED_CALLBACKS.get();
-        if (!collectedCallbacks.isEmpty()) {
-          // Return copy and clear ThreadLocal to prevent memory leaks
-          List<NC> result = new ArrayList<>(collectedCallbacks);
-          collectedCallbacks.clear();
-          ConfigurableNotificationStrategy.COLLECTED_CALLBACKS.remove();
-          return result;
-        }
-
-        // If ThreadLocal is empty, try application-level cache (works across threads)
-        var entityId = String.valueOf(stateMachine.getEntity().getId());
-        var cacheEntry = ConfigurableNotificationStrategy.CALLBACK_CACHE.get(entityId);
-        if (cacheEntry != null && !cacheEntry.isExpired(
-            ConfigurableNotificationStrategy.CALLBACK_CACHE_TTL_MILLIS)) {
-          // Remove from cache after reading (callbacks are single-use)
-          ConfigurableNotificationStrategy.CALLBACK_CACHE.remove(entityId);
-          return (List<NC>) cacheEntry.callbacks;
-        }
-      } catch (Exception e) {
-        // Fall back to database query if there's any issue
-      }
-    }
-    // Fall back to querying database with retry logic to handle MongoDB replication lag
-    return getNotificationCallbacksWithRetry(stateMachine);
-  }
-
-  default List<NC> getNotificationCallbacksWithRetry(SM stateMachine) {
-    // Try up to 3 times with small delays to handle MongoDB replication lag
-    int maxRetries = 3;
-    long retryDelayMillis = 50; // 50ms between retries
-
-    for (int attempt = 0; attempt < maxRetries; attempt++) {
-      List<NC> callbacks = getNotificationCallbacks(stateMachine);
-
-      // If we found callbacks, return them
-      if (!callbacks.isEmpty()) {
-        return callbacks;
-      }
-
-      // If this was not the last attempt, wait before retrying
-      if (attempt < maxRetries - 1) {
-        try {
-          Thread.sleep(retryDelayMillis);
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          break; // Exit retry loop if interrupted
-        }
-      }
-    }
-
-    // Return empty list if no callbacks found after all retries
-    // This is expected behavior if no callbacks exist for this state machine
-    return new ArrayList<>();
-  }
 
   default Action2<Transition<S, T>, Object[]> getNotificationCallbackAction2(NC callback) {
     return (arg1, arg2) -> {
