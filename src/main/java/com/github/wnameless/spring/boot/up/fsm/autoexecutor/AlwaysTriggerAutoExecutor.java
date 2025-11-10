@@ -91,7 +91,12 @@ public interface AlwaysTriggerAutoExecutor extends SchedulingConfigurer {
             phaseProviderType)) {
           var phase = fsmItem.getPhase();
           for (var strategy : strategies) {
-            if (strategy.getNotifiableStateMachineType().equals(phase.getClass())) {
+            var expectedClass = strategy.getNotifiableStateMachineType();
+            var actualClass = phase.getClass();
+
+            // Check exact match OR if actual is subclass/proxy of expected
+            // IMPORTANT: isAssignableFrom() is required to handle Spring CGLIB proxies
+            if (expectedClass.equals(actualClass) || expectedClass.isAssignableFrom(actualClass)) {
               if (phase instanceof NotifiableStateMachine nsm)
                 strategy.applyAlwaysNotificationStrategy(nsm);
             }

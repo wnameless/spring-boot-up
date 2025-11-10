@@ -176,7 +176,12 @@ public class StateRecord<S extends State<T, ID>, T extends Trigger, ID> {
     Optional<CrudRepository> formRepoOpt = repositories.values().stream().filter(repo -> {
       ResolvableType[] generics =
           ResolvableType.forClass(repo.getClass()).as(CrudRepository.class).getGenerics();
-      return generics.length > 0 && generics[0].resolve() == formType;
+      // Check exact match OR if either type is assignable from the other
+      // IMPORTANT: Use equals() and isAssignableFrom() instead of == to handle CGLIB proxies
+      return generics.length > 0 && generics[0].resolve() != null &&
+             (generics[0].resolve().equals(formType) ||
+              generics[0].resolve().isAssignableFrom(formType) ||
+              formType.isAssignableFrom(generics[0].resolve()));
     }).findFirst();
 
     return formRepoOpt.flatMap(repo -> repo.findById(idOpt.get()));

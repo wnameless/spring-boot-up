@@ -19,7 +19,13 @@ public interface NotifiableStateMachine<SM extends NotifiableStateMachine<SM, S,
     return c -> {
       var strategies = SpringBootUp.getBeansOfType(NotificationStrategy.class).values();
       for (var strategy : strategies) {
-        if (strategy.getNotifiableStateMachineType().equals(this.getClass())) {
+        var expectedClass = strategy.getNotifiableStateMachineType();
+        var actualClass = this.getClass();
+
+        // Check exact match OR if actual is subclass/proxy of expected
+        // IMPORTANT: isAssignableFrom() is required to handle Spring CGLIB proxies
+        // where actualClass might be "IrbApplicationPhase$$EnhancerBySpringCGLIB$$abc123"
+        if (expectedClass.equals(actualClass) || expectedClass.isAssignableFrom(actualClass)) {
           strategy.applyNotificationStrategy(c, getNotifiableStateMachine());
         }
       }

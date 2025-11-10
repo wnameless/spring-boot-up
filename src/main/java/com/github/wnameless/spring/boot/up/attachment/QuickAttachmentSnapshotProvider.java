@@ -18,7 +18,12 @@ public interface QuickAttachmentSnapshotProvider<T, A extends Attachment<ID>, ID
   @AfterDeleteFromMongo // MongoDB
   default void afterDeleteFromMongo() {
     var attachmentService = SpringBootUp.getBeansOfType(AttachmentService.class).values().stream()
-        .filter(as -> as.getAttachmentType().equals(getAttachmentType())).findFirst().get();
+        // Check exact match OR if either type is assignable from the other
+        // IMPORTANT: isAssignableFrom() handles CGLIB proxies correctly
+        .filter(as -> as.getAttachmentType().equals(getAttachmentType()) ||
+                      as.getAttachmentType().isAssignableFrom(getAttachmentType()) ||
+                      getAttachmentType().isAssignableFrom(as.getAttachmentType()))
+        .findFirst().get();
     getAttachmentSnapshot().getAttachments().forEach(attachment -> {
       attachmentService.deleteAttachment((Attachment) attachment);
     });

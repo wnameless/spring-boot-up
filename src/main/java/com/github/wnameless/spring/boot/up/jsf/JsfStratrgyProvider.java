@@ -6,10 +6,13 @@ import com.github.wnameless.spring.boot.up.SpringBootUp;
 
 public interface JsfStratrgyProvider {
 
-  @SuppressWarnings("rawtypes")
+  @SuppressWarnings({"rawtypes", "unchecked"})
   default Optional<JsfStrategy> getJsonSchemaFormStrategy() {
     return SpringBootUp.getBeansOfType(JsfStrategy.class).values().stream()
-        .filter(dc -> dc.getDocumentType().equals(this.getClass()))
+        // Check exact match OR if actual is subclass/proxy of expected
+        // IMPORTANT: isAssignableFrom() handles CGLIB proxies correctly
+        .filter(dc -> dc.getDocumentType().equals(this.getClass())
+            || dc.getDocumentType().isAssignableFrom(this.getClass()))
         .filter(dc -> dc.activeStatus().getAsBoolean()).findFirst();
   }
 
