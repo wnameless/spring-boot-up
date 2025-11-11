@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.wnameless.json.flattener.JsonFlattener;
 import com.github.wnameless.json.unflattener.JsonUnflattener;
+import com.github.wnameless.spring.boot.up.web.WebActionAlertHelper.AlertMessages;
 import com.google.common.collect.LinkedHashMultimap;
 import com.jayway.jsonpath.DocumentContext;
 import lombok.experimental.UtilityClass;
@@ -58,9 +59,20 @@ public class JsfWorkbookUtils {
     return Base64.getEncoder().encode(bytes);
   }
 
-  private boolean containsErrorFormula(Cell cell) {
-    return cell.getCellType() == CellType.FORMULA
-        && cell.getCachedFormulaResultType() == CellType.ERROR;
+  private boolean containsError(Cell cell) {
+    if (cell == null) {
+      return false;
+    }
+    // Check for direct ERROR cell type (e.g., #N/A, #REF!, #VALUE!, etc.)
+    if (cell.getCellType() == CellType.ERROR) {
+      return true;
+    }
+    // Check for FORMULA cells that evaluate to ERROR
+    if (cell.getCellType() == CellType.FORMULA
+        && cell.getCachedFormulaResultType() == CellType.ERROR) {
+      return true;
+    }
+    return false;
   }
 
   private String getCellValueAsString(Cell cell, Workbook workbook) {
@@ -73,103 +85,151 @@ public class JsfWorkbookUtils {
     return cellValue;
   }
 
-  public Map<String, Object> dataWorkbookToMap(Workbook wb) {
+  private String columnIndexToLetter(int columnIndex) {
+    StringBuilder result = new StringBuilder();
+    while (columnIndex >= 0) {
+      result.insert(0, (char) ('A' + columnIndex % 26));
+      columnIndex = columnIndex / 26 - 1;
+    }
+    return result.toString();
+  }
+
+  public Map<String, Object> dataWorkbookToMap(Workbook wb, AlertMessages... alertMessages) {
     var map = new LinkedHashMap<String, Object>();
 
-    int rowCount = DATA_POINT_ROW_START;
-    int startCol = DATA_POINT_VALUE_START;
-    var sheet = wb.getSheet(DATASHEET_NAME);
-    var row = sheet.getRow(rowCount++);
-    var lastRow = sheet.getLastRowNum();
+    try {
+      int rowCount = DATA_POINT_ROW_START;
+      int startCol = DATA_POINT_VALUE_START;
+      var sheet = wb.getSheet(DATASHEET_NAME);
+      var row = sheet.getRow(rowCount++);
+      var lastRow = sheet.getLastRowNum();
 
-    while (rowCount <= lastRow) {
-      if (row != null //
-          && row.getCell(DATA_POINT_JSON_PATH_COL) != null //
-          && row.getCell(DATA_POINT_TYPE_COL) != null //
-          && row.getCell(DATA_POINT_IS_IN_ARRAY_COL) != null //
-          && row.getCell(DATA_POINT_IS_ENUM_COL) != null //
-          && row.getCell(startCol) != null //
-          && row.getCell(startCol).getCellType() != CellType.BLANK) {
-        var jsonPath = row.getCell(DATA_POINT_JSON_PATH_COL).getStringCellValue();
-        var type = row.getCell(DATA_POINT_TYPE_COL).getStringCellValue();
-        var isArray = row.getCell(DATA_POINT_IS_IN_ARRAY_COL).getBooleanCellValue();
-        var isEnum = row.getCell(DATA_POINT_IS_ENUM_COL).getBooleanCellValue();
-        if (!jsonPath.isBlank() && !type.isBlank()) {
-          var dataRow = isEnum ? sheet.getRow(rowCount++) : row;
-          switch (type) {
-            case "string" -> {
-              if (isArray) {
-                int idx = 0;
-                var cell = dataRow.getCell(startCol++);
-                while (cell != null && cell.getCellType() != CellType.BLANK
-                    && !containsErrorFormula(cell)) {
-                  var value = getCellValueAsString(cell, wb);
-                  // .getStringCellValue();
-                  map.put(jsonPath.replace(".items", "[" + idx++ + "]"), value);
-                  cell = dataRow.getCell(startCol++);
+      while (rowCount <= lastRow) {
+        int currentCol = startCol; // Track current column for error reporting
+
+        try {
+          if (row != null //
+              && row.getCell(DATA_POINT_JSON_PATH_COL) != null //
+              && row.getCell(DATA_POINT_TYPE_COL) != null //
+              && row.getCell(DATA_POINT_IS_IN_ARRAY_COL) != null //
+              && row.getCell(DATA_POINT_IS_ENUM_COL) != null //
+              && row.getCell(startCol) != null //
+              && row.getCell(startCol).getCellType() != CellType.BLANK) {
+            var jsonPath = row.getCell(DATA_POINT_JSON_PATH_COL).getStringCellValue();
+            var type = row.getCell(DATA_POINT_TYPE_COL).getStringCellValue();
+            var isArray = row.getCell(DATA_POINT_IS_IN_ARRAY_COL).getBooleanCellValue();
+            var isEnum = row.getCell(DATA_POINT_IS_ENUM_COL).getBooleanCellValue();
+            if (!jsonPath.isBlank() && !type.isBlank()) {
+              var dataRow = isEnum ? sheet.getRow(rowCount++) : row;
+              switch (type) {
+                case "string" -> {
+                  if (isArray) {
+                    int idx = 0;
+                    currentCol = startCol;
+                    var cell = dataRow.getCell(currentCol++);
+                    while (cell != null && cell.getCellType() != CellType.BLANK
+                        && !containsError(cell)) {
+                      var value = getCellValueAsString(cell, wb);
+                      map.put(jsonPath.replace(".items", "[" + idx++ + "]"), value);
+                      cell = dataRow.getCell(currentCol++);
+                    }
+                  } else {
+                    currentCol = startCol;
+                    var cell = dataRow.getCell(currentCol++);
+                    if (!containsError(cell)) {
+                      var value = getCellValueAsString(cell, wb);
+                      map.put(jsonPath, value);
+                    }
+                  }
                 }
-              } else {
-                var value = getCellValueAsString(dataRow.getCell(startCol++), wb);
-                // .getStringCellValue();
-                map.put(jsonPath, value);
-              }
-            }
-            case "number" -> {
-              if (isArray) {
-                int idx = 0;
-                var cell = dataRow.getCell(startCol++);
-                while (cell != null && cell.getCellType() != CellType.BLANK
-                    && !containsErrorFormula(cell)) {
-                  var value = cell.getNumericCellValue();
-                  map.put(jsonPath.replace(".items", "[" + idx++ + "]"), value);
-                  cell = dataRow.getCell(startCol++);
+                case "number" -> {
+                  if (isArray) {
+                    int idx = 0;
+                    currentCol = startCol;
+                    var cell = dataRow.getCell(currentCol++);
+                    while (cell != null && cell.getCellType() != CellType.BLANK
+                        && !containsError(cell)) {
+                      var value = cell.getNumericCellValue();
+                      map.put(jsonPath.replace(".items", "[" + idx++ + "]"), value);
+                      cell = dataRow.getCell(currentCol++);
+                    }
+                  } else {
+                    currentCol = startCol;
+                    var cell = dataRow.getCell(currentCol++);
+                    if (!containsError(cell)) {
+                      var value = cell.getNumericCellValue();
+                      map.put(jsonPath, value);
+                    }
+                  }
                 }
-              } else {
-                var value = dataRow.getCell(startCol++).getNumericCellValue();
-                map.put(jsonPath, value);
-              }
-            }
-            case "integer" -> {
-              if (isArray) {
-                int idx = 0;
-                var cell = dataRow.getCell(startCol++);
-                while (cell != null && cell.getCellType() != CellType.BLANK
-                    && !containsErrorFormula(cell)) {
-                  var value = cell.getNumericCellValue();
-                  map.put(jsonPath.replace(".items", "[" + idx++ + "]"),
-                      Double.valueOf(value).intValue());
-                  cell = dataRow.getCell(startCol++);
+                case "integer" -> {
+                  if (isArray) {
+                    int idx = 0;
+                    currentCol = startCol;
+                    var cell = dataRow.getCell(currentCol++);
+                    while (cell != null && cell.getCellType() != CellType.BLANK
+                        && !containsError(cell)) {
+                      var value = cell.getNumericCellValue();
+                      map.put(jsonPath.replace(".items", "[" + idx++ + "]"),
+                          Double.valueOf(value).intValue());
+                      cell = dataRow.getCell(currentCol++);
+                    }
+                  } else {
+                    currentCol = startCol;
+                    var cell = dataRow.getCell(currentCol++);
+                    if (!containsError(cell)) {
+                      var value = cell.getNumericCellValue();
+                      map.put(jsonPath, Double.valueOf(value).intValue());
+                    }
+                  }
                 }
-              } else {
-                var value = dataRow.getCell(startCol++).getNumericCellValue();
-                map.put(jsonPath, Double.valueOf(value).intValue());
-              }
-            }
-            case "boolean" -> {
-              if (isArray) {
-                int idx = 0;
-                var cell = dataRow.getCell(startCol++);
-                while (cell != null && cell.getCellType() != CellType.BLANK
-                    && !containsErrorFormula(cell)) {
-                  var value = cell.getBooleanCellValue();
-                  map.put(jsonPath.replace(".items", "[" + idx++ + "]"), value);
-                  cell = dataRow.getCell(startCol++);
+                case "boolean" -> {
+                  if (isArray) {
+                    int idx = 0;
+                    currentCol = startCol;
+                    var cell = dataRow.getCell(currentCol++);
+                    while (cell != null && cell.getCellType() != CellType.BLANK
+                        && !containsError(cell)) {
+                      var value = cell.getBooleanCellValue();
+                      map.put(jsonPath.replace(".items", "[" + idx++ + "]"), value);
+                      cell = dataRow.getCell(currentCol++);
+                    }
+                  } else {
+                    currentCol = startCol;
+                    var cell = dataRow.getCell(currentCol++);
+                    if (!containsError(cell)) {
+                      var value = cell.getBooleanCellValue();
+                      map.put(jsonPath, value);
+                    }
+                  }
                 }
-              } else {
-                var value = dataRow.getCell(startCol++).getBooleanCellValue();
-                map.put(jsonPath, value);
               }
+
+              startCol = DATA_POINT_VALUE_START;
             }
           }
-
-          startCol = DATA_POINT_VALUE_START;
+        } catch (Exception e) {
+          // Report error with row and column context
+          int humanReadableRow = rowCount; // Already incremented, so this is 1-based
+          String columnLetter = columnIndexToLetter(currentCol);
+          String errorMessage = String.format("Error at row %d, column %s: %s", humanReadableRow,
+              columnLetter, e.getMessage());
+          List.of(alertMessages).stream().filter(am -> am != null)
+              .forEach(alertMessage -> alertMessage.getDanger().add(errorMessage));
+          return new LinkedHashMap<>();
         }
+
+        row = sheet.getRow(rowCount++);
       }
 
-      row = sheet.getRow(rowCount++);
+      return JsonUnflattener.unflattenAsMap(map);
+    } catch (Exception e) {
+      // Handle any other exceptions (e.g., sheet not found, etc.)
+      String errorMessage = String.format("Error processing workbook: %s", e.getMessage());
+      List.of(alertMessages).stream().filter(am -> am != null)
+          .forEach(alertMessage -> alertMessage.getDanger().add(errorMessage));
+      return new LinkedHashMap<>();
     }
-
-    return JsonUnflattener.unflattenAsMap(map);
   }
 
   public XSSFWorkbook toDataCollectionWorkbook(String schemaJson, String uiSchemaJson) {
