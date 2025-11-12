@@ -44,19 +44,20 @@
     </li>
   </ul>
 
-  <div class="tab-content">
+  <div class="tab-content" th:with="hasOnlyOneGroup=${item.attachmentChecklist.getGroupNames().size() == 1}">
     <div class="tab-pane fade show active" th:id="${'pills-file-list' + rid}" role="tabpanel">
       <div id="accordionFileList" class="accordion">
         <div th:each="fileGroup, groupIndex : ${item.attachmentChecklist.getGroupNames()}"
           class="accordion-item">
           <h2 class="accordion-header" th:id="'heading_' + ${groupIndex.index}">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              aria-expanded="false"
-              th:attr="data-bs-target='#collapse_' + ${groupIndex.index}, aria-controls='collapse_' + ${groupIndex.index}">
+            <button class="accordion-button" th:classappend="${!hasOnlyOneGroup ? 'collapsed' : ''}"
+              type="button" data-bs-toggle="collapse"
+              th:attr="aria-expanded=${hasOnlyOneGroup}, data-bs-target='#collapse_' + ${groupIndex.index}, aria-controls='collapse_' + ${groupIndex.index}">
               [[${#messages.msgOrNull('sbu.attachment.group.' + fileGroup) ?: fileGroup}]]
             </button>
           </h2>
-          <div th:id="'collapse_' + ${groupIndex.index}" class="accordion-collapse collapse show"
+          <div th:id="'collapse_' + ${groupIndex.index}" class="accordion-collapse collapse"
+            th:classappend="${hasOnlyOneGroup ? 'show' : ''}"
             th:attr="aria-labelledby='heading_' + ${groupIndex.index}"
             data-bs-parent="#accordionFileList">
             <div class="accordion-body">
