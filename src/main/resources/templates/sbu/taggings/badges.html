@@ -3,13 +3,10 @@
 <div th:fragment="bs5">
   <th:block th:with="item=${__${@webModelAttributes.ITEM_NAME}__}">
     <th:block th:each="tag,iter : ${item.tagTemplates}">
-      <div class="btn-group" role="group">
-        <input type="radio" class="btn-check btn-sm" name="btn-radio" id="btn-radio1"
-          autocomplete="off" checked>
-        <label class="btn btn-outline-info btn-sm" for="btn-radio1">[[${tag.labelName}]]</label>
-        <input type="radio" class="btn-check btn-sm" name="btn-radio" id="btn-radio2"
-          autocomplete="off">
-        <label class="btn btn-outline-info btn-sm" for="btn-radio2">[[${tag.groupTitle}]]</label>
+      <div class="btn-group btn-group-sm" role="group">
+        <button type="button" class="btn btn-outline-dark"
+          th:classappend="${tag.labelColor}">[[${tag.labelName}]]</button>
+        <button type="button" class="btn btn-outline-dark">[[${tag.groupTitle}]]</button>
       </div>
     </th:block>
   </th:block>
