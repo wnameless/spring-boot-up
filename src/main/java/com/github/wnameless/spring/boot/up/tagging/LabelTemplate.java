@@ -27,7 +27,8 @@ public interface LabelTemplate<ID> extends IdProvider<ID> {
 
   default Optional<Class<?>> getEntityTypeByClass() {
     try {
-      var klass = Class.forName(getEntityType());
+      var klass =
+          Class.forName(getEntityType(), true, Thread.currentThread().getContextClassLoader());
       return Optional.of(klass);
     } catch (ClassNotFoundException e) {
       return Optional.empty();

@@ -27,7 +27,7 @@ public interface UserLabelTemplate<ID> extends IdProvider<ID> {
   }
 
   default Class<?> getEntityTypeByClass() throws ClassNotFoundException {
-    return Class.forName(getEntityType());
+    return Class.forName(getEntityType(), true, Thread.currentThread().getContextClassLoader());
   }
 
 }

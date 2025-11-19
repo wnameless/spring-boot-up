@@ -52,8 +52,8 @@ public interface NotificationCallback<NS extends NotificationSource<ID>, ID>
   @SuppressWarnings("unchecked")
   @SneakyThrows
   default Enum<?> getState() {
-    Class<? extends Enum<?>> enumType =
-        (Class<? extends Enum<?>>) Class.forName(getStateEnumTypeName());
+    Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) Class
+        .forName(getStateEnumTypeName(), true, Thread.currentThread().getContextClassLoader());
     for (Enum<?> e : enumType.getEnumConstants()) {
       if (Objects.equals(e.name(), getStateName())) {
         return e;
@@ -65,8 +65,8 @@ public interface NotificationCallback<NS extends NotificationSource<ID>, ID>
   @SuppressWarnings("unchecked")
   @SneakyThrows
   default Enum<?> getTrigger() {
-    Class<? extends Enum<?>> enumType =
-        (Class<? extends Enum<?>>) Class.forName(getTriggerEnumTypeName());
+    Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) Class
+        .forName(getTriggerEnumTypeName(), true, Thread.currentThread().getContextClassLoader());
     for (Enum<?> e : enumType.getEnumConstants()) {
       if (Objects.equals(e.name(), getTriggerName())) {
         return e;
