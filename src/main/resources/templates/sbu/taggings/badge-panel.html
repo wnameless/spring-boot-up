@@ -15,6 +15,14 @@
 
   <div class="offcanvas offcanvas-bottom" tabindex="-1" id="searchByTag"
     aria-labelledby="searchByTagLabel">
+    <style>
+      .badge-outline {
+        color: black;
+        border: 1px solid #999;
+        background-color: transparent;
+      }
+    </style>
+
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="searchByTagLabel">
         [[${#messages.msgOrNull('sbu.tagging.ui.panel.title') ?: 'Tags'}]]
@@ -25,9 +33,11 @@
     <div class="offcanvas-body">
       <i class="fas fa-tag fa-xl fa-fw"></i>
       <a th:each="label : ${item.labelTemplates}"
-        th:href="@{${route.indexPath}(taggings=${label.id})}" class="btn badge p-2 fs-5"
-        th:style="'line-height: 1;' + 'background-color:' + ${label.labelColor} + ';'">
-        [[${label.labelName}]]
+        th:href="@{${route.indexPath}(taggings=${label.id})}"
+        class="btn badge badge-outline p-2 fs-5" th:style="'line-height: 1;'">
+        <span th:classappend="${label.labelColor}">
+          [[${label.labelName}]]
+        </span>
       </a>
 
       <hr>
@@ -35,9 +45,10 @@
       <i class="fa-solid fa-user-tag fa-xl"></i>
       <a th:each="label : ${item.userLabelTemplates}"
         th:href="@{${route.indexPath}(taggings=${label.id})}"
-        class="btn badge rounded-pill p-2 fs-5"
-        th:style="'line-height: 1;' + 'background-color:' + ${label.labelColor} + ';'">
-        [[${label.labelName}]]
+        class="btn badge badge-outline rounded-pill p-2 fs-5" th:style="'line-height: 1;'">
+        <span th:classappend="${label.labelColor}">
+          [[${label.labelName}]]
+        </span>
       </a>
 
       <hr>
@@ -45,9 +56,10 @@
       <i class="fa-solid fa-hashtag fa-xl"></i>
       <a th:each="label : ${item.systemLabels}"
         th:href="@{${route.indexPath}(taggings=${label.id})}"
-        class="btn badge rounded-pill p-2 fs-5"
-        th:style="'line-height: 1;' + 'background-color:' + ${label.labelColor} + ';'">
-        [[${label.labelName}]]
+        class="btn badge badge-outline rounded-pill p-2 fs-5" th:style="'line-height: 1;'">
+        <span th:classappend="${label.labelColor}">
+          [[${label.labelName}]]
+        </span>
       </a>
     </div>
   </div>
