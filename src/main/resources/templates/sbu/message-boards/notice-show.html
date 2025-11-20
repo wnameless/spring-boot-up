@@ -38,6 +38,14 @@
 
           <div class="mb-3">
             <label for="title" class="form-label">
+              [[${#messages.msgOrNull('sbu.MessageBoardNotice.messageType') ?: 'Message Type'}]]
+            </label>
+            <input type="text" class="form-control" name="messageType"
+              th:value="${item.messageType}" readonly>
+          </div>
+
+          <div class="mb-3">
+            <label for="title" class="form-label">
               [[${#messages.msgOrNull('sbu.MessageBoardNotice.timelyDuration') ?: 'Timely
               Duration'}]]
             </label>

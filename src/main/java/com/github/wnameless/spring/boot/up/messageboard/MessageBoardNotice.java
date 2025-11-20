@@ -12,6 +12,8 @@ public interface MessageBoardNotice<MB extends MessageBoard> extends TimeAuditab
 
   String getTitle();
 
+  String getMessageType();
+
   String getContent();
 
   Duration getTimelyDuration();

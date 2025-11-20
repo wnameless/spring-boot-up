@@ -7,7 +7,9 @@
         <button class="accordion-button" type="button" data-bs-toggle="collapse"
           th:attr="data-bs-target=${'#collapse_' + iter.index}">
           [[${notice.title + ' - ' + @sbuHtml.toTimeAgo(notice.createdAt)}]]
-          <span class="hint--right" th:attr="aria-label=#{'ui.pinned'}">
+          <span th:unless="${#strings.isEmpty(notice.messageType)}"
+            class="badge bg-primary ms-1">[[${notice.messageType}]]</span>
+          <span class="hint--right ms-1" th:attr="aria-label=#{'ui.pinned'}">
             <i th:if="${notice.pinned}" class="fas fa-map-pin fa-fw text-danger"></i>
           </span>
         </button>
