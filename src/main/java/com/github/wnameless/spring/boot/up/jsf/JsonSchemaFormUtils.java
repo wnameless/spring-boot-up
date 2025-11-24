@@ -13,20 +13,10 @@ public final class JsonSchemaFormUtils {
 
   private JsonSchemaFormUtils() {}
 
-  // @SuppressWarnings("unchecked")
   public static Map<String, Object> defaultSchema() {
     return JsonCoreFactory.INSTANCE.readJson(
         "{\"title\": \"Default Form\",\"type\": \"object\",\"properties\": {\"warning\": {\"type\": \"string\",\"title\": \"Please update this schema ASAP.\",\"default\": \"Hurry up!\"}}}")
         .asObject().toMap();
-    // try {
-    // return JacksonObjectMapperFactory.INSTANCE.getObjectMapper().readValue(
-    // "{\"title\": \"Default Form\",\"type\": \"object\",\"properties\":
-    // {\"warning\": {\"type\": \"string\",\"title\": \"Please update this
-    // schema ASAP.\",\"default\": \"Hurry up!\"}}}",
-    // Map.class);
-    // } catch (JsonProcessingException e) {
-    // throw new RuntimeException(e);
-    // }
   }
 
   public static Map<String, Object> defaultUiSchema() {

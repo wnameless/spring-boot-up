@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.poi.common.usermodel.PictureType;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -211,7 +212,7 @@ public class DocxTemplateProcessor {
               }
 
               String imgFileName = getImageFileName(imagePath);
-              int imgFormat = getImageFormat(imgFileName);
+              PictureType imgFormat = getImageFormat(imgFileName);
 
               XWPFRun imageRun = paragraph.insertNewRun(insertPosition++);
               imageRun.addPicture(imgInputStream, imgFormat, imgFileName, Units.toEMU(100),
@@ -247,7 +248,7 @@ public class DocxTemplateProcessor {
               // Insert image with custom dimensions
               InputStream imgInputStream = documentImage.getImageStream();
               String imgFileName = documentImage.getFileName();
-              int imgFormat = getImageFormat(imgFileName);
+              PictureType imgFormat = getImageFormat(imgFileName);
 
               XWPFRun imageRun = paragraph.insertNewRun(insertPosition++);
 
@@ -305,31 +306,31 @@ public class DocxTemplateProcessor {
     return new File(imagePath).getName();
   }
 
-  private int getImageFormat(String imgFileName) throws InvalidFormatException {
-    int format;
+  private PictureType getImageFormat(String imgFileName) throws InvalidFormatException {
+    PictureType format;
     String lowerCaseName = imgFileName.toLowerCase();
     if (lowerCaseName.endsWith(".emf"))
-      format = XWPFDocument.PICTURE_TYPE_EMF;
+      format = PictureType.EMF;
     else if (lowerCaseName.endsWith(".wmf"))
-      format = XWPFDocument.PICTURE_TYPE_WMF;
+      format = PictureType.WMF;
     else if (lowerCaseName.endsWith(".pict"))
-      format = XWPFDocument.PICTURE_TYPE_PICT;
+      format = PictureType.PICT;
     else if (lowerCaseName.endsWith(".jpeg") || lowerCaseName.endsWith(".jpg"))
-      format = XWPFDocument.PICTURE_TYPE_JPEG;
+      format = PictureType.JPEG;
     else if (lowerCaseName.endsWith(".png"))
-      format = XWPFDocument.PICTURE_TYPE_PNG;
+      format = PictureType.PNG;
     else if (lowerCaseName.endsWith(".dib"))
-      format = XWPFDocument.PICTURE_TYPE_DIB;
+      format = PictureType.DIB;
     else if (lowerCaseName.endsWith(".gif"))
-      format = XWPFDocument.PICTURE_TYPE_GIF;
+      format = PictureType.GIF;
     else if (lowerCaseName.endsWith(".tiff"))
-      format = XWPFDocument.PICTURE_TYPE_TIFF;
+      format = PictureType.TIFF;
     else if (lowerCaseName.endsWith(".eps"))
-      format = XWPFDocument.PICTURE_TYPE_EPS;
+      format = PictureType.EPS;
     else if (lowerCaseName.endsWith(".bmp"))
-      format = XWPFDocument.PICTURE_TYPE_BMP;
+      format = PictureType.BMP;
     else if (lowerCaseName.endsWith(".wpg"))
-      format = XWPFDocument.PICTURE_TYPE_WPG;
+      format = PictureType.WPG;
     else
       throw new InvalidFormatException("Unsupported picture format: " + imgFileName);
     return format;
