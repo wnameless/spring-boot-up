@@ -93,10 +93,8 @@ public interface NotificationStrategy<NC extends NotificationCallback<NS, ID>, /
   }
 
   default List<NC> getNotificationCallbacks(SM stateMachine) {
-    List<NC> callbacks = getNotificationService().getNotificationCallbackRepository()
+    return getNotificationService().getNotificationCallbackRepository()
         .findAllByStateMachineEntityId(stateMachine.getEntity().getId());
-    // XXX: Force materialization of Spring Data MongoDB proxy collection
-    return callbacks.stream().toList();
   }
 
   default Action2<Transition<S, T>, Object[]> getNotificationCallbackAction2(NC callback) {

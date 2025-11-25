@@ -23,6 +23,8 @@
       <button class="nav-link" data-bs-toggle="tab"
         th:attr="data-bs-target=${'#viewableForm' + fid + '_' + iter.index}" type="button"
         role="tab">
+        <span
+          th:replace="~{sbu/fsm/required-mark :: bs5(${@sbuHtml.getSimpleName(item.phase.stateRecord.state.class)}, ${item.phase.stateRecord.state.name}, ${formType})}"></span>
         [[${#messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) + '.' +
         item.phase.stateRecord.state.name + '.tabs.' + formType) ?:
         #messages.msgOrNull(@sbuHtml.getSimpleName(item.phase.stateRecord.state.class) +

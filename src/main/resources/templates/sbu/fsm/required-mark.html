@@ -1,0 +1,19 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<span th:fragment="bs5(stateType, stateName, formType)">
+  <th:block
+    th:if="${#messages.msgOrNull(stateType + '.' + stateName + '.tabs.' + formType + '.required')} == 'true'">
+    <i class="fas fa-asterisk fa-fw text-secondary"></i>
+  </th:block>
+  <th:block
+    th:unless="${#messages.msgOrNull(stateType + '.' + stateName + '.tabs.' + formType + '.required')} == 'true'">
+    <th:block
+      th:if="${#messages.msgOrNull(stateType + '.stateForms.' + formType + '.required')} == 'true'">
+      <small>
+        <i class="fas fa-asterisk fa-fw text-secondary"></i>
+      </small>
+    </th:block>
+  </th:block>
+</span>
+
+</html>
