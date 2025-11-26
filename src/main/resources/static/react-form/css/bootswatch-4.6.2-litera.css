@@ -11783,3 +11783,31 @@ table-danger,
 .field-array>.form-group>div h5 {
   font-size: 1.0rem;
 }
+
+/* Make container-fluid in rjsf forms act as a flex row */
+.rjsf .container-fluid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* When a field has col-* class, remove the row/col-12 wrapper behavior */
+.rjsf .container-fluid>.row:has(> .col-12 > .form-group[class*="col-"]) {
+  display: contents;
+}
+
+.rjsf .container-fluid>.row>.col-12:has(> .form-group[class*="col-"]) {
+  display: contents;
+}
+
+/* The field with col-* now becomes a direct flex child */
+.rjsf .form-group[class*="col-"] {
+  margin-bottom: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* === FIX: Fields WITHOUT col-* class should take full width === */
+.rjsf .container-fluid>.row:not(:has(> .col-12 > .form-group[class*="col-"])) {
+  width: 100%;
+  flex-basis: 100%;
+}
