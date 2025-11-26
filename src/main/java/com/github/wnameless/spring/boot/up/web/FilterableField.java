@@ -1,6 +1,8 @@
 package com.github.wnameless.spring.boot.up.web;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -32,6 +34,13 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   }
 
   public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
+      List<String> datalistOption, BiFunction<F, String, Predicate> filterLogic) {
+    var ff = new FilterableField<F>(f -> f, Optional.of(fieldName), "text", filterLogic);
+    ff.datalistOption(datalistOption);
+    return ff;
+  }
+
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
       String inputType, Map<String, String> selectOption,
       BiFunction<F, String, Predicate> filterLogic) {
     var ff = new FilterableField<F>(f -> f, Optional.of(fieldName), inputType, filterLogic);
@@ -50,6 +59,7 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   private final BiFunction<E, String, Predicate> filterLogic;
   private boolean sortable = true;
   private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();
+  private final List<String> datalistOption = new ArrayList<>();
   private final Map<String, String> attr = new LinkedHashMap<>();
 
   public String getAttrString() {
@@ -76,6 +86,15 @@ public final class FilterableField<E extends EntityPathBase<?>> {
 
   public FilterableField<E> selectOption(Map<String, String> selectOption) {
     this.selectOption.putAll(selectOption);
+    return this;
+  }
+
+  public boolean hasDatalistOption() {
+    return !datalistOption.isEmpty();
+  }
+
+  public FilterableField<E> datalistOption(List<String> datalistOption) {
+    this.datalistOption.addAll(datalistOption);
     return this;
   }
 

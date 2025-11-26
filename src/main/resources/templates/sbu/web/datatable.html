@@ -62,7 +62,7 @@
               [[${#messages.msgOrNull('sbu.web.item.field.' + @sbuHtml.getSimpleName(itemClass) +
               '.' + field) ?: field}]]
             </label>
-            <!-- With select option -->
+            <!-- With select or datalist option -->
             <th:block th:if="${queryConfig.getFilterFields.get(field).hasSelectOption}">
               <select th:name="${field}" class="form-select">
                 <option></option>
@@ -73,8 +73,19 @@
                 </option>
               </select>
             </th:block>
-            <!-- Without select option -->
-            <th:block th:unless="${queryConfig.getFilterFields.get(field).hasSelectOption}">
+            <th:block th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}"
+              th:if="${!queryConfig.getFilterFields.get(field).hasSelectOption} and ${queryConfig.getFilterFields.get(field).hasDatalistOption}">
+              <input th:name="${field}" class="form-control" th:attr="list=${'datalist' + rid}"
+                th:placeholder="${(param.get(field) == null || #strings.isEmpty(param.get(field))) ? 'Type to search...' : param.get(field)}">
+              <datalist th:id="${'datalist' + rid}">
+                <option th:each="opt : ${queryConfig.getFilterFields.get(field).datalistOption}"
+                  th:value="${opt}">
+                </option>
+              </datalist>
+            </th:block>
+            <!-- Without select or datalist option -->
+            <th:block
+              th:unless="${queryConfig.getFilterFields.get(field).hasSelectOption} or ${queryConfig.getFilterFields.get(field).hasDatalistOption}">
               <input th:name="${field}"
                 th:attr="__${queryConfig.getFilterFields.get(field).attrString}__"
                 class="form-control" th:value="${queryConfig.getFieldQueryString(field)}">
