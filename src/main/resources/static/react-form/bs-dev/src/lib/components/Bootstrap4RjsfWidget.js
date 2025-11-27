@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Keep this import
+void React;
+
 const FileListWidget = (props) => {
   let li = [];
   (props.value instanceof Array ? props.value : [props.value]).forEach(function (base64) {
@@ -86,5 +89,25 @@ const ImageWidget = (props) => {
   );
 }
 
-export { DownloadWidget, FileListWidget, ImageWidget };
+const LinkWidget = (props) => {
+  const { value, onChange, readonly, schema } = props;
+
+  if (readonly) {
+    return (
+      <a href={value} target="_blank" rel="noopener noreferrer">
+        {schema.title || value}
+      </a>
+    );
+  }
+
+  return (
+    <input
+      type="url"
+      value={value || ''}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
+};
+
+export { DownloadWidget, FileListWidget, ImageWidget, LinkWidget };
 

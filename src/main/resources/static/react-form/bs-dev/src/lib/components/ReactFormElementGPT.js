@@ -5,7 +5,7 @@ import parse from 'html-react-parser';
 import debounce from 'lodash.debounce';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { DownloadWidget, FileListWidget, ImageWidget } from './Bootstrap4RjsfWidget';
+import { DownloadWidget, FileListWidget, ImageWidget, LinkWidget } from './Bootstrap4RjsfWidget';
 import * as HtmlHelper from './HtmlHelperGPT';
 
 class ReactFormElement extends HTMLElement {
@@ -226,7 +226,8 @@ class ReactFormElement extends HTMLElement {
     const widgets = {
       fileListWidget: FileListWidget,
       downloadWidget: DownloadWidget,
-      imageWidget: ImageWidget
+      imageWidget: ImageWidget,
+      linkWidget: LinkWidget
     };
 
     // Choose bootstrap 3 or 4
