@@ -11811,3 +11811,8 @@ table-danger,
   width: 100%;
   flex-basis: 100%;
 }
+
+/* === FIX: Restore normal display for container-fluid inside array fields === */
+.rjsf .field-array .container-fluid {
+  display: block;
+}
