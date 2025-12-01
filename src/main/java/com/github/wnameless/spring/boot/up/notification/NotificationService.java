@@ -44,15 +44,21 @@ public interface NotificationService<NC extends NotificationCallback<NS, ID>, NT
   default NC findOrCreateNotificationCallback(ID stateMachineEntityId, NS notificationSource,
       NotificationAdvice advice, String triggerName, String triggerNameTypeName, String stateName,
       String stateEnumTypeName) {
-    var notificationCallbackOpt = getNotificationCallbackRepository()
-        .findByStateMachineEntityIdAndNotificationSourceAndAdviceAndTriggerNameAndTriggerEnumTypeNameAndStateNameAndStateEnumTypeName(
-            stateMachineEntityId, notificationSource, advice, triggerName, triggerNameTypeName,
-            stateName, stateEnumTypeName);
-    if (notificationCallbackOpt.isPresent()) {
-      return notificationCallbackOpt.get();
-    } else {
-      return createNotificationCallback(stateMachineEntityId, notificationSource, advice,
-          triggerName, triggerNameTypeName, stateName, stateEnumTypeName);
+    var lock = NotificationCallbackLockManager.getLock(stateMachineEntityId);
+    lock.lock();
+    try {
+      var notificationCallbackOpt = getNotificationCallbackRepository()
+          .findByStateMachineEntityIdAndNotificationSourceAndAdviceAndTriggerNameAndTriggerEnumTypeNameAndStateNameAndStateEnumTypeName(
+              stateMachineEntityId, notificationSource, advice, triggerName, triggerNameTypeName,
+              stateName, stateEnumTypeName);
+      if (notificationCallbackOpt.isPresent()) {
+        return notificationCallbackOpt.get();
+      } else {
+        return createNotificationCallback(stateMachineEntityId, notificationSource, advice,
+            triggerName, triggerNameTypeName, stateName, stateEnumTypeName);
+      }
+    } finally {
+      lock.unlock();
     }
   }
 
@@ -61,24 +67,38 @@ public interface NotificationService<NC extends NotificationCallback<NS, ID>, NT
       String stateEnumTypeName);
 
   default NS findOrCreateNotificationSource(String title, String content, String actionPath) {
-    var notificationSourceOpt = getNotificationSourceRepository()
-        .findByTitleAndContentAndActionPathAndSenderId(title, content, actionPath, null);
-    if (notificationSourceOpt.isPresent()) {
-      return notificationSourceOpt.get();
+    var lockKey = title + "|" + content + "|" + actionPath + "|null";
+    var lock = NotificationCallbackLockManager.getLock(lockKey);
+    lock.lock();
+    try {
+      var notificationSourceOpt = getNotificationSourceRepository()
+          .findByTitleAndContentAndActionPathAndSenderId(title, content, actionPath, null);
+      if (notificationSourceOpt.isPresent()) {
+        return notificationSourceOpt.get();
+      }
+      return createNotificationSource(title, content, actionPath, null);
+    } finally {
+      lock.unlock();
     }
-    return createNotificationSource(title, content, actionPath, null);
   }
 
   NS createNotificationSource(String title, String content, String actionPath, ID senderId);
 
   default NS findOrCreateNotificationSource(String title, String content, String actionPath,
       ID senderId) {
-    var notificationSourceOpt = getNotificationSourceRepository()
-        .findByTitleAndContentAndActionPathAndSenderId(title, content, actionPath, senderId);
-    if (notificationSourceOpt.isPresent()) {
-      return notificationSourceOpt.get();
+    var lockKey = title + "|" + content + "|" + actionPath + "|" + senderId;
+    var lock = NotificationCallbackLockManager.getLock(lockKey);
+    lock.lock();
+    try {
+      var notificationSourceOpt = getNotificationSourceRepository()
+          .findByTitleAndContentAndActionPathAndSenderId(title, content, actionPath, senderId);
+      if (notificationSourceOpt.isPresent()) {
+        return notificationSourceOpt.get();
+      }
+      return createNotificationSource(title, content, actionPath, senderId);
+    } finally {
+      lock.unlock();
     }
-    return createNotificationSource(title, content, actionPath, senderId);
   }
 
   default Collection<NT> deleteAllThenCreateNotificationTarget(NS source,
