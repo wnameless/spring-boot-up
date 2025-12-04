@@ -22,14 +22,34 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   }
 
   public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
+      BiFunction<F, String, Predicate> filterLogic, boolean sortable) {
+    return new FilterableField<F>(f -> f, Optional.of(fieldName), "text", filterLogic)
+        .sortable(sortable);
+  }
+
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
       String inputType, BiFunction<F, String, Predicate> filterLogic) {
     return new FilterableField<F>(f -> f, Optional.of(fieldName), inputType, filterLogic);
+  }
+
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
+      String inputType, BiFunction<F, String, Predicate> filterLogic, boolean sortable) {
+    return new FilterableField<F>(f -> f, Optional.of(fieldName), inputType, filterLogic)
+        .sortable(sortable);
   }
 
   public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
       Map<String, String> selectOption, BiFunction<F, String, Predicate> filterLogic) {
     var ff = new FilterableField<F>(f -> f, Optional.of(fieldName), "text", filterLogic);
     ff.selectOption(selectOption);
+    return ff;
+  }
+
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
+      Map<String, String> selectOption, BiFunction<F, String, Predicate> filterLogic,
+      boolean sortable) {
+    var ff = new FilterableField<F>(f -> f, Optional.of(fieldName), "text", filterLogic);
+    ff.selectOption(selectOption).sortable(sortable);
     return ff;
   }
 
@@ -41,6 +61,13 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   }
 
   public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
+      List<String> datalistOption, BiFunction<F, String, Predicate> filterLogic, boolean sortable) {
+    var ff = new FilterableField<F>(f -> f, Optional.of(fieldName), "text", filterLogic);
+    ff.datalistOption(datalistOption).sortable(sortable);
+    return ff;
+  }
+
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
       String inputType, Map<String, String> selectOption,
       BiFunction<F, String, Predicate> filterLogic) {
     var ff = new FilterableField<F>(f -> f, Optional.of(fieldName), inputType, filterLogic);
@@ -48,9 +75,24 @@ public final class FilterableField<E extends EntityPathBase<?>> {
     return ff;
   }
 
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(String fieldName,
+      String inputType, Map<String, String> selectOption,
+      BiFunction<F, String, Predicate> filterLogic, boolean sortable) {
+    var ff = new FilterableField<F>(f -> f, Optional.of(fieldName), inputType, filterLogic);
+    ff.selectOption(selectOption).sortable(sortable);
+    return ff;
+  }
+
   public static <F extends EntityPathBase<?>> FilterableField<F> of(
       Function<F, ? extends Path<?>> pathFinder, BiFunction<F, String, Predicate> filterLogic) {
     return new FilterableField<F>(pathFinder, Optional.empty(), "text", filterLogic);
+  }
+
+  public static <F extends EntityPathBase<?>> FilterableField<F> of(
+      Function<F, ? extends Path<?>> pathFinder, BiFunction<F, String, Predicate> filterLogic,
+      boolean sortable) {
+    return new FilterableField<F>(pathFinder, Optional.empty(), "text", filterLogic)
+        .sortable(sortable);
   }
 
   private final Function<E, ? extends Path<?>> pathFinder;
