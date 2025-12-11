@@ -35,7 +35,8 @@
         [[${#messages.msgOrNull('sbu.attachment.upload') ?: 'Upload'}]]
       </button>
     </li>
-    <li th:if="${(user == null || user.canRead(item)) && item.attachmentSnapshot.attachments != null && !item.attachmentSnapshot.attachments.isEmpty()}"
+    <li
+      th:if="${item.attachmentSnapshot.attachments != null && !item.attachmentSnapshot.attachments.isEmpty()}"
       class="nav-item" role="presentation">
       <a class="nav-link" th:href="@{${item.joinPath('attachments', 'download-all')}}" download>
         <i class="fas fa-download me-1"></i>
@@ -44,7 +45,8 @@
     </li>
   </ul>
 
-  <div class="tab-content" th:with="hasOnlyOneGroup=${item.attachmentChecklist.getGroupNames().size() == 1}">
+  <div class="tab-content"
+    th:with="hasOnlyOneGroup=${item.attachmentChecklist.getGroupNames().size() == 1}">
     <div class="tab-pane fade show active" th:id="${'pills-file-list' + rid}" role="tabpanel">
       <div id="accordionFileList" class="accordion">
         <div th:each="fileGroup, groupIndex : ${item.attachmentChecklist.getGroupNames()}"
@@ -52,8 +54,11 @@
           <h2 class="accordion-header" th:id="'heading_' + ${groupIndex.index}">
             <button class="accordion-button" th:classappend="${!hasOnlyOneGroup ? 'collapsed' : ''}"
               type="button" data-bs-toggle="collapse"
-              th:attr="aria-expanded=${hasOnlyOneGroup}, data-bs-target='#collapse_' + ${groupIndex.index}, aria-controls='collapse_' + ${groupIndex.index}">
+              th:attr="aria-expanded=${hasOnlyOneGroup}, data-bs-target='#collapse_' + ${groupIndex.index}, aria-controls='collapse_' + ${groupIndex.index}"
+              th:with="fileCount=${item.attachmentSnapshot.attachmentsByGroup.get(fileGroup)?.size() ?: 0}">
               [[${#messages.msgOrNull('sbu.attachment.group.' + fileGroup) ?: fileGroup}]]
+              <span class="badge rounded-pill ms-2" th:classappend="${fileCount > 0 ? 'text-bg-primary' : 'text-bg-secondary'}"
+                th:text="${fileCount}"></span>
             </button>
           </h2>
           <div th:id="'collapse_' + ${groupIndex.index}" class="accordion-collapse collapse"

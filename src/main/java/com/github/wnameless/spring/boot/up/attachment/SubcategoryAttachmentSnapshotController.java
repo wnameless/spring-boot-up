@@ -57,6 +57,12 @@ public interface SubcategoryAttachmentSnapshotController<AA extends AttachmentSn
     downloadAttachmentAction(response, getAttachmentSnapshotProvider(id, subId), attachmentId);
   }
 
+  @GetMapping(path = "/{id}/subcategories/{subId}/attachments/download-all")
+  default void downloadAllSubAttachments(HttpServletResponse response, @PathVariable ID id,
+      @PathVariable ID subId) {
+    downloadAllAttachmentsAction(response, getAttachmentSnapshotProvider(id, subId));
+  }
+
   @PutMapping(path = "/{id}/subcategories/{subId}/attachments")
   default ModelAndView modifySubAttachments(ModelAndView mav, @PathVariable ID id,
       @PathVariable ID subId, @RequestBody Map<String, Object> jsfFiles,
