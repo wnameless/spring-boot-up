@@ -6,11 +6,11 @@
     <ol class="breadcrumb">
       <th:block th:each="contentNode,idx : ${contentNodes}">
         <li th:unless="${idx.last}" class="breadcrumb-item">
-          <a th:href="${contentNode.path}">[[${contentNode.name}]]</a>
+          <a th:href="@{${contentNode.path}}">[[${contentNode.name}]]</a>
         </li>
         <li th:if="${idx.last}" class="breadcrumb-item active">
           <a>[[${contentNode.name}]]</a>
-          <a th:href="${contentNode.path}" target="_blank" class="ps-1">
+          <a th:href="@{${contentNode.path}}" target="_blank" class="ps-1">
             <i class="fas fa-arrow-up-right-from-square"></i>
           </a>
         </li>
