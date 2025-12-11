@@ -33,16 +33,28 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyPr
       return;
     }
 
-    String[] names = SpringBootUp.applicationContext().getBeanNamesForType(ResolvableType
-        .forClassWithGenerics(JsfPOJOConverter.class, pojo.getClass(), this.getClass()));
-    if (names.length > 0) {
-      var converter = SpringBootUp.getBean(names[0], JsfPOJOConverter.class);
-      converter.map(pojo, this);
-    } else {
-      log.warn("Default ModelMapper is used for mapping because the JsfPOJOConverter for "
-          + pojo.getClass().getSimpleName() + " not found");
-      JsfConfig.getModelMapper().map(pojo, this);
+    // Priority 1: MapStruct converter (preferred - compile-time generated, faster)
+    String[] mapStructNames = SpringBootUp.applicationContext().getBeanNamesForType(ResolvableType
+        .forClassWithGenerics(MapStructJsfPOJOConverter.class, pojo.getClass(), this.getClass()));
+    if (mapStructNames.length > 0) {
+      var converter = SpringBootUp.getBean(mapStructNames[0], MapStructJsfPOJOConverter.class);
+      converter.mapToJsfPOJO(pojo, this);
+      return;
     }
+
+    // Priority 2: Legacy ModelMapper-based converter (deprecated)
+    String[] legacyNames = SpringBootUp.applicationContext().getBeanNamesForType(ResolvableType
+        .forClassWithGenerics(JsfPOJOConverter.class, pojo.getClass(), this.getClass()));
+    if (legacyNames.length > 0) {
+      var converter = SpringBootUp.getBean(legacyNames[0], JsfPOJOConverter.class);
+      converter.map(pojo, this);
+      return;
+    }
+
+    // Priority 3: Direct ModelMapper (fallback)
+    log.warn("Default ModelMapper is used for mapping because no converter for "
+        + pojo.getClass().getSimpleName() + " was found");
+    JsfConfig.getModelMapper().map(pojo, this);
   }
 
   default Map<String, Object> _getFormData() {

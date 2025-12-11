@@ -3,6 +3,15 @@ package com.github.wnameless.spring.boot.up.jsf;
 import org.modelmapper.ModelMapper;
 import com.github.wnameless.spring.boot.up.model.MapModelConverter;
 
+/**
+ * Legacy POJO to JsfPOJO converter using ModelMapper.
+ *
+ * @deprecated Use {@link MapStructJsfPOJOConverter} instead for better performance and type safety.
+ *             ModelMapper uses runtime reflection which is slower and has known bugs. MapStruct
+ *             generates code at compile-time providing better performance and compile-time
+ *             validation.
+ */
+@Deprecated(since = "0.18.0")
 public interface JsfPOJOConverter<P, J extends JsfPOJO<P>> extends MapModelConverter<P, J> {
 
   @Override
