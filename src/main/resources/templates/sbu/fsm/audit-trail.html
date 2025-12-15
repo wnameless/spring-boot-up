@@ -37,7 +37,8 @@
     <nav style="--bs-breadcrumb-divider: '<';" aria-label="breadcrumb">
       <ol class="breadcrumb">
         <th:block th:if="${item.stateRecord != null}">
-          <th:block th:each="at : ${item.stateRecord.reversedAuditTrails}">
+          <th:block th:each="at : ${item.stateRecord.reversedAuditTrails}"
+            th:with="atTimestamp=${at?.timestamp?.atZone(T(java.time.ZoneId).systemDefault())}">
             <li th:if="${at != null}" class="breadcrumb-item mt-1 mb-2">
               <div class="btn-group" role="group">
                 <button type="button" class="btn btn-outline-primary">
@@ -45,9 +46,9 @@
                   usernameStrategy.apply(at.username)}]]
                 </button>
                 <button type="button" class="btn btn-outline-info hint--right"
-                  th:attr="aria-label=${at.timestamp}">
+                  th:attr="aria-label=${atTimestamp}">
                   [[${at?.trigger?.displayName}]]<br>
-                  [[${at?.timestamp?.atZone(T(java.time.ZoneId).systemDefault()).toLocalDate}]]
+                  [[${atTimestamp?.toLocalDate}]]
                 </button>
               </div>
             </li>
