@@ -21,7 +21,7 @@ public class BasicAttachmentSnapshot<A extends Attachment<ID>, ID>
   List<A> attachments = new ArrayList<>();
 
   public BasicAttachmentSnapshot(AttachmentSnapshot<A, ID> attachmentSnapshot) {
-    attachments = attachmentSnapshot.getAttachments();
+    attachments = new ArrayList<>(attachmentSnapshot.getAttachments());
   }
 
 }
