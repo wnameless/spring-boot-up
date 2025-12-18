@@ -10,7 +10,8 @@
         </li>
         <li th:if="${idx.last}" class="breadcrumb-item active">
           <a>[[${contentNode.name}]]</a>
-          <a th:href="@{${contentNode.path}}" target="_blank" class="ps-1">
+          <a th:href="@{${contentNode.path}}" target="_blank" class="ps-1 hint--right"
+            th:attr="data-hint=${#strings.defaultString(#messages.msgOrNull('ui.open-in-new-tab'), 'Open in New Tab')}">
             <i class="fas fa-arrow-up-right-from-square"></i>
           </a>
         </li>
