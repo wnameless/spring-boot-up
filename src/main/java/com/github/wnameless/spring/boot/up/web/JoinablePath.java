@@ -22,8 +22,13 @@ public interface JoinablePath {
   default String joinPath(String... paths) {
     String pathSeprator = "/";
 
-    List<String> list = new ArrayList<>(Arrays.asList(paths));
-    list.add(0, getRootPath());
+    List<String> list = new ArrayList<>();
+    list.add(getRootPath());
+    for (String path : paths) {
+      if (path != null && !path.isEmpty()) {
+        list.add(path);
+      }
+    }
     for (int i = 1; i < list.size(); i++) {
       int predecessor = i - 1;
       while (list.get(predecessor).endsWith(pathSeprator)) {

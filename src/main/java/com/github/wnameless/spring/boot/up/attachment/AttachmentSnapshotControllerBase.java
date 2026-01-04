@@ -105,6 +105,11 @@ public interface AttachmentSnapshotControllerBase<S extends AttachmentService<A,
 
     String uiOpt = """
         {
+          "items": {
+            "fileName": {
+              "ui:readonly": true
+            }
+          },
           "ui:options": {
             "addable": false,
             "orderable": false,
