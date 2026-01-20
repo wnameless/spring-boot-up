@@ -43,9 +43,11 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyPr
     }
 
     // Priority 2: Legacy ModelMapper-based converter (deprecated)
+    @SuppressWarnings("deprecation")
     String[] legacyNames = SpringBootUp.applicationContext().getBeanNamesForType(ResolvableType
         .forClassWithGenerics(JsfPOJOConverter.class, pojo.getClass(), this.getClass()));
     if (legacyNames.length > 0) {
+      @SuppressWarnings("deprecation")
       var converter = SpringBootUp.getBean(legacyNames[0], JsfPOJOConverter.class);
       converter.map(pojo, this);
       return;
