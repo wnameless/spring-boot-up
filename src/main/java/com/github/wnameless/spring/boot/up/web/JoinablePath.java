@@ -1,7 +1,6 @@
 package com.github.wnameless.spring.boot.up.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public interface JoinablePath {
