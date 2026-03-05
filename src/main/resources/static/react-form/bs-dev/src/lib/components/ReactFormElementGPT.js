@@ -5,7 +5,7 @@ import parse from 'html-react-parser';
 import debounce from 'lodash.debounce';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { DownloadWidget, FileListWidget, ImageWidget, LinkWidget } from './Bootstrap4RjsfWidget';
+import { DownloadWidget, FileListWidget, ImageWidget, LinkWidget, SearchableSelectWidget } from './Bootstrap4RjsfWidget';
 import * as HtmlHelper from './HtmlHelperGPT';
 
 class ReactFormElement extends HTMLElement {
@@ -227,7 +227,8 @@ class ReactFormElement extends HTMLElement {
       fileListWidget: FileListWidget,
       downloadWidget: DownloadWidget,
       imageWidget: ImageWidget,
-      linkWidget: LinkWidget
+      linkWidget: LinkWidget,
+      searchableSelectWidget: SearchableSelectWidget
     };
 
     // Choose bootstrap 3 or 4
@@ -320,6 +321,7 @@ class ReactFormElement extends HTMLElement {
           schema={data.schema}
           uiSchema={data.uiSchema}
           formData={data.formData}
+          formContext={{ ...this.props.formContext, shadowRoot: this.shadowRoot }}
           onChange={handleChange}
           onSubmit={this.state.onSubmit}
           validator={validator}

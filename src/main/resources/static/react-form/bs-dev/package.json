@@ -28,7 +28,8 @@
     "react-bootstrap": "^1.6.8",
     "react-dom": "^19.0.0",
     "react-jsonschema-form-pagination": "^0.4.0",
-    "react-jsonschema-form-pagination-bs4": "0.4.1"
+    "react-jsonschema-form-pagination-bs4": "0.4.1",
+    "react-select": "^5.10.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",

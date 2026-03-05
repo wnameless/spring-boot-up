@@ -1,4 +1,7 @@
-import React from 'react';
+import createCache from '@emotion/cache';
+import { CacheProvider } from '@emotion/react';
+import React, { useMemo } from 'react';
+import Select from 'react-select';
 
 // Keep this import
 void React;
@@ -109,5 +112,37 @@ const LinkWidget = (props) => {
   );
 };
 
-export { DownloadWidget, FileListWidget, ImageWidget, LinkWidget };
+const SearchableSelectWidget = (props) => {
+  const { schema, value, onChange, disabled, readonly, formContext } = props;
+
+  const emotionCache = useMemo(() => {
+    const container = formContext?.shadowRoot
+      ? (() => {
+          let nonce = document.createElement('style');
+          formContext.shadowRoot.insertBefore(nonce, formContext.shadowRoot.firstChild);
+          return nonce;
+        })()
+      : undefined;
+    return createCache({ key: 'rsel', container });
+  }, [formContext?.shadowRoot]);
+
+  const options = (schema.enum || []).map((val, i) => ({
+    value: val,
+    label: schema.enumNames?.[i] ?? String(val),
+  }));
+
+  return (
+    <CacheProvider value={emotionCache}>
+      <Select
+        options={options}
+        value={options.find(opt => opt.value === value) ?? null}
+        onChange={(selected) => onChange(selected ? selected.value : undefined)}
+        isDisabled={disabled || readonly}
+        isClearable
+      />
+    </CacheProvider>
+  );
+}
+
+export { DownloadWidget, FileListWidget, ImageWidget, LinkWidget, SearchableSelectWidget };
 
