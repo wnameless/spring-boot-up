@@ -19,8 +19,10 @@ public interface JsfDefaultEnumStrategy {
   Map<Class<? extends JsonSchemaForm>, List<JsfDefaultEnum>> getJsfDefaultEnums();
 
   default JsonSchemaForm applyDefaultEnumStategy(JsfStratrgyProvider entity, JsonSchemaForm jsf) {
-    var defaultEnums =
-        Optional.ofNullable(getJsfDefaultEnums().get(entity.getClass())).orElse(List.of());
+    var defaultEnums = Optional.ofNullable(getJsfDefaultEnums().get(entity.getClass()))
+        .map(item -> Ruby.Array.copyOf(item)
+            .sortByǃ(defaultEnum -> defaultEnum.getDocumentEnumRuleOrder()).toList())
+        .orElse(List.of());
     if (defaultEnums.isEmpty()) return jsf;
 
     DocumentContext docCtx = JsonPath.parse(jsf.getSchema());

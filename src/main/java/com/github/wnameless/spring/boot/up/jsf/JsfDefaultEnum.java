@@ -7,6 +7,8 @@ public interface JsfDefaultEnum {
 
   String getDocumentTypeName();
 
+  int getDocumentEnumRuleOrder();
+
   String getEnumPath();
 
   List<JsonPathConst> getIfConditions();

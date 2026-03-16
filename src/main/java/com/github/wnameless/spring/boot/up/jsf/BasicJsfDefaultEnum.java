@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 public final class BasicJsfDefaultEnum implements JsfDefaultEnum {
 
   String documentTypeName;
+  int documentEnumRuleOrder;
   String enumPath;
   List<JsonPathConst> ifConditions = new ArrayList<>();
   JsfDefaultEnumType enumType;
