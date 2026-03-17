@@ -89,7 +89,7 @@
             hx:get="@{${item.joinPath('forms', formTypeData.key, 'formId', formBranchData.value)}}"
             hx-ext="json-enc">
             [[${entireStateFormTitleReplacer != null ?
-            entireStateFormTitleReplacer.getTitle(formTypeData.key, formBranchData.key) :
+            entireStateFormTitleReplacer.getTitle(item, formTypeData.key, formBranchData.key) :
             formBranchData.key}]]
           </a>
         </th:block>
