@@ -89,6 +89,17 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     return this;
   }
 
+  public QuerySetting<E> addFilterableField(FilterableField<E> ff, Map<String, String> selectOption,
+      boolean enableDatalist) {
+    if (enableDatalist) {
+      ff.datalistMapOption(selectOption);
+    } else {
+      ff.selectOption(selectOption);
+    }
+    filterFields.put(ff.getFieldName(entityPath), ff);
+    return this;
+  }
+
   public PathFilterableField onField(Function<E, Path<?>> pathFinder) {
     return new PathFilterableField(pathFinder);
   }
@@ -104,6 +115,7 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     private String alias;
     private boolean sortable = true;
     private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();
+    private final LinkedHashMap<String, String> datalistMapOption = new LinkedHashMap<>();
     private final LinkedHashMap<String, String> attr = new LinkedHashMap<>();
 
     public PathFilterableField attr(Map<String, String> attr) {
@@ -126,10 +138,16 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
       return this;
     }
 
+    public PathFilterableField datalistMapOption(Map<String, String> datalistMapOption) {
+      this.datalistMapOption.putAll(datalistMapOption);
+      return this;
+    }
+
     public QuerySetting<E> filterLogic(BiFunction<E, String, Predicate> filterLogic) {
       QuerySetting.this.addFilterableField(
           new FilterableField<>(pathFinder, Optional.ofNullable(alias), "text", filterLogic)
-              .sortable(sortable).selectOption(selectOption).attr(attr));
+              .sortable(sortable).selectOption(selectOption).datalistMapOption(datalistMapOption)
+              .attr(attr));
       return QuerySetting.this;
     }
 
@@ -142,6 +160,7 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
     private String alias;
     private boolean sortable = true;
     private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();
+    private final LinkedHashMap<String, String> datalistMapOption = new LinkedHashMap<>();
 
     public StringPathFilterableField alias(String alias) {
       this.alias = alias;
@@ -158,10 +177,15 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
       return this;
     }
 
+    public StringPathFilterableField datalistMapOption(Map<String, String> datalistMapOption) {
+      this.datalistMapOption.putAll(datalistMapOption);
+      return this;
+    }
+
     public QuerySetting<E> filterLogic(BiFunction<E, String, Predicate> filterLogic) {
       QuerySetting.this.addFilterableField(
           new FilterableField<>(pathFinder, Optional.ofNullable(alias), "text", filterLogic)
-              .sortable(sortable).selectOption(selectOption));
+              .sortable(sortable).selectOption(selectOption).datalistMapOption(datalistMapOption));
       return QuerySetting.this;
     }
 
@@ -169,14 +193,14 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
       QuerySetting.this
           .addFilterableField(new FilterableField<>(pathFinder, Optional.ofNullable(alias), "text",
               (e, param) -> pathFinder.apply(e).containsIgnoreCase(param)).sortable(sortable)
-                  .selectOption(selectOption));
+                  .selectOption(selectOption).datalistMapOption(datalistMapOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByContains() {
       QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
           Optional.ofNullable(alias), "text", (e, param) -> pathFinder.apply(e).contains(param))
-              .sortable(sortable).selectOption(selectOption));
+              .sortable(sortable).selectOption(selectOption).datalistMapOption(datalistMapOption));
       return QuerySetting.this;
     }
 
@@ -186,21 +210,21 @@ public final class QuerySetting<E extends EntityPathBase<?>> {
             return param == null || param.trim().isEmpty()
                 ? pathFinder.apply(e).containsIgnoreCase(param)
                 : pathFinder.apply(e).eq(param);
-          }).sortable(sortable).selectOption(selectOption));
+          }).sortable(sortable).selectOption(selectOption).datalistMapOption(datalistMapOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByStartsWith() {
       QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
           Optional.ofNullable(alias), "text", (e, param) -> pathFinder.apply(e).startsWith(param))
-              .sortable(sortable).selectOption(selectOption));
+              .sortable(sortable).selectOption(selectOption).datalistMapOption(datalistMapOption));
       return QuerySetting.this;
     }
 
     public QuerySetting<E> filterByEndsWith() {
       QuerySetting.this.addFilterableField(new FilterableField<>(pathFinder,
           Optional.ofNullable(alias), "text", (e, param) -> pathFinder.apply(e).endsWith(param))
-              .sortable(sortable).selectOption(selectOption));
+              .sortable(sortable).selectOption(selectOption).datalistMapOption(datalistMapOption));
       return QuerySetting.this;
     }
 

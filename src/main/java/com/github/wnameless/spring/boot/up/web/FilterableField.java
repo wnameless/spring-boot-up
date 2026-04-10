@@ -102,6 +102,7 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   private boolean sortable = true;
   private final LinkedHashMap<String, String> selectOption = new LinkedHashMap<>();
   private final List<String> datalistOption = new ArrayList<>();
+  private final LinkedHashMap<String, String> datalistMapOption = new LinkedHashMap<>();
   private final Map<String, String> attr = new LinkedHashMap<>();
 
   public String getAttrString() {
@@ -132,12 +133,29 @@ public final class FilterableField<E extends EntityPathBase<?>> {
   }
 
   public boolean hasDatalistOption() {
-    return !datalistOption.isEmpty();
+    return !datalistOption.isEmpty() || !datalistMapOption.isEmpty();
+  }
+
+  public boolean hasDatalistMapOption() {
+    return !datalistMapOption.isEmpty();
   }
 
   public FilterableField<E> datalistOption(List<String> datalistOption) {
     this.datalistOption.addAll(datalistOption);
     return this;
+  }
+
+  public FilterableField<E> datalistMapOption(Map<String, String> datalistMapOption) {
+    this.datalistMapOption.putAll(datalistMapOption);
+    return this;
+  }
+
+  public String getDatalistMapDisplayByValue(String value) {
+    if (value == null) return "";
+    for (var entry : datalistMapOption.entrySet()) {
+      if (entry.getValue().equals(value)) return entry.getKey();
+    }
+    return "";
   }
 
   public boolean hasSelectOption() {

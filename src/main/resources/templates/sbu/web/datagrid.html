@@ -76,12 +76,24 @@
               </select>
             </th:block>
             <th:block th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}"
-              th:if="${!queryConfig.getFilterFields.get(field).hasSelectOption} and ${queryConfig.getFilterFields.get(field).hasDatalistOption}">
+              th:if="${!queryConfig.getFilterFields.get(field).hasSelectOption} and ${queryConfig.getFilterFields.get(field).hasDatalistOption} and ${!queryConfig.getFilterFields.get(field).hasDatalistMapOption}">
               <input th:name="${field}" class="form-control" th:attr="list=${'datalist' + rid}"
                 th:placeholder="${(param.get(field) == null || #strings.isEmpty(param.get(field))) ? 'Type to search...' : param.get(field)}">
               <datalist th:id="${'datalist' + rid}">
                 <option th:each="opt : ${queryConfig.getFilterFields.get(field).datalistOption}"
                   th:value="${opt}">
+                </option>
+              </datalist>
+            </th:block>
+            <th:block th:with="rid=${(T(java.lang.Math).random() * 2147483647).intValue()}"
+              th:if="${!queryConfig.getFilterFields.get(field).hasSelectOption} and ${queryConfig.getFilterFields.get(field).hasDatalistMapOption}">
+              <input type="hidden" th:name="${field}" th:value="${queryConfig.getFieldQueryString(field)}">
+              <input class="form-control sbu-datalist-map-input" th:attr="list=${'datalist' + rid}"
+                th:placeholder="${(param.get(field) == null || #strings.isEmpty(param.get(field))) ? 'Type to search...' : ''}"
+                th:value="${queryConfig.getFilterFields.get(field).getDatalistMapDisplayByValue(queryConfig.getFieldQueryString(field))}">
+              <datalist th:id="${'datalist' + rid}">
+                <option th:each="opt : ${queryConfig.getFilterFields.get(field).datalistMapOption}"
+                  th:value="${opt.key}" th:data-value="${opt.value}">
                 </option>
               </datalist>
             </th:block>
@@ -200,6 +212,16 @@
 
   <script th:inline="javascript" defer>
     htmx.process(document.getElementById(/*[[${ajaxTargetId}]]*/ null));
+  </script>
+  <script defer>
+    document.querySelectorAll('.sbu-datalist-map-input').forEach(function(input) {
+      input.addEventListener('input', function() {
+        var list = document.getElementById(this.getAttribute('list'));
+        var hidden = this.previousElementSibling;
+        var opt = Array.from(list.options).find(function(o) { return o.value === input.value; });
+        hidden.value = opt ? opt.dataset.value : '';
+      });
+    });
   </script>
 </div>
 <!-- End Table -->
