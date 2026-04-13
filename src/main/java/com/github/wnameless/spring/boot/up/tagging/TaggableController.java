@@ -115,6 +115,8 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
     var systemLabelList = taggable.getSystemLabels().stream() //
         .filter(LabelTemplate::isUserEditable) //
         .filter(l -> l.userPermissionStock() == null || l.userPermissionStock().getAsBoolean())
+        .filter(l -> l.userPermissionPredicate() == null
+            || l.userPermissionPredicate().test(getRestfulItem()))
         .toList();
     if (!systemLabelList.isEmpty()) {
       var systemLabelListEnum = systemLabelList.stream().map(SystemLabel::getId).toList();

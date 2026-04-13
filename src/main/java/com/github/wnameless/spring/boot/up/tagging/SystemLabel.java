@@ -2,6 +2,7 @@ package com.github.wnameless.spring.boot.up.tagging;
 
 import static lombok.AccessLevel.PRIVATE;
 import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 import org.springframework.data.annotation.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,5 +31,9 @@ public class SystemLabel implements LabelTemplate<String> {
   @Transient
   @Accessors(fluent = true, chain = false)
   BooleanSupplier userPermissionStock;
+
+  @Transient
+  @Accessors(fluent = true, chain = false)
+  Predicate<Object> userPermissionPredicate;
 
 }

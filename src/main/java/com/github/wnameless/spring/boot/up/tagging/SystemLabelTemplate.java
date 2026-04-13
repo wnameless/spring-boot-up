@@ -1,6 +1,7 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 
 public interface SystemLabelTemplate extends LabelTemplate<String> {
 
@@ -15,6 +16,7 @@ public interface SystemLabelTemplate extends LabelTemplate<String> {
     systemLabel.setUsername(getUsername());
     systemLabel.setUserEditable(isUserEditable());
     systemLabel.userPermissionStock(userPermissionStock());
+    systemLabel.userPermissionPredicate(userPermissionPredicate());
 
     return systemLabel;
   }
@@ -24,5 +26,11 @@ public interface SystemLabelTemplate extends LabelTemplate<String> {
   }
 
   default void userPermissionStock(BooleanSupplier permissionStock) {}
+
+  default Predicate<Object> userPermissionPredicate() {
+    return null;
+  }
+
+  default void userPermissionPredicate(Predicate<Object> permissionStrategy) {}
 
 }
