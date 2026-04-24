@@ -76,7 +76,7 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyPr
     Map<String, Object> formData = applyFormDataStrategy(jsf);
     jsf.setFormData(formData);
 
-    Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
+    Optional<JsfPatchService> jsfPatchServiceOpt = JsfPatchService.findIfActive();
     if (jsfPatchServiceOpt.isPresent()) {
       JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
       if (jsfPatchService.wholePatch() != null) {
@@ -108,7 +108,7 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyPr
     Map<String, Object> schema = applySchemaStrategy(jsf);
     jsf.setSchema(schema);
 
-    Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
+    Optional<JsfPatchService> jsfPatchServiceOpt = JsfPatchService.findIfActive();
     if (jsfPatchServiceOpt.isPresent()) {
       JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
       if (jsfPatchService.wholePatch() != null) {
@@ -130,7 +130,7 @@ public interface JsfPOJO<T> extends JsonSchemaForm, JsfVersioning, JsfStratrgyPr
     Map<String, Object> uiSchema = applyUiSchemaStrategy(jsf);
     jsf.setUiSchema(uiSchema);
 
-    Optional<JsfPatchService> jsfPatchServiceOpt = SpringBootUp.findBean(JsfPatchService.class);
+    Optional<JsfPatchService> jsfPatchServiceOpt = JsfPatchService.findIfActive();
     if (jsfPatchServiceOpt.isPresent()) {
       JsfPatchService jsfPatchService = jsfPatchServiceOpt.get();
       if (jsfPatchService.wholePatch() != null) {
