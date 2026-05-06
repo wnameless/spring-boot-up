@@ -1,6 +1,8 @@
 package com.github.wnameless.spring.boot.up.tagging;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -173,9 +175,29 @@ public interface TaggableController<E extends Taggable<T, UL, L, ID>, TS extends
       return mav;
     }
 
+    Set<ID> visibleLabelIds = taggable.getLabelTemplates().stream()
+        .filter(LabelTemplate::isUserEditable).map(LabelTemplate::getId)
+        .collect(Collectors.toSet());
+    Set<ID> visibleUserLabelIds = taggable.getUserLabelTemplates().stream()
+        .map(UserLabelTemplate::getId).collect(Collectors.toSet());
+    Set<String> visibleSystemLabelIds = taggable.getSystemLabels().stream()
+        .filter(LabelTemplate::isUserEditable)
+        .filter(l -> l.userPermissionStock() == null || l.userPermissionStock().getAsBoolean())
+        .filter(l -> l.userPermissionPredicate() == null
+            || l.userPermissionPredicate().test(getRestfulItem()))
+        .map(SystemLabel::getId).collect(Collectors.toSet());
+
     taggable.getTagTemplates().stream().filter(tag -> {
-      if (tag.getLabelTemplate() == null) return true;
-      return tag.getLabelTemplate().isUserEditable();
+      if (tag.getLabelTemplate() != null) {
+        return visibleLabelIds.contains(tag.getLabelTemplate().getId());
+      }
+      if (tag.getUserLabelTemplate() != null) {
+        return visibleUserLabelIds.contains(tag.getUserLabelTemplate().getId());
+      }
+      if (tag.getSystemLabel() != null) {
+        return visibleSystemLabelIds.contains(tag.getSystemLabel().getId());
+      }
+      return false;
     }).forEach(tag -> getTaggingService().getTagTemplateRepository().delete(tag));
 
     for (var labelId : data.getLabelList()) {
