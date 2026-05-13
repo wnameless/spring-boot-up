@@ -109,6 +109,16 @@ public interface NotificationService<NC extends NotificationCallback<NS, ID>, NT
     return createNotificationTarget(source, receivers);
   }
 
+  default Collection<NT> deleteThenCreateNotificationTargetForReceivers(NS source,
+      Collection<NR> receivers) {
+    List<NT> oldTargets = getNotificationTargetRepository().findAllByNotificationSource(source)
+        .stream().filter(nt -> receivers.contains(nt.getNotificationReceiver()))
+        .collect(Collectors.toList());
+    getNotificationTargetRepository().deleteAll(oldTargets);
+
+    return createNotificationTarget(source, receivers);
+  }
+
   List<NT> createNotificationTarget(NS source, Collection<NR> receivers);
 
   default Collection<NR> getAlwaysTriggerNotificationReceivers(Duration alwaysActionInterval,
