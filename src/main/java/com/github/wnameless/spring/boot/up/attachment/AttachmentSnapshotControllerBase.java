@@ -44,10 +44,22 @@ public interface AttachmentSnapshotControllerBase<S extends AttachmentService<A,
     if (original == null) original = new ArrayList<>();
 
     var service = getAttachmentService();
+    var checklist = attachmentSnapshotProvider.getAttachmentChecklist();
 
     for (var a : attachments) {
       if (attachmentSnapshotProvider.isValidAttachment(a)) {
-        if (attachmentSnapshotProvider.isExistedAttachment(a)) {
+        var singleGroup = checklist.getAttachmentGroups().stream()
+            .anyMatch(g -> Objects.equals(g.getGroup(), a.getGroup()) && g.isSingle());
+        if (singleGroup) {
+          var existingInGroup =
+              original.stream().filter(x -> Objects.equals(x.getGroup(), a.getGroup())).toList();
+          if (!existingInGroup.isEmpty()) {
+            original.removeAll(existingInGroup);
+            if (service.outdatedAttachmentProcedure().isPresent()) {
+              service.outdatedAttachmentProcedure().get().accept(new ArrayList<>(existingInGroup));
+            }
+          }
+        } else if (attachmentSnapshotProvider.isExistedAttachment(a)) {
           var removedOne = attachmentSnapshotProvider.removeExistedAttachment(a);
           if (removedOne != null) {
             if (service.outdatedAttachmentProcedure().isPresent()) {
